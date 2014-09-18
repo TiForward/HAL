@@ -5,7 +5,11 @@
 #
 # Run this
 
-${GTEST_ROOT:?"GTEST_ROOT must point to your Google Test installation."}
+if ! test -d "${GTEST_ROOT}"; then
+    echo "GTEST_ROOT must point to your Google Test installation."
+    exit 1
+fi
+
 declare -rx VERBOSE=1
 
 declare -r CMAKE_BUILD_TYPE=Debug
