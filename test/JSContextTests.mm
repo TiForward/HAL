@@ -8,8 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 #import <XCTest/XCTest.h>
-#include "JSContext.h"
-#include "JSValue.h"
+#include "JavaScriptCoreCPP/JSContext.h"
+#include "JavaScriptCoreCPP/JSValue.h"
 
 @interface JSContextTests : XCTestCase
 

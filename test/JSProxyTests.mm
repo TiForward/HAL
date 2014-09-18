@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 Pedro Enrique. All rights reserved.
 
 #import <XCTest/XCTest.h>
-#include "JSProxy.h"
-#include "JSString.h"
+#include "JavaScriptCoreCPP/JSProxy.h"
+#include "JavaScriptCoreCPP/JSString.h"
 #include <JavaScriptCore/JavaScript.h>
 #include <string>
 #include <iostream>

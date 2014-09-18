@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import <XCTest/XCTest.h>
-#include "JSString.h"
+#include "JavaScriptCoreCPP/JSString.h"
 #include <iostream>
 
 @interface JSStringTests : XCTestCase
