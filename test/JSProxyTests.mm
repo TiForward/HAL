@@ -1,19 +1,39 @@
-#include "JavaScriptCoreCPP/JSString.h"
+//
+//  TiProxyTests.m
+//  TiValue
+//
+//  Created by Matt Langston on 9/9/14.
+//  Copyright (c) 2014 Pedro Enrique. All rights reserved.
 
+#import <XCTest/XCTest.h>
+#include "JSProxy.h"
+#include "JSString.h"
+#include <JavaScriptCore/JavaScript.h>
 #include <string>
 #include <iostream>
 
-#include <JavaScriptCore/JavaScript.h>
-#include "gtest/gtest.h"
+@interface JSProxyTests : XCTestCase
+@end
 
-// Tests JSString for std::string interoperability.
-TEST(JSStringTests, JSEvaluateScript) {
-	// This test is named "JSEvaluateScript", and belongs to the
-	// "JSStringTests" test case.
-	
+@implementation JSProxyTests
+
+- (void)setUp
+{
+    [super setUp];
+    // Put setup code here. This method is called before the invocation of each test method in the class.
+}
+
+- (void)tearDown
+{
+    // Put teardown code here. This method is called after the invocation of each test method in the class.
+    [super tearDown];
+}
+
+- (void)testJSClassRef
+{
     ::JSGlobalContextRef globalContext { JSGlobalContextCreate(nullptr) };
     ::JSObjectRef        globalObject  { JSContextGetGlobalObject(globalContext) };
-	
+
     //JSValueRef JSEvaluateScript(JSContextRef ctx, JSStringRef script, JSObjectRef thisObject, JSStringRef sourceURL, int startingLineNumber, JSValueRef* exception);
     
     ::JSValueRef exceptionValue { nullptr };
@@ -23,23 +43,15 @@ TEST(JSStringTests, JSEvaluateScript) {
     if (exceptionValue) {
         ::JSValueRef exceptionValue2 { nullptr };
         JSString exceptionString { JSValueToStringCopy(globalContext, exceptionValue, &exceptionValue2) };
-		EXPECT_FALSE(exceptionValue2);
+        XCTAssertFalse(exceptionValue2);
         std::clog << "MDL: caught exception: " << exceptionString << std::endl;
     } else {
         JSString resultString { JSValueToStringCopy(globalContext, resultValue, &exceptionValue) };
-		EXPECT_FALSE(exceptionValue);
+        XCTAssertFalse(exceptionValue);
         std::clog << "MDL: result = " << resultString << std::endl;
     }
+
+    //context.addPropertyToGlobalObject("Proxy2", Ti::Proxy2::CreateConstructor());
 }
 
-// Tests JSString for std::string interoperability.
-TEST(JSStringTests, Equality) {
-    JSString string1 { "hello, world" };
-    JSString string2 = string1;
-    ASSERT_EQ(string1, string2);
-    
-    JSString string3 { "hello" };
-    ASSERT_NE(string1, string3);
-	
-    std::clog << "MDL: " << string1 << std::endl;
-}
+@end
