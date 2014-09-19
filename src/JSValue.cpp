@@ -104,7 +104,7 @@ JSValue::operator double() const {
 
 // This in the ToInt32 operation is defined in section 9.5 of the ECMA-262 spec.
 // Note that this operation is identical to ToUInt32 other than to interpretation
-// of the resulting bit-pattern (as such this metod is also called to implement
+// of the resulting bit-pattern (as such this method is also called to implement
 // ToUInt32).
 //
 // The operation can be descibed as round towards zero, then select the 32 least
@@ -119,7 +119,7 @@ JSValue::operator int32_t() const
     // after rounding; if the exponent is > 83 then no bits of precision can be
     // left in the low 32-bit range of the result (IEEE-754 doubles have 52 bits
     // of fractional precision).
-    // Note this case handles 0, -0, and all infinte, NaN, & denormal value.
+    // Note this case handles 0, -0, and all infinite, NaN, & denormal value.
     if (exp < 0 || exp > 83)
         return 0;
     

@@ -19,7 +19,7 @@ class JSProxy {
         object_ = rhs.object_;
     }
     
-    // Non-virtial destructor.
+    // Non-virtual destructor.
     ~JSProxy() {
     }
     
