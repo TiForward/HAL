@@ -14,7 +14,7 @@
 
 /*!
  @interface
- @discussion A JSString is an immutable, thread-safe representaton of a
+ @discussion A JSString is an immutable, thread-safe representation of a
  JavaScript string.
  
  */
