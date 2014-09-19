@@ -89,7 +89,7 @@ public:
         return exceptionHandler_;
     };
     
-    // Implicit convertsion to C API.
+    // Implicit conversion to C API.
     operator ::JSGlobalContextRef() const {
         return context_;
     }

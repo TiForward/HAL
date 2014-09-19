@@ -32,7 +32,7 @@ public:
         return JSVirtualMachine_ptr_t(new JSVirtualMachine(std::forward<Ts>(params)...), deleter{});
     }
     
-    // Implicit convertsion to C API.
+    // Implicit conversion to C API.
     operator JSContextGroupRef() const {
         return contextGroup_;
     }

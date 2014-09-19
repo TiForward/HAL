@@ -35,7 +35,7 @@ public:
 	
     operator std::string() const;
 	
-    // Explicit convertsion to C API.
+    // Explicit conversion to C API.
     explicit operator JSStringRef() const {
         return string_;
     }
