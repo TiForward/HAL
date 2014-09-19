@@ -14,16 +14,19 @@
 #include <string>
 #include <iostream>
 #include <atomic>
+#include  <cstdint>
 
 class JSValue final : public std::enable_shared_from_this<JSValue> {
 
 public:
-
+    
     // Create the Undefined value.
     explicit JSValue(const JSContext_ptr_t& context_ptr);
     
     explicit JSValue(bool value, const JSContext_ptr_t& context_ptr);
 
+    explicit JSValue(int value, const JSContext_ptr_t& context_ptr);
+    
     explicit JSValue(double value, const JSContext_ptr_t& context_ptr);
 
     JSValue(::JSValueRef value, const JSContext_ptr_t& context_ptr);
@@ -42,6 +45,15 @@ public:
     
     operator double() const;
     
+    operator int32_t() const;
+    
+    // This implements ToUInt32, defined in ECMA-262 9.6.
+    operator uint32_t() const  {
+        // As commented in the spec, the operation of ToInt32 and ToUint32 only differ
+        // in how the result is interpreted; see NOTEs in sections 9.5 and 9.6.
+        return this->operator int32_t();
+    }
+
     operator JSString() const;
 
     static long ctorCounter() {
@@ -52,6 +64,26 @@ public:
         return dtorCounter_;
     }
 
+    bool isUndefined() const {
+        return JSValueIsUndefined(*context_ptr_, value_);
+    }
+    
+    bool isNull() const {
+        return JSValueIsNull(*context_ptr_, value_);
+    }
+    
+    bool isBoolean() const {
+        return JSValueIsBoolean(*context_ptr_, value_);
+    }
+    
+    bool isNumber() const {
+        return JSValueIsNumber(*context_ptr_, value_);
+    }
+    
+    bool isString() const {
+        return JSValueIsString(*context_ptr_, value_);
+    }
+    
 private:
     
     // Return true if the two JSValues are equal.

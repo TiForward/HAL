@@ -23,6 +23,7 @@
 		C936FD6B19CB97930082CB08 /* JSString.h in Headers */ = {isa = PBXBuildFile; fileRef = C936FD6619CB97930082CB08 /* JSString.h */; };
 		C936FD6C19CB97930082CB08 /* JSValue.h in Headers */ = {isa = PBXBuildFile; fileRef = C936FD6719CB97930082CB08 /* JSValue.h */; };
 		C936FD6D19CB97930082CB08 /* JSVirtualMachine.h in Headers */ = {isa = PBXBuildFile; fileRef = C936FD6819CB97930082CB08 /* JSVirtualMachine.h */; };
+		C936FD6F19CC949E0082CB08 /* JSValueTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C936FD6E19CC949E0082CB08 /* JSValueTests.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +56,7 @@
 		C936FD6619CB97930082CB08 /* JSString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSString.h; path = ../../../include/JavaScriptCoreCPP/JSString.h; sourceTree = "<group>"; };
 		C936FD6719CB97930082CB08 /* JSValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSValue.h; path = ../../../include/JavaScriptCoreCPP/JSValue.h; sourceTree = "<group>"; };
 		C936FD6819CB97930082CB08 /* JSVirtualMachine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSVirtualMachine.h; path = ../../../include/JavaScriptCoreCPP/JSVirtualMachine.h; sourceTree = "<group>"; };
+		C936FD6E19CC949E0082CB08 /* JSValueTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = JSValueTests.mm; path = ../../../test/JSValueTests.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,9 +118,10 @@
 		C936FD4E19CB961A0082CB08 /* JavaScriptCoreCPPTests */ = {
 			isa = PBXGroup;
 			children = (
-				C936FD5619CB962E0082CB08 /* JSStringTests.mm */,
-				C936FD5719CB962E0082CB08 /* JSProxyTests.mm */,
 				C936FD5819CB962E0082CB08 /* JSContextTests.mm */,
+				C936FD5619CB962E0082CB08 /* JSStringTests.mm */,
+				C936FD6E19CC949E0082CB08 /* JSValueTests.mm */,
+				C936FD5719CB962E0082CB08 /* JSProxyTests.mm */,
 				C936FD5919CB962E0082CB08 /* GotW71.cpp */,
 				C936FD5A19CB962E0082CB08 /* GotW71.h */,
 				C936FD4F19CB961A0082CB08 /* Supporting Files */,
@@ -251,6 +254,7 @@
 			files = (
 				C936FD5C19CB962E0082CB08 /* JSProxyTests.mm in Sources */,
 				C936FD5E19CB962E0082CB08 /* GotW71.cpp in Sources */,
+				C936FD6F19CC949E0082CB08 /* JSValueTests.mm in Sources */,
 				C936FD5D19CB962E0082CB08 /* JSContextTests.mm in Sources */,
 				C936FD5B19CB962E0082CB08 /* JSStringTests.mm in Sources */,
 			);

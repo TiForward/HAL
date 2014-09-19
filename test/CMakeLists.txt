@@ -4,3 +4,4 @@ include_directories(${GTEST_INCLUDE_DIRS})
 #target_link_libraries(foo ${GTEST_BOTH_LIBRARIES})
 
 cxx_test(JSStringTests . JavaScriptCoreCPP ${JavaScriptCore_LIBRARIES})
+cxx_test(JSValueTests  . JavaScriptCoreCPP ${JavaScriptCore_LIBRARIES})
