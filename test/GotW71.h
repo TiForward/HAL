@@ -73,38 +73,38 @@ public:
     enum { Is = 0 };
 };
 
-class Clonable {
+class Cloneable {
 };
 
 // Example 3(b): Using IsDerivedFrom to make use of
-// derivation from Clonable if available, and do
+// derivation from Cloneable if available, and do
 // something else otherwise.
 //
 template<class T, int>
 class XImpl
 {
-    // general case: T is not derived from Clonable
+    // general case: T is not derived from Cloneable
 };
 
 template<class T>
 class XImpl<T, 1>
 {
-    // T is derived from Clonable
+    // T is derived from Cloneable
 };
 
 // Example 3(a), continued: Using IsDerivedFrom
-// to enforce derivation from Clonable
+// to enforce derivation from Cloneable
 //
 template<class T>
 class X
 {
-    XImpl<T, IsDerivedFrom<T, Clonable>::Is> impl_;
+    XImpl<T, IsDerivedFrom<T, Cloneable>::Is> impl_;
     // ... delegates to impl_ ...
     
     bool ValidateRequirements() const
     {
         // typedef needed because of the ,
-        typedef IsDerivedFrom<T, Clonable> Y;
+        typedef IsDerivedFrom<T, Cloneable> Y;
         
         // a runtime check, but one that can be turned
         // into a compile-time check without much work
@@ -125,13 +125,13 @@ public:
 };
 
 
-class MyClonable : public Clonable { /*...*/ };
-class MyNotClonable { /*...*/ };
+class MyCloneable : public Cloneable { /*...*/ };
+class MyNotCloneable { /*...*/ };
 
 // Example 4: Using traits instead of IsDerivedFrom
 // to make use of Clonability if available, and do
 // something else otherwise. Requires writing a
-// specialization for each Clonable class.
+// specialization for each Cloneable class.
 //
 template<class T>
 class XTraits
@@ -143,14 +143,14 @@ class XTraits
 
 /*
 template<>
-class XTraits<MyClonable>
+class XTraits<MyCloneable>
 {
-    // MyClonable is derived from Clonable, so use Clone()
-    static MyClonable* Clone( const MyClonable* p )
+    // MyCloneable is derived from Cloneable, so use Clone()
+    static MyCloneable* Clone( const MyCloneable* p )
     { return p->Clone(); }
 };
 */
 
-// ... etc. for every class derived from Clonable
+// ... etc. for every class derived from Cloneable
 
 #endif /* defined(__TiValue__GotW71__) */
