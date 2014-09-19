@@ -9,6 +9,7 @@
 
 #include <JavaScriptCore/JavaScript.h>
 #include <string>
+#include <memory>
 #include <iostream>
 #include <atomic>
 

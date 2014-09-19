@@ -21,6 +21,7 @@ function echo_and_eval {
 
 cmd+="cmake"
 #cmd+=" -DGTEST_MSVC_SEARCH=MT"
+#cmd+=" --debug-output"
 cmd+=" ../"
 
 echo_and_eval "rm -rf \"${BUILD_DIR}\""

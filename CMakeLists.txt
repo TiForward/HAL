@@ -10,7 +10,7 @@ list(INSERT CMAKE_MODULE_PATH 0 ${APPCELERATOR_CMAKE_MODULE_PATH})
 include(${APPCELERATOR_CMAKE_MODULE_PATH}/internal_utils.cmake)
 
 config_compiler_and_linker()  # Defined in internal_utils.cmake.
-config_cmake_system_framework_path(macosx)
+#config_cmake_system_framework_path(macosx)
 
 # Allow "make test" to work.
 enable_testing()
