@@ -11,6 +11,13 @@
 #include <memory>
 #include <atomic>
 
+/*!
+ @interface
+ @discussion An instance of JSVirtualMachine represents a single JavaScript "object space"
+ or set of execution resources. Thread safety is supported by locking the
+ virtual machine, with concurrent JavaScript execution supported by allocating
+ separate instances of JSVirtualMachine.
+ */
 class JSVirtualMachine;
 typedef std::shared_ptr<JSVirtualMachine> JSVirtualMachine_ptr_t;
 

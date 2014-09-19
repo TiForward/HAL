@@ -16,6 +16,24 @@
 #include <atomic>
 #include  <cstdint>
 
+/*!
+ @interface
+ @discussion A JSValue is a reference to a value within the JavaScript object space of a
+ JSVirtualMachine. All instances of JSValue originate from a JSContext and
+ hold a strong reference to this JSContext. As long as any value associated with
+ a particular JSContext is retained, that JSContext will remain alive.
+ Where an instance method is invoked upon a JSValue, and this returns another
+ JSValue, the returned JSValue will originate from the same JSContext as the
+ JSValue on which the method was invoked.
+ 
+ All JavaScript values are associated with a particular JSVirtualMachine
+ (the associated JSVirtualMachine is available indirectly via the context
+ property). An instance of JSValue may only be passed as an argument to
+ methods on instances of JSValue and JSContext that belong to the same
+ JSVirtualMachine - passing a JSValue to a method on an object originating
+ from a different JSVirtualMachine will result in an Objective-C exception
+ being raised.
+ */
 class JSValue final : public std::enable_shared_from_this<JSValue> {
 
 public:
@@ -23,10 +41,31 @@ public:
     // Create the Undefined value.
     explicit JSValue(const JSContext_ptr_t& context_ptr);
     
+    /*!
+     @method
+     @abstract Create a JavaScript value from a BOOL primitive.
+     @param value
+     @param context The JSContext in which the resulting JSValue will be created.
+     @result The new JSValue representing the equivalent boolean value.
+     */
     explicit JSValue(bool value, const JSContext_ptr_t& context_ptr);
 
-    explicit JSValue(int value, const JSContext_ptr_t& context_ptr);
+    /*!
+     @method
+     @abstract Create a JavaScript value from an <code>int32_t</code> primitive.
+     @param value
+     @param context The JSContext in which the resulting JSValue will be created.
+     @result The new JSValue representing the equivalent boolean value.
+     */
+    explicit JSValue(int32_t value, const JSContext_ptr_t& context_ptr);
     
+    /*!
+     @method
+     @abstract Create a JavaScript value from a double primitive.
+     @param value
+     @param context The JSContext in which the resulting JSValue will be created.
+     @result The new JSValue representing the equivalent boolean value.
+     */
     explicit JSValue(double value, const JSContext_ptr_t& context_ptr);
 
     JSValue(::JSValueRef value, const JSContext_ptr_t& context_ptr);

@@ -37,7 +37,7 @@ JSValue(JSValueMakeBoolean(*context_ptr, value), context_ptr)
     std::clog << "JSValue: ctor called (bool, JSContext_ptr_t)" << std::endl;
 }
 
-JSValue::JSValue(int value, const JSContext_ptr_t& context_ptr) :
+JSValue::JSValue(int32_t value, const JSContext_ptr_t& context_ptr) :
 JSValue(JSValueMakeNumber(*context_ptr, value), context_ptr)
 {
     std::clog << "JSValue: ctor called (int, JSContext_ptr_t)" << std::endl;
