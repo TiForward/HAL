@@ -295,6 +295,7 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					"TRAVIS=$(TRAVIS)",
 					"DEBUG=1",
 					"$(inherited)",
 				);
