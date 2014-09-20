@@ -38,11 +38,11 @@
 
 /* Begin PBXFileReference section */
 		C936FD3119CB95BE0082CB08 /* libJavaScriptCoreCPP.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libJavaScriptCoreCPP.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		C936FD3F19CB95EC0082CB08 /* JSContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSContext.cpp; path = ../../../src/JSContext.cpp; sourceTree = "<group>"; };
-		C936FD4019CB95EC0082CB08 /* JSProxy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSProxy.cpp; path = ../../../src/JSProxy.cpp; sourceTree = "<group>"; };
-		C936FD4119CB95EC0082CB08 /* JSString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSString.cpp; path = ../../../src/JSString.cpp; sourceTree = "<group>"; };
-		C936FD4219CB95EC0082CB08 /* JSValue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSValue.cpp; path = ../../../src/JSValue.cpp; sourceTree = "<group>"; };
-		C936FD4319CB95EC0082CB08 /* JSVirtualMachine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSVirtualMachine.cpp; path = ../../../src/JSVirtualMachine.cpp; sourceTree = "<group>"; };
+		C936FD3F19CB95EC0082CB08 /* JSContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSContext.cpp; path = ../../src/JSContext.cpp; sourceTree = "<group>"; };
+		C936FD4019CB95EC0082CB08 /* JSProxy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSProxy.cpp; path = ../../src/JSProxy.cpp; sourceTree = "<group>"; };
+		C936FD4119CB95EC0082CB08 /* JSString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSString.cpp; path = ../../src/JSString.cpp; sourceTree = "<group>"; };
+		C936FD4219CB95EC0082CB08 /* JSValue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSValue.cpp; path = ../../src/JSValue.cpp; sourceTree = "<group>"; };
+		C936FD4319CB95EC0082CB08 /* JSVirtualMachine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSVirtualMachine.cpp; path = ../../src/JSVirtualMachine.cpp; sourceTree = "<group>"; };
 		C936FD4D19CB961A0082CB08 /* JavaScriptCoreCPPTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JavaScriptCoreCPPTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C936FD5019CB961A0082CB08 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C936FD5619CB962E0082CB08 /* JSStringTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = JSStringTests.mm; path = ../../../test/JSStringTests.mm; sourceTree = "<group>"; };
@@ -51,11 +51,11 @@
 		C936FD5919CB962E0082CB08 /* GotW71.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GotW71.cpp; path = ../../../test/GotW71.cpp; sourceTree = "<group>"; };
 		C936FD5A19CB962E0082CB08 /* GotW71.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GotW71.h; path = ../../../test/GotW71.h; sourceTree = "<group>"; };
 		C936FD6219CB966B0082CB08 /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		C936FD6419CB97930082CB08 /* JSContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSContext.h; path = ../../../include/JavaScriptCoreCPP/JSContext.h; sourceTree = "<group>"; };
-		C936FD6519CB97930082CB08 /* JSProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSProxy.h; path = ../../../include/JavaScriptCoreCPP/JSProxy.h; sourceTree = "<group>"; };
-		C936FD6619CB97930082CB08 /* JSString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSString.h; path = ../../../include/JavaScriptCoreCPP/JSString.h; sourceTree = "<group>"; };
-		C936FD6719CB97930082CB08 /* JSValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSValue.h; path = ../../../include/JavaScriptCoreCPP/JSValue.h; sourceTree = "<group>"; };
-		C936FD6819CB97930082CB08 /* JSVirtualMachine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSVirtualMachine.h; path = ../../../include/JavaScriptCoreCPP/JSVirtualMachine.h; sourceTree = "<group>"; };
+		C936FD6419CB97930082CB08 /* JSContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSContext.h; path = ../../include/JavaScriptCoreCPP/JSContext.h; sourceTree = "<group>"; };
+		C936FD6519CB97930082CB08 /* JSProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSProxy.h; path = ../../include/JavaScriptCoreCPP/JSProxy.h; sourceTree = "<group>"; };
+		C936FD6619CB97930082CB08 /* JSString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSString.h; path = ../../include/JavaScriptCoreCPP/JSString.h; sourceTree = "<group>"; };
+		C936FD6719CB97930082CB08 /* JSValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSValue.h; path = ../../include/JavaScriptCoreCPP/JSValue.h; sourceTree = "<group>"; };
+		C936FD6819CB97930082CB08 /* JSVirtualMachine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSVirtualMachine.h; path = ../../include/JavaScriptCoreCPP/JSVirtualMachine.h; sourceTree = "<group>"; };
 		C936FD6E19CC949E0082CB08 /* JSValueTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = JSValueTests.mm; path = ../../../test/JSValueTests.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -420,6 +420,7 @@
 				C936FD3E19CB95BE0082CB08 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C936FD5319CB961A0082CB08 /* Build configuration list for PBXNativeTarget "JavaScriptCoreCPPTests" */ = {
 			isa = XCConfigurationList;
@@ -428,6 +429,7 @@
 				C936FD5519CB961A0082CB08 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
