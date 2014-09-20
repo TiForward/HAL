@@ -3,7 +3,6 @@
 # Author: Matt Langston
 # Date: 2014.09.15
 #
-# Run this
 
 if ! test -d "${GTEST_ROOT}"; then
     echo "GTEST_ROOT must point to your Google Test installation."
