@@ -25,73 +25,72 @@ protected:
 
 
 TEST_F(JSValueTests, testUndefined) {
-    auto undefinedValue = JSValue(context_ptr);
-    ASSERT_TRUE(undefinedValue.isUndefined());
-    ASSERT_FALSE(undefinedValue.isNull());
-    ASSERT_FALSE(undefinedValue.isBoolean());
-    ASSERT_FALSE(undefinedValue.isNumber());
-    ASSERT_FALSE(undefinedValue.isString());
+    auto undefinedValue = JSValue::valueWithUndefinedInContext(context_ptr);
+    ASSERT_TRUE(undefinedValue->isUndefined());
+    ASSERT_FALSE(undefinedValue->isNull());
+    ASSERT_FALSE(undefinedValue->isBoolean());
+    ASSERT_FALSE(undefinedValue->isNumber());
+    ASSERT_FALSE(undefinedValue->isString());
 }
 
 TEST_F(JSValueTests, testBool) {
-    auto undefinedValue = JSValue(context_ptr);
-    auto falseValue = JSValue(false, context_ptr);
-    ASSERT_FALSE(bool(falseValue));
+    auto falseValue = JSValue::valueWithBoolInContext(false, context_ptr);
+    ASSERT_FALSE(bool(*falseValue));
 
-    ASSERT_FALSE(falseValue.isUndefined());
-    ASSERT_FALSE(falseValue.isNull());
-    ASSERT_TRUE(falseValue.isBoolean());
-    ASSERT_FALSE(falseValue.isNumber());
-    ASSERT_FALSE(falseValue.isString());
+    ASSERT_FALSE(falseValue->isUndefined());
+    ASSERT_FALSE(falseValue->isNull());
+    ASSERT_TRUE(falseValue->isBoolean());
+    ASSERT_FALSE(falseValue->isNumber());
+    ASSERT_FALSE(falseValue->isString());
     
-    auto trueValue = JSValue(true, context_ptr);
-    ASSERT_TRUE(bool(trueValue));
+    auto trueValue = JSValue::valueWithBoolInContext(true, context_ptr);
+    ASSERT_TRUE(bool(*trueValue));
 
-    ASSERT_FALSE(trueValue.isUndefined());
-    ASSERT_FALSE(trueValue.isNull());
-    ASSERT_TRUE(trueValue.isBoolean());
-    ASSERT_FALSE(trueValue.isNumber());
-    ASSERT_FALSE(trueValue.isString());
-}
-
-TEST_F(JSValueTests, testInt32) {
-    auto intValue = JSValue(42, context_ptr);
-    ASSERT_EQ(42, int32_t(intValue));
-
-    auto result_ptr  = context_ptr -> evaluateScript("21 / 7");
-    ASSERT_EQ(3, int32_t(*result_ptr));
-
-    ASSERT_FALSE(intValue.isUndefined());
-    ASSERT_FALSE(intValue.isNull());
-    ASSERT_FALSE(intValue.isBoolean());
-    ASSERT_TRUE(intValue.isNumber());
-    ASSERT_FALSE(intValue.isString());
-}
-
-TEST_F(JSValueTests, testUInt32) {
-    auto intValue = JSValue(42, context_ptr);
-    ASSERT_EQ(42, uint32_t(intValue));
-    
-    auto result_ptr  = context_ptr -> evaluateScript("21 / 7");
-    ASSERT_EQ(3, uint32_t(*result_ptr));
-    
-    ASSERT_FALSE(intValue.isUndefined());
-    ASSERT_FALSE(intValue.isNull());
-    ASSERT_FALSE(intValue.isBoolean());
-    ASSERT_TRUE(intValue.isNumber());
-    ASSERT_FALSE(intValue.isString());
+    ASSERT_FALSE(trueValue->isUndefined());
+    ASSERT_FALSE(trueValue->isNull());
+    ASSERT_TRUE(trueValue->isBoolean());
+    ASSERT_FALSE(trueValue->isNumber());
+    ASSERT_FALSE(trueValue->isString());
 }
 
 TEST_F(JSValueTests, testDouble) {
-    auto doubleValue = JSValue(UnitTestConstants::pi, context_ptr);
-    ASSERT_DOUBLE_EQ(UnitTestConstants::pi, double(doubleValue));
+    auto doubleValue = JSValue::valueWithDoubleInContext(UnitTestConstants::pi, context_ptr);
+    ASSERT_DOUBLE_EQ(UnitTestConstants::pi, double(*doubleValue));
     
     auto piValue_ptr  = context_ptr -> evaluateScript("Math.PI");
     ASSERT_DOUBLE_EQ(UnitTestConstants::pi, double(*piValue_ptr));
 
-    ASSERT_FALSE(doubleValue.isUndefined());
-    ASSERT_FALSE(doubleValue.isNull());
-    ASSERT_FALSE(doubleValue.isBoolean());
-    ASSERT_TRUE(doubleValue.isNumber());
-    ASSERT_FALSE(doubleValue.isString());
+    ASSERT_FALSE(doubleValue->isUndefined());
+    ASSERT_FALSE(doubleValue->isNull());
+    ASSERT_FALSE(doubleValue->isBoolean());
+    ASSERT_TRUE(doubleValue->isNumber());
+    ASSERT_FALSE(doubleValue->isString());
+}
+
+TEST_F(JSValueTests, testInt32) {
+    auto intValue = JSValue::valueWithInt32InContext(42, context_ptr);
+    ASSERT_EQ(42, int32_t(*intValue));
+
+    auto result_ptr  = context_ptr -> evaluateScript("21 / 7");
+    ASSERT_EQ(3, int32_t(*result_ptr));
+
+    ASSERT_FALSE(intValue->isUndefined());
+    ASSERT_FALSE(intValue->isNull());
+    ASSERT_FALSE(intValue->isBoolean());
+    ASSERT_TRUE(intValue->isNumber());
+    ASSERT_FALSE(intValue->isString());
+}
+
+TEST_F(JSValueTests, testUInt32) {
+    auto uintValue = JSValue::valueWithUInt32InContext(42, context_ptr);
+    ASSERT_EQ(42, uint32_t(*uintValue));
+    
+    auto result_ptr  = context_ptr -> evaluateScript("21 / 7");
+    ASSERT_EQ(3, uint32_t(*result_ptr));
+    
+    ASSERT_FALSE(uintValue->isUndefined());
+    ASSERT_FALSE(uintValue->isNull());
+    ASSERT_FALSE(uintValue->isBoolean());
+    ASSERT_TRUE(uintValue->isNumber());
+    ASSERT_FALSE(uintValue->isString());
 }
