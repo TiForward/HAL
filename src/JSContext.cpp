@@ -67,7 +67,7 @@ JSContext& JSContext::operator=(const JSContext& rhs) {
 }
 
 JSValue_ptr_t JSContext::globalObject() {
-    return std::make_shared<JSValue>(JSContextGetGlobalObject(context_), shared_from_this());
+    return JSValue::create(JSContextGetGlobalObject(context_), shared_from_this());
 }
 
 JSValue_ptr_t JSContext::evaluateScript(const std::string& script) {
@@ -80,7 +80,7 @@ JSValue_ptr_t JSContext::evaluateScript(const std::string& script) {
         return valueFromNotifyException(exceptionValue);
     }
     
-    return std::make_shared<JSValue>(JSValue(result, shared_from_this()));
+    return JSValue::create(result, shared_from_this());
 }
 
 JSValue_ptr_t JSContext::valueFromNotifyException(::JSValueRef exceptionValue) {
@@ -88,11 +88,11 @@ JSValue_ptr_t JSContext::valueFromNotifyException(::JSValueRef exceptionValue) {
     // Return undefined, which is created by the JSValue default
     // constructor.
     JSContext_ptr_t context_ptr = JSContext_ptr_t(this, deleter{});
-    return std::make_shared<JSValue>(JSValue(context_ptr));
+    return JSValue::valueWithUndefinedInContext(context_ptr);
 }
 
 void JSContext::notifyException(::JSValueRef value) {
     if (exceptionHandler_) {
-        exceptionHandler_(shared_from_this(), std::make_shared<JSValue>(JSValue(value, shared_from_this())));
+        exceptionHandler_(shared_from_this(), JSValue::create(value, shared_from_this()));
     }
 }

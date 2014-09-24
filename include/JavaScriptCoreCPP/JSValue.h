@@ -38,45 +38,130 @@ class JSValue final : public std::enable_shared_from_this<JSValue> {
 
 public:
     
-    // Create the Undefined value.
-    explicit JSValue(const JSContext_ptr_t& context_ptr);
+    // Factory function for creating a smart pointer to a JSValue. This is the
+    // public API to create a JSValue.
+    template <typename... Ts>
+    static JSValue_ptr_t create(Ts&&... params) {
+        return JSValue_ptr_t(new JSValue(std::forward<Ts>(params)...), deleter{});
+    }
     
     /*!
      @method
-     @abstract Create a JavaScript value from a BOOL primitive.
+     @abstract Create a JavaScript value from a bool primitive.
      @param value
      @param context The JSContext in which the resulting JSValue will be created.
-     @result The new JSValue representing the equivalent boolean value.
+     @result The new JSValue representing the equivalent bool value.
      */
-    explicit JSValue(bool value, const JSContext_ptr_t& context_ptr);
-
-    /*!
-     @method
-     @abstract Create a JavaScript value from an <code>int32_t</code> primitive.
-     @param value
-     @param context The JSContext in which the resulting JSValue will be created.
-     @result The new JSValue representing the equivalent boolean value.
-     */
-    explicit JSValue(int32_t value, const JSContext_ptr_t& context_ptr);
+    static JSValue_ptr_t valueWithBoolInContext(bool value, const JSContext_ptr_t& context_ptr) {
+        return JSValue::create(JSValueMakeBoolean(*context_ptr, value), context_ptr);
+    }
     
     /*!
      @method
      @abstract Create a JavaScript value from a double primitive.
      @param value
      @param context The JSContext in which the resulting JSValue will be created.
-     @result The new JSValue representing the equivalent boolean value.
+     @result The new JSValue representing the equivalent double value.
      */
-    explicit JSValue(double value, const JSContext_ptr_t& context_ptr);
+    static JSValue_ptr_t valueWithDoubleInContext(double value, const JSContext_ptr_t& context_ptr) {
+        return JSValue::create(JSValueMakeNumber(*context_ptr, value), context_ptr);
+    }
 
-    JSValue(::JSValueRef value, const JSContext_ptr_t& context_ptr);
+    /*!
+     @method
+     @abstract Create a JavaScript value from an <code>int32_t</code> primitive.
+     @param value
+     @param context The JSContext in which the resulting JSValue will be created.
+     @result The new JSValue representing the equivalent int32_t value.
+     */
+    static JSValue_ptr_t valueWithInt32InContext(int32_t value, const JSContext_ptr_t& context_ptr) {
+        return JSValue::create(JSValueMakeNumber(*context_ptr, value), context_ptr);
+    }
     
-    ~JSValue();
-        
-    // Create a copy of another JSValue.
-    JSValue(const JSValue& rhs);
-        
-    // Create a copy of another JSValue by assignment.
-    JSValue& operator=(const JSValue& rhs);
+    /*!
+     @method
+     @abstract Create a JavaScript value from a <code>uint32_t</code> primitive.
+     @param value
+     @param context The JSContext in which the resulting JSValue will be created.
+     @result The new JSValue representing the equivalent uint32_t value.
+     */
+    static JSValue_ptr_t valueWithUInt32InContext(uint32_t value, const JSContext_ptr_t& context_ptr) {
+        return JSValue::create(JSValueMakeNumber(*context_ptr, value), context_ptr);
+    }
+
+    /*!
+     @method
+     @abstract Create a JavaScript value from a <code>std::string</code>.
+     @param value
+     @param context The JSContext in which the resulting JSValue will be created.
+     @result The new JSValue representing the equivalent std::string value.
+     */
+    static JSValue_ptr_t valueWithStringInContext(const std::string& value, const JSContext_ptr_t& context_ptr) {
+        return JSValue::create(JSValueMakeString(*context_ptr, JSStringRef(JSString(value))), context_ptr);
+    }
+
+    /*!
+     @method
+     @abstract Create a new, empty JavaScript object.
+     @param context The JSContext in which the resulting object will be created.
+     @result The new JavaScript object.
+     */
+    static JSValue_ptr_t valueWithNewObjectInContext(const JSContext_ptr_t& context_ptr) {
+        return JSValue::create(JSObjectMake(*context_ptr, nullptr, nullptr), context_ptr);
+    }
+    
+    /*!
+     @method
+     @abstract Create a new, empty JavaScript array.
+     @param context The JSContext in which the resulting array will be created.
+     @result The new JavaScript array.
+     */
+    static JSValue_ptr_t valueWithNewArrayInContext(const JSContext_ptr_t& context_ptr) {
+        return JSValue::create(JSObjectMakeArray(*context_ptr, 0, nullptr, nullptr), context_ptr);
+    }
+
+    /*!
+     @method
+     @abstract Create a new JavaScript regular expression object.
+     @param pattern The regular expression pattern.
+     @param flags The regular expression flags.
+     @param context The JSContext in which the resulting regular expression object will be created.
+     @result The new JavaScript regular expression object.
+     */
+    static JSValue_ptr_t valueWithNewRegularExpressionFromPatternAndFlagsInContext(const std::string& pattern, const std::string& flags, const JSContext_ptr_t& context_ptr);
+    
+    /*!
+     @method
+     @abstract Create a new JavaScript error object.
+     @param message The error message.
+     @param context The JSContext in which the resulting error object will be created.
+     @result The new JavaScript error object.
+     */
+    static JSValue_ptr_t valueWithNewErrorFromMessageInContext(const std::string& message, const JSContext_ptr_t& context_ptr) {
+        JSValueRef arguments[2] = { JSValueMakeString(*context_ptr, JSStringRef(JSString(message))) };
+        return JSValue::create(JSObjectMakeError(*context_ptr, 1, arguments, nullptr), context_ptr);
+    }
+    
+    /*!
+     @method
+     @abstract Create the JavaScript value <code>null</code>.
+     @param context The JSContext to which the resulting JSValue belongs.
+     @result The JSValue representing the JavaScript value <code>null</code>.
+     */
+    static JSValue_ptr_t valueWithNullInContext(const JSContext_ptr_t& context_ptr) {
+        return JSValue::create(JSValueMakeNull(*context_ptr), context_ptr);
+    }
+
+    /*!
+     @method
+     @abstract Create the JavaScript value <code>undefined</code>.
+     @param context The JSContext to which the resulting JSValue belongs.
+     @result The JSValue representing the JavaScript value <code>undefined</code>.
+     */
+    static JSValue_ptr_t valueWithUndefinedInContext(const JSContext_ptr_t& context_ptr) {
+        return JSValue::create(JSValueMakeUndefined(*context_ptr), context_ptr);
+    }
+
 
     operator bool() const {
         return JSValueToBoolean(*context_ptr_, value_);
@@ -94,14 +179,6 @@ public:
     }
 
     operator JSString() const;
-
-    static long ctorCounter() {
-        return ctorCounter_;
-    }
-    
-    static long dtorCounter() {
-        return dtorCounter_;
-    }
 
     bool isUndefined() const {
         return JSValueIsUndefined(*context_ptr_, value_);
@@ -123,13 +200,44 @@ public:
         return JSValueIsString(*context_ptr_, value_);
     }
     
-private:
+    static long ctorCounter() {
+        return ctorCounter_;
+    }
     
-    // Return true if the two JSValues are equal.
-    friend bool operator==( const JSValue& lhs, const JSValue& rhs );
+    static long dtorCounter() {
+        return dtorCounter_;
+    }
+    
+private:
 
     JSValue() = delete;
     
+    JSValue(::JSValueRef value, const JSContext_ptr_t& context_ptr);
+    
+    ~JSValue();
+    
+    // Create a copy of another JSValue.
+    JSValue(const JSValue& rhs);
+    
+    // Create a copy of another JSValue by assignment.
+    JSValue& operator=(const JSValue& rhs);
+    
+private:
+    
+    friend class JSContext;
+
+    // Return true if the two JSValues are equal.
+    friend bool operator==( const JSValue& lhs, const JSValue& rhs );
+
+    // This struct only exists so that a custom deleter can be passed to
+    // std::shared_ptr<JSValue> while keeping the JSValue destructor
+    // private.
+    struct deleter {
+        void operator()(JSValue* ptr) {
+            delete ptr;
+        }
+    };
+
     ::JSValueRef    value_;
     JSContext_ptr_t context_ptr_;
     

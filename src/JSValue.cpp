@@ -24,29 +24,13 @@ inline ToType bitwise_cast(FromType from)
     return u.to;
 }
 
-// Create the Undefined value.
-JSValue::JSValue(const JSContext_ptr_t& context_ptr) :
-JSValue(JSValueMakeUndefined(*context_ptr), context_ptr)
-{
-    std::clog << "JSValue: ctor called (JSContext_ptr_t)" << std::endl;
-}
-
-JSValue::JSValue(bool value, const JSContext_ptr_t& context_ptr) :
-JSValue(JSValueMakeBoolean(*context_ptr, value), context_ptr)
-{
-    std::clog << "JSValue: ctor called (bool, JSContext_ptr_t)" << std::endl;
-}
-
-JSValue::JSValue(int32_t value, const JSContext_ptr_t& context_ptr) :
-JSValue(JSValueMakeNumber(*context_ptr, value), context_ptr)
-{
-    std::clog << "JSValue: ctor called (int, JSContext_ptr_t)" << std::endl;
-}
-
-JSValue::JSValue(double value, const JSContext_ptr_t& context_ptr) :
-JSValue(JSValueMakeNumber(*context_ptr, value), context_ptr)
-{
-    std::clog << "JSValue: ctor called (double, JSContext_ptr_t)" << std::endl;
+JSValue_ptr_t
+JSValue::valueWithNewRegularExpressionFromPatternAndFlagsInContext(const std::string& pattern, const std::string& flags, const JSContext_ptr_t& context_ptr) {
+    JSString patternString { pattern };
+    JSString flagsString { flags };
+    JSValueRef arguments[2] = { JSValueMakeString(*context_ptr, JSStringRef(patternString)), JSValueMakeString(*context_ptr, JSStringRef(flagsString)) };
+    // TODO: should the exception really be a nullptr?
+    return JSValue::create(JSObjectMakeRegExp(*context_ptr, 2, arguments, nullptr), context_ptr);
 }
 
 JSValue::JSValue(::JSValueRef value, const JSContext_ptr_t& context_ptr) :

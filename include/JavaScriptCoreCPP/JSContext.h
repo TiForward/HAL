@@ -14,10 +14,10 @@
 #include <functional>
 
 class JSValue;
-typedef std::shared_ptr<JSValue> JSValue_ptr_t;
+using JSValue_ptr_t = std::shared_ptr<JSValue>;
 
 class JSContext;
-typedef std::shared_ptr<JSContext> JSContext_ptr_t;
+using JSContext_ptr_t = std::shared_ptr<JSContext>;
 
 /*!
  @interface
