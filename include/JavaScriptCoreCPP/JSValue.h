@@ -162,21 +162,57 @@ public:
         return JSValue::create(JSValueMakeUndefined(*context_ptr), context_ptr);
     }
 
-
+    /*!
+     @method
+     @abstract Convert a JSValue to a boolean.
+     @discussion The JSValue is converted to a boolean according to the rules specified
+     by the JavaScript language.
+     @result The boolean result of the conversion.
+     */
     operator bool() const {
         return JSValueToBoolean(*context_ptr_, value_);
     }
     
+    /*!
+     @method
+     @abstract Convert a JSValue to a double.
+     @discussion The JSValue is converted to a number according to the rules specified
+     by the JavaScript language.
+     @result The double result of the conversion.
+     */
     operator double() const;
     
+    /*!
+     @method
+     @abstract Convert a JSValue to an <code>int32_t</code>.
+     @discussion The JSValue is converted to an integer according to the rules specified
+     by the JavaScript language.
+     @result The <code>int32_t</code> result of the conversion.
+     */
     operator int32_t() const;
     
-    // This implements ToUInt32, defined in ECMA-262 9.6.
+    /*!
+     @method
+     @abstract Convert a JSValue to a <code>uint32_t</code>.
+     @discussion The JSValue is converted to an integer according to the rules specified
+     by the JavaScript language (implements ToUInt32, defined in ECMA-262 9.6).
+     @result The <code>uint32_t</code> result of the conversion.
+     */
     operator uint32_t() const  {
         // As commented in the spec, the operation of ToInt32 and ToUint32 only differ
         // in how the result is interpreted; see NOTEs in sections 9.5 and 9.6.
         return this->operator int32_t();
     }
+
+    /*!
+     @method
+     @abstract Convert a JSValue to a NSString.
+     @discussion The JSValue is converted to a string according to the rules specified
+     by the JavaScript language.
+     @result The NSString containing the result of the conversion.
+     */
+//    operator std::string() const {
+//    }
 
     operator JSString() const;
 
