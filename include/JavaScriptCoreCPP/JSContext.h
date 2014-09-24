@@ -42,23 +42,6 @@ public:
     }
 
     /*!
-     @property
-     @discussion All instances of JSContext are associated with a single JSVirtualMachine. The
-     virtual machine provides an "object space" or set of execution resources.
-     */
-    JSVirtualMachine_ptr_t virtualMachine() const {
-        return virtualMachine_ptr_;
-    }
-    
-    /*!
-     @property
-     @abstract Get the global object of the context.
-     @discussion This method retrieves the global object of the JavaScript execution context.
-     @result The global object.
-     */
-    JSValue_ptr_t globalObject();
-    
-    /*!
      @methodgroup Evaluating Scripts
      */
     /*!
@@ -71,12 +54,46 @@ public:
     
     /*!
      @property
+     @abstract Get the global object of the context.
+     @discussion This method retrieves the global object of the JavaScript execution context.
+     @result The global object.
+     */
+    JSValue_ptr_t globalObject();
+    
+    
+    /*!
+     @property
+     @discussion The <code>exception</code> property may be used to throw an exception to JavaScript.
+     
+     Before a callback is made from JavaScript to an C++ lambda or method,
+     the prior value of the exception property will be preserved and the property
+     will be set to nullptr. After the callback has completed the new value of the
+     exception property will be read, and prior value restored. If the new value
+     of exception is not nullptr, the callback will result in that value being thrown.
+     
+     This property may also be used to check for uncaught exceptions arising from
+     API function calls (since the default behaviour of <code>exceptionHandler</code> is to
+     assign an uncaught exception to this property).
+     
+     If a JSValue originating from a different JSVirtualMachine than this context
+     is assigned to this property, an C++ exception will be thrown.
+     */
+    void setException(const JSValue_ptr_t& exception_ptr) {
+        exception_ptr_ = exception_ptr;
+    };
+    
+    JSValue_ptr_t exception() const {
+        return JSValue_ptr_t(exception_ptr_.lock());
+    };
+
+    /*!
+     @property
      @discussion If a call to an API function results in an uncaught JavaScript exception, the
      <code>exceptionHandler</code> block will be invoked. The default implementation for the
      exception handler will store the exception to the exception property on
      context. As a consequence the default behaviour is for unhandled exceptions
      occurring within a callback from JavaScript to be rethrown upon return.
-     Setting this value to nil will result in all uncaught exceptions thrown from
+     Setting this value to nullptr will result in all uncaught exceptions thrown from
      the API being silently consumed.
      */
     typedef std::function<void(const JSContext_ptr_t&, const JSValue_ptr_t&)> exceptionHandler_t;
@@ -88,6 +105,15 @@ public:
     exceptionHandler_t exceptionHandler() const {
         return exceptionHandler_;
     };
+    
+    /*!
+     @property
+     @discussion All instances of JSContext are associated with a single JSVirtualMachine. The
+     virtual machine provides an "object space" or set of execution resources.
+     */
+    JSVirtualMachine_ptr_t virtualMachine() const {
+        return virtualMachine_ptr_;
+    }
     
     // Implicit conversion to C API.
     operator ::JSGlobalContextRef() const {
@@ -135,8 +161,12 @@ private:
     
     JSVirtualMachine_ptr_t virtualMachine_ptr_ { nullptr };
     ::JSGlobalContextRef   context_            { nullptr };
+    
+    // exception_ptr_ must be a weak pointer becuase we don't want to create a
+    // cyclic dependency where a JSContext holds a strong reference to a
+    // JSValue.
     std::weak_ptr<JSValue> exception_ptr_;
-    exceptionHandler_t     exceptionHandler_   { [](const JSContext_ptr_t& context_ptr, const JSValue_ptr_t& exception_ptr) { context_ptr->exception_ptr_ = exception_ptr; } };
+    exceptionHandler_t     exceptionHandler_ {[](const JSContext_ptr_t& context_ptr, const JSValue_ptr_t& exception_ptr) {context_ptr->setException(exception_ptr);}};
     
     static std::atomic<long> ctorCounter_;
     static std::atomic<long> dtorCounter_;

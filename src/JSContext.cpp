@@ -85,8 +85,6 @@ JSValue_ptr_t JSContext::evaluateScript(const std::string& script) {
 
 JSValue_ptr_t JSContext::valueFromNotifyException(::JSValueRef exceptionValue) {
     notifyException(exceptionValue);
-    // Return undefined, which is created by the JSValue default
-    // constructor.
     JSContext_ptr_t context_ptr = JSContext_ptr_t(this, deleter{});
     return JSValue::valueWithUndefinedInContext(context_ptr);
 }

@@ -36,6 +36,16 @@
     std::cout << "MDL: JSString::dtorCounter = " << JSString::dtorCounter() << std::endl;
 }
 
+- (void)testException{
+    auto context_ptr = JSContext::create();
+    auto exception_ptr = context_ptr -> exception();
+    XCTAssertFalse(bool(exception_ptr));
+    
+    context_ptr -> setExceptionHandler([](const JSContext_ptr_t& context_ptr, const JSValue_ptr_t& exception_ptr) {
+        
+        context_ptr->setException(exception_ptr);});
+}
+
 - (void)testEvaluateScript {
     auto context_ptr = JSContext::create();
     auto result_ptr  = context_ptr -> evaluateScript("2 + 2");
