@@ -9,6 +9,13 @@
 std::atomic<long> JSString::ctorCounter_ { 0 };
 std::atomic<long> JSString::dtorCounter_ { 0 };
 
+JSString::JSString() :
+string_(JSStringCreateWithUTF8CString(nullptr))
+{
+    std::clog << "JSString: ctor called" << std::endl;
+    ++ctorCounter_;
+}
+
 JSString::JSString(JSStringRef string) :
 string_(JSStringRetain(string))
 {

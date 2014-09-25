@@ -29,6 +29,11 @@
     std::cout << "MDL: JSString::dtorCounter = " << JSString::dtorCounter() << std::endl;
 }
 
+- (void)testEmptyString {
+    JSString string;
+    XCTAssertEqual(0, string.size());
+}
+
 - (void)testEqual {
     JSString string1 { "hello, world" };
     JSString string2 = string1;

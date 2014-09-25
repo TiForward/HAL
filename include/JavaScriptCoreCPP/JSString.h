@@ -22,6 +22,9 @@
 class JSString final : public std::enable_shared_from_this<JSString> {
 public:
 	
+    // Constructs an empty JSString, with a length of zero characters.
+    JSString();
+    
     JSString(JSStringRef string);
 	
     JSString(const std::string& string);
@@ -34,6 +37,10 @@ public:
     // Create a copy of another JSProxy by assignment.
     JSString& operator=(const JSString& rhs);
 	
+    size_t size() const {
+        return JSStringGetLength(string_);
+    }
+    
     explicit operator std::string() const;
 	
     // Explicit conversion to C API.
@@ -54,8 +61,6 @@ public:
     // Return true if the two JSStrings are equal.
     friend bool operator==( const JSString& lhs, const JSString& rhs );
 
-    JSString() = delete;
-	
     ::JSStringRef string_;
 	
     static std::atomic<long> ctorCounter_;
