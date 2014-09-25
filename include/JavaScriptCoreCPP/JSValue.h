@@ -53,7 +53,7 @@ public:
      @result The new JSValue representing the equivalent bool value.
      */
     static JSValue_ptr_t valueWithBoolInContext(bool value, const JSContext_ptr_t& context_ptr) {
-        return JSValue::create(JSValueMakeBoolean(*context_ptr, value), context_ptr);
+        return JSValue::create(JSValueMakeBoolean(static_cast<::JSGlobalContextRef>(*context_ptr), value), context_ptr);
     }
     
     /*!
@@ -64,7 +64,7 @@ public:
      @result The new JSValue representing the equivalent double value.
      */
     static JSValue_ptr_t valueWithDoubleInContext(double value, const JSContext_ptr_t& context_ptr) {
-        return JSValue::create(JSValueMakeNumber(*context_ptr, value), context_ptr);
+        return JSValue::create(JSValueMakeNumber(static_cast<::JSGlobalContextRef>(*context_ptr), value), context_ptr);
     }
 
     /*!
@@ -75,7 +75,7 @@ public:
      @result The new JSValue representing the equivalent int32_t value.
      */
     static JSValue_ptr_t valueWithInt32InContext(int32_t value, const JSContext_ptr_t& context_ptr) {
-        return JSValue::create(JSValueMakeNumber(*context_ptr, value), context_ptr);
+        return JSValue::create(JSValueMakeNumber(static_cast<::JSGlobalContextRef>(*context_ptr), value), context_ptr);
     }
     
     /*!
@@ -86,7 +86,7 @@ public:
      @result The new JSValue representing the equivalent uint32_t value.
      */
     static JSValue_ptr_t valueWithUInt32InContext(uint32_t value, const JSContext_ptr_t& context_ptr) {
-        return JSValue::create(JSValueMakeNumber(*context_ptr, value), context_ptr);
+        return JSValue::create(JSValueMakeNumber(static_cast<::JSGlobalContextRef>(*context_ptr), value), context_ptr);
     }
 
     /*!
@@ -97,7 +97,7 @@ public:
      @result The new JSValue representing the equivalent std::string value.
      */
     static JSValue_ptr_t valueWithStringInContext(const std::string& value, const JSContext_ptr_t& context_ptr) {
-        return JSValue::create(JSValueMakeString(*context_ptr, JSStringRef(JSString(value))), context_ptr);
+        return JSValue::create(JSValueMakeString(static_cast<::JSGlobalContextRef>(*context_ptr), JSStringRef(JSString(value))), context_ptr);
     }
 
     /*!
@@ -107,7 +107,7 @@ public:
      @result The new JavaScript object.
      */
     static JSValue_ptr_t valueWithNewObjectInContext(const JSContext_ptr_t& context_ptr) {
-        return JSValue::create(JSObjectMake(*context_ptr, nullptr, nullptr), context_ptr);
+        return JSValue::create(JSObjectMake(static_cast<::JSGlobalContextRef>(*context_ptr), nullptr, nullptr), context_ptr);
     }
     
     /*!
@@ -117,7 +117,7 @@ public:
      @result The new JavaScript array.
      */
     static JSValue_ptr_t valueWithNewArrayInContext(const JSContext_ptr_t& context_ptr) {
-        return JSValue::create(JSObjectMakeArray(*context_ptr, 0, nullptr, nullptr), context_ptr);
+        return JSValue::create(JSObjectMakeArray(static_cast<::JSGlobalContextRef>(*context_ptr), 0, nullptr, nullptr), context_ptr);
     }
 
     /*!
@@ -138,8 +138,8 @@ public:
      @result The new JavaScript error object.
      */
     static JSValue_ptr_t valueWithNewErrorFromMessageInContext(const std::string& message, const JSContext_ptr_t& context_ptr) {
-        JSValueRef arguments[2] = { JSValueMakeString(*context_ptr, JSStringRef(JSString(message))) };
-        return JSValue::create(JSObjectMakeError(*context_ptr, 1, arguments, nullptr), context_ptr);
+        JSValueRef arguments[2] = { JSValueMakeString(static_cast<::JSGlobalContextRef>(*context_ptr), JSStringRef(JSString(message))) };
+        return JSValue::create(JSObjectMakeError(static_cast<::JSGlobalContextRef>(*context_ptr), 1, arguments, nullptr), context_ptr);
     }
     
     /*!
@@ -149,7 +149,7 @@ public:
      @result The JSValue representing the JavaScript value <code>null</code>.
      */
     static JSValue_ptr_t valueWithNullInContext(const JSContext_ptr_t& context_ptr) {
-        return JSValue::create(JSValueMakeNull(*context_ptr), context_ptr);
+        return JSValue::create(JSValueMakeNull(static_cast<::JSGlobalContextRef>(*context_ptr)), context_ptr);
     }
 
     /*!
@@ -159,7 +159,7 @@ public:
      @result The JSValue representing the JavaScript value <code>undefined</code>.
      */
     static JSValue_ptr_t valueWithUndefinedInContext(const JSContext_ptr_t& context_ptr) {
-        return JSValue::create(JSValueMakeUndefined(*context_ptr), context_ptr);
+        return JSValue::create(JSValueMakeUndefined(static_cast<::JSGlobalContextRef>(*context_ptr)), context_ptr);
     }
 
     /*!
@@ -169,8 +169,8 @@ public:
      by the JavaScript language.
      @result The boolean result of the conversion.
      */
-    operator bool() const {
-        return JSValueToBoolean(*context_ptr_, value_);
+    explicit operator bool() const {
+        return JSValueToBoolean(static_cast<::JSGlobalContextRef>(*context_ptr_), value_);
     }
     
     /*!
@@ -180,7 +180,7 @@ public:
      by the JavaScript language.
      @result The double result of the conversion.
      */
-    operator double() const;
+    explicit operator double() const;
     
     /*!
      @method
@@ -189,7 +189,7 @@ public:
      by the JavaScript language.
      @result The <code>int32_t</code> result of the conversion.
      */
-    operator int32_t() const;
+    explicit operator int32_t() const;
     
     /*!
      @method
@@ -198,7 +198,7 @@ public:
      by the JavaScript language (implements ToUInt32, defined in ECMA-262 9.6).
      @result The <code>uint32_t</code> result of the conversion.
      */
-    operator uint32_t() const  {
+    explicit operator uint32_t() const  {
         // As commented in the spec, the operation of ToInt32 and ToUint32 only differ
         // in how the result is interpreted; see NOTEs in sections 9.5 and 9.6.
         return this->operator int32_t();
@@ -211,29 +211,30 @@ public:
      by the JavaScript language.
      @result The NSString containing the result of the conversion.
      */
-//    operator std::string() const {
-//    }
+    explicit operator std::string() const {
+        return static_cast<std::string>(this->operator JSString());
+    }
 
-    operator JSString() const;
+    explicit operator JSString() const;
 
     bool isUndefined() const {
-        return JSValueIsUndefined(*context_ptr_, value_);
+        return JSValueIsUndefined(static_cast<::JSGlobalContextRef>(*context_ptr_), value_);
     }
     
     bool isNull() const {
-        return JSValueIsNull(*context_ptr_, value_);
+        return JSValueIsNull(static_cast<::JSGlobalContextRef>(*context_ptr_), value_);
     }
     
     bool isBoolean() const {
-        return JSValueIsBoolean(*context_ptr_, value_);
+        return JSValueIsBoolean(static_cast<::JSGlobalContextRef>(*context_ptr_), value_);
     }
     
     bool isNumber() const {
-        return JSValueIsNumber(*context_ptr_, value_);
+        return JSValueIsNumber(static_cast<::JSGlobalContextRef>(*context_ptr_), value_);
     }
     
     bool isString() const {
-        return JSValueIsString(*context_ptr_, value_);
+        return JSValueIsString(static_cast<::JSGlobalContextRef>(*context_ptr_), value_);
     }
     
     static long ctorCounter() {
@@ -299,7 +300,7 @@ bool operator!=( const JSValue& lhs, const JSValue& rhs ) {
 
 inline
 std::ostream& operator << (std::ostream& ostream, const JSValue& value) {
-    ostream << JSString(value);
+    ostream << static_cast<JSString>(value);
     return ostream;
 }
 

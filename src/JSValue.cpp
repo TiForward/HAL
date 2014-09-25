@@ -5,6 +5,7 @@
 //
 
 #include "JavaScriptCoreCPP/JSValue.h"
+#include <cassert>
 
 std::atomic<long> JSValue::ctorCounter_ { 0 };
 std::atomic<long> JSValue::dtorCounter_ { 0 };
@@ -28,9 +29,9 @@ JSValue_ptr_t
 JSValue::valueWithNewRegularExpressionFromPatternAndFlagsInContext(const std::string& pattern, const std::string& flags, const JSContext_ptr_t& context_ptr) {
     JSString patternString { pattern };
     JSString flagsString { flags };
-    JSValueRef arguments[2] = { JSValueMakeString(*context_ptr, JSStringRef(patternString)), JSValueMakeString(*context_ptr, JSStringRef(flagsString)) };
+    JSValueRef arguments[2] = { JSValueMakeString(static_cast<::JSGlobalContextRef>(*context_ptr), JSStringRef(patternString)), JSValueMakeString(static_cast<::JSGlobalContextRef>(*context_ptr), JSStringRef(flagsString)) };
     // TODO: should the exception really be a nullptr?
-    return JSValue::create(JSObjectMakeRegExp(*context_ptr, 2, arguments, nullptr), context_ptr);
+    return JSValue::create(JSObjectMakeRegExp(static_cast<::JSGlobalContextRef>(*context_ptr), 2, arguments, nullptr), context_ptr);
 }
 
 JSValue::JSValue(::JSValueRef value, const JSContext_ptr_t& context_ptr) :
@@ -38,13 +39,13 @@ value_(value),
 context_ptr_(context_ptr)
 {
     std::clog << "JSValue: ctor called (JSValueRef, JSContext_ptr_t)" << std::endl;
-    JSValueProtect(*context_ptr_, value_);
+    JSValueProtect(static_cast<::JSGlobalContextRef>(*context_ptr_), value_);
     ++ctorCounter_;
 }
 
 JSValue::~JSValue() {
     std::clog << "JSValue: dtor called" << std::endl;
-    JSValueUnprotect(*context_ptr_, value_);
+    JSValueUnprotect(static_cast<::JSGlobalContextRef>(*context_ptr_), value_);
     ++dtorCounter_;
 }
 
@@ -64,20 +65,20 @@ JSValue& JSValue::operator=(const JSValue& rhs) {
     }
     
     // Release the resource we are replacing.
-    JSValueUnprotect(*context_ptr_, value_);
+    JSValueUnprotect(static_cast<::JSGlobalContextRef>(*context_ptr_), value_);
     
     value_       = rhs.value_;
     context_ptr_ = rhs.context_ptr_;
     
     // Retain the resource we copying.
-    JSValueProtect(*context_ptr_, value_);
+    JSValueProtect(static_cast<::JSGlobalContextRef>(*context_ptr_), value_);
     
     return *this;
 }
 
 JSValue::operator double() const {
     ::JSValueRef exception = 0;
-    double result = JSValueToNumber(*context_ptr_, value_, &exception);
+    double result = JSValueToNumber(static_cast<::JSGlobalContextRef>(*context_ptr_), value_, &exception);
     if (exception) {
         context_ptr_ -> notifyException(exception);
         return std::numeric_limits<double>::quiet_NaN();
@@ -134,10 +135,12 @@ JSValue::operator int32_t() const
 
 JSValue::operator JSString() const {
     ::JSValueRef exception = 0;
-    ::JSStringRef result = JSValueToStringCopy(*context_ptr_, value_, &exception);
+    ::JSStringRef result = JSValueToStringCopy(static_cast<::JSGlobalContextRef>(*context_ptr_), value_, &exception);
     if (exception) {
         context_ptr_ -> notifyException(exception);
-        return JSString("");
+
+        ::JSStringRef exceptionString = JSValueToStringCopy(static_cast<::JSGlobalContextRef>(*context_ptr_), exception, nullptr);
+        return JSString(exceptionString);
     }
     
     return JSString(result);

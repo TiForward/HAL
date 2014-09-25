@@ -12,7 +12,7 @@ std::atomic<long> JSObject::dtorCounter_ { 0 };
 
 // Create the Undefined value.
 JSObject::JSObject(const JSContext_ptr_t& context_ptr) :
-JSObject(JSObjectMake(*context_ptr, nullptr, nullptr), context_ptr)
+JSObject(JSObjectMake(static_cast<::JSGlobalContextRef>(*context_ptr), nullptr, nullptr), context_ptr)
 {
     std::clog << "JSValue: ctor called (JSContext_ptr_t)" << std::endl;
 }
@@ -28,7 +28,7 @@ context_ptr_(context_ptr)
 
 JSObject::~JSObject() {
     std::clog << "JSObject: dtor called" << std::endl;
-    JSValueUnprotect(*context_ptr_, object_);
+    JSValueUnprotect(static_cast<::JSGlobalContextRef>(*context_ptr_), object_);
     ++dtorCounter_;
 }
 
@@ -48,13 +48,13 @@ JSObject& JSObject::operator=(const JSObject& rhs) {
     }
     
     // Release the resource we are replacing.
-    JSValueUnprotect(*context_ptr_, object_);
+    JSValueUnprotect(static_cast<::JSGlobalContextRef>(*context_ptr_), object_);
     
     object_      = rhs.object_;
     context_ptr_ = rhs.context_ptr_;
     
     // Retain the resource we copying.
-    JSValueProtect(*context_ptr_, object_);
+    JSValueProtect(static_cast<::JSGlobalContextRef>(*context_ptr_), object_);
     
     return *this;
 }

@@ -34,7 +34,7 @@ public:
     // Create a copy of another JSProxy by assignment.
     JSString& operator=(const JSString& rhs);
 	
-    operator std::string() const;
+    explicit operator std::string() const;
 	
     // Explicit conversion to C API.
     explicit operator JSStringRef() const {

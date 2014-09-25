@@ -116,7 +116,7 @@ public:
     }
     
     // Implicit conversion to C API.
-    operator ::JSGlobalContextRef() const {
+    explicit operator ::JSGlobalContextRef() const {
         return context_;
     }
     
