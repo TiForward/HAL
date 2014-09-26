@@ -43,6 +43,8 @@ public:
     
     explicit operator std::string() const;
 	
+    explicit operator std::u16string() const;
+
     // Explicit conversion to C API.
     explicit operator JSStringRef() const {
         return string_;
@@ -81,7 +83,7 @@ bool operator!=( const JSString& lhs, const JSString& rhs ) {
 
 inline
 std::ostream& operator << (std::ostream& ostream, const JSString& string) {
-    ostream << std::string(string);
+    ostream << static_cast<std::string>(string);
     return ostream;
 }
 

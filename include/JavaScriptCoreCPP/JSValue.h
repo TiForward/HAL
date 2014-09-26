@@ -217,6 +217,41 @@ public:
 
     explicit operator JSString() const;
 
+    /*!
+     @method
+     @abstract Convert a JSValue to a NSDate.
+     @discussion The value is converted to a number representing a time interval
+     since 1970 which is then used to create a new NSDate instance.
+     @result The NSDate created using the converted time interval.
+     */
+//    - (NSDate *)toDate;
+    
+    /*!
+     @method
+     @abstract Convert a JSValue to a NSArray.
+     @discussion If the value is <code>null</code> or <code>undefined</code> then <code>nil</code> is returned.
+     If the value is not an object then a JavaScript TypeError will be thrown.
+     The property <code>length</code> is read from the object, converted to an unsigned
+     integer, and an NSArray of this size is allocated. Properties corresponding
+     to indicies within the array bounds will be copied to the array, with
+     JSValues converted to equivalent Objective-C objects as specified.
+     @result The NSArray containing the recursively converted contents of the
+     converted JavaScript array.
+     */
+//    - (NSArray *)toArray;
+    
+    /*!
+     @method
+     @abstract Convert a JSValue to a NSDictionary.
+     @discussion If the value is <code>null</code> or <code>undefined</code> then <code>nil</code> is returned.
+     If the value is not an object then a JavaScript TypeError will be thrown.
+     All enumerable properties of the object are copied to the dictionary, with
+     JSValues converted to equivalent Objective-C objects as specified.
+     @result The NSDictionary containing the recursively converted contents of
+     the converted JavaScript object.
+     */
+//    - (NSDictionary *)toDictionary;
+
     bool isUndefined() const {
         return JSValueIsUndefined(static_cast<::JSGlobalContextRef>(*context_ptr_), value_);
     }
@@ -237,6 +272,10 @@ public:
         return JSValueIsString(static_cast<::JSGlobalContextRef>(*context_ptr_), value_);
     }
     
+    bool isObject() const {
+        return JSValueIsObject(static_cast<::JSGlobalContextRef>(*context_ptr_), value_);
+    }
+
     static long ctorCounter() {
         return ctorCounter_;
     }
@@ -301,6 +340,12 @@ bool operator!=( const JSValue& lhs, const JSValue& rhs ) {
 inline
 std::ostream& operator << (std::ostream& ostream, const JSValue& value) {
     ostream << static_cast<JSString>(value);
+    return ostream;
+}
+
+inline
+std::ostream& operator << (std::ostream& ostream, const JSValue_ptr_t& value_ptr) {
+    ostream << *value_ptr;
     return ostream;
 }
 

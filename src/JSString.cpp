@@ -5,6 +5,7 @@
 //
 
 #include "JavaScriptCoreCPP/JSString.h"
+#include <codecvt>
 
 std::atomic<long> JSString::ctorCounter_ { 0 };
 std::atomic<long> JSString::dtorCounter_ { 0 };
@@ -62,11 +63,12 @@ JSString& JSString::operator=(const JSString& rhs) {
 }
 
 JSString::operator std::string() const {
-    const size_t maxSize = JSStringGetMaximumUTF8CStringSize(string_);
-    char* utf8Buffer = new char[maxSize];
-    JSStringGetUTF8CString(string_, utf8Buffer, maxSize);
-    std::string string { utf8Buffer };
-    delete[] utf8Buffer;
-    return string;
+    static std::wstring_convert<std::codecvt_utf8_utf16<char16_t>,char16_t> converter;
+    
+    return std::string(converter.to_bytes(static_cast<std::u16string>(*this)));
 }
 
+JSString::operator std::u16string() const {
+    const JSChar* string_ptr = JSStringGetCharactersPtr(string_);
+    return std::u16string(string_ptr, string_ptr + JSStringGetLength(string_));
+}

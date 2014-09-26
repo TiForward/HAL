@@ -138,9 +138,9 @@ JSValue::operator JSString() const {
     ::JSStringRef result = JSValueToStringCopy(static_cast<::JSGlobalContextRef>(*context_ptr_), value_, &exception);
     if (exception) {
         context_ptr_ -> notifyException(exception);
-
-        ::JSStringRef exceptionString = JSValueToStringCopy(static_cast<::JSGlobalContextRef>(*context_ptr_), exception, nullptr);
-        return JSString(exceptionString);
+        
+        // Return the empty string.
+        return JSString();
     }
     
     return JSString(result);

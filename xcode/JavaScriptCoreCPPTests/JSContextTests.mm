@@ -39,11 +39,23 @@
 - (void)testException{
     auto context_ptr = JSContext::create();
     auto exception_ptr = context_ptr -> exception();
-    XCTAssertFalse(bool(exception_ptr));
+    XCTAssertFalse(static_cast<bool>(exception_ptr));
     
     context_ptr -> setExceptionHandler([](const JSContext_ptr_t& context_ptr, const JSValue_ptr_t& exception_ptr) {
         
         context_ptr->setException(exception_ptr);});
+}
+
+- (void)testGlobalObject{
+    auto context_ptr = JSContext::create();
+    auto globalObject = context_ptr -> globalObject();
+
+    XCTAssertFalse(globalObject->isUndefined());
+    XCTAssertFalse(globalObject->isNull());
+    XCTAssertFalse(globalObject->isBoolean());
+    XCTAssertFalse(globalObject->isNumber());
+    XCTAssertFalse(globalObject->isString());
+    XCTAssertTrue(globalObject->isObject());
 }
 
 - (void)testEvaluateScript {
