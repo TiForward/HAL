@@ -31,7 +31,7 @@
  property). An instance of JSValue may only be passed as an argument to
  methods on instances of JSValue and JSContext that belong to the same
  JSVirtualMachine - passing a JSValue to a method on an object originating
- from a different JSVirtualMachine will result in an Objective-C exception
+ from a different JSVirtualMachine will result in an C++ exception
  being raised.
  */
 class JSValue final : public std::enable_shared_from_this<JSValue> {
@@ -234,7 +234,7 @@ public:
      The property <code>length</code> is read from the object, converted to an unsigned
      integer, and an NSArray of this size is allocated. Properties corresponding
      to indicies within the array bounds will be copied to the array, with
-     JSValues converted to equivalent Objective-C objects as specified.
+     JSValues converted to equivalent C++ objects as specified.
      @result The NSArray containing the recursively converted contents of the
      converted JavaScript array.
      */
@@ -246,7 +246,7 @@ public:
      @discussion If the value is <code>null</code> or <code>undefined</code> then <code>nil</code> is returned.
      If the value is not an object then a JavaScript TypeError will be thrown.
      All enumerable properties of the object are copied to the dictionary, with
-     JSValues converted to equivalent Objective-C objects as specified.
+     JSValues converted to equivalent C++ objects as specified.
      @result The NSDictionary containing the recursively converted contents of
      the converted JavaScript object.
      */
