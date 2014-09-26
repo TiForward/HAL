@@ -206,11 +206,10 @@ makeTimePoint(int year, int mon, int day, int hour, int min, int sec = 0) {
 
 - (void)testString {
     auto stringValue = JSValue::valueWithStringInContext("hello, world", context_ptr);
-    std::cout << "MDL: " << stringValue << std:: endl;
-//    XCTAssertEqual("hello, world", static_cast<std::string>(*stringValue));
+    XCTAssertEqual("hello, world", static_cast<std::string>(*stringValue));
     
-//    auto result_ptr  = context_ptr -> evaluateScript("\"hello, JavaScript\"");
-//    XCTAssertEqual("hello, JavaScript", static_cast<std::string>(*result_ptr));
+    auto result_ptr  = context_ptr -> evaluateScript("\"hello, JavaScript\"");
+    XCTAssertEqual("hello, JavaScript", static_cast<std::string>(*result_ptr));
     
     XCTAssertFalse(stringValue->isUndefined());
     XCTAssertFalse(stringValue->isNull());

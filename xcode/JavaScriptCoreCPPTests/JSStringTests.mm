@@ -47,8 +47,6 @@
     
     JSString string3 { "hello" };
     XCTAssertNotEqual(string1, string3);
-
-    std::clog << "MDL: " << string1 << std::endl;
 }
 
 - (void)testStdString {
