@@ -146,3 +146,33 @@ JSValue::operator JSString() const {
   return JSString(result);
 }
 
+JSValue_ptr_t JSValue::valueForProperty(const std::string& property) const {
+  JSValueRef exception = 0;
+  JSObjectRef object = JSValueToObject(static_cast<::JSGlobalContextRef>(*context_ptr_), value_, &exception);
+  if (exception) {
+    return context_ptr_ -> valueFromNotifyException(exception);
+  }
+  
+  JSStringRef name = static_cast<JSStringRef>(JSString(property));
+  JSValueRef result = JSObjectGetProperty(static_cast<JSGlobalContextRef>(*context_ptr_), object, name, &exception);
+  if (exception) {
+    return context_ptr_ -> valueFromNotifyException(exception);
+  }
+  
+  return JSValue::create(result, context_ptr_);
+}
+
+
+bool JSValue::hasProperty(const std::string& property) const {
+  JSValueRef exception = 0;
+  JSObjectRef object = JSValueToObject(static_cast<::JSGlobalContextRef>(*context_ptr_), value_, &exception);
+  if (exception) {
+    context_ptr_ -> valueFromNotifyException(exception);
+    return false;
+  }
+  
+  JSStringRef name = static_cast<JSStringRef>(JSString(property));
+  return JSObjectHasProperty(static_cast<JSGlobalContextRef>(*context_ptr_), object, name);
+}
+
+

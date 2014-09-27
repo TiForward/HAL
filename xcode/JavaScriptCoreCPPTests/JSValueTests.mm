@@ -219,6 +219,42 @@ makeTimePoint(int year, int mon, int day, int hour, int min, int sec = 0) {
   XCTAssertFalse(stringValue->isObject());
 }
 
+- (void)testObject {
+  auto objectValue = JSValue::valueWithNewObjectInContext(context_ptr);
+  XCTAssertTrue(objectValue -> isObject());
+  
+  //auto result_ptr  = context_ptr -> evaluateScript("new Object()");
+  //auto result_ptr  = context_ptr -> evaluateScript("var a = {}; a");
+  auto result_ptr  = context_ptr -> evaluateScript("return {}");
+  XCTAssertTrue(result_ptr -> isObject());
+  
+  XCTAssertFalse(objectValue->isUndefined());
+  XCTAssertFalse(objectValue->isNull());
+  XCTAssertFalse(objectValue->isBoolean());
+  XCTAssertFalse(objectValue->isNumber());
+  XCTAssertFalse(objectValue->isString());
+  XCTAssertTrue(objectValue->isObject());
+}
+
+- (void)xtestValueForProperty {
+  auto stringValue = JSValue::valueWithStringInContext("hello, world", context_ptr);
+  XCTAssertEqual("hello, world", static_cast<std::string>(*stringValue));
+  XCTAssertTrue(stringValue -> isObject());
+  XCTAssertTrue(stringValue -> hasProperty("length"));
+  auto length_ptr = stringValue -> valueForProperty("length");
+  //XCTAssertEqual(11, static_cast<int32_t>(*length_ptr));
+  
+  auto result_ptr  = context_ptr -> evaluateScript("\"hello, JavaScript\"");
+  XCTAssertEqual("hello, JavaScript", static_cast<std::string>(*result_ptr));
+  
+  XCTAssertFalse(stringValue->isUndefined());
+  XCTAssertFalse(stringValue->isNull());
+  XCTAssertFalse(stringValue->isBoolean());
+  XCTAssertFalse(stringValue->isNumber());
+  XCTAssertTrue(stringValue->isString());
+  XCTAssertFalse(stringValue->isObject());
+}
+
 // As of 2014.09.20 Travis CI only supports Xcode 5.1 which lacks support for
 // measureBlock.
 #ifndef TRAVIS

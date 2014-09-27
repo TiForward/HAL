@@ -252,6 +252,66 @@ public:
   */
   //    - (NSDictionary *)toDictionary;
 
+
+  /*!
+   @methodgroup Accessing Properties
+   */
+  /*!
+   @method
+   @abstract Access a property of a JSValue.
+   @result The JSValue for the requested property or the JSValue <code>undefined</code>
+   if the property does not exist.
+   */
+  JSValue_ptr_t valueForProperty(const std::string& property) const;
+  
+  /*!
+   @method
+   @abstract Set a property on a JSValue.
+   */
+  //void setValueForProperty(bool value, const std::string& property);
+  
+  /*!
+   @method
+   @abstract Delete a property from a JSValue.
+   @result YES if deletion is successful, NO otherwise.
+   */
+  //bool deleteProperty(const std::string& property);
+  
+  /*!
+   @method
+   @abstract Check if a JSValue has a property.
+   @discussion This method has the same function as the JavaScript operator <code>in</code>.
+   @result Returns YES if property is present on the value.
+   */
+  bool hasProperty(const std::string& property) const;
+  
+  /*!
+   @method
+   @abstract Define properties with custom descriptors on JSValues.
+   @discussion This method may be used to create a data or accessor property on an object.
+   This method operates in accordance with the Object.defineProperty method in the
+   JavaScript language.
+   */
+  //void definePropertyWithDescriptor(const std::string& property, int descriptor);
+  
+  /*!
+   @method
+   @abstract Access an indexed (numerical) property on a JSValue.
+   @result The JSValue for the property at the specified index.
+   Returns the JavaScript value <code>undefined</code> if no property exists at that index.
+   */
+  //JSValue_ptr_t valueAtIndex(size_t index);
+  
+  /*!
+   @method
+   @abstract Set an indexed (numerical) property on a JSValue.
+   @discussion For JSValues that are JavaScript arrays, indices greater than
+   UINT_MAX - 1 will not affect the length of the array.
+   */
+  //void setValueAtIndex(bool value, size_t index);
+  
+  
+  
   bool isUndefined() const {
     return JSValueIsUndefined(static_cast<::JSGlobalContextRef>(*context_ptr_), value_);
   }
