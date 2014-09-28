@@ -273,7 +273,7 @@ public:
   /*!
    @method
    @abstract Delete a property from a JSValue.
-   @result YES if deletion is successful, NO otherwise.
+   @result true if deletion is successful, false otherwise.
    */
   bool deleteProperty(const std::string& property);
   
@@ -281,7 +281,7 @@ public:
    @method
    @abstract Check if a JSValue has a property.
    @discussion This method has the same function as the JavaScript operator <code>in</code>.
-   @result Returns YES if property is present on the value.
+   @result Returns true if property is present on the value.
    */
   bool hasProperty(const std::string& property) const;
   
