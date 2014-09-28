@@ -30,6 +30,7 @@
 		C9BD384719D0FEC900609F73 /* JSClass.h in Headers */ = {isa = PBXBuildFile; fileRef = C9BD384519D0FEC900609F73 /* JSClass.h */; };
 		C9BD384819D0FEC900609F73 /* JSClass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9BD384619D0FEC900609F73 /* JSClass.cpp */; };
 		C9BD384A19D0FF1300609F73 /* JSClassTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9BD384919D0FF1300609F73 /* JSClassTests.mm */; };
+		C9BD384C19D725F600609F73 /* LambdaTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C9BD384B19D725F600609F73 /* LambdaTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +70,7 @@
 		C9BD384519D0FEC900609F73 /* JSClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSClass.h; path = include/JavaScriptCoreCPP/JSClass.h; sourceTree = "<group>"; };
 		C9BD384619D0FEC900609F73 /* JSClass.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSClass.cpp; path = src/JSClass.cpp; sourceTree = "<group>"; };
 		C9BD384919D0FF1300609F73 /* JSClassTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = JSClassTests.mm; sourceTree = "<group>"; };
+		C9BD384B19D725F600609F73 /* LambdaTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LambdaTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,6 +143,7 @@
 				C9BD384919D0FF1300609F73 /* JSClassTests.mm */,
 				C9BD384319D0F9DA00609F73 /* JSObjectTests.mm */,
 				C936FD5719CB962E0082CB08 /* JSProxyTests.mm */,
+				C9BD384B19D725F600609F73 /* LambdaTests.m */,
 				C936FD5919CB962E0082CB08 /* GotW71.cpp */,
 				C936FD5A19CB962E0082CB08 /* GotW71.h */,
 				C936FD4F19CB961A0082CB08 /* Supporting Files */,
@@ -279,6 +282,7 @@
 				C936FD5D19CB962E0082CB08 /* JSContextTests.mm in Sources */,
 				C936FD6F19CC949E0082CB08 /* JSValueTests.mm in Sources */,
 				C9BD384419D0F9DA00609F73 /* JSObjectTests.mm in Sources */,
+				C9BD384C19D725F600609F73 /* LambdaTests.m in Sources */,
 				C936FD5C19CB962E0082CB08 /* JSProxyTests.mm in Sources */,
 				C9BD384A19D0FF1300609F73 /* JSClassTests.mm in Sources */,
 				C936FD5E19CB962E0082CB08 /* GotW71.cpp in Sources */,

@@ -128,131 +128,249 @@ makeTimePoint(int year, int mon, int day, int hour, int min, int sec = 0) {
 }
 
 - (void)testUndefined {
-  auto undefinedValue = JSValue::valueWithUndefinedInContext(context_ptr);
-  XCTAssertTrue(undefinedValue->isUndefined());
-  XCTAssertFalse(undefinedValue->isNull());
-  XCTAssertFalse(undefinedValue->isBoolean());
-  XCTAssertFalse(undefinedValue->isNumber());
-  XCTAssertFalse(undefinedValue->isString());
-  XCTAssertFalse(undefinedValue->isObject());
+  auto undefinedValue_ptr = JSValue::valueWithUndefinedInContext(context_ptr);
+  XCTAssertEqual("undefined", static_cast<std::string>(*undefinedValue_ptr));
+  XCTAssertTrue(undefinedValue_ptr->isUndefined());
+  XCTAssertFalse(undefinedValue_ptr->isNull());
+  XCTAssertFalse(undefinedValue_ptr->isBoolean());
+  XCTAssertFalse(undefinedValue_ptr->isNumber());
+  XCTAssertFalse(undefinedValue_ptr->isString());
+  XCTAssertFalse(undefinedValue_ptr->isObject());
 }
 
 - (void)testBool {
-  auto falseValue = JSValue::valueWithBoolInContext(false, context_ptr);
-  XCTAssertFalse(static_cast<bool>(*falseValue));
+  auto falseValue_ptr = JSValue::valueWithBoolInContext(false, context_ptr);
+  XCTAssertFalse(static_cast<bool>(*falseValue_ptr));
+  XCTAssertEqual("false", static_cast<std::string>(*falseValue_ptr));
 
-  XCTAssertFalse(falseValue->isUndefined());
-  XCTAssertFalse(falseValue->isNull());
-  XCTAssertTrue(falseValue->isBoolean());
-  XCTAssertFalse(falseValue->isNumber());
-  XCTAssertFalse(falseValue->isString());
-  XCTAssertFalse(falseValue->isObject());
+  XCTAssertFalse(falseValue_ptr->isUndefined());
+  XCTAssertFalse(falseValue_ptr->isNull());
+  XCTAssertTrue(falseValue_ptr->isBoolean());
+  XCTAssertFalse(falseValue_ptr->isNumber());
+  XCTAssertFalse(falseValue_ptr->isString());
+  XCTAssertFalse(falseValue_ptr->isObject());
     
-  auto trueValue = JSValue::valueWithBoolInContext(true, context_ptr);
-  XCTAssertTrue(static_cast<bool>(*trueValue));
+  auto trueValue_ptr = JSValue::valueWithBoolInContext(true, context_ptr);
+  XCTAssertTrue(static_cast<bool>(*trueValue_ptr));
+  XCTAssertEqual("true", static_cast<std::string>(*trueValue_ptr));
 
-  XCTAssertFalse(trueValue->isUndefined());
-  XCTAssertFalse(trueValue->isNull());
-  XCTAssertTrue(trueValue->isBoolean());
-  XCTAssertFalse(trueValue->isNumber());
-  XCTAssertFalse(trueValue->isString());
-  XCTAssertFalse(trueValue->isObject());
+  XCTAssertFalse(trueValue_ptr->isUndefined());
+  XCTAssertFalse(trueValue_ptr->isNull());
+  XCTAssertTrue(trueValue_ptr->isBoolean());
+  XCTAssertFalse(trueValue_ptr->isNumber());
+  XCTAssertFalse(trueValue_ptr->isString());
+  XCTAssertFalse(trueValue_ptr->isObject());
 }
 
 - (void)testDouble {
-  auto doubleValue = JSValue::valueWithDoubleInContext(UnitTestConstants::pi, context_ptr);
-  XCTAssertEqualWithAccuracy(UnitTestConstants::pi, static_cast<double>(*doubleValue), std::numeric_limits<double>::epsilon());
-    
+  auto doubleValue_ptr = JSValue::valueWithDoubleInContext(UnitTestConstants::pi, context_ptr);
+  XCTAssertEqualWithAccuracy(UnitTestConstants::pi, static_cast<double>(*doubleValue_ptr), std::numeric_limits<double>::epsilon());
+  XCTAssertEqual("3.141592653589793", static_cast<std::string>(*doubleValue_ptr));
+  
+  XCTAssertFalse(doubleValue_ptr->isUndefined());
+  XCTAssertFalse(doubleValue_ptr->isNull());
+  XCTAssertFalse(doubleValue_ptr->isBoolean());
+  XCTAssertTrue(doubleValue_ptr->isNumber());
+  XCTAssertFalse(doubleValue_ptr->isString());
+  XCTAssertFalse(doubleValue_ptr->isObject());
+
   auto piValue_ptr  = context_ptr -> evaluateScript("Math.PI");
   XCTAssertEqualWithAccuracy(UnitTestConstants::pi, static_cast<double>(*piValue_ptr), std::numeric_limits<double>::epsilon());
-    
-  XCTAssertFalse(doubleValue->isUndefined());
-  XCTAssertFalse(doubleValue->isNull());
-  XCTAssertFalse(doubleValue->isBoolean());
-  XCTAssertTrue(doubleValue->isNumber());
-  XCTAssertFalse(doubleValue->isString());
-  XCTAssertFalse(doubleValue->isObject());
 }
 
 - (void)testInt32 {
-  auto intValue = JSValue::valueWithInt32InContext(42, context_ptr);
-  XCTAssertEqual(42, static_cast<int32_t>(*intValue));
+  auto intValue_ptr = JSValue::valueWithInt32InContext(42, context_ptr);
+  XCTAssertEqual(42, static_cast<int32_t>(*intValue_ptr));
+  XCTAssertEqual("42", static_cast<std::string>(*intValue_ptr));
+
+  XCTAssertFalse(intValue_ptr->isUndefined());
+  XCTAssertFalse(intValue_ptr->isNull());
+  XCTAssertFalse(intValue_ptr->isBoolean());
+  XCTAssertTrue(intValue_ptr->isNumber());
+  XCTAssertFalse(intValue_ptr->isString());
+  XCTAssertFalse(intValue_ptr->isObject());
 
   auto result_ptr  = context_ptr -> evaluateScript("21 / 7");
   XCTAssertEqual(3, static_cast<int32_t>(*result_ptr));
-
-  XCTAssertFalse(intValue->isUndefined());
-  XCTAssertFalse(intValue->isNull());
-  XCTAssertFalse(intValue->isBoolean());
-  XCTAssertTrue(intValue->isNumber());
-  XCTAssertFalse(intValue->isString());
-  XCTAssertFalse(intValue->isObject());
+  
 }
 
 - (void)testUInt32 {
-  auto uintValue = JSValue::valueWithUInt32InContext(42, context_ptr);
-  XCTAssertEqual(42, static_cast<uint32_t>(*uintValue));
-    
+  auto uintValue_ptr = JSValue::valueWithUInt32InContext(42, context_ptr);
+  XCTAssertEqual(42, static_cast<uint32_t>(*uintValue_ptr));
+  XCTAssertEqual("42", static_cast<std::string>(*uintValue_ptr));
+  
+  XCTAssertFalse(uintValue_ptr->isUndefined());
+  XCTAssertFalse(uintValue_ptr->isNull());
+  XCTAssertFalse(uintValue_ptr->isBoolean());
+  XCTAssertTrue(uintValue_ptr->isNumber());
+  XCTAssertFalse(uintValue_ptr->isString());
+  XCTAssertFalse(uintValue_ptr->isObject());
+
   auto result_ptr  = context_ptr -> evaluateScript("21 / 7");
   XCTAssertEqual(3, static_cast<uint32_t>(*result_ptr));
-    
-  XCTAssertFalse(uintValue->isUndefined());
-  XCTAssertFalse(uintValue->isNull());
-  XCTAssertFalse(uintValue->isBoolean());
-  XCTAssertTrue(uintValue->isNumber());
-  XCTAssertFalse(uintValue->isString());
-  XCTAssertFalse(uintValue->isObject());
+  
 }
 
 - (void)testString {
-  auto stringValue = JSValue::valueWithStringInContext("hello, world", context_ptr);
-  XCTAssertEqual("hello, world", static_cast<std::string>(*stringValue));
+  auto stringValue_ptr = JSValue::valueWithStringInContext("hello, world", context_ptr);
+  XCTAssertEqual("hello, world", static_cast<std::string>(*stringValue_ptr));
     
+  XCTAssertFalse(stringValue_ptr->isUndefined());
+  XCTAssertFalse(stringValue_ptr->isNull());
+  XCTAssertFalse(stringValue_ptr->isBoolean());
+  XCTAssertFalse(stringValue_ptr->isNumber());
+  XCTAssertTrue(stringValue_ptr->isString());
+  XCTAssertFalse(stringValue_ptr->isObject());
+
   auto result_ptr  = context_ptr -> evaluateScript("\"hello, JavaScript\"");
   XCTAssertEqual("hello, JavaScript", static_cast<std::string>(*result_ptr));
-    
-  XCTAssertFalse(stringValue->isUndefined());
-  XCTAssertFalse(stringValue->isNull());
-  XCTAssertFalse(stringValue->isBoolean());
-  XCTAssertFalse(stringValue->isNumber());
-  XCTAssertTrue(stringValue->isString());
-  XCTAssertFalse(stringValue->isObject());
+  
 }
 
 - (void)testObject {
-  auto objectValue = JSValue::valueWithNewObjectInContext(context_ptr);
-  XCTAssertTrue(objectValue -> isObject());
-  
-  //auto result_ptr  = context_ptr -> evaluateScript("new Object()");
-  //auto result_ptr  = context_ptr -> evaluateScript("var a = {}; a");
-  auto result_ptr  = context_ptr -> evaluateScript("return {}");
+  auto objectValue_ptr = JSValue::valueWithNewObjectInContext(context_ptr);
+  XCTAssertFalse(objectValue_ptr->isUndefined());
+  XCTAssertFalse(objectValue_ptr->isNull());
+  XCTAssertFalse(objectValue_ptr->isBoolean());
+  XCTAssertFalse(objectValue_ptr->isNumber());
+  XCTAssertFalse(objectValue_ptr->isString());
+  XCTAssertTrue(objectValue_ptr->isObject());
+
+  auto result_ptr  = context_ptr -> evaluateScript("new Object()");
+  XCTAssertTrue(result_ptr -> isObject());
+
+  result_ptr  = context_ptr -> evaluateScript("Object()");
   XCTAssertTrue(result_ptr -> isObject());
   
-  XCTAssertFalse(objectValue->isUndefined());
-  XCTAssertFalse(objectValue->isNull());
-  XCTAssertFalse(objectValue->isBoolean());
-  XCTAssertFalse(objectValue->isNumber());
-  XCTAssertFalse(objectValue->isString());
-  XCTAssertTrue(objectValue->isObject());
+  // It is surprising to me that an object literal, "{}", is not an object.
+  result_ptr  = context_ptr -> evaluateScript("{}");
+  XCTAssertTrue(result_ptr -> isUndefined());
+
+  // But this is an object.
+  result_ptr  = context_ptr -> evaluateScript("var a = {}; a");
+  XCTAssertTrue(result_ptr -> isObject());
+  
+  // This is nor a primitive string.
+  result_ptr  = context_ptr -> evaluateScript("new String()");
+  XCTAssertTrue(result_ptr -> isObject());
+  XCTAssertFalse(result_ptr -> isString());
+
+  // Yet this is a primitive string (i.e. without new).
+  result_ptr  = context_ptr -> evaluateScript("String()");
+  XCTAssertFalse(result_ptr -> isObject());
+  XCTAssertTrue(result_ptr -> isString());
+
+  result_ptr  = context_ptr -> evaluateScript("new Date()");
+  XCTAssertTrue(result_ptr -> isObject());
+
+  result_ptr  = context_ptr -> evaluateScript("new Array()");
+  XCTAssertTrue(result_ptr -> isObject());
+
+  // An array literal is an Object, as expected. Why isn't an object literal,
+  // "{}", an Object?
+  result_ptr  = context_ptr -> evaluateScript("[]");
+  XCTAssertTrue(result_ptr -> isObject());
+
+  result_ptr  = context_ptr -> evaluateScript("[1, 3, 5, 7]");
+  XCTAssertTrue(result_ptr -> isObject());
 }
 
-- (void)xtestValueForProperty {
-  auto stringValue = JSValue::valueWithStringInContext("hello, world", context_ptr);
-  XCTAssertEqual("hello, world", static_cast<std::string>(*stringValue));
-  XCTAssertTrue(stringValue -> isObject());
-  XCTAssertTrue(stringValue -> hasProperty("length"));
-  auto length_ptr = stringValue -> valueForProperty("length");
-  //XCTAssertEqual(11, static_cast<int32_t>(*length_ptr));
+- (void)testValueForProperty {
+  auto result_ptr  = context_ptr -> evaluateScript("[1, 3, 5, 7]");
+  XCTAssertTrue(result_ptr -> isObject());
+  XCTAssertTrue(result_ptr -> hasProperty("length"));
+  JSValue_ptr_t length_ptr = result_ptr -> valueForProperty("length");
+  XCTAssertEqual(4, static_cast<int32_t>(*length_ptr));
+
+  result_ptr  = context_ptr -> evaluateScript("\"hello, JavaScript\"");
+  XCTAssertTrue(result_ptr -> isString());
+  XCTAssertTrue(result_ptr -> hasProperty("length"));
+  length_ptr = result_ptr -> valueForProperty("length");
+  XCTAssertEqual(17, static_cast<int32_t>(*length_ptr));
   
-  auto result_ptr  = context_ptr -> evaluateScript("\"hello, JavaScript\"");
-  XCTAssertEqual("hello, JavaScript", static_cast<std::string>(*result_ptr));
+  // Trying to reference an undefined property returns undefined.
+  XCTAssertFalse(result_ptr -> hasProperty("foo"));
+  auto foo_ptr = result_ptr -> valueForProperty("foo");
+  XCTAssertTrue(foo_ptr->isUndefined());
+}
+
+- (void)testCustomProperty {
+  auto object_ptr  = context_ptr -> evaluateScript("new Object()");
+  XCTAssertTrue(object_ptr -> isObject());
+
+  XCTAssertFalse(object_ptr -> hasProperty("foo"));
+  object_ptr -> setValueForProperty(JSValue::valueWithInt32InContext(42, context_ptr), "foo");
+  XCTAssertTrue(object_ptr -> hasProperty("foo"));
+  auto value_ptr = object_ptr -> valueForProperty("foo");
+  XCTAssertEqual(42, static_cast<int32_t>(*value_ptr));
+
+  // Should be able to delete a property we created.
+  XCTAssertTrue(object_ptr -> deleteProperty("foo"));
+
+  // It is legal to delete a non-existent property.
+  XCTAssertTrue(object_ptr -> deleteProperty("bar"));
   
-  XCTAssertFalse(stringValue->isUndefined());
-  XCTAssertFalse(stringValue->isNull());
-  XCTAssertFalse(stringValue->isBoolean());
-  XCTAssertFalse(stringValue->isNumber());
-  XCTAssertTrue(stringValue->isString());
-  XCTAssertFalse(stringValue->isObject());
+  const std::string quoteString = "Life can only be understood backwards; but it must be lived forwards.";
+
+  // You can't set a custom propery on a bool.
+  value_ptr = JSValue::valueWithBoolInContext(true, context_ptr);
+  value_ptr -> setValueForProperty(JSValue::valueWithStringInContext(quoteString, context_ptr), "quote");
+  XCTAssertFalse(value_ptr -> hasProperty("quote"));
+  
+  // You can't set a custom propery on a double.
+  value_ptr = JSValue::valueWithDoubleInContext(3.14, context_ptr);
+  value_ptr -> setValueForProperty(JSValue::valueWithStringInContext(quoteString, context_ptr), "quote");
+  XCTAssertFalse(value_ptr -> hasProperty("quote"));
+
+  // You can't set a custom propery on an int32_t.
+  value_ptr = JSValue::valueWithInt32InContext(42, context_ptr);
+  value_ptr -> setValueForProperty(JSValue::valueWithStringInContext(quoteString, context_ptr), "quote");
+  XCTAssertFalse(value_ptr -> hasProperty("quote"));
+
+  // You can't set a custom propery on an uint32_t.
+  value_ptr = JSValue::valueWithUInt32InContext(42, context_ptr);
+  value_ptr -> setValueForProperty(JSValue::valueWithStringInContext(quoteString, context_ptr), "quote");
+  XCTAssertFalse(value_ptr -> hasProperty("quote"));
+
+  // You can't set a custom propery on a string.
+  value_ptr = JSValue::valueWithStringInContext("hello, world", context_ptr);
+  value_ptr -> setValueForProperty(JSValue::valueWithStringInContext(quoteString, context_ptr), "quote");
+  XCTAssertFalse(value_ptr -> hasProperty("quote"));
+
+  // You can set a custom propery on a string.
+  value_ptr = JSValue::valueWithNewObjectInContext(context_ptr);
+  value_ptr -> setValueForProperty(JSValue::valueWithStringInContext(quoteString, context_ptr), "quote");
+  XCTAssertTrue(value_ptr -> hasProperty("quote"));
+  XCTAssertEqual(quoteString, static_cast<std::string>(*(value_ptr -> valueForProperty("quote"))));
+
+  // You can set a custom propery on an array.
+  value_ptr = JSValue::valueWithNewArrayInContext(context_ptr);
+  value_ptr -> setValueForProperty(JSValue::valueWithStringInContext(quoteString, context_ptr), "quote");
+  XCTAssertTrue(value_ptr -> hasProperty("quote"));
+  XCTAssertEqual(quoteString, static_cast<std::string>(*(value_ptr -> valueForProperty("quote"))));
+
+  // You can set a custom propery on a RegExp.
+  value_ptr = JSValue::valueWithNewRegularExpressionFromPatternAndFlagsInContext("^Live can only .+$", "", context_ptr);
+  value_ptr -> setValueForProperty(JSValue::valueWithStringInContext(quoteString, context_ptr), "quote");
+  XCTAssertTrue(value_ptr -> hasProperty("quote"));
+  XCTAssertEqual(quoteString, static_cast<std::string>(*(value_ptr -> valueForProperty("quote"))));
+
+  // You can set a custom propery on a Error.
+  value_ptr = JSValue::valueWithNewErrorFromMessageInContext("Error Message Goes Here", context_ptr);
+  value_ptr -> setValueForProperty(JSValue::valueWithStringInContext(quoteString, context_ptr), "quote");
+  XCTAssertTrue(value_ptr -> hasProperty("quote"));
+  XCTAssertEqual(quoteString, static_cast<std::string>(*(value_ptr -> valueForProperty("quote"))));
+
+  // You can't set a custom propery on a Null.
+  value_ptr = JSValue::valueWithNullInContext(context_ptr);
+  value_ptr -> setValueForProperty(JSValue::valueWithStringInContext(quoteString, context_ptr), "quote");
+  XCTAssertFalse(value_ptr -> hasProperty("quote"));
+
+  // You can't set a custom propery on a Undefined.
+  value_ptr = JSValue::valueWithUndefinedInContext(context_ptr);
+  value_ptr -> setValueForProperty(JSValue::valueWithStringInContext(quoteString, context_ptr), "quote");
+  XCTAssertFalse(value_ptr -> hasProperty("quote"));
 }
 
 // As of 2014.09.20 Travis CI only supports Xcode 5.1 which lacks support for

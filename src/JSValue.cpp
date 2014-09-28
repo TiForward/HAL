@@ -153,8 +153,8 @@ JSValue_ptr_t JSValue::valueForProperty(const std::string& property) const {
     return context_ptr_ -> valueFromNotifyException(exception);
   }
   
-  JSStringRef name = static_cast<JSStringRef>(JSString(property));
-  JSValueRef result = JSObjectGetProperty(static_cast<JSGlobalContextRef>(*context_ptr_), object, name, &exception);
+  auto propertyName = JSString(property);
+  JSValueRef result = JSObjectGetProperty(static_cast<JSGlobalContextRef>(*context_ptr_), object, static_cast<JSStringRef>(propertyName), &exception);
   if (exception) {
     return context_ptr_ -> valueFromNotifyException(exception);
   }
@@ -162,17 +162,79 @@ JSValue_ptr_t JSValue::valueForProperty(const std::string& property) const {
   return JSValue::create(result, context_ptr_);
 }
 
+void JSValue::setValueForProperty(const JSValue_ptr_t& value_ptr, const std::string& property) {
+  JSValueRef exception = 0;
+  JSObjectRef object = JSValueToObject(static_cast<::JSGlobalContextRef>(*context_ptr_), value_, &exception);
+  if (exception) {
+    context_ptr_ -> notifyException(exception);
+    return;
+  }
+  
+  auto propertyName = JSString(property);
+  JSObjectSetProperty(static_cast<JSGlobalContextRef>(*context_ptr_), object, static_cast<JSStringRef>(propertyName), value_ptr -> value_, 0, &exception);
+  if (exception) {
+    context_ptr_ -> notifyException(exception);
+    return;
+  }
+}
+
+bool JSValue::deleteProperty(const std::string& property) {
+  JSValueRef exception = 0;
+  JSObjectRef object = JSValueToObject(static_cast<::JSGlobalContextRef>(*context_ptr_), value_, &exception);
+  if (exception) {
+    context_ptr_ -> notifyException(exception);
+    return false;
+  }
+  
+  auto propertyName = JSString(property);
+  bool result = JSObjectDeleteProperty(static_cast<JSGlobalContextRef>(*context_ptr_), object, static_cast<JSStringRef>(propertyName), &exception);
+  if (exception) {
+    context_ptr_ -> notifyException(exception);
+    return false;
+  }
+  
+  return result;
+}
 
 bool JSValue::hasProperty(const std::string& property) const {
   JSValueRef exception = 0;
   JSObjectRef object = JSValueToObject(static_cast<::JSGlobalContextRef>(*context_ptr_), value_, &exception);
   if (exception) {
-    context_ptr_ -> valueFromNotifyException(exception);
+    context_ptr_ -> notifyException(exception);
     return false;
   }
   
-  JSStringRef name = static_cast<JSStringRef>(JSString(property));
-  return JSObjectHasProperty(static_cast<JSGlobalContextRef>(*context_ptr_), object, name);
+  auto propertyName = JSString(property);
+  return JSObjectHasProperty(static_cast<JSGlobalContextRef>(*context_ptr_), object, static_cast<JSStringRef>(propertyName));
 }
 
+JSValue_ptr_t JSValue::valueAtIndex(size_t index) const {
+  JSValueRef exception = 0;
+  JSObjectRef object = JSValueToObject(static_cast<::JSGlobalContextRef>(*context_ptr_), value_, &exception);
+  if (exception) {
+    return context_ptr_ -> valueFromNotifyException(exception);
+  }
+  
+  JSValueRef result = JSObjectGetPropertyAtIndex(static_cast<JSGlobalContextRef>(*context_ptr_), object, static_cast<unsigned int>(index), &exception);
+  if (exception) {
+    return context_ptr_ -> valueFromNotifyException(exception);
+  }
+  
+  return JSValue::create(result, context_ptr_);
+}
+
+void JSValue::setValueAtIndex(const JSValue_ptr_t& value_ptr, size_t index) {
+  JSValueRef exception = 0;
+  JSObjectRef object = JSValueToObject(static_cast<::JSGlobalContextRef>(*context_ptr_), value_, &exception);
+  if (exception) {
+    context_ptr_ -> notifyException(exception);
+    return;
+  }
+  
+  JSObjectSetPropertyAtIndex(static_cast<JSGlobalContextRef>(*context_ptr_), object, static_cast<unsigned int>(index), value_ptr -> value_, &exception);
+  if (exception) {
+    context_ptr_ -> notifyException(exception);
+    return;
+  }
+}
 

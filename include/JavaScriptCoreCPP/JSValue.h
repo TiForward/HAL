@@ -212,7 +212,7 @@ public:
     @result The NSString containing the result of the conversion.
   */
   explicit operator std::string() const {
-    return static_cast<std::string>(this->operator JSString());
+    return static_cast<std::string>(static_cast<JSString>(*this));
   }
 
   explicit operator JSString() const;
@@ -268,14 +268,14 @@ public:
    @method
    @abstract Set a property on a JSValue.
    */
-  //void setValueForProperty(bool value, const std::string& property);
+  void setValueForProperty(const JSValue_ptr_t& value_ptr, const std::string& property);
   
   /*!
    @method
    @abstract Delete a property from a JSValue.
    @result YES if deletion is successful, NO otherwise.
    */
-  //bool deleteProperty(const std::string& property);
+  bool deleteProperty(const std::string& property);
   
   /*!
    @method
@@ -300,7 +300,7 @@ public:
    @result The JSValue for the property at the specified index.
    Returns the JavaScript value <code>undefined</code> if no property exists at that index.
    */
-  //JSValue_ptr_t valueAtIndex(size_t index);
+  JSValue_ptr_t valueAtIndex(size_t index) const;
   
   /*!
    @method
@@ -308,7 +308,7 @@ public:
    @discussion For JSValues that are JavaScript arrays, indices greater than
    UINT_MAX - 1 will not affect the length of the array.
    */
-  //void setValueAtIndex(bool value, size_t index);
+  void setValueAtIndex(const JSValue_ptr_t& value_ptr, size_t index);
   
   
   
@@ -357,7 +357,7 @@ private:
     
   // Create a copy of another JSValue by assignment.
   JSValue& operator=(const JSValue& rhs);
-    
+  
 private:
     
   friend class JSContext;
