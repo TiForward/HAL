@@ -209,6 +209,14 @@ bool JSValue::hasProperty(const std::string& property) const {
 }
 
 JSValue_ptr_t JSValue::valueAtIndex(size_t index) const {
+  // Properties that are higher than an unsigned value can hold are converted to
+  // a double then inserted as a normal property. Indices that are bigger than
+  // the max allowed index size (UINT_MAX - 1) will be handled internally in
+  // get().
+  if (index != (unsigned)index) {
+    return valueForProperty(static_cast<std::string>(*JSValue::valueWithDoubleInContext(index, context_ptr_)));
+  }
+
   JSValueRef exception = 0;
   JSObjectRef object = JSValueToObject(static_cast<::JSGlobalContextRef>(*context_ptr_), value_, &exception);
   if (exception) {
@@ -224,6 +232,14 @@ JSValue_ptr_t JSValue::valueAtIndex(size_t index) const {
 }
 
 void JSValue::setValueAtIndex(const JSValue_ptr_t& value_ptr, size_t index) {
+  // Properties that are higher than an unsigned value can hold are converted to
+  // a double then inserted as a normal property. Indices that are bigger than
+  // the max allowed index size (UINT_MAX - 1) will be handled internally in
+  // putByIndex().
+  if (index != (unsigned)index) {
+    return setValueForProperty(value_ptr, static_cast<std::string>(*JSValue::valueWithDoubleInContext(index, context_ptr_)));
+  }
+
   JSValueRef exception = 0;
   JSObjectRef object = JSValueToObject(static_cast<::JSGlobalContextRef>(*context_ptr_), value_, &exception);
   if (exception) {

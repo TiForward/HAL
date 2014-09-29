@@ -6,4 +6,7 @@ add_library(JavaScriptCoreCPP
   JSVirtualMachine.cpp
   )
 
-target_link_libraries(JavaScriptCoreCPP ${JavaScriptCore_LIBRARIES})
+target_link_libraries(JavaScriptCoreCPP
+  ${JavaScriptCore_LIBRARIES}
+  ${Boost_LIBRARIES}
+  )

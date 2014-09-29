@@ -14,7 +14,7 @@
 #include <string>
 #include <iostream>
 #include <atomic>
-#include  <cstdint>
+#include <cstdint>
 
 /*!
   @interface
@@ -41,7 +41,7 @@ public:
   // Factory function for creating a smart pointer to a JSValue. This is the
   // public API to create a JSValue.
   template <typename... Ts>
-      static JSValue_ptr_t create(Ts&&... params) {
+  static JSValue_ptr_t create(Ts&&... params) {
     return JSValue_ptr_t(new JSValue(std::forward<Ts>(params)...), deleter{});
   }
     

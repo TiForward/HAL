@@ -373,6 +373,12 @@ makeTimePoint(int year, int mon, int day, int hour, int min, int sec = 0) {
   XCTAssertFalse(value_ptr -> hasProperty("quote"));
 }
 
+- (void)testExamle {
+  std::cout << "MDL: sizeof(size_t)" << sizeof(size_t) << std::endl;
+  std::cout << "MDL: sizeof(unsigned)" << sizeof(unsigned) << std::endl;
+  std::cout << "MDL: sizeof(NSUInteger)" << sizeof(NSUInteger) << std::endl;
+}
+
 // As of 2014.09.20 Travis CI only supports Xcode 5.1 which lacks support for
 // measureBlock.
 #ifndef TRAVIS

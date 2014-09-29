@@ -24,6 +24,8 @@
 		C936FD6C19CB97930082CB08 /* JSValue.h in Headers */ = {isa = PBXBuildFile; fileRef = C936FD6719CB97930082CB08 /* JSValue.h */; };
 		C936FD6D19CB97930082CB08 /* JSVirtualMachine.h in Headers */ = {isa = PBXBuildFile; fileRef = C936FD6819CB97930082CB08 /* JSVirtualMachine.h */; };
 		C936FD6F19CC949E0082CB08 /* JSValueTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C936FD6E19CC949E0082CB08 /* JSValueTests.mm */; };
+		C941452919D899B100EC5678 /* TemplateTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C941452819D899B100EC5678 /* TemplateTests.mm */; };
+		C941452B19D9C9CD00EC5678 /* LambdaTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C941452A19D9C9CD00EC5678 /* LambdaTests.mm */; };
 		C9BD384119D0DF3900609F73 /* JSObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9BD383F19D0DF3900609F73 /* JSObject.cpp */; };
 		C9BD384219D0DF3900609F73 /* JSObject.h in Headers */ = {isa = PBXBuildFile; fileRef = C9BD384019D0DF3900609F73 /* JSObject.h */; };
 		C9BD384419D0F9DA00609F73 /* JSObjectTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9BD384319D0F9DA00609F73 /* JSObjectTests.mm */; };
@@ -63,6 +65,8 @@
 		C936FD6719CB97930082CB08 /* JSValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSValue.h; path = include/JavaScriptCoreCPP/JSValue.h; sourceTree = "<group>"; };
 		C936FD6819CB97930082CB08 /* JSVirtualMachine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSVirtualMachine.h; path = include/JavaScriptCoreCPP/JSVirtualMachine.h; sourceTree = "<group>"; };
 		C936FD6E19CC949E0082CB08 /* JSValueTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = JSValueTests.mm; sourceTree = "<group>"; };
+		C941452819D899B100EC5678 /* TemplateTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TemplateTests.mm; sourceTree = "<group>"; };
+		C941452A19D9C9CD00EC5678 /* LambdaTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = LambdaTests.mm; sourceTree = "<group>"; };
 		C9BD383F19D0DF3900609F73 /* JSObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSObject.cpp; path = src/JSObject.cpp; sourceTree = "<group>"; };
 		C9BD384019D0DF3900609F73 /* JSObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSObject.h; path = include/JavaScriptCoreCPP/JSObject.h; sourceTree = "<group>"; };
 		C9BD384319D0F9DA00609F73 /* JSObjectTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = JSObjectTests.mm; sourceTree = "<group>"; };
@@ -141,6 +145,8 @@
 				C9BD384919D0FF1300609F73 /* JSClassTests.mm */,
 				C9BD384319D0F9DA00609F73 /* JSObjectTests.mm */,
 				C936FD5719CB962E0082CB08 /* JSProxyTests.mm */,
+				C941452819D899B100EC5678 /* TemplateTests.mm */,
+				C941452A19D9C9CD00EC5678 /* LambdaTests.mm */,
 				C936FD5919CB962E0082CB08 /* GotW71.cpp */,
 				C936FD5A19CB962E0082CB08 /* GotW71.h */,
 				C936FD4F19CB961A0082CB08 /* Supporting Files */,
@@ -276,10 +282,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				C936FD5B19CB962E0082CB08 /* JSStringTests.mm in Sources */,
+				C941452919D899B100EC5678 /* TemplateTests.mm in Sources */,
 				C936FD5D19CB962E0082CB08 /* JSContextTests.mm in Sources */,
 				C936FD6F19CC949E0082CB08 /* JSValueTests.mm in Sources */,
 				C9BD384419D0F9DA00609F73 /* JSObjectTests.mm in Sources */,
 				C936FD5C19CB962E0082CB08 /* JSProxyTests.mm in Sources */,
+				C941452B19D9C9CD00EC5678 /* LambdaTests.mm in Sources */,
 				C9BD384A19D0FF1300609F73 /* JSClassTests.mm in Sources */,
 				C936FD5E19CB962E0082CB08 /* GotW71.cpp in Sources */,
 			);
@@ -300,7 +308,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -334,7 +342,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = ../include;
+				USER_HEADER_SEARCH_PATHS = "../include ../../Util/include";
 			};
 			name = Debug;
 		};
@@ -342,7 +350,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -369,7 +377,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = ../include;
+				USER_HEADER_SEARCH_PATHS = "../include ../../Util/include";
 			};
 			name = Release;
 		};

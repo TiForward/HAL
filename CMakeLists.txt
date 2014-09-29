@@ -18,7 +18,16 @@ enable_testing()
 find_package(JavaScriptCore REQUIRED)
 add_definitions(-DSTATICALLY_LINKED_WITH_JavaScriptCore)
 
-include_directories("${PROJECT_SOURCE_DIR}/include" ${JavaScriptCore_INCLUDE_DIRS})
+set( Boost_USE_STATIC_LIBS    ON  )
+set( Boost_USE_MULTITHREADED  ON  )
+set( Boost_USE_STATIC_RUNTIME OFF )
+find_package( Boost 1.56.0 REQUIRED )
+
+include_directories(
+  "${PROJECT_SOURCE_DIR}/include"
+  ${JavaScriptCore_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIRS}
+  )
 
 add_subdirectory(src)
 add_subdirectory(test)
