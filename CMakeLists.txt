@@ -21,7 +21,9 @@ add_definitions(-DSTATICALLY_LINKED_WITH_JavaScriptCore)
 set( Boost_USE_STATIC_LIBS    ON  )
 set( Boost_USE_MULTITHREADED  ON  )
 set( Boost_USE_STATIC_RUNTIME OFF )
-find_package( Boost 1.56.0 REQUIRED )
+
+# Travis only supports Boost 1.55, which is good enough for now.
+find_package( Boost 1.55.0 REQUIRED )
 
 include_directories(
   "${PROJECT_SOURCE_DIR}/include"
