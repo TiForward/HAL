@@ -67,6 +67,8 @@ struct C: A, B, virtual_enable_shared_from_this<C> {
   using virtual_enable_shared_from_this<C>::shared_from_this;
 
   helloCallback_t helloCallbackCorrect() {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++1y-extensions"
     auto lambda = [weakThis = std::weak_ptr<C>(shared_from_this())]() -> std::string {
       auto strong_ptr = weakThis.lock();
       if (strong_ptr) {
@@ -75,15 +77,19 @@ struct C: A, B, virtual_enable_shared_from_this<C> {
         return "weak pointer is invalid";
       }
     };
-    
+#pragma clang diagnostic pop
+
     return lambda;
   }
 
   helloCallback_t helloCallbackIncorrect() {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++1y-extensions"
     auto lambda = [rawThis = this]() -> std::string {
       // This will crash is this is a dangling pointer.
      return rawThis -> hello();
     };
+#pragma clang diagnostic pop
     
     return lambda;
   }
