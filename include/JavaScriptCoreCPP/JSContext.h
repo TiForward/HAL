@@ -96,7 +96,7 @@ public:
     Setting this value to nullptr will result in all uncaught exceptions thrown from
     the API being silently consumed.
   */
-  typedef std::function<void(const JSContext_ptr_t&, const JSValue_ptr_t&)> exceptionHandler_t;
+  using exceptionHandler_t = std::function<void(const JSContext_ptr_t&, const JSValue_ptr_t&)>;
     
   void setExceptionHandler(const exceptionHandler_t& exceptionHandler) {
     exceptionHandler_ = exceptionHandler;
