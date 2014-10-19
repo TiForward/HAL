@@ -9,7 +9,7 @@
 #define _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCONTEXT_HPP_
 
 
-#include <Util/JSContextGroupRefRAII.hpp>
+#include "JavaScriptCoreCPP/RAII/JSContextGroup.hpp"
 #include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP {
@@ -39,7 +39,7 @@ class JSContext final	{
 	// Object, Function, String, and Array.
 	JSContext(JSClassRef globalObjectClass = nullptr)
 			: js_context_(JSGlobalContextCreate(globalObjectClass))
-			, js_context_group_(JSContextGroupRefRAII(JSContextGetGroup(js_context_)))
+			, js_context_group_(JSContextGroup(JSContextGetGroup(js_context_)))
 	{
 	}
 
@@ -49,80 +49,87 @@ class JSContext final	{
 	// globalObjectClass will use the default object class. The context
 	// is populated with all the built-in JavaScript objects, such as
 	// Object, Function, String, and Array.
-	JSGlobalContextRefRAII(const JSContextGroupRefRAII& js_context_group, JSClassRef globalObjectClass = nullptr)
+	JSContext(const JSContextGroup& js_context_group, JSClassRef globalObjectClass = nullptr)
 			: js_context_(JSGlobalContextCreateInGroup(js_context_group, globalObjectClass))
-			: js_context_group_(js_context_group)
+			, js_context_group_(js_context_group)
 	{
 	}
 
-	~JSGlobalContextRefRAII() {
-		JSGlobalContextRelease(js_context_group_);
+	~JSContext() {
+		JSGlobalContextRelease(js_context_);
 	}
 	
 	// Copy constructor.
-	JSGlobalContextRefRAII(const JSGlobalContextRefRAII& rhs) {
-		// Tell the JavaScriptCore garbage collector that we have no more
-		// interest in the object being replaced.
+	JSContext(const JSContext& rhs) {
+		js_context_       = rhs.js_context_;
+    js_context_group_ = rhs.js_context_group_;
 		JSGlobalContextRetain(js_context_);
-
-		js_context_     _ = rhs.js_context_;
-		js_context_group_ = rhs.js_context_group_;
-
-		// However, we must tell the JavaScriptCore garbage collector that
-		// we do have an interest in the object that replaced the previous
-		// one.
-		JSGlobalContextRelease(js_context_);
 	}
 	
-	// Create a copy of another JSGlobalContextRefRAII by assignment.
-	JSGlobalContextRefRAII& operator=(const JSGlobalContextRefRAII& rhs) {
-		if (this == &rhs) {
-			return *this;
-		}
-		
-		// Tell the JavaScriptCore garbage collector that we have no more
-		// interest in the object being replaced.
-		JSGlobalContextRetain(js_context_);
+  // Move constructor.
+  JSContext(JSContext&& rhs) {
+    js_context_ = rhs.js_context_;
+    JSGlobalContextRetain(rhs.js_context_);
+    js_context_group_ = rhs.js_context_group_;
+  }
+  
+  // Create a copy of another JSContextGroup by assignment. This is a unified
+  // assignment operator that fuses the copy assignment operator,
+  // X& X::operator=(const X&), and the move assignment operator,
+  // X& X::operator=(X&&);
+  JSContext& operator=(JSContext rhs) {
+    swap(*this, rhs);
+    return *this;
+  }
+  
+  friend void swap(JSContext& first, JSContext& second) noexcept {
+    // enable ADL (not necessary in our case, but good practice)
+    using std::swap;
+    
+    // by swapping the members of two classes,
+    // the two classes are effectively swapped
+    swap(first.js_context_      , second.js_context_      );
+    swap(first.js_context_group_, second.js_context_group_);
+  }
 
-		js_context_     _ = rhs.js_context_;
-		js_context_group_ = rhs.js_context_group_;
-
-		// However, we must tell the JavaScriptCore garbage collector that
-		// we do have an interest in the object that replaced the previous
-		// one.
-		JSGlobalContextRelease(js_context_);
-		
-		return *this;
-	}
-
-	JSContextGroupRefRAII get_context_group() const {
+	JSContextGroup get_context_group() const {
 		return js_context_group_;
 	}
 	
-	JSObjectRefRAII get_global_object() const {
+  // TODO: Change JSObjectRef to JSObject
+	JSObjectRef get_global_object() const {
 		return JSContextGetGlobalObject(js_context_);
 	}
 
 	operator JSContextRef() const {
-		return js_context_group_;
+		return js_context_;
 	}
 	
-	operator JSGlobalContextRef() const {
-		return js_context_group_;
-	}
-
 private:
 
-	// Prevent heap based objects.
+  // Return true if the two JSContexts are equal.
+  friend bool operator==(const JSContext& lhs, const JSContext& rhs);
+
+  // Prevent heap based objects.
 	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
 	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
 	
-	JSGlobalContextRef    js_context_;
-	JSContextGroupRefRAII js_context_group_;
+	JSGlobalContextRef js_context_;
+	JSContextGroup     js_context_group_;
 };
 
-// A JSGlobalContextRef is a JSContext.
-using JSContext = JSGlobalContext;
+// Return true if the two JSContexts are equal.
+inline
+bool operator==(const JSContext& lhs, const JSContext& rhs) {
+  return (lhs.js_context_ == rhs.js_context_) && (lhs.js_context_group_ == rhs.js_context_group_);
+}
+  
+// Return true if the two JSContextGroups are not equal.
+inline
+bool operator!=(const JSContext& lhs, const JSContext& rhs) {
+  return ! (lhs == rhs);
+}
+
 
 } // namespace JavaScriptCoreCPP
 

@@ -8,6 +8,7 @@
 #ifndef _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSSTRING_HPP_
 #define _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSSTRING_HPP_
 
+#include <locale>
 #include <cstddef>
 #include <codecvt>
 #include <JavaScriptCore/JavaScript.h>
@@ -23,11 +24,11 @@ class JSString final	{
 	JSString() : js_string_(JSStringCreateWithUTF8CString(nullptr)) {
 	}
 	
-	JSString(const JSStringRef& js_string) : js_string_(js_string) {
-		JSStringRetain(js_string_);
+	JSString(const std::string& string) : js_string_(JSStringCreateWithUTF8CString(string.c_str())) {
 	}
 	
-	JSString(const std::string& string) : js_string_(JSStringCreateWithUTF8CString(string.c_str())) {
+	JSString(const JSStringRef& js_string) : js_string_(js_string) {
+		JSStringRetain(js_string_);
 	}
 	
 	~JSString() {
@@ -36,37 +37,33 @@ class JSString final	{
 
 	// Copy constructor.
 	JSString(const JSString& rhs) {
-		// Tell the JavaScriptCore garbage collector that we have no more
-		// interest in the object being replaced.
-		JSStringRelease(js_string_);
-
 		js_string_ = rhs.js_string_;
-
-		// However, we must tell the JavaScriptCore garbage collector that
-		// we do have an interest in the object that replaced the previous
-		// one.
 		JSStringRetain(js_string_);
 	}
 
-	// Create a copy of another JSString by assignment.
-	JSString& operator=(const JSString& rhs) {
-		if (this == &rhs) {
-			return *this;
-		}
-
-		// Tell the JavaScriptCore garbage collector that we have no more
-		// interest in the object being replaced.
-		JSStringRelease(js_string_);
-
-		js_string_ = rhs.js_string_;
-
-		// However, we must tell the JavaScriptCore garbage collector that
-		// we do have an interest in the object that replaced the previous
-		// one.
-		JSStringRetain(js_string_);
-
-		return *this;
-	}
+  // Move constructor.
+  JSString(JSString&& rhs) {
+    js_string_ = rhs.js_string_;
+    JSStringRetain(js_string_);
+  }
+  
+  // Create a copy of another JSContextGroup by assignment. This is a unified
+  // assignment operator that fuses the copy assignment operator,
+  // X& X::operator=(const X&), and the move assignment operator,
+  // X& X::operator=(X&&);
+  JSString& operator=(JSString rhs) {
+    swap(*this, rhs);
+    return *this;
+  }
+  
+  friend void swap(JSString& first, JSString& second) noexcept {
+    // enable ADL (not necessary in our case, but good practice)
+    using std::swap;
+    
+    // by swapping the members of two classes,
+    // the two classes are effectively swapped
+    swap(first.js_string_, second.js_string_);
+  }
 
 	const std::size_t length() const {
 		return JSStringGetLength(js_string_);
@@ -88,7 +85,7 @@ class JSString final	{
 
 private:
 
-	// Return true if the two JSValues are equal.
+	// Return true if the two JSStrings are equal.
 	friend bool operator==(const JSString& lhs, const JSString& rhs);
 	
   // Prevent heap based objects.

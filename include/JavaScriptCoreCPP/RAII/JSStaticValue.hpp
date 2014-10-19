@@ -10,7 +10,7 @@
 
 #include <bitset>
 #include <JavaScriptCore/JavaScript.h>
-#include "Util/JSStringRefRAII.hpp"
+#include "JavaScriptCoreCPP/RAII/JSString.hpp"
 
 namespace JavaScriptCoreCPP {
 

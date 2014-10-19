@@ -8,6 +8,7 @@
 #ifndef _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_HPP_
 #define _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_HPP_
 
+#include <utility>
 #include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP {
@@ -25,7 +26,7 @@ class JSContextGroup final	{
 	JSContextGroup() : js_context_group_(JSContextGroupCreate()) {
 	}
 	
-	JSContextGroup(JSContextGroup js_context_group) : js_context_group_(js_context_group) {
+	JSContextGroup(const JSContextGroupRef& js_context_group) : js_context_group_(js_context_group) {
 		JSContextGroupRetain(js_context_group_);
 	}
 
@@ -35,50 +36,61 @@ class JSContextGroup final	{
 	
 	// Copy constructor.
 	JSContextGroup(const JSContextGroup& rhs) {
-		// Tell the JavaScriptCore garbage collector that we have no more
-		// interest in the object being replaced.
-		JSContextGroupRelease(js_context_group_);
-
 		js_context_group_ = rhs.js_context_group_;
-
-		// However, we must tell the JavaScriptCore garbage collector that
-		// we do have an interest in the object that replaced the previous
-		// one.
 		JSContextGroupRetain(js_context_group_);
 	}
 	
-	// Create a copy of another JSContextGroup by assignment.
-	JSContextGroup& operator=(const JSContextGroup& rhs) {
-		if (this == &rhs) {
-			return *this;
-		}
-		
-		// Tell the JavaScriptCore garbage collector that we have no more
-		// interest in the object being replaced.
-		JSContextGroupRelease(js_context_group_);
-		
-		js_context_group_ = rhs.js_context_group_;
-		
-		// However, we must tell the JavaScriptCore garbage collector that
-		// we do have an interest in the object that replaced the previous
-		// one.
-		JSContextGroupRetain(js_context_group_);
-		
-		return *this;
-	}
-	
-	operator JSContextGroup() const {
+  // Move constructor.
+  JSContextGroup(JSContextGroup&& rhs) {
+    js_context_group_ = rhs.js_context_group_;
+    JSContextGroupRetain(js_context_group_);
+  }
+  
+  // Create a copy of another JSContextGroup by assignment. This is a unified
+  // assignment operator that fuses the copy assignment operator,
+  // X& X::operator=(const X&), and the move assignment operator,
+  // X& X::operator=(X&&);
+  JSContextGroup& operator=(JSContextGroup rhs) {
+    swap(*this, rhs);
+    return *this;
+  }
+  
+  friend void swap(JSContextGroup& first, JSContextGroup& second) noexcept {
+    // enable ADL (not necessary in our case, but good practice)
+    using std::swap;
+    
+    // by swapping the members of two classes,
+    // the two classes are effectively swapped
+    swap(first.js_context_group_, second.js_context_group_);
+  }
+
+	operator JSContextGroupRef() const {
 		return js_context_group_;
 	}
 	
  private:
 
-	// Prevent heap based objects.
+  // Return true if the two JSContextGroups are equal.
+  friend bool operator==(const JSContextGroup& lhs, const JSContextGroup& rhs);
+
+  // Prevent heap based objects.
 	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
 	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
 	
-	JSContextGroup js_context_group;
+  JSContextGroupRef js_context_group_ {nullptr};
 };
+
+// Return true if the two JSContextGroups are equal.
+inline
+bool operator==(const JSContextGroup& lhs, const JSContextGroup& rhs) {
+  return lhs.js_context_group_ == rhs.js_context_group_;
+}
+  
+// Return true if the two JSContextGroups are not equal.
+inline
+bool operator!=(const JSContextGroup& lhs, const JSContextGroup& rhs) {
+  return ! (lhs == rhs);
+}
 
 } // namespace JavaScriptCoreCPP
 
