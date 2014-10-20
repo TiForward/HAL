@@ -88,7 +88,9 @@ using namespace JavaScriptCoreCPP;
     XCTFail("Caught unexpected unknown exception, but we expected a std::runtime_error exception.");
   }
   
-  for (const auto& property_name : js_object.GetPropertyNames()) {
+  const auto property_names = js_object.GetPropertyNames();
+  XCTAssertEqual(2, property_names.size());
+  for (const auto& property_name : property_names) {
     std::clog << "MDL: property_name = " << property_name << std::endl;
   }
 }
