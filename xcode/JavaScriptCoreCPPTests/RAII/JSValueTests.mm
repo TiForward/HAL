@@ -153,36 +153,36 @@ namespace UnitTestConstants {
   JSUndefined js_undefined(js_context);
   JSString js_undefined_json = JSValue::ToJSONString(js_undefined);
   XCTAssertEqual(0, js_undefined_json.length());
-  //std::cout << "MDL: js_undefined_json = " << js_undefined_json << std::endl;
+  //std::clog << "MDL: js_undefined_json = " << js_undefined_json << std::endl;
   
   JSNull js_null(js_context);
   JSString js_null_json = JSValue::ToJSONString(js_null);
-  std::cout << "MDL: js_null_json = " << js_null_json << std::endl;
+  std::clog << "MDL: js_null_json = " << js_null_json << std::endl;
   XCTAssertEqual("null", js_null_json);
   
   JSBoolean js_false(false, js_context);
   JSString js_false_sjon = JSValue::ToJSONString(js_false);
-  //std::cout << "MDL: js_false_sjon = " << js_false_sjon << std::endl;
+  //std::clog << "MDL: js_false_sjon = " << js_false_sjon << std::endl;
   XCTAssertEqual("false", js_false_sjon);
 
   JSBoolean js_true(true, js_context);
   JSString js_true_sjon = JSValue::ToJSONString(js_true);
-  //std::cout << "MDL: js_true_sjon = " << js_true_sjon << std::endl;
+  //std::clog << "MDL: js_true_sjon = " << js_true_sjon << std::endl;
   XCTAssertEqual("true", js_true_sjon);
   
   JSNumber js_double(UnitTestConstants::pi, js_context);
   JSString js_double_sjon = JSValue::ToJSONString(js_double);
-  //std::cout << "MDL: js_double_sjon = " << js_double_sjon << std::endl;
+  //std::clog << "MDL: js_double_sjon = " << js_double_sjon << std::endl;
   XCTAssertEqual("3.141592653589793", js_double_sjon);
 
   JSNumber js_int32(int32_t(42), js_context);
   JSString js_int32_sjon = JSValue::ToJSONString(js_int32);
-  //std::cout << "MDL: js_int32_sjon = " << js_int32_sjon << std::endl;
+  //std::clog << "MDL: js_int32_sjon = " << js_int32_sjon << std::endl;
   XCTAssertEqual("42", js_int32_sjon);
 
   JSNumber js_uint32(uint32_t(42), js_context);
   JSString js_uint32_sjon = JSValue::ToJSONString(js_uint32);
-  //std::cout << "MDL: js_uint32_sjon = " << js_uint32_sjon << std::endl;
+  //std::clog << "MDL: js_uint32_sjon = " << js_uint32_sjon << std::endl;
   XCTAssertEqual("42", js_uint32_sjon);
 }
 

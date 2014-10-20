@@ -302,7 +302,7 @@ class JSValue final	{
     JSValueProtect(js_context_, js_value_ref_);
   }
   
-  // Create a copy of another JSContextGroup by assignment. This is a unified
+  // Create a copy of another JSValue by assignment. This is a unified
   // assignment operator that fuses the copy assignment operator,
   // X& X::operator=(const X&), and the move assignment operator,
   // X& X::operator=(X&&);

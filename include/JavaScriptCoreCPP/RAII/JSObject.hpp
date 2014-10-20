@@ -62,10 +62,17 @@ class JSObject final	{
 	  @abstract Return this object's prototype.
 	  @result   A JSValue that is this object's prototype.
 	*/
-	JSValue get_prototype() const {
+	JSValue GetPrototype() const {
 		return JSValue(JSObjectGetPrototype(js_context_, js_object_ref_), js_context_);
 	}
 
+	/*!
+	  @method
+	  @abstract Return a std::vector<JSString> of the names of this object's enumerable properties.
+	  @result   A std::vector<JSString> containing the names of this object's enumerable properties.
+	*/
+	std::vector<JSString> GetPropertyNames() const;
+			
 	/*!
 	  @method
 	  @abstract            Determine if this object has a property with the given name.
@@ -403,10 +410,10 @@ class JSObject final	{
 	  JSValueProtect(js_context_, js_object_ref_);
   }
   
-  // Create a copy of another JSContextGroup by assignment. This is a unified
-  // assignment operator that fuses the copy assignment operator,
-  // X& X::operator=(const X&), and the move assignment operator,
-  // X& X::operator=(X&&);
+  // Create a copy of another JSObject by assignment. This is a
+  // unified assignment operator that fuses the copy assignment
+  // operator, X& X::operator=(const X&), and the move assignment
+  // operator, X& X::operator=(X&&);
   JSObject& operator=(JSObject rhs) {
     swap(*this, rhs);
     return *this;
@@ -440,7 +447,8 @@ class JSObject final	{
   }
 
   friend class JSArray;
-
+  friend class JSPropertyNameArray;
+		
   // Prevent heap based objects.
 	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
 	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects

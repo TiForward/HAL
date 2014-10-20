@@ -58,10 +58,10 @@ class JSContextGroup final	{
     JSContextGroupRetain(js_context_group_ref_);
   }
   
-  // Create a copy of another JSContextGroup by assignment. This is a unified
-  // assignment operator that fuses the copy assignment operator,
-  // X& X::operator=(const X&), and the move assignment operator,
-  // X& X::operator=(X&&);
+  // Create a copy of another JSContextGroup by assignment. This is a
+  // unified assignment operator that fuses the copy assignment
+  // operator, X& X::operator=(const X&), and the move assignment
+  // operator, X& X::operator=(X&&);
   JSContextGroup& operator=(JSContextGroup rhs) {
     swap(*this, rhs);
     return *this;

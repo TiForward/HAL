@@ -62,10 +62,10 @@ class JSString final	{
     JSStringRetain(js_string_ref_);
   }
   
-  // Create a copy of another JSContextGroup by assignment. This is a unified
-  // assignment operator that fuses the copy assignment operator,
-  // X& X::operator=(const X&), and the move assignment operator,
-  // X& X::operator=(X&&);
+  // Create a copy of another JSString by assignment. This is a
+  // unified assignment operator that fuses the copy assignment
+  // operator, X& X::operator=(const X&), and the move assignment
+  // operator, X& X::operator=(X&&);
   JSString& operator=(JSString rhs) {
     swap(*this, rhs);
     return *this;
@@ -98,6 +98,7 @@ private:
 
   friend class JSValue;
   friend class JSObject;
+  friend class JSPropertyNameArray;
   
   // For interoperability with the JavaScriptCore C API.
   JSString(const JSStringRef& js_string_ref) : js_string_ref_(js_string_ref) {

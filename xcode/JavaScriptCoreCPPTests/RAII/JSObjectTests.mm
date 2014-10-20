@@ -35,7 +35,7 @@ using namespace JavaScriptCoreCPP;
 
 - (void)testJSObject {
   JSObject js_object(js_context);
-  JSValue prototype = js_object.get_prototype();
+  JSValue prototype = js_object.GetPrototype();
   XCTAssertFalse(prototype.IsUndefined());
   XCTAssertFalse(prototype.IsNull());
   XCTAssertFalse(prototype.IsBoolean());
@@ -86,6 +86,10 @@ using namespace JavaScriptCoreCPP;
     XCTAssert(YES, @"Caught expected std::runtime_error exception.");
   } catch (...) {
     XCTFail("Caught unexpected unknown exception, but we expected a std::runtime_error exception.");
+  }
+  
+  for (const auto& property_name : js_object.GetPropertyNames()) {
+    std::clog << "MDL: property_name = " << property_name << std::endl;
   }
 }
 
