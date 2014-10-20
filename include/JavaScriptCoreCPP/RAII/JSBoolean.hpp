@@ -19,7 +19,7 @@ namespace JavaScriptCoreCPP {
   @class
   @discussion A JavaScript value of the boolean type.
 */
-class JSBoolean final	{
+class JSBoolean final : public JSValue {
 	
 public:
 	
@@ -30,9 +30,24 @@ public:
     @param js_context The execution context to use.
     @result           A JavaScript value of the boolean type, representing the value of boolean.
   */
-	JSBoolean(bool boolean, const JSContext& js_context) : js_value_(JSValueMakeBoolean(js_context, boolean), js_context) {
+	JSBoolean(bool boolean, const JSContext& js_context) : JSValue(JSValueMakeBoolean(js_context, boolean), js_context) {
 	}
 	
+	/*!
+	  @method
+	  @abstract       Create a JavaScript value of the number type from the given JavaScript value.
+	  @param js_value The JSValue to convert.
+	  @throws         std::invalid_argument if the given JavaScript value could not be converted to a JavaScript boolean.
+	*/
+	JSBoolean(const JSValue& js_value) : JSValue(js_value) {
+		static const std::string log_prefix { "MDL: JSBoolean(const JSValue& js_value): " };
+		if (!IsBoolean()) {
+			const std::string message = "JSValue is not a boolean";
+			std::clog << log_prefix << " [ERROR] " << message << std::endl;
+			throw std::invalid_argument(message);
+		}
+	}
+
 	/*!
     @method
     @abstract      Assign the given boolean value to the JSBoolean.
@@ -42,47 +57,31 @@ public:
 	JSBoolean& operator=(bool boolean) {
 		const bool current_value = operator bool();
 		if (current_value != boolean) {
-			js_value_ = JSBoolean(boolean, js_value_.get_js_context());
+			JSValue::operator=(JSBoolean(boolean, js_context_));
 		}
-    return *this;
+		return *this;
+	}
+
+	/*!
+    @method
+    @abstract       Assign the given JavaScript value to this JSBoolean.
+    @param js_value The JavaScript value to assign to this JSBoolean
+    @result         The JSBoolean with the new value of the given JavaScript value.
+	  @throws         std::invalid_argument if the given JavaScript value is not a boolean.
+	*/
+	JSBoolean& operator=(const JSValue& js_value) {
+		JSValue::operator=(JSBoolean(js_value));
+		return *this;
   }
 
-  /*!
+	/*!
 	  @method
 	  @abstract Convert a JSBoolean to a boolean.
 	  @result   The boolean result of conversion.
 	*/
 	operator bool() const {
-		return JSValueToBoolean(js_value_, js_value_);
+		return JSValueToBoolean(js_context_, js_value_ref_);
 	}
-
-	/*!
-	  @method
-	  @abstract Converts a JSBoolean into a JSValue.
-	  @result   The JSValue result of conversion.
-	*/
-	operator JSValue() const {
-		return js_value_;
-	}
-	
-private:
-	
-	/*!
-	  @method
-	  @abstract       Create a JavaScript value of the boolean type from the given JSValue.
-	  @param js_value The JSValue to convert.
-	  @throws         std::logic_error if the JSValue could not be converted to a boolean.
-	*/
-	JSBoolean(const JSValue& js_value) : js_value_(js_value) {
-		static const std::string log_prefix { "MDL: JSBoolean(const JSValue& js_value): " };
-		if (!js_value.IsBoolean()) {
-			const std::string message = "JSValue is not a boolean value";
-			std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
-			throw std::logic_error(message);
-		}
-	}
-	
-	JSValue js_value_;
 };
 
 } // namespace JavaScriptCoreCPP

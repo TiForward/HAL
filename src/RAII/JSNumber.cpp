@@ -5,6 +5,7 @@
 //
 
 #include "JavaScriptCoreCPP/RAII/JSNumber.hpp"
+#include <sstream>
 #include <cassert>
 
 /*
@@ -22,6 +23,22 @@ inline ToType bitwise_cast(FromType from) {
 }
 
 namespace JavaScriptCoreCPP {
+
+JSNumber::operator double() const {
+	JSValueRef exception { nullptr };
+	const double result = JSValueToNumber(js_context_, js_value_ref_, &exception);
+	if (exception) {
+		static const std::string log_prefix { "MDL: operator double() const: " };
+		std::ostringstream os;
+		os << "JSNumber could not be converted to a double: " << JSValue(exception, js_context_);
+		const std::string message = os.str();
+		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
+		throw std::logic_error(message);
+		// return std::numeric_limits<double>::quiet_NaN();
+	}
+	
+		return result;
+}
 
 // This in the ToInt32 operation as defined in section 9.5 of the
 // ECMA-262 spec. Note that this operation is identical to ToUInt32

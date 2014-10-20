@@ -10,23 +10,20 @@
 
 #include "JavaScriptCoreCPP/RAII/JSContext.hpp"
 #include "JavaScriptCoreCPP/RAII/JSString.hpp"
-#include <stdexcept>
 #include <iostream>
-#include <sstream>
 #include <cassert>
 #include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP {
 
-class JSValue;
-std::ostream& operator << (std::ostream& ostream, const JSValue& js_value);
+class JSObject;
 
 /*!
   @class
   @discussion A JSValue is an RAII wrapper around a JSValueRef, the
   JavaScriptCore C API representation of a JavaScript value.
 */
-class JSValue final	{
+class JSValue	{
 	
  public:
 
@@ -49,99 +46,32 @@ class JSValue final	{
 		Object    = kJSTypeObject
 	};
 
-	// Converting to and from JSON formatted strings
-	
-	/*!
-	  @function
-	  @abstract         Create a JavaScript value from a JSON formatted string.
-	  @param string     The JSString containing the JSON string to be parsed.
-	  @param js_context The execution context to use.
-	  @result           A JSValue containing the parsed value.
-	  @throws           std::invalid_argument exception if the input is invalid.
-	*/
-	static JSValue FromJSONString(const JSString& js_string, const JSContext& js_context) {
-		JSValueRef js_value_ref = JSValueMakeFromJSONString(js_context, js_string);
-		if (!js_value_ref) {
-			static const std::string log_prefix { "MDL: JSONStringToJSValue: " };
-			std::ostringstream os;
-			os << "Input is not a valid JSON string: " << js_string;
-			const std::string message = os.str();
-			std::clog << log_prefix << " [ERROR] " << message << std::endl; 
-			throw std::invalid_argument(message);
-		}
-		
-		JSValue js_value(js_value_ref, js_context);
-		JSValueUnprotect(js_context, js_value_ref);
-		
-		return js_value;
-	}
-	
 	/*!
 	  @method
-	  @abstract       Create a JSString containing the JSON serialized representation of the given JSValue.
-	  @param js_value The JSValue to serialize to its JSON representation.
-	  @param indent   The number of spaces to indent when nesting. If 0 (the default), the resulting JSON will not contain newlines. The size of the indent is clamped to 10 spaces.
-	  @result         A JSString with the result of serialization.
-	  @throws         std::invalid_argument exception if the input is invalid.
+	  @abstract            Create a JavaScript value either of the string type, or from a JSON formatted string.
+	  @param string        The JSString to either assign to the newly created JSValue, or that contains the JSON string to be parsed.
+    @param js_context    The execution context to use.
+    @param parse_as_json If true then parse string as a JSON formatted string, otherwise simply assign to the string to the newly created JavaScript value.
+	  @result              A JSValue either of the string type that represents the value of string, or a JavaScript value containing the parsed JSON formatted string.
+	  @throws              std::invalid_argument exception if parse_as_json is true but the string isn't a valid JSON formatted string.
 	*/
-	static JSString ToJSONString(const JSValue& js_value, unsigned indent = 0) {
-		JSValueRef exception { nullptr };
-		JSStringRef js_string_ref = JSValueCreateJSONString(js_value, js_value, indent, &exception);
-		if (exception) {
-			// assert(!js_string_ref);
-			static const std::string log_prefix { "MDL: JSValueCreateJSONString: " };
-			std::ostringstream os;
-			os << "JSValue could not be serialized to a JSON string: " << JSValue(exception, js_value.get_js_context());
-			const std::string message = os.str();
-			std::clog << log_prefix << " [ERROR] " << message << std::endl;
-			throw std::invalid_argument(message);
-		}
-		
-		JSString js_string;
-		if (js_string_ref) {
-			js_string = JSString(js_string_ref);
-			JSStringRelease(js_string_ref);
-		}
-		
-		return js_string;
-	}
-	
-	// Constructors.
-	
-	/*!
-	  @method
-	  @abstract         Create a JavaScript value of the string type.
-	  @param string     The JSString to assign to the newly created JSValue.
-    @param js_context The execution context to use.
-	  @result           A JSValue of the string type, representing the value of string.
-	*/
-	JSValue(const JSString& string, const JSContext& js_context) : js_value_ref_(JSValueMakeString(js_context, string)), js_context_(js_context) {
-	}
+	JSValue(const JSString& js_string, const JSContext& js_context, bool parse_as_json = false);
 
+	/*!
+	  @method
+	  @abstract       Return a JSString containing the JSON serialized representation of this JavaScript value.
+	  @param indent   The number of spaces to indent when nesting. If 0 (the default), the resulting JSON will not contain newlines. The size of the indent is clamped to 10 spaces.
+	  @result         A JSString containing the JSON serialized representation of this JavaScript value.
+	*/
+	JSString ToJSONString(unsigned indent = 0);
+	
 	/*!
 	  @method
 	  @abstract Convert this JSValue to a JSString.
 	  @result   A JSString with the result of conversion.
 	  @throws   std::logic_error if this JSValue could not be converted to a JSString.
 	*/
-	operator JSString() const {
-		JSValueRef exception { nullptr };
-		JSStringRef js_string_ref = JSValueToStringCopy(js_context_, js_value_ref_, &exception);
-		if (exception) {
-			static const std::string log_prefix { "MDL: JSValue::operator JSString() const: " };
-			std::ostringstream os;
-			os << "JSValue could not be converted to a JSString: "<< JSValue(exception, js_context_);
-			const std::string message = os.str();
-			std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
-			throw std::logic_error(message);
-		}
-
-		assert(js_string_ref);
-		JSString js_string(js_string_ref);
-		JSStringRelease(js_string_ref);
-		
-		return js_string;
-	}
+	operator JSString() const;
 	
 	/*!
 	  @method
@@ -190,50 +120,16 @@ class JSValue final	{
 
   /*!
     @method
-    @abstract       Returns a JavaScript value's type.
-    @result         A value of type JSType that identifies value's type.
-    @throws         std::logic_error if the JSValue's type could not be determined.
+    @abstract Return this JavaScript value's type.
+    @result   A value of type JSValue::Type that identifies this JavaScript value's type.
   */
-  Type get_type() const {
-	  const JSType js_type = JSValueGetType(js_context_, js_value_ref_);
-	  switch (js_type) {
-		  case kJSTypeUndefined:
-			  return Type::Undefined;
-			  break;
-
-		  case kJSTypeNull:
-			  return Type::Null;
-			  break;
-
-		  case kJSTypeBoolean:
-			  return Type::Boolean;
-			  break;
-
-		  case kJSTypeNumber:
-			  return Type::Number;
-			  break;
-
-		  case kJSTypeString:
-			  return Type::String;
-			  break;
-
-		  case kJSTypeObject:
-			  return Type::Object;
-			  break;
-
-		  default:
-			  static const std::string log_prefix { "MDL: JSValue::get_type() const: " };
-			  const std::string message = "JSValue could not decode JSType = " + std::to_string(js_type);
-			  std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
-			  throw std::logic_error(message);
-	  }
-  }
+	Type GetType() const;
 
 
 	/*!
     @method
-    @abstract       Tests whether a JavaScript value's type is the undefined type.
-    @result         true if value's type is the undefined type, otherwise false.
+    @abstract Tests whether this JavaScript value's type is the undefined type.
+    @result   true if this JavaScript value's type is the undefined type, otherwise false.
   */
   bool IsUndefined() const {
 	  return JSValueIsUndefined(js_context_, js_value_ref_);
@@ -241,8 +137,8 @@ class JSValue final	{
 
   /*!
     @method
-    @abstract       Tests whether a JavaScript value's type is the null type.
-    @result         true if value's type is the null type, otherwise false.
+    @abstract Tests whether this JavaScript value's type is the null type.
+    @result   true if this JavaScript value's type is the null type, otherwise false.
   */
   bool IsNull() const {
 	  return JSValueIsNull(js_context_, js_value_ref_);
@@ -250,8 +146,8 @@ class JSValue final	{
   
   /*!
     @method
-    @abstract       Tests whether a JavaScript value's type is the boolean type.
-    @result         true if value's type is the boolean type, otherwise false.
+    @abstract Tests whether this JavaScript value's type is the boolean type.
+    @result   true if this JavaScript value's type is the boolean type, otherwise false.
   */
   bool IsBoolean() const {
 	  return JSValueIsBoolean(js_context_, js_value_ref_);
@@ -259,8 +155,8 @@ class JSValue final	{
 
   /*!
     @method
-    @abstract       Tests whether a JavaScript value's type is the number type.
-    @result         true if value's type is the number type, otherwise false.
+    @abstract Tests whether this JavaScript value's type is the number type.
+    @result   true if this JavaScript value's type is the number type, otherwise false.
   */
   bool IsNumber() const {
 	  return JSValueIsNumber(js_context_, js_value_ref_);
@@ -268,8 +164,8 @@ class JSValue final	{
 
   /*!
     @method
-    @abstract       Tests whether a JavaScript value's type is the string type.
-    @result         true if value's type is the string type, otherwise false.
+    @abstract Tests whether this JavaScript value's type is the string type.
+    @result   true if this JavaScript value's type is the string type, otherwise false.
   */
   bool IsString() const {
 	  return JSValueIsString(js_context_, js_value_ref_);
@@ -277,14 +173,22 @@ class JSValue final	{
 
   /*!
     @method
-    @abstract       Tests whether a JavaScript value's type is the object type.
-    @result         true if value's type is the object type, otherwise false.
+    @abstract Tests whether this JavaScript value's type is the object type.
+    @result   true if this JavaScript value's type is the object type, otherwise false.
   */
   bool IsObject() const {
 	  return JSValueIsObject(js_context_, js_value_ref_);
   }
 
-  ~JSValue() {
+  /*!
+    @method
+    @abstract          Determine whether this JavaScript value was constructed by the given constructor, as compared by the JS instanceof operator.
+    @param constructor The constructor to test against.
+    @result            true if this JavaScript value was constructed by the given constructor, as compared by the JS instanceof operator, otherwise false.
+  */
+  bool IsInstanceOfConstructor(const JSObject& constructor);
+
+	virtual ~JSValue() {
 	  JSValueUnprotect(js_context_, js_value_ref_);
   }
 
@@ -295,7 +199,7 @@ class JSValue final	{
 		JSValueProtect(js_context_, js_value_ref_);
 	}
 	
-  // Move constructor.
+	// Move constructor.
   JSValue(JSValue&& rhs) {
     js_value_ref_ = rhs.js_value_ref_;
     js_context_   = rhs.js_context_;
@@ -303,7 +207,7 @@ class JSValue final	{
   }
   
   // Create a copy of another JSValue by assignment. This is a unified
-  // assignment operator that fuses the copy assignment operator,
+	// assignment operator that fuses the copy assignment operator,
   // X& X::operator=(const X&), and the move assignment operator,
   // X& X::operator=(X&&);
   JSValue& operator=(JSValue rhs) {
@@ -311,7 +215,7 @@ class JSValue final	{
     return *this;
   }
   
-  friend void swap(JSValue& first, JSValue& second) noexcept {
+	void swap(JSValue& first, JSValue& second) noexcept {
     // enable ADL (not necessary in our case, but good practice)
     using std::swap;
     
@@ -325,11 +229,14 @@ private:
 
   // For interoperability with the JavaScriptCore C API.
 	JSValue(const JSValueRef& js_value_ref, const JSContext& js_context) : js_value_ref_(js_value_ref), js_context_(js_context) {
-		if (js_value_ref) {
-			JSValueProtect(js_context_, js_value_ref_);
-		} else {
-			js_value_ref_ = JSValueMakeUndefined(js_context);
-		}
+		// if (js_value_ref) {
+		// 	JSValueProtect(js_context_, js_value_ref_);
+		// } else {
+		// 	js_value_ref_ = JSValueMakeUndefined(js_context);
+		// }
+
+		assert(js_value_ref_);
+		JSValueProtect(js_context_, js_value_ref_);
 	}
 	
   // For interoperability with the JavaScriptCore C API.
@@ -347,6 +254,7 @@ private:
   friend class JSBoolean;
   friend class JSNumber;
   friend class JSObject;
+  friend class JSPropertyNameArray;
   friend class JSArray;
 
 	// Return true if the two JSValues are equal as compared by the JS === operator.
@@ -388,21 +296,7 @@ bool operator!=(const JSValue& lhs, const JSValue& rhs) {
   @param    rhs The second value to test.
   @result   true if the two values are equal, false if they are not equal.
 */
-inline
-bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs) {
-	JSValueRef exception { nullptr };
-	//const bool result = JSValueIsEqual(lhs.js_context_, lhs.js_value_ref_, rhs.js_value_ref_, &exception);
-	const bool result = JSValueIsEqual(lhs, lhs, rhs, &exception);
-	if (exception) {
-		static const std::string log_prefix { "MDL: IsEqualWithTypeCoercion: " };
-		std::ostringstream os;
-		os << "caught exception: " << JSValue(exception, lhs.js_context_);
-		const std::string message = os.str();
-		std::clog << log_prefix << " [ERROR] " << message << std::endl; 
-	}
-	
-	return result;
-}
+bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs);
 
 inline
 std::ostream& operator << (std::ostream& ostream, const JSValue& js_value) {

@@ -45,8 +45,10 @@
 		C9A4E64719F4701500CF25BF /* JSNumber.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A4E64619F4701500CF25BF /* JSNumber.hpp */; };
 		C9A4E64919F4701F00CF25BF /* JSNumber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A4E64819F4701F00CF25BF /* JSNumber.cpp */; };
 		C9A4E64D19F49E5700CF25BF /* JSArray.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A4E64C19F49E5700CF25BF /* JSArray.hpp */; };
-		C9A4E64F19F4E38700CF25BF /* JSPropertyNameArray.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A4E64E19F4E38700CF25BF /* JSPropertyNameArray.hpp */; };
 		C9A4E65119F4E47100CF25BF /* JSObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A4E65019F4E47100CF25BF /* JSObject.cpp */; };
+		C9A4E65319F553CA00CF25BF /* JSPropertyNameArray.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A4E65219F553CA00CF25BF /* JSPropertyNameArray.hpp */; };
+		C9A4E65519F558CE00CF25BF /* JSValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A4E65419F558CE00CF25BF /* JSValue.cpp */; };
+		C9A4E65719F5914B00CF25BF /* JSArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A4E65619F5914B00CF25BF /* JSArray.cpp */; };
 		C9BD384119D0DF3900609F73 /* JSObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9BD383F19D0DF3900609F73 /* JSObject.cpp */; };
 		C9BD384219D0DF3900609F73 /* JSObject.h in Headers */ = {isa = PBXBuildFile; fileRef = C9BD384019D0DF3900609F73 /* JSObject.h */; };
 		C9BD384419D0F9DA00609F73 /* JSObjectTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9BD384319D0F9DA00609F73 /* JSObjectTests.mm */; };
@@ -107,8 +109,10 @@
 		C9A4E64619F4701500CF25BF /* JSNumber.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSNumber.hpp; path = include/JavaScriptCoreCPP/RAII/JSNumber.hpp; sourceTree = "<group>"; };
 		C9A4E64819F4701F00CF25BF /* JSNumber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSNumber.cpp; path = src/RAII/JSNumber.cpp; sourceTree = "<group>"; };
 		C9A4E64C19F49E5700CF25BF /* JSArray.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSArray.hpp; path = include/JavaScriptCoreCPP/RAII/JSArray.hpp; sourceTree = "<group>"; };
-		C9A4E64E19F4E38700CF25BF /* JSPropertyNameArray.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSPropertyNameArray.hpp; path = include/JavaScriptCoreCPP/RAII/JSPropertyNameArray.hpp; sourceTree = "<group>"; };
 		C9A4E65019F4E47100CF25BF /* JSObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSObject.cpp; path = src/RAII/JSObject.cpp; sourceTree = "<group>"; };
+		C9A4E65219F553CA00CF25BF /* JSPropertyNameArray.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSPropertyNameArray.hpp; path = src/RAII/JSPropertyNameArray.hpp; sourceTree = "<group>"; };
+		C9A4E65419F558CE00CF25BF /* JSValue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSValue.cpp; path = src/RAII/JSValue.cpp; sourceTree = "<group>"; };
+		C9A4E65619F5914B00CF25BF /* JSArray.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSArray.cpp; path = src/RAII/JSArray.cpp; sourceTree = "<group>"; };
 		C9BD383F19D0DF3900609F73 /* JSObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSObject.cpp; path = src/JSObject.cpp; sourceTree = "<group>"; };
 		C9BD384019D0DF3900609F73 /* JSObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSObject.h; path = include/JavaScriptCoreCPP/JSObject.h; sourceTree = "<group>"; };
 		C9BD384319D0F9DA00609F73 /* JSObjectTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = JSObjectTests.mm; sourceTree = "<group>"; };
@@ -192,6 +196,7 @@
 				C9A4E61F19F2EC6B00CF25BF /* JSContext.hpp */,
 				C9A4E62319F2EC6B00CF25BF /* JSString.hpp */,
 				C9A4E62419F2EC6B00CF25BF /* JSValue.hpp */,
+				C9A4E65419F558CE00CF25BF /* JSValue.cpp */,
 				C9A4E63E19F452A600CF25BF /* JSUndefined.hpp */,
 				C9A4E64219F4533800CF25BF /* JSNull.hpp */,
 				C9A4E64419F46C3200CF25BF /* JSBoolean.hpp */,
@@ -199,8 +204,9 @@
 				C9A4E64819F4701F00CF25BF /* JSNumber.cpp */,
 				C9A4E62119F2EC6B00CF25BF /* JSObject.hpp */,
 				C9A4E65019F4E47100CF25BF /* JSObject.cpp */,
-				C9A4E64E19F4E38700CF25BF /* JSPropertyNameArray.hpp */,
+				C9A4E65219F553CA00CF25BF /* JSPropertyNameArray.hpp */,
 				C9A4E64C19F49E5700CF25BF /* JSArray.hpp */,
+				C9A4E65619F5914B00CF25BF /* JSArray.cpp */,
 				C9A4E61D19F2EC6B00CF25BF /* JSClass.hpp */,
 				C9A4E61E19F2EC6B00CF25BF /* JSClassDefinition.hpp */,
 				C9A4E62219F2EC6B00CF25BF /* JSStaticValue.hpp */,
@@ -284,7 +290,7 @@
 				C936FD6C19CB97930082CB08 /* JSValue.h in Headers */,
 				C9A4E62819F2EC6B00CF25BF /* JSContextGroup.hpp in Headers */,
 				C9A4E64519F46C3200CF25BF /* JSBoolean.hpp in Headers */,
-				C9A4E64F19F4E38700CF25BF /* JSPropertyNameArray.hpp in Headers */,
+				C9A4E65319F553CA00CF25BF /* JSPropertyNameArray.hpp in Headers */,
 				C9A4E62519F2EC6B00CF25BF /* JSClass.hpp in Headers */,
 				C9BD384719D0FEC900609F73 /* JSClass.h in Headers */,
 				C9A4E62C19F2EC6B00CF25BF /* JSValue.hpp in Headers */,
@@ -384,10 +390,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C9A4E65519F558CE00CF25BF /* JSValue.cpp in Sources */,
 				C936FD4619CB95EC0082CB08 /* JSString.cpp in Sources */,
 				C936FD4819CB95EC0082CB08 /* JSVirtualMachine.cpp in Sources */,
 				C936FD4419CB95EC0082CB08 /* JSContext.cpp in Sources */,
 				C9A4E64919F4701F00CF25BF /* JSNumber.cpp in Sources */,
+				C9A4E65719F5914B00CF25BF /* JSArray.cpp in Sources */,
 				C9A4E65119F4E47100CF25BF /* JSObject.cpp in Sources */,
 				C936FD4719CB95EC0082CB08 /* JSValue.cpp in Sources */,
 				C9BD384119D0DF3900609F73 /* JSObject.cpp in Sources */,
