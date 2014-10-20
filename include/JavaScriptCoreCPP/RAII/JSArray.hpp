@@ -10,7 +10,6 @@
 
 #include "JavaScriptCoreCPP/RAII/JSObject.hpp"
 #include <vector>
-#include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP {
 
@@ -26,8 +25,7 @@ class JSArray final : public JSObject {
 	  @method
 	  @abstract         Create JavaScript Array object.
 	  @param js_context The execution context to use.
-    @result           A JavaScript object of the Array.
-	  @throws           std::logic_error if the JSArray could not be created.
+    @result           A JavaScript object that is an Array.
 	*/
 	JSArray(const JSContext& js_context) : JSArray(std::vector<JSValue>(), js_context) {
 	}
@@ -36,18 +34,12 @@ class JSArray final : public JSObject {
 	  @method
 	  @abstract         Create a JavaScript Array object.
 	  @discussion       The behavior of this constructor does not exactly match the behavior of the built-in Array constructor. Specifically, if one argument is supplied, this function returns an array with one element.
+	  @param arguments  The JavaScript values to populate the array.
 	  @param js_context The execution context to use.
-    @result           A JavaScript object of the Array.
-	  @throws           std::logic_error if the JSArray could not be created.
+    @result           A JavaScript object that is an Array, populated with the given JavaScript values.
 	*/
 	JSArray(const std::vector<JSValue>& arguments, const JSContext& js_context);
 	
-  /*!
-	  @method
-	  @abstract Convert a JSArray to a std::vector<JSValue>.
-	  @result   A std::vector<JSValue> of the contents of the JSArray.
-  */
-	//operator std::vector<JSValue>() const;
 };
 
 } // namespace JavaScriptCoreCPP

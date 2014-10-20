@@ -11,17 +11,9 @@
 #include "JavaScriptCoreCPP/RAII/JSContext.hpp"
 #include "JavaScriptCoreCPP/RAII/JSValue.hpp"
 #include "JavaScriptCoreCPP/RAII/JSString.hpp"
-#include "JavaScriptCoreCPP/RAII/JSUndefined.hpp"
 #include <vector>
 #include <unordered_map>
-#include <algorithm>
 #include <set>
-#include <bitset>
-#include <type_traits>
-#include <string>
-#include <sstream>
-#include <cassert>
-#include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP {
 
@@ -280,9 +272,13 @@ class JSObject : public JSValue {
 	}
 	
 	friend class JSValue;
-  friend class JSArray;
   friend class JSPropertyNameArray;
-		
+  friend class JSArray;
+  friend class JSDate;
+  friend class JSError;
+  friend class JSRegExp;
+  friend class JSFunction;
+
   // Prevent heap based objects.
 	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
 	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects

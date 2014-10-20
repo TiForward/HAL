@@ -99,6 +99,7 @@ private:
   friend class JSValue;
   friend class JSObject;
   friend class JSPropertyNameArray;
+  friend class JSFunction;
   
   // For interoperability with the JavaScriptCore C API.
   JSString(const JSStringRef& js_string_ref) : js_string_ref_(js_string_ref) {

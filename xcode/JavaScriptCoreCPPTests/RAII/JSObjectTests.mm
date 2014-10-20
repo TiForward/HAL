@@ -8,6 +8,10 @@
 
 #include "JavaScriptCoreCPP/RAII/JSObject.hpp"
 #include "JavaScriptCoreCPP/RAII/JSArray.hpp"
+#include "JavaScriptCoreCPP/RAII/JSDate.hpp"
+#include "JavaScriptCoreCPP/RAII/JSError.hpp"
+#include "JavaScriptCoreCPP/RAII/JSRegExp.hpp"
+#include "JavaScriptCoreCPP/RAII/JSFunction.hpp"
 #include "JavaScriptCoreCPP/RAII/JSNumber.hpp"
 #include "JavaScriptCoreCPP/RAII/JSBoolean.hpp"
 #include <limits>
@@ -105,6 +109,22 @@ using namespace JavaScriptCoreCPP;
 
 - (void)testJSArray {
   JSArray js_array(js_context);
+}
+
+- (void)testJSDate {
+  JSDate js_date(js_context);
+}
+
+- (void)testJSError {
+  JSError js_error(js_context);
+}
+
+- (void)testJSRegExp {
+  JSRegExp js_regexp(js_context);
+}
+
+- (void)testJSFunction {
+  JSFunction js_function("foo", {"name"}, "return 'Hello ' + name;", js_context);
 }
 
 - (void)testPerformanceExample {

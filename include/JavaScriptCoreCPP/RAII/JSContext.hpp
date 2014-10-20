@@ -10,7 +10,6 @@
 
 
 #include "JavaScriptCoreCPP/RAII/JSContextGroup.hpp"
-#include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP {
 
@@ -134,6 +133,10 @@ private:
   friend class JSNumber;
 	friend class JSObject;
 	friend class JSArray;
+  friend class JSDate;
+  friend class JSError;
+  friend class JSRegExp;
+  friend class JSFunction;
 
   // Return true if the two JSContexts are equal.
   friend bool operator==(const JSContext& lhs, const JSContext& rhs);

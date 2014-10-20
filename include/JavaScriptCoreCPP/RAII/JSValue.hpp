@@ -12,7 +12,6 @@
 #include "JavaScriptCoreCPP/RAII/JSString.hpp"
 #include <iostream>
 #include <cassert>
-#include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP {
 
@@ -252,6 +251,10 @@ private:
   friend class JSObject;
   friend class JSPropertyNameArray;
   friend class JSArray;
+  friend class JSDate;
+  friend class JSError;
+  friend class JSRegExp;
+  friend class JSFunction;
 
 	// Return true if the two JSValues are equal as compared by the JS === operator.
 	friend bool operator==(const JSValue& lhs, const JSValue& rhs);

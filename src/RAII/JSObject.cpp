@@ -5,6 +5,10 @@
 //
 
 #include "JavaScriptCoreCPP/RAII/JSObject.hpp"
+#include <bitset>
+#include <algorithm>
+#include <type_traits>
+#include <sstream>
 #include "JSPropertyNameArray.hpp"
 
 namespace JavaScriptCoreCPP {

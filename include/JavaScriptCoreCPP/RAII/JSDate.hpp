@@ -9,50 +9,34 @@
 #define _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSDATE_HPP_
 
 #include "JavaScriptCoreCPP/RAII/JSObject.hpp"
-#include <sstream>
-#include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP {
 
 /*!
   @class
-  @discussion A JSDate is an RAII wrapper around a JSDateRef, the
-  JavaScriptCore C API representation of a JavaScript object. A
-  JSDate is a JSValue.
+  @discussion A JavaScript object of the Date type.
 */
-class JSDate final	{
+class JSDate final : public JSObject {
 	
  public:
 
 	/*!
 	  @method
-	  @abstract         Create a JavaScript Date object, as if by invoking the built-in Date constructor.
+	  @abstract         Create JavaScript Date object.
 	  @param js_context The execution context to use.
-    @result           A JavaScript value of the Date type.
+    @result           A JavaScript object of the Date type.
 	*/
-	JSDate(const JSContext& js_context) : js_value_(JSObjectMakeDate(js_context, boolean), js_context) {
-		JSObjectRef js_object_ref = JSObjectMakeDate(js_context, js_string);
-		if (!js_value_ref) {
-			static const std::string log_prefix { "MDL: JSONStringToJSValue: " };
-			std::ostringstream os;
-			os << "Input is not a valid JSON string: " << js_string;
-			const std::string message = os.str();
-			std::clog << log_prefix << " [ERROR] " << message << std::endl; 
-			throw std::invalid_argument(message);
-		}
-		
-		JSValue js_value(js_value_ref, js_context);
-		JSValueUnprotect(js_context, js_value_ref);
+	JSDate(const JSContext& js_context) : JSDate(std::vector<JSValue>(), js_context) {
 	}
-
-
- private:
 	
-	// Prevent heap based objects.
-	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
-	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
-
-	JSObject js_date_;
+	/*!
+	  @method
+	  @abstract         Create a JavaScript Date object, as if by invoking the built-in Date constructor.
+	  @param arguments  The JavaScript values to pass to the Date Constructor.
+	  @param js_context The execution context to use.
+    @result           A JSObject that is a Date.
+	*/
+	JSDate(const std::vector<JSValue>& arguments, const JSContext& js_context);
 };
 
 } // namespace JavaScriptCoreCPP

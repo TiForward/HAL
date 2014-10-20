@@ -11,7 +11,6 @@
 #include "JavaScriptCoreCPP/RAII/JSValue.hpp"
 #include <cstdint>
 #include <stdexcept>
-#include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP {
 
