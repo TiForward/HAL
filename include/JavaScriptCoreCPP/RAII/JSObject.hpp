@@ -268,7 +268,7 @@ class JSObject final	{
 	  @method
 	  @abstract           Calls this object as a function using the given JSObject as "this".
 	  @param this_object  The object to use as "this".
-	  @result             The JSValue that results from calling this object as a function
+	  @result             The JSValue that results from calling this object as a function.
 	  @throws             std::runtime_error exception if the called function through an exception, or object is not a function.
 	*/
 	JSValue CallAsFunction(const std::vector<JSValue>& arguments, const JSObject& this_object) const {
@@ -304,7 +304,55 @@ class JSObject final	{
 		return js_value;
 	}
 
-/*!
+	/*!
+	  @method
+	  @abstract Determine whether this object can be called as a constructor.
+	  @result   true if this object can be called as a constructor, otherwise false.
+	*/
+	bool IsConstructor() const {
+		return JSObjectIsConstructor(js_context_, js_object_ref_);
+	}
+
+	/*!
+	  @method
+	  @abstract Calls this object as a constructor.
+	  @result   The JSObject that results from calling this object as a constructor.
+	  @throws   std::runtime_error exception if the called constructor through an exception, or object is not a constructor.
+	*/
+	JSObject CallAsConstructor(const std::vector<JSValue>& arguments) const {
+		static const std::string log_prefix { "MDL: JSObject::CallAsConstructor: " };
+
+		if (!IsConstructor()) {
+			const std::string message = "This object is not a constructor.";
+			std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
+			throw std::runtime_error(message);
+		}
+		
+		JSValueRef exception { nullptr };
+		JSObjectRef js_object_ref = nullptr;
+		if (!arguments.empty()) {
+			std::vector<JSValueRef> arguments_array;
+			std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [](const JSValue& js_value) { return static_cast<JSValueRef>(js_value); });
+			js_object_ref = JSObjectCallAsConstructor(js_context_, js_object_ref_, arguments_array.size(), &arguments_array[0], &exception);
+		} else {
+			js_object_ref = JSObjectCallAsConstructor(js_context_, js_object_ref_, 0, nullptr, &exception);
+		}
+
+		if (exception) {
+			// assert(!js_object_ref);
+			const std::string message = JSValue(exception, js_context_);
+			std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
+			throw std::runtime_error(message);
+		}
+
+		assert(js_object_ref);
+		JSObject js_object(js_object_ref, js_context_);
+		JSValueUnprotect(js_context_, js_object_ref);
+		
+		return js_object;
+	}
+
+	/*!
     @method
     @abstract Tests whether a JavaScript value is an object with a given class in its class chain.
     @param    jsClass The JSClass to test against.

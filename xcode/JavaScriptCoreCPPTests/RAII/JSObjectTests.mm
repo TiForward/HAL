@@ -76,6 +76,17 @@ using namespace JavaScriptCoreCPP;
   } catch (...) {
     XCTFail("Caught unexpected unknown exception, but we expected a std::runtime_error exception.");
   }
+
+  XCTAssertFalse(js_object.IsConstructor());
+  
+  try {
+    js_object.CallAsConstructor({});
+    XCTFail("js_object was called as a constructor but did not throw a std::runtime_error exception");
+  } catch (const std::runtime_error& exception) {
+    XCTAssert(YES, @"Caught expected std::runtime_error exception.");
+  } catch (...) {
+    XCTFail("Caught unexpected unknown exception, but we expected a std::runtime_error exception.");
+  }
 }
 
 - (void)testJSArray {
