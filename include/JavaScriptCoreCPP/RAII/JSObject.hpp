@@ -226,10 +226,9 @@ class JSObject final	{
 
 	/*!
 	  @method
-	  @abstract           Calls this object as a function.
-	  @param this_object  The object to use as "this," or NULL to use the global object as "this."
-	  @result             The JSValue that results from calling this object as a function
-	  @throws             std::runtime_error exception if the called function through an exception, or object is not a function.
+	  @abstract Calls this object as a function using the global object as "this."
+	  @result   The JSValue that results from calling this object as a function
+	  @throws   std::runtime_error exception if the called function through an exception, or object is not a function.
 	*/
 	JSValue CallAsFunction(const std::vector<JSValue>& arguments) const {
 		static const std::string log_prefix { "MDL: JSObject::CallAsFunction: " };
@@ -265,6 +264,45 @@ class JSObject final	{
 		return js_value;
 	}
 
+	/*!
+	  @method
+	  @abstract           Calls this object as a function using the given JSObject as "this".
+	  @param this_object  The object to use as "this".
+	  @result             The JSValue that results from calling this object as a function
+	  @throws             std::runtime_error exception if the called function through an exception, or object is not a function.
+	*/
+	JSValue CallAsFunction(const std::vector<JSValue>& arguments, const JSObject& this_object) const {
+		static const std::string log_prefix { "MDL: JSObject::CallAsFunction: " };
+
+		if (!IsFunction()) {
+			const std::string message = "This object is not a function.";
+			std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
+			throw std::runtime_error(message);
+		}
+		
+		JSValueRef exception { nullptr };
+		JSValueRef js_value_ref = nullptr;
+		if (!arguments.empty()) {
+			std::vector<JSValueRef> arguments_array;
+			std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [](const JSValue& js_value) { return static_cast<JSValueRef>(js_value); });
+			js_value_ref = JSObjectCallAsFunction(js_context_, js_object_ref_, this_object, arguments_array.size(), &arguments_array[0], &exception);
+		} else {
+			js_value_ref = JSObjectCallAsFunction(js_context_, js_object_ref_, this_object, 0, nullptr, &exception);
+		}
+
+		if (exception) {
+			// assert(!js_value_ref);
+			const std::string message = JSValue(exception, js_context_);
+			std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
+			throw std::runtime_error(message);
+		}
+
+		assert(js_value_ref);
+		JSValue js_value(js_value_ref, js_context_);
+		JSValueUnprotect(js_context_, js_value_ref);
+		
+		return js_value;
+	}
 
 /*!
     @method
