@@ -49,6 +49,8 @@
 		C9A4E65319F553CA00CF25BF /* JSPropertyNameArray.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A4E65219F553CA00CF25BF /* JSPropertyNameArray.hpp */; };
 		C9A4E65519F558CE00CF25BF /* JSValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A4E65419F558CE00CF25BF /* JSValue.cpp */; };
 		C9A4E65719F5914B00CF25BF /* JSArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A4E65619F5914B00CF25BF /* JSArray.cpp */; };
+		C9A4E65919F5B12700CF25BF /* HashUtilities.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A4E65819F5B12700CF25BF /* HashUtilities.hpp */; };
+		C9A4E65B19F5B13D00CF25BF /* HashUtilitiesTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9A4E65A19F5B13D00CF25BF /* HashUtilitiesTests.mm */; };
 		C9BD384119D0DF3900609F73 /* JSObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9BD383F19D0DF3900609F73 /* JSObject.cpp */; };
 		C9BD384219D0DF3900609F73 /* JSObject.h in Headers */ = {isa = PBXBuildFile; fileRef = C9BD384019D0DF3900609F73 /* JSObject.h */; };
 		C9BD384419D0F9DA00609F73 /* JSObjectTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9BD384319D0F9DA00609F73 /* JSObjectTests.mm */; };
@@ -113,6 +115,8 @@
 		C9A4E65219F553CA00CF25BF /* JSPropertyNameArray.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSPropertyNameArray.hpp; path = src/RAII/JSPropertyNameArray.hpp; sourceTree = "<group>"; };
 		C9A4E65419F558CE00CF25BF /* JSValue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSValue.cpp; path = src/RAII/JSValue.cpp; sourceTree = "<group>"; };
 		C9A4E65619F5914B00CF25BF /* JSArray.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSArray.cpp; path = src/RAII/JSArray.cpp; sourceTree = "<group>"; };
+		C9A4E65819F5B12700CF25BF /* HashUtilities.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = HashUtilities.hpp; path = src/RAII/HashUtilities.hpp; sourceTree = "<group>"; };
+		C9A4E65A19F5B13D00CF25BF /* HashUtilitiesTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HashUtilitiesTests.mm; sourceTree = "<group>"; };
 		C9BD383F19D0DF3900609F73 /* JSObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSObject.cpp; path = src/JSObject.cpp; sourceTree = "<group>"; };
 		C9BD384019D0DF3900609F73 /* JSObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSObject.h; path = include/JavaScriptCoreCPP/JSObject.h; sourceTree = "<group>"; };
 		C9BD384319D0F9DA00609F73 /* JSObjectTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = JSObjectTests.mm; sourceTree = "<group>"; };
@@ -192,6 +196,7 @@
 		C9A4E61C19F2EC1A00CF25BF /* RAII */ = {
 			isa = PBXGroup;
 			children = (
+				C9A4E65819F5B12700CF25BF /* HashUtilities.hpp */,
 				C9A4E62019F2EC6B00CF25BF /* JSContextGroup.hpp */,
 				C9A4E61F19F2EC6B00CF25BF /* JSContext.hpp */,
 				C9A4E62319F2EC6B00CF25BF /* JSString.hpp */,
@@ -267,6 +272,7 @@
 				C9A4E63519F2FF2B00CF25BF /* JSStringTests.mm */,
 				C9A4E63719F32E7900CF25BF /* JSValueTests.mm */,
 				C9A4E63C19F420EB00CF25BF /* JSObjectTests.mm */,
+				C9A4E65A19F5B13D00CF25BF /* HashUtilitiesTests.mm */,
 			);
 			name = RAII;
 			sourceTree = "<group>";
@@ -287,6 +293,7 @@
 				C9A4E64019F452A600CF25BF /* JSUndefined.hpp in Headers */,
 				C9A4E62B19F2EC6B00CF25BF /* JSString.hpp in Headers */,
 				C9A4E62719F2EC6B00CF25BF /* JSContext.hpp in Headers */,
+				C9A4E65919F5B12700CF25BF /* HashUtilities.hpp in Headers */,
 				C936FD6C19CB97930082CB08 /* JSValue.h in Headers */,
 				C9A4E62819F2EC6B00CF25BF /* JSContextGroup.hpp in Headers */,
 				C9A4E64519F46C3200CF25BF /* JSBoolean.hpp in Headers */,
@@ -412,6 +419,7 @@
 				C9A4E63619F2FF2B00CF25BF /* JSStringTests.mm in Sources */,
 				C941452919D899B100EC5678 /* TemplateTests.mm in Sources */,
 				C936FD5D19CB962E0082CB08 /* JSContextTests.mm in Sources */,
+				C9A4E65B19F5B13D00CF25BF /* HashUtilitiesTests.mm in Sources */,
 				C936FD6F19CC949E0082CB08 /* JSValueTests.mm in Sources */,
 				C9A4E63D19F420EB00CF25BF /* JSObjectTests.mm in Sources */,
 				C9A4E63219F2ED6F00CF25BF /* JSContextGroupTests.mm in Sources */,

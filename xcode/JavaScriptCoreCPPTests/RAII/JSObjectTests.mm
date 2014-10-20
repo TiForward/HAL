@@ -9,6 +9,8 @@
 #include "JavaScriptCoreCPP/RAII/JSObject.hpp"
 #include "JavaScriptCoreCPP/RAII/JSArray.hpp"
 #include "JavaScriptCoreCPP/RAII/JSNumber.hpp"
+#include "JavaScriptCoreCPP/RAII/JSBoolean.hpp"
+#include <limits>
 #import <XCTest/XCTest.h>
 
 namespace UnitTestConstants {
@@ -52,20 +54,32 @@ using namespace JavaScriptCoreCPP;
   XCTAssertEqual(42, foo);
   XCTAssertTrue(js_object.DeleteProperty("foo"));
 
-  js_object.SetProperty("bar", JSNumber(42, js_context), {JSPropertyAttribute::DontDelete});
+  js_object.SetProperty("bar", JSBoolean(true, js_context), {JSPropertyAttribute::DontDelete});
   XCTAssertTrue(js_object.HasProperty("bar"));
-  JSNumber bar = js_object.GetProperty("bar");
-  XCTAssertEqual(42, bar);
+  JSBoolean bar = js_object.GetProperty("bar");
+  XCTAssertTrue(bar);
   XCTAssertFalse(js_object.DeleteProperty("bar"));
   XCTAssertTrue(js_object.HasProperty("bar"));
   bar = js_object.GetProperty("bar");
-  XCTAssertEqual(42, bar);
+  XCTAssertTrue(bar);
 
   XCTAssertTrue(js_object.GetPropertyAtIndex(42).IsUndefined());
   js_object.SetPropertyAtIndex(42, JSNumber(UnitTestConstants::pi, js_context));
   JSNumber pi = js_object.GetPropertyAtIndex(42);
-  XCTAssertEqualWithAccuracy(UnitTestConstants::pi, pi, std::numeric_limits<double>::epsilon());
+  XCTAssertEqualWithAccuracy(UnitTestConstants::pi, static_cast<double>(pi), std::numeric_limits<double>::epsilon());
 
+  const auto property_names = js_object.GetPropertyNames();
+  XCTAssertEqual(2, property_names.size());
+  for (const auto& property_name : property_names) {
+    std::clog << "MDL: property_name = " << property_name << std::endl;
+  }
+  
+  auto properties = js_object.GetProperties();
+  XCTAssertEqual(2, properties.size());
+  XCTAssertTrue(properties.at("42").IsNumber());
+  XCTAssertTrue(properties.at("bar").IsBoolean());
+  
+  
   XCTAssertFalse(js_object.IsFunction());
   
   try {
@@ -86,12 +100,6 @@ using namespace JavaScriptCoreCPP;
     XCTAssert(YES, @"Caught expected std::runtime_error exception.");
   } catch (...) {
     XCTFail("Caught unexpected unknown exception, but we expected a std::runtime_error exception.");
-  }
-  
-  const auto property_names = js_object.GetPropertyNames();
-  XCTAssertEqual(2, property_names.size());
-  for (const auto& property_name : property_names) {
-    std::clog << "MDL: property_name = " << property_name << std::endl;
   }
 }
 

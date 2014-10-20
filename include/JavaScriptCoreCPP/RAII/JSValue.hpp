@@ -46,6 +46,8 @@ class JSValue	{
 		Object    = kJSTypeObject
 	};
 
+public:
+	
 	/*!
 	  @method
 	  @abstract            Create a JavaScript value either of the string type, or from a JSON formatted string.
@@ -229,12 +231,6 @@ private:
 
   // For interoperability with the JavaScriptCore C API.
 	JSValue(const JSValueRef& js_value_ref, const JSContext& js_context) : js_value_ref_(js_value_ref), js_context_(js_context) {
-		// if (js_value_ref) {
-		// 	JSValueProtect(js_context_, js_value_ref_);
-		// } else {
-		// 	js_value_ref_ = JSValueMakeUndefined(js_context);
-		// }
-
 		assert(js_value_ref_);
 		JSValueProtect(js_context_, js_value_ref_);
 	}

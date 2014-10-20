@@ -50,6 +50,16 @@ std::vector<JSString> JSObject::GetPropertyNames() const {
 	return JSPropertyNameArray(*this);
 }
 
+std::unordered_map<JSString, JSValue> JSObject::GetProperties() const {
+	auto property_names = GetPropertyNames();
+	std::unordered_map<JSString, JSValue> properties(property_names.size());
+	for (const auto& property_name : property_names) {
+		properties.emplace(property_name, GetProperty(property_name));
+	}
+	
+	return properties;
+}
+
 JSValue JSObject::GetProperty(const JSString& property_name) const {
 	JSValueRef exception { nullptr };
 	JSValueRef js_value_ref = JSObjectGetProperty(js_context_, js_object_ref_, property_name, &exception);

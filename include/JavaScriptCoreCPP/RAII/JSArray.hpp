@@ -9,6 +9,7 @@
 #define _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSARRAY_HPP_
 
 #include "JavaScriptCoreCPP/RAII/JSObject.hpp"
+#include <vector>
 #include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP {
@@ -46,9 +47,7 @@ class JSArray final : public JSObject {
 	  @abstract Convert a JSArray to a std::vector<JSValue>.
 	  @result   A std::vector<JSValue> of the contents of the JSArray.
   */
-	// operator std::vector<JSValue>() const {
-	// 	return JSValueToBoolean(js_value_, js_value_);
-	// }
+	//operator std::vector<JSValue>() const;
 };
 
 } // namespace JavaScriptCoreCPP

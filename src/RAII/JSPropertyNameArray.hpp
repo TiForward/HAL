@@ -43,7 +43,7 @@ private:
 	/*!
 	  @method
 	  @abstract Return the number of items in this JavaScript property name array.
-	  @result   An integer count of the number of names in this JavaScript property name array.
+	  @result   The number of names in this JavaScript property name array.
 	*/
 	size_t GetCount() const {
 		return JSPropertyNameArrayGetCount(js_property_name_array_ref_);

@@ -13,6 +13,7 @@
 #include "JavaScriptCoreCPP/RAII/JSString.hpp"
 #include "JavaScriptCoreCPP/RAII/JSUndefined.hpp"
 #include <vector>
+#include <unordered_map>
 #include <algorithm>
 #include <set>
 #include <bitset>
@@ -104,14 +105,20 @@ class JSObject : public JSValue {
 		return JSObjectSetPrivate(js_object_ref_, data);
 	}
 
-	
-/*!
+	/*!
 	  @method
 	  @abstract Return a std::vector<JSString> of the names of this object's enumerable properties.
 	  @result   A std::vector<JSString> containing the names of this object's enumerable properties.
 	*/
 	std::vector<JSString> GetPropertyNames() const;
 			
+	/*!
+	  @method
+	  @abstract Return a std::unordered_map<JSString, JSValue> of this object's enumerable properties.
+	  @result   A std::unordered_map<JSString, JSValue> of this object's enumerable properties.
+	*/
+	std::unordered_map<JSString, JSValue> GetProperties() const;
+
 	/*!
 	  @method
 	  @abstract            Determine if this object has a property with the given name.

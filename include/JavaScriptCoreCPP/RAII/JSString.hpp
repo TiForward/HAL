@@ -140,4 +140,20 @@ std::ostream& operator << (std::ostream& ostream, const JSString& js_string) {
 
 } // namespace JavaScriptCoreCPP
 
+namespace std {
+
+template<>
+struct hash<JavaScriptCoreCPP::JSString> {
+	typedef JavaScriptCoreCPP::JSString argument_type;
+	typedef std::size_t                 result_type;
+	const std::hash<std::string> string_hash = std::hash<std::string>();
+	
+	result_type operator()(const argument_type& js_string) const {
+		return string_hash(js_string);
+	}
+};
+
+}  // namespace std
+
+
 #endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSSTRING_HPP_
