@@ -14,62 +14,81 @@
 
 namespace JavaScriptCoreCPP {
 
-// A JSContext allocates a global object and populates it with all the
-// built-in JavaScript objects, such as Object, Function, String, and
-// Array.
-//
-// The context is created within a unique context group. Therefore,
-// scripts may execute in it concurrently with scripts executing in
-// other contexts. However, you may not use values created in the
-// context in other contexts.
+/*!
+  @class
+  @discussion A JSContext is an RAII wrapper around a JSContextRef,
+  the JavaScriptCore C API representation of a JavaScript execution
+  context that holds the global object and other execution state.
+  
+  A JSContext allocates a global object and populates it with all the
+  built-in JavaScript objects, such as Object, Function, String, and
+  Array.
+  
+  The context is created within a unique context group. Therefore,
+  scripts may execute in it concurrently with scripts executing in
+  other contexts. However, you may not use values created in the
+  context in other contexts.
+
+  JSContexts within the same group may share and exchange JavaScript
+  objects. Sharing and/or exchanging JavaScript objects between
+  contexts in different groups will produce undefined behavior. When
+  objects from the same context group are used in multiple threads,
+  explicit synchronization is required.
+*/
 class JSContext final	{
 	
  public:
 
-	// Create a global JavaScript execution context within a unique
-	// context group and populate it with all the built-in JavaScript
-	// objects, such as Object, Function, String, and Array.
-	// JSContext() : JSContext(nullptr) { }
-	
-	// Create a global JavaScript execution context within a unique
-	// context group using the given object class (parameter
-	// globalObjectClass). Passing nullptr (the default) for the
-	// globalObjectClass will use the default object class. The context
-	// is populated with all the built-in JavaScript objects, such as
-	// Object, Function, String, and Array.
-	JSContext(JSClassRef globalObjectClass = nullptr)
-			: js_context_(JSGlobalContextCreate(globalObjectClass))
-			, js_context_group_(JSContextGroup(JSContextGetGroup(js_context_)))
+	/*!
+	  @method
+	  @abstract Create a global JavaScript execution context.
+	  @discussion Create a global JavaScript execution context within a
+	  unique context group using the given object class (parameter
+	  global_object_class). Passing nullptr (the default) for the
+	  global_object_class will use the default object class.
+
+	  The context is populated with all the built-in JavaScript objects,
+	  such as Object, Function, String, and Array.
+	*/
+	JSContext(JSClassRef global_object_class = nullptr)
+			: js_context_ref_(JSGlobalContextCreate(global_object_class))
+			, js_context_group_(JSContextGroup(JSContextGetGroup(js_context_ref_)))
 	{
 	}
 
-	// Create a global JavaScript execution context within the given
-	// context group using the given object class (parameter
-	// globalObjectClass). Passing nullptr (the default) for the
-	// globalObjectClass will use the default object class. The context
-	// is populated with all the built-in JavaScript objects, such as
-	// Object, Function, String, and Array.
-	JSContext(const JSContextGroup& js_context_group, JSClassRef globalObjectClass = nullptr)
-			: js_context_(JSGlobalContextCreateInGroup(js_context_group, globalObjectClass))
+	/*!
+	  @method
+	  @abstract Create a global JavaScript execution context in the
+	  context group provided.
+	  @discussion Create a global JavaScript execution context within
+	  the given context group using the given object class (parameter
+	  global_object_class). Passing nullptr (the default) for the
+	  global_object_class will use the default object class.
+
+	  The context is populated with all the built-in JavaScript objects,
+	  such as Object, Function, String, and Array.
+	*/
+	JSContext(const JSContextGroup& js_context_group, JSClassRef global_object_class = nullptr)
+			: js_context_ref_(JSGlobalContextCreateInGroup(js_context_group, global_object_class))
 			, js_context_group_(js_context_group)
 	{
 	}
 
 	~JSContext() {
-		JSGlobalContextRelease(js_context_);
+		JSGlobalContextRelease(js_context_ref_);
 	}
 	
 	// Copy constructor.
 	JSContext(const JSContext& rhs) {
-		js_context_       = rhs.js_context_;
-    js_context_group_ = rhs.js_context_group_;
-		JSGlobalContextRetain(js_context_);
+		js_context_ref_   = rhs.js_context_ref_;
+		js_context_group_ = rhs.js_context_group_;
+		JSGlobalContextRetain(js_context_ref_);
 	}
 	
   // Move constructor.
   JSContext(JSContext&& rhs) {
-    js_context_ = rhs.js_context_;
-    JSGlobalContextRetain(rhs.js_context_);
+    js_context_ref_ = rhs.js_context_ref_;
+    JSGlobalContextRetain(rhs.js_context_ref_);
     js_context_group_ = rhs.js_context_group_;
   }
   
@@ -88,7 +107,7 @@ class JSContext final	{
     
     // by swapping the members of two classes,
     // the two classes are effectively swapped
-    swap(first.js_context_      , second.js_context_      );
+    swap(first.js_context_ref_  , second.js_context_ref_  );
     swap(first.js_context_group_, second.js_context_group_);
   }
 
@@ -98,30 +117,39 @@ class JSContext final	{
 	
   // TODO: Change JSObjectRef to JSObject
 	JSObjectRef get_global_object() const {
-		return JSContextGetGlobalObject(js_context_);
+		return JSContextGetGlobalObject(js_context_ref_);
 	}
 
-	operator JSContextRef() const {
-		return js_context_;
-	}
-	
 private:
+
+	// For interoperability with the JavaScriptCore C API.
+	operator JSContextRef() const {
+		return js_context_ref_;
+	}
+
+	friend class JSValue;
+  friend class JSUndefined;
+  friend class JSNull;
+  friend class JSBoolean;
+  friend class JSNumber;
+	friend class JSObject;
+	friend class JSArray;
 
   // Return true if the two JSContexts are equal.
   friend bool operator==(const JSContext& lhs, const JSContext& rhs);
 
-  // Prevent heap based objects.
+	// Prevent heap based objects.
 	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
 	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
 	
-	JSGlobalContextRef js_context_;
+	JSGlobalContextRef js_context_ref_;
 	JSContextGroup     js_context_group_;
 };
 
 // Return true if the two JSContexts are equal.
 inline
 bool operator==(const JSContext& lhs, const JSContext& rhs) {
-  return (lhs.js_context_ == rhs.js_context_) && (lhs.js_context_group_ == rhs.js_context_group_);
+  return (lhs.js_context_ref_ == rhs.js_context_ref_) && (lhs.js_context_group_ == rhs.js_context_group_);
 }
   
 // Return true if the two JSContextGroups are not equal.

@@ -4,6 +4,8 @@ add_library(JavaScriptCoreCPP
   JSString.cpp
   JSValue.cpp
   JSVirtualMachine.cpp
+
+	RAII/JSValue.cpp
   )
 
 target_link_libraries(JavaScriptCoreCPP

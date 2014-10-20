@@ -13,37 +13,49 @@
 
 namespace JavaScriptCoreCPP {
 
-// A JSContextGroup associates JavaScript contexts with one
-// another. JSContexts within the same group may share and exchange
-// JavaScript objects. Sharing and/or exchanging JavaScript objects
-// between contexts in different groups will produce undefined
-// behavior.  When objects from the same context group are used in
-// multiple threads, explicit synchronization is required.
+/*!
+  @class
+  @discussion A JSContextGroup is an RAII wrapper around a
+  JSContextGroupRef, the JavaScriptCore C API representation of a
+  group that associates JavaScript contexts with one another.
+  
+  JSContexts within the same group may share and exchange JavaScript
+  objects. Sharing and/or exchanging JavaScript objects between
+  contexts in different groups will produce undefined behavior. When
+  objects from the same context group are used in multiple threads,
+  explicit synchronization is required.
+*/
 class JSContextGroup final	{
 	
  public:
 
-	JSContextGroup() : js_context_group_(JSContextGroupCreate()) {
+	/*!
+	  @method
+	  @abstract Create a JavaScript context group.
+	  @discussion A JSContextGroup associates JavaScript contexts with
+	  one another.  Contexts in the same group may share and exchange
+	  JavaScript objects. Sharing and/or exchanging JavaScript objects
+	  between contexts in different groups will produce undefined
+	  behavior. When objects from the same context group are used in
+	  multiple threads, explicit synchronization is required.
+	*/
+	JSContextGroup() : js_context_group_ref_(JSContextGroupCreate()) {
 	}
 	
-	JSContextGroup(const JSContextGroupRef& js_context_group) : js_context_group_(js_context_group) {
-		JSContextGroupRetain(js_context_group_);
-	}
-
 	~JSContextGroup() {
-		JSContextGroupRelease(js_context_group_);
+		JSContextGroupRelease(js_context_group_ref_);
 	}
 	
 	// Copy constructor.
 	JSContextGroup(const JSContextGroup& rhs) {
-		js_context_group_ = rhs.js_context_group_;
-		JSContextGroupRetain(js_context_group_);
+		js_context_group_ref_ = rhs.js_context_group_ref_;
+		JSContextGroupRetain(js_context_group_ref_);
 	}
 	
   // Move constructor.
   JSContextGroup(JSContextGroup&& rhs) {
-    js_context_group_ = rhs.js_context_group_;
-    JSContextGroupRetain(js_context_group_);
+    js_context_group_ref_ = rhs.js_context_group_ref_;
+    JSContextGroupRetain(js_context_group_ref_);
   }
   
   // Create a copy of another JSContextGroup by assignment. This is a unified
@@ -61,15 +73,23 @@ class JSContextGroup final	{
     
     // by swapping the members of two classes,
     // the two classes are effectively swapped
-    swap(first.js_context_group_, second.js_context_group_);
+    swap(first.js_context_group_ref_, second.js_context_group_ref_);
   }
 
-	operator JSContextGroupRef() const {
-		return js_context_group_;
-	}
-	
  private:
 
+  friend class JSContext;
+
+  // For interoperability with the JavaScriptCore C API.
+	JSContextGroup(const JSContextGroupRef& js_context_group_ref) : js_context_group_ref_(js_context_group_ref) {
+		JSContextGroupRetain(js_context_group_ref_);
+	}
+
+  // For interoperability with the JavaScriptCore C API.
+	operator JSContextGroupRef() const {
+		return js_context_group_ref_;
+	}
+	
   // Return true if the two JSContextGroups are equal.
   friend bool operator==(const JSContextGroup& lhs, const JSContextGroup& rhs);
 
@@ -77,13 +97,13 @@ class JSContextGroup final	{
 	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
 	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
 	
-  JSContextGroupRef js_context_group_ {nullptr};
+  JSContextGroupRef js_context_group_ref_ {nullptr};
 };
 
 // Return true if the two JSContextGroups are equal.
 inline
 bool operator==(const JSContextGroup& lhs, const JSContextGroup& rhs) {
-  return lhs.js_context_group_ == rhs.js_context_group_;
+  return lhs.js_context_group_ref_ == rhs.js_context_group_ref_;
 }
   
 // Return true if the two JSContextGroups are not equal.

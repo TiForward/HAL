@@ -15,36 +15,51 @@
 
 namespace JavaScriptCoreCPP {
 
-// A JSString represents a JavaScript string.
+/*!
+  @class JSString
+  @discussion A JSString is an RAII wrapper around a JSStringRef, the
+  JavaScriptCore C API representation of a JavaScript string.
+*/
 class JSString final	{
 	
  public:
 	
 	// Create an empty JSString with a length of zero characters.
-	JSString() : js_string_(JSStringCreateWithUTF8CString(nullptr)) {
+	JSString() : js_string_ref_(JSStringCreateWithUTF8CString(nullptr)) {
 	}
 	
-	JSString(const std::string& string) : js_string_(JSStringCreateWithUTF8CString(string.c_str())) {
+	/*!
+	  @method
+	  @abstract     Create a JavaScript string from a null-terminated UTF8 string.
+	  @param string The null-terminated UTF8 string to copy into the new JSString.
+	  @result       A JSString containing string.
+	*/
+	JSString(const char* string) : js_string_ref_(JSStringCreateWithUTF8CString(string)) {
+  }
+
+	/*!
+	  @method
+	  @abstract     Create a JavaScript string from a null-terminated UTF8 string.
+	  @param string The null-terminated UTF8 string to copy into the new JSString.
+	  @result       A JSString containing string.
+	*/
+	JSString(const std::string& string) : JSString(string.c_str()) {
 	}
-	
-	JSString(const JSStringRef& js_string) : js_string_(js_string) {
-		JSStringRetain(js_string_);
-	}
-	
+
 	~JSString() {
-		JSStringRelease(js_string_);
+		JSStringRelease(js_string_ref_);
 	}
 
 	// Copy constructor.
 	JSString(const JSString& rhs) {
-		js_string_ = rhs.js_string_;
-		JSStringRetain(js_string_);
+		js_string_ref_ = rhs.js_string_ref_;
+		JSStringRetain(js_string_ref_);
 	}
 
   // Move constructor.
   JSString(JSString&& rhs) {
-    js_string_ = rhs.js_string_;
-    JSStringRetain(js_string_);
+    js_string_ref_ = rhs.js_string_ref_;
+    JSStringRetain(js_string_ref_);
   }
   
   // Create a copy of another JSContextGroup by assignment. This is a unified
@@ -62,15 +77,11 @@ class JSString final	{
     
     // by swapping the members of two classes,
     // the two classes are effectively swapped
-    swap(first.js_string_, second.js_string_);
+    swap(first.js_string_ref_, second.js_string_ref_);
   }
 
 	const std::size_t length() const {
-		return JSStringGetLength(js_string_);
-	}
-	
-	operator JSStringRef() const {
-		return js_string_;
+		return JSStringGetLength(js_string_ref_);
 	}
 	
 	operator std::string() const {
@@ -79,11 +90,24 @@ class JSString final	{
 	}
 
 	operator std::u16string() const {
-		const JSChar* string_ptr = JSStringGetCharactersPtr(js_string_);
-		return std::u16string(string_ptr, string_ptr + JSStringGetLength(js_string_));
+		const JSChar* string_ptr = JSStringGetCharactersPtr(js_string_ref_);
+		return std::u16string(string_ptr, string_ptr + JSStringGetLength(js_string_ref_));
 	}
 
 private:
+
+  friend class JSValue;
+  friend class JSObject;
+  
+  // For interoperability with the JavaScriptCore C API.
+  JSString(const JSStringRef& js_string_ref) : js_string_ref_(js_string_ref) {
+    JSStringRetain(js_string_ref_);
+  }
+  
+  // For interoperability with the JavaScriptCore C API.
+  operator JSStringRef() const {
+    return js_string_ref_;
+  }
 
 	// Return true if the two JSStrings are equal.
 	friend bool operator==(const JSString& lhs, const JSString& rhs);
@@ -92,7 +116,7 @@ private:
 	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
 	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
 
-	JSStringRef js_string_;
+	JSStringRef js_string_ref_;
 };
 
 // Return true if the two JSString are equal.
