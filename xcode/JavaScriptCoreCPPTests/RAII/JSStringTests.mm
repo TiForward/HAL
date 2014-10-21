@@ -80,11 +80,15 @@ JSString makeJSString() {
   XCTAssertEqual(std::string("hello, std::string"), JSString(string2));
 }
 
+// As of 2014.09.20 Travis CI only supports Xcode 5.1 which lacks support for
+// measureBlock.
+#ifndef TRAVIS
 - (void)testJSStringCreationPerformance {
   [self measureBlock:^{
     // How long does it take to create a JSString?
     JSString string;
   }];
 }
+#endif
 
 @end

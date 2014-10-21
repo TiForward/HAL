@@ -193,11 +193,15 @@ namespace UnitTestConstants {
 //  XCTAssertEqual("hello, JavaScript", static_cast<std::string>(*result_ptr));
 }
 
+// As of 2014.09.20 Travis CI only supports Xcode 5.1 which lacks support for
+// measureBlock.
+#ifndef TRAVIS
 - (void)testJSContextCreationPerformance {
   [self measureBlock:^{
     // How long does it take to create a JSValue?
     JSUndefined js_value(js_context);
   }];
 }
+#endif
 
 @end

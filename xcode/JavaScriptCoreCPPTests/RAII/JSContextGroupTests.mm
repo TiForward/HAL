@@ -52,11 +52,15 @@ JSContextGroup makeJSContextGroup() {
   XCTAssertEqual(js_context_group_1, js_context_group_6);
 }
 
+// As of 2014.09.20 Travis CI only supports Xcode 5.1 which lacks support for
+// measureBlock.
+#ifndef TRAVIS
 - (void)testJSContextGroupCreationPerformance {
   [self measureBlock:^{
     // How long does it take to create a JSContextGroup?
     JSContextGroup js_context_group;
   }];
 }
+#endif
 
 @end
