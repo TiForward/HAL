@@ -10,7 +10,7 @@
 
 #include <JavaScriptCore/JavaScript.h>
 
-namespace JavaScriptCoreCPP {
+namespace JavaScriptCoreCPP { namespace RAII {
 
 // Standard JavaScript practice calls for storing function objects in
 // prototypes, so they can be shared. The default constructor for
@@ -85,6 +85,6 @@ class JSClass final	{
 	JSClassRef         js_class_;
 };
 
-} // namespace JavaScriptCoreCPP
+}} // namespace JavaScriptCoreCPP { namespace RAII {
 
 #endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCLASS_HPP_

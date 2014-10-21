@@ -10,7 +10,7 @@
 
 #include "JavaScriptCoreCPP/RAII/JSObject.hpp"
 
-namespace JavaScriptCoreCPP {
+namespace JavaScriptCoreCPP { namespace RAII {
 
 /*!
   @class
@@ -37,6 +37,6 @@ class JSFunction final : public JSObject {
 };
 
 
-} // namespace JavaScriptCoreCPP
+}} // namespace JavaScriptCoreCPP { namespace RAII {
 
 #endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSFUNCTION_HPP_

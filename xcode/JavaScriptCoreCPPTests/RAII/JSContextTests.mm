@@ -9,7 +9,7 @@
 #include "JavaScriptCoreCPP/RAII/JSContext.hpp"
 #import <XCTest/XCTest.h>
 
-using namespace JavaScriptCoreCPP;
+using namespace JavaScriptCoreCPP::RAII;
 
 JSContext makeJSContext() {
   JSContext js_context;

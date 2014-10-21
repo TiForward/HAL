@@ -11,7 +11,7 @@
 #include "JavaScriptCoreCPP/RAII/JSObject.hpp"
 #include <vector>
 
-namespace JavaScriptCoreCPP {
+namespace JavaScriptCoreCPP { namespace RAII {
 
 /*!
   @class
@@ -42,6 +42,6 @@ class JSArray final : public JSObject {
 	
 };
 
-} // namespace JavaScriptCoreCPP
+}} // namespace JavaScriptCoreCPP { namespace RAII {
 
 #endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSARRAY_HPP_

@@ -10,7 +10,7 @@
 
 #include "JavaScriptCoreCPP/RAII/JSObject.hpp"
 
-namespace JavaScriptCoreCPP {
+namespace JavaScriptCoreCPP { namespace RAII {
 
 /*!
   @class
@@ -39,6 +39,6 @@ class JSRegExp final : public JSObject {
 	JSRegExp(const std::vector<JSValue>& arguments, const JSContext& js_context);
 };
 
-} // namespace JavaScriptCoreCPP
+}} // namespace JavaScriptCoreCPP { namespace RAII {
 
 #endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSREGEXP_HPP_

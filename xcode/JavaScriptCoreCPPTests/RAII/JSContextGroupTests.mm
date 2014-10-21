@@ -9,7 +9,7 @@
 #include "JavaScriptCoreCPP/RAII/JSContextGroup.hpp"
 #import <XCTest/XCTest.h>
 
-using namespace JavaScriptCoreCPP;
+using namespace JavaScriptCoreCPP::RAII;
 
 JSContextGroup makeJSContextGroup() {
   JSContextGroup js_context_group;

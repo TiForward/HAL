@@ -11,7 +11,7 @@
 
 #include "JavaScriptCoreCPP/RAII/JSContextGroup.hpp"
 
-namespace JavaScriptCoreCPP {
+namespace JavaScriptCoreCPP { namespace RAII {
 
 /*!
   @class
@@ -162,6 +162,6 @@ bool operator!=(const JSContext& lhs, const JSContext& rhs) {
 }
 
 
-} // namespace JavaScriptCoreCPP
+}} // namespace JavaScriptCoreCPP { namespace RAII {
 
 #endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCONTEXT_HPP_

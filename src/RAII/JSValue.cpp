@@ -10,7 +10,7 @@
 #include <sstream>
 #include <cassert>
 
-namespace JavaScriptCoreCPP {
+namespace JavaScriptCoreCPP { namespace RAII {
 
 JSValue::JSValue(const JSString& js_string, const JSContext& js_context, bool parse_as_json) : js_context_(js_context) {
 	if (parse_as_json) {
@@ -134,4 +134,4 @@ bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs) {
 	return result;
 }
 
-} // namespace JavaScriptCoreCPP
+}} // namespace JavaScriptCoreCPP { namespace RAII {

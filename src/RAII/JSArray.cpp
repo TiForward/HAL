@@ -10,7 +10,7 @@
 #include <stdexcept>
 #include <cassert>
 
-namespace JavaScriptCoreCPP {
+namespace JavaScriptCoreCPP { namespace RAII {
 
 JSArray::JSArray(const std::vector<JSValue>& arguments, const JSContext& js_context) : JSObject(js_context) {
 	JSValueRef exception { nullptr };
@@ -35,4 +35,4 @@ JSArray::JSArray(const std::vector<JSValue>& arguments, const JSContext& js_cont
 	js_object_ref_ = js_object_ref;
 }
 
-} // namespace JavaScriptCoreCPP
+}} // namespace JavaScriptCoreCPP { namespace RAII {

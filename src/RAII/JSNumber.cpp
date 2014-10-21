@@ -22,7 +22,7 @@ inline ToType bitwise_cast(FromType from) {
 	return u.to;
 }
 
-namespace JavaScriptCoreCPP {
+namespace JavaScriptCoreCPP { namespace RAII {
 
 JSNumber::operator double() const {
 	JSValueRef exception { nullptr };
@@ -86,4 +86,4 @@ JSNumber::operator int32_t() const {
   return bits < 0 ? -result : result;
 }
 
-} // namespace JavaScriptCoreCPP
+}} // namespace JavaScriptCoreCPP { namespace RAII {

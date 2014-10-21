@@ -21,7 +21,8 @@ namespace UnitTestConstants {
   static const double pi { 3.141592653589793 };
 }
 
-using namespace JavaScriptCoreCPP;
+using namespace JavaScriptCoreCPP::RAII;
+
 @interface JSObjectTests2 : XCTestCase
 @end
 

@@ -12,7 +12,7 @@
 #include <cstdint>
 #include <stdexcept>
 
-namespace JavaScriptCoreCPP {
+namespace JavaScriptCoreCPP { namespace RAII {
 
 /*!
   @class
@@ -151,6 +151,6 @@ public:
 	}
 };
 
-} // namespace JavaScriptCoreCPP
+}} // namespace JavaScriptCoreCPP { namespace RAII {
 
 #endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSNUMBER_HPP_

@@ -10,7 +10,7 @@
 
 #include "JavaScriptCoreCPP/RAII/JSValue.hpp"
 
-namespace JavaScriptCoreCPP {
+namespace JavaScriptCoreCPP { namespace RAII {
 
 /*!
   @class
@@ -30,6 +30,6 @@ public:
 	}
 };
 
-} // namespace JavaScriptCoreCPP
+}} // namespace JavaScriptCoreCPP { namespace RAII {
 
 #endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSNULL_HPP_

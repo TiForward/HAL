@@ -11,7 +11,7 @@
 #include <functional>
 #include <JavaScriptCore/JavaScript.h>
 
-namespace JavaScriptCoreCPP {
+namespace JavaScriptCoreCPP { namespace RAII {
 
 enum class ClassAttributes {
 	None                 = kJSClassAttributeNone,
@@ -80,6 +80,6 @@ class JSClassDefinition final	{
 	std::vector<JSStaticFunction> static_functions_;
 };
 
-} // namespace JavaScriptCoreCPP
+}} // namespace JavaScriptCoreCPP { namespace RAII {
 
 #endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCLASSDEFINITION_HPP_

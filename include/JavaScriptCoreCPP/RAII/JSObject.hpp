@@ -15,7 +15,7 @@
 #include <unordered_map>
 #include <set>
 
-namespace JavaScriptCoreCPP {
+namespace JavaScriptCoreCPP { namespace RAII {
 
 	/*!
 	  @enum JSPropertyAttribute
@@ -489,6 +489,6 @@ class JSObject : public JSValue {
 	JSContext   js_context_;
 };
 
-} // namespace JavaScriptCoreCPP
+}} // namespace JavaScriptCoreCPP { namespace RAII {
 
 #endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSOBJECT_HPP_

@@ -15,7 +15,7 @@
 #include <cassert>
 #include <JavaScriptCore/JavaScript.h>
 
-namespace JavaScriptCoreCPP {
+namespace JavaScriptCoreCPP { namespace RAII {
 
 /*!
   @class
@@ -114,6 +114,6 @@ private:
 	JSPropertyNameArrayRef js_property_name_array_ref_;
 };
 
-} // namespace JavaScriptCoreCPP
+}} // namespace JavaScriptCoreCPP { namespace RAII {
 
 #endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSPROPERTYNAMEARRAY_HPP_

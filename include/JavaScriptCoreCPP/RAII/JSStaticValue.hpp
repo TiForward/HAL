@@ -12,7 +12,7 @@
 #include <JavaScriptCore/JavaScript.h>
 #include "JavaScriptCoreCPP/RAII/JSString.hpp"
 
-namespace JavaScriptCoreCPP {
+namespace JavaScriptCoreCPP { namespace RAII {
 
 enum class PropertyAttributes {	None, ReadOnly, DontEnum, DontDelete };
 
@@ -71,6 +71,6 @@ class JSStaticValue final	{
 	std::string   name_;
 };
 
-} // namespace JavaScriptCoreCPP
+}} // namespace JavaScriptCoreCPP { namespace RAII {
 
 #endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSSTATICVALUE_HPP_

@@ -11,7 +11,7 @@
 #include <utility>
 #include <JavaScriptCore/JavaScript.h>
 
-namespace JavaScriptCoreCPP {
+namespace JavaScriptCoreCPP { namespace RAII {
 
 /*!
   @class
@@ -112,6 +112,6 @@ bool operator!=(const JSContextGroup& lhs, const JSContextGroup& rhs) {
   return ! (lhs == rhs);
 }
 
-} // namespace JavaScriptCoreCPP
+}} // namespace JavaScriptCoreCPP { namespace RAII {
 
 #endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_HPP_

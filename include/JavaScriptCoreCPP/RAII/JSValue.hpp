@@ -13,7 +13,7 @@
 #include <iostream>
 #include <cassert>
 
-namespace JavaScriptCoreCPP {
+namespace JavaScriptCoreCPP { namespace RAII {
 
 class JSObject;
 
@@ -303,6 +303,6 @@ std::ostream& operator << (std::ostream& ostream, const JSValue& js_value) {
 	return ostream;
 }
 
-} // namespace JavaScriptCoreCPP
+}} // namespace JavaScriptCoreCPP { namespace RAII {
 
 #endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSVALUE_HPP_

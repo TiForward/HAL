@@ -11,7 +11,7 @@
 #include <sstream>
 #include "JSPropertyNameArray.hpp"
 
-namespace JavaScriptCoreCPP {
+namespace JavaScriptCoreCPP { namespace RAII {
 
 JSObject::JSObject(const JSValue& js_value) : JSValue(js_value), js_context_(js_value.js_context_) {
 	static const std::string log_prefix { "MDL: JSObject(const JSValue& js_value) " };
@@ -273,4 +273,4 @@ JSObject JSObject::CallAsConstructor(const std::vector<JSValue>& arguments) cons
 	return js_object;
 }
 
-} // namespace JavaScriptCoreCPP
+}} // namespace JavaScriptCoreCPP { namespace RAII {

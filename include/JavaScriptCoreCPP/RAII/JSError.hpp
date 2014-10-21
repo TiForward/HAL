@@ -10,7 +10,7 @@
 
 #include "JavaScriptCoreCPP/RAII/JSObject.hpp"
 
-namespace JavaScriptCoreCPP {
+namespace JavaScriptCoreCPP { namespace RAII {
 
 /*!
   @class
@@ -39,6 +39,6 @@ class JSError final : public JSObject {
 	JSError(const std::vector<JSValue>& arguments, const JSContext& js_context);
 };
 
-} // namespace JavaScriptCoreCPP
+}} // namespace JavaScriptCoreCPP { namespace RAII {
 
 #endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSERROR_HPP_

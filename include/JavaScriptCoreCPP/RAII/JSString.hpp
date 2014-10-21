@@ -13,7 +13,7 @@
 #include <codecvt>
 #include <JavaScriptCore/JavaScript.h>
 
-namespace JavaScriptCoreCPP {
+namespace JavaScriptCoreCPP { namespace RAII {
 
 /*!
   @class JSString
@@ -139,13 +139,13 @@ std::ostream& operator << (std::ostream& ostream, const JSString& js_string) {
 	return ostream;
 }
 
-} // namespace JavaScriptCoreCPP
+}} // namespace JavaScriptCoreCPP { namespace RAII {
 
 namespace std {
 
 template<>
-struct hash<JavaScriptCoreCPP::JSString> {
-	typedef JavaScriptCoreCPP::JSString argument_type;
+  struct hash<JavaScriptCoreCPP::RAII::JSString> {
+    typedef JavaScriptCoreCPP::RAII::JSString argument_type;
 	typedef std::size_t                 result_type;
 	const std::hash<std::string> string_hash = std::hash<std::string>();
 	
