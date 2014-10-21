@@ -13,20 +13,6 @@
 
 namespace JavaScriptCoreCPP {
 
-// JSObject::JSObject(JSObjectRef js_object_ref, const JSContext& js_context) : JSObject(JSValue(js_object_ref, js_context)) {
-// }
-	
-JSObject::JSObject(JSObjectRef js_object_ref, const JSContext& js_context) : JSValue(js_object_ref, js_context), js_object_ref_(js_object_ref), js_context_(js_context) {
-	static const std::string log_prefix { "MDL: JSObject(JSObjectRef js_object_ref, const JSContext& js_context): " };
-	if (!js_object_ref_) {
-		const std::string message = "js_object_ref can not be nullptr.";
-		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
-		throw std::logic_error(message);
-	}
-	
-	JSValueProtect(js_context_, js_object_ref_);
-}
-
 JSObject::JSObject(const JSValue& js_value) : JSValue(js_value), js_context_(js_value.js_context_) {
 	static const std::string log_prefix { "MDL: JSObject(const JSValue& js_value) " };
 	if (!IsObject()) {
@@ -47,6 +33,18 @@ JSObject::JSObject(const JSValue& js_value) : JSValue(js_value), js_context_(js_
 	
 	assert(js_object_ref);
 	js_object_ref_ = js_object_ref;
+	JSValueProtect(js_context_, js_object_ref_);
+}
+
+// For interoperability with the JavaScriptCore C API.
+JSObject::JSObject(JSObjectRef js_object_ref, const JSContext& js_context) : JSValue(js_object_ref, js_context), js_object_ref_(js_object_ref), js_context_(js_context) {
+	static const std::string log_prefix { "MDL: JSObject(JSObjectRef js_object_ref, const JSContext& js_context): " };
+	if (!js_object_ref_) {
+		const std::string message = "js_object_ref can not be nullptr.";
+		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
+		throw std::logic_error(message);
+	}
+	
 	JSValueProtect(js_context_, js_object_ref_);
 }
 
@@ -196,6 +194,12 @@ JSValue JSObject::CallAsFunction(const std::vector<JSValue>& arguments) const {
 	return js_value;
 }
 
+JSValue JSObject::CallAsFunction(const std::vector<JSString>& arguments) const {
+	std::vector<JSValue> arguments_array;
+	std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [this](const JSString& js_string) { return JSValue(js_string, js_context_); });
+	return CallAsFunction(arguments_array);
+}
+
 JSValue JSObject::CallAsFunction(const std::vector<JSValue>& arguments, const JSObject& this_object) const {
 	static const std::string log_prefix { "MDL: JSObject::CallAsFunction: " };
 	
@@ -228,6 +232,13 @@ JSValue JSObject::CallAsFunction(const std::vector<JSValue>& arguments, const JS
 	
 	return js_value;
 }
+
+JSValue JSObject::CallAsFunction(const std::vector<JSString>& arguments, const JSObject& this_object) const {
+	std::vector<JSValue> arguments_array;
+	std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [this](const JSString& js_string) { return JSValue(js_string, js_context_); });
+	return CallAsFunction(arguments_array, this_object);
+}
+
 
 JSObject JSObject::CallAsConstructor(const std::vector<JSValue>& arguments) const {
 	static const std::string log_prefix { "MDL: JSObject::CallAsConstructor: " };

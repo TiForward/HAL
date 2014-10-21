@@ -87,7 +87,7 @@ using namespace JavaScriptCoreCPP;
   XCTAssertFalse(js_object.IsFunction());
   
   try {
-    js_object.CallAsFunction({});
+    js_object.CallAsFunction();
     XCTFail("js_object was called as a function but did not throw a std::runtime_error exception");
   } catch (const std::runtime_error& exception) {
     XCTAssert(YES, @"Caught expected std::runtime_error exception.");
@@ -124,7 +124,11 @@ using namespace JavaScriptCoreCPP;
 }
 
 - (void)testJSFunction {
-  JSFunction js_function("foo", {"name"}, "return 'Hello ' + name;", js_context);
+  JSFunction js_function("foo", {"name"}, "return 'Hello, ' + name;", js_context);
+  XCTAssertTrue(js_function.IsFunction());
+  XCTAssertTrue(js_function.IsObject());
+  //std::clog << "MDL: js_function(\"world\") = " << js_function("world") << std::endl;
+  XCTAssertEqual("Hello, world", static_cast<std::string>(js_function("world")));
 }
 
 - (void)testPerformanceExample {

@@ -36,6 +36,7 @@ class JSFunction final : public JSObject {
 	JSFunction(const JSString& name, const std::vector<JSString>& parameter_names, const JSString& body, const JSContext& js_context, const JSString& source_url = JSString(), int starting_line_number = 1);
 };
 
+
 } // namespace JavaScriptCoreCPP
 
 #endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSFUNCTION_HPP_
