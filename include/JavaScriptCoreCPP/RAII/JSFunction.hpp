@@ -23,7 +23,7 @@ class JSFunction final : public JSObject {
 	/*!
 	  @method
 	  @abstract                   Create a JavaScript function with a given script as its body.
-	  @param name                 A JSString containing the function's name. This will be used when converting the function to string. Pass an empty string to create an anonymous function.
+	  @param function_name        A JSString containing the function's name. This will be used when converting the function to string. Pass an empty string to create an anonymous function.
 	  @param parameter_names      A JSString array containing the names of the function's parameters.
 	  @param body                 A JSString containing the script to use as the function's body.
 	  @param js_context           The execution context to use.
@@ -33,7 +33,7 @@ class JSFunction final : public JSObject {
 	  @throws                     std::invalid_argument if either body or parameter_names contains a syntax error.
 	  @discussion                 Use this method when you want to execute a script repeatedly, to avoid the cost of re-parsing the script before each execution.
 	*/
-	JSFunction(const JSString& name, const std::vector<JSString>& parameter_names, const JSString& body, const JSContext& js_context, const JSString& source_url = JSString(), int starting_line_number = 1);
+	JSFunction(const JSString& function_name, const std::vector<JSString>& parameter_names, const JSString& body, const JSContext& js_context, const JSString& source_url = JSString(), int starting_line_number = 1);
 };
 
 
