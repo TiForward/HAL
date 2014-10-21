@@ -14,6 +14,7 @@
 #include <vector>
 #include <unordered_map>
 #include <set>
+#include <algorithm>
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
@@ -342,7 +343,11 @@ class JSObject : public JSValue {
 	  @result          The JSValue that results from calling this object as a function
 	  @throws          std::runtime_error exception if the called function through an exception, or object is not a function.
 	*/
-	JSValue CallAsFunction(const std::vector<JSString>& arguments) const;
+	JSValue CallAsFunction(const std::vector<JSString>& arguments) const {
+		std::vector<JSValue> arguments_array;
+		std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [this](const JSString& js_string) { return JSValue(js_string, js_context_); });
+		return CallAsFunction(arguments_array);
+	}
 
 	/*!
 	  @method
@@ -383,7 +388,12 @@ class JSObject : public JSValue {
 	  @result            The JSValue that results from calling this object as a function
 	  @throws            std::runtime_error exception if the called function through an exception, or object is not a function.
 	*/
-	JSValue CallAsFunction(const std::vector<JSString>& arguments, const JSObject& this_object) const;
+	JSValue CallAsFunction(const std::vector<JSString>& arguments, const JSObject& this_object) const {
+		std::vector<JSValue> arguments_array;
+		std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [this](const JSString& js_string) { return JSValue(js_string, js_context_); });
+		return CallAsFunction(arguments_array, this_object);
+	}
+
 	
 	/*!
 	  @method
@@ -409,10 +419,57 @@ class JSObject : public JSValue {
 	/*!
 	  @method
 	  @abstract Calls this object as a constructor.
-	  @result   The JSObject that results from calling this object as a constructor.
+	  @result   The JSObject that results from calling this object as a constructor
 	  @throws   std::runtime_error exception if the called constructor through an exception, or object is not a constructor.
 	*/
+	JSObject CallAsConstructor() const {
+		return CallAsConstructor(std::vector<JSValue>());
+	}
+
+	/*!
+	  @method
+	  @abstract       Calls this object as a constructor.
+	  @param argument A JSValue to pass as the sole argument to the constructor.
+	  @result         The JSObject that results from calling this object as a constructor
+	  @throws         std::runtime_error exception if the called constructor through an exception, or object is not a constructor.
+	*/
+	JSObject CallAsConstructor(const JSValue& argument) const {
+		return CallAsConstructor(std::vector<JSValue>{argument});
+	}
+
+	/*!
+	  @method
+	  @abstract       Calls this object as a constructor.
+	  @param argument A JSString to pass as the sole argument to the constructor.
+	  @result         The JSObject that results from calling this object as a constructor
+	  @throws         std::runtime_error exception if the called constructor through an exception, or object is not a constructor.
+	*/
+	JSObject CallAsConstructor(const JSString& argument) const {
+		return CallAsConstructor(std::vector<JSString>{argument});
+	}
+
+	/*!
+	  @method
+	  @abstract        Calls this object as a constructor.
+	  @param arguments A JSValue array of arguments to pass to the constructor.
+	  @result          The JSObject that results from calling this object as a constructor
+	  @throws          std::runtime_error exception if the called constructor through an exception, or object is not a constructor.
+	*/
 	JSObject CallAsConstructor(const std::vector<JSValue>& arguments) const;
+
+	/*!
+	  @method
+	  @abstract        Calls this object as a constructor.
+	  @param arguments A JSString array of arguments to pass to the constructor.
+	  @result          The JSObject that results from calling this object as a constructor
+	  @throws          std::runtime_error exception if the called constructor through an exception, or object is not a constructor.
+	*/
+	JSObject CallAsConstructor(const std::vector<JSString>& arguments) const {
+		std::vector<JSValue> arguments_array;
+		std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [this](const JSString& js_string) { return JSValue(js_string, js_context_); });
+		return CallAsConstructor(arguments_array);
+	}
+
 
 	/*!
 	  @method

@@ -99,7 +99,7 @@ using namespace JavaScriptCoreCPP::RAII;
   XCTAssertFalse(js_object.IsConstructor());
   
   try {
-    js_object.CallAsConstructor({});
+    js_object.CallAsConstructor();
     XCTFail("js_object was called as a constructor but did not throw a std::runtime_error exception");
   } catch (const std::runtime_error& exception) {
     XCTAssert(YES, @"Caught expected std::runtime_error exception.");

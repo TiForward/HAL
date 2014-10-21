@@ -6,7 +6,6 @@
 
 #include "JavaScriptCoreCPP/RAII/JSObject.hpp"
 #include <bitset>
-#include <algorithm>
 #include <type_traits>
 #include <sstream>
 #include "JSPropertyNameArray.hpp"
@@ -194,12 +193,6 @@ JSValue JSObject::CallAsFunction(const std::vector<JSValue>& arguments) const {
 	return js_value;
 }
 
-JSValue JSObject::CallAsFunction(const std::vector<JSString>& arguments) const {
-	std::vector<JSValue> arguments_array;
-	std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [this](const JSString& js_string) { return JSValue(js_string, js_context_); });
-	return CallAsFunction(arguments_array);
-}
-
 JSValue JSObject::CallAsFunction(const std::vector<JSValue>& arguments, const JSObject& this_object) const {
 	static const std::string log_prefix { "MDL: JSObject::CallAsFunction: " };
 	
@@ -232,13 +225,6 @@ JSValue JSObject::CallAsFunction(const std::vector<JSValue>& arguments, const JS
 	
 	return js_value;
 }
-
-JSValue JSObject::CallAsFunction(const std::vector<JSString>& arguments, const JSObject& this_object) const {
-	std::vector<JSValue> arguments_array;
-	std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [this](const JSString& js_string) { return JSValue(js_string, js_context_); });
-	return CallAsFunction(arguments_array, this_object);
-}
-
 
 JSObject JSObject::CallAsConstructor(const std::vector<JSValue>& arguments) const {
 	static const std::string log_prefix { "MDL: JSObject::CallAsConstructor: " };
