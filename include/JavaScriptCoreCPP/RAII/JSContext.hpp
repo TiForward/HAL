@@ -10,6 +10,7 @@
 
 
 #include "JavaScriptCoreCPP/RAII/JSContextGroup.hpp"
+#include <cassert>
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
@@ -50,9 +51,8 @@ class JSContext final	{
 	  such as Object, Function, String, and Array.
 	*/
 	JSContext(JSClassRef global_object_class = nullptr)
-			: js_context_ref_(JSGlobalContextCreate(global_object_class))
-			, js_context_group_(JSContextGroup(JSContextGetGroup(js_context_ref_)))
-	{
+			: js_context_ref_(JSGlobalContextCreate(global_object_class)) {
+		js_context_group_ = JSContextGroup(JSContextGetGroup(js_context_ref_));
 	}
 
 	/*!
@@ -122,7 +122,13 @@ class JSContext final	{
 private:
 
 	// For interoperability with the JavaScriptCore C API.
-	operator JSContextRef() const {
+	JSContext(JSGlobalContextRef js_context_ref) : js_context_group_(JSContextGetGroup(js_context_ref)), js_context_ref_(js_context_ref) {
+		assert(js_context_ref_);
+		JSGlobalContextRetain(js_context_ref_);
+	}
+		
+	// For interoperability with the JavaScriptCore C API.
+	operator JSGlobalContextRef() const {
 		return js_context_ref_;
 	}
 
@@ -141,12 +147,16 @@ private:
   // Return true if the two JSContexts are equal.
   friend bool operator==(const JSContext& lhs, const JSContext& rhs);
 
-	// Prevent heap based objects.
+  // Return true if the two JSValues are equal as compared by the JS == operator.
+  class JSValue;
+  friend bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs);
+  
+  // Prevent heap based objects.
 	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
 	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
 	
-	JSGlobalContextRef js_context_ref_;
 	JSContextGroup     js_context_group_;
+	JSGlobalContextRef js_context_ref_ { nullptr };
 };
 
 // Return true if the two JSContexts are equal.

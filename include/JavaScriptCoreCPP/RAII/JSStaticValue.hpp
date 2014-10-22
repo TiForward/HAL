@@ -8,67 +8,93 @@
 #ifndef _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSSTATICVALUE_HPP_
 #define _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSSTATICVALUE_HPP_
 
-#include <bitset>
+#include "JavaScriptCoreCPP/RAII/JSObject.hpp"
 #include <JavaScriptCore/JavaScript.h>
-#include "JavaScriptCoreCPP/RAII/JSString.hpp"
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-enum class PropertyAttributes {	None, ReadOnly, DontEnum, DontDelete };
-
-// A JSStaticValue describes a statically declared value property.
-
-// @struct JSStaticValue
-// @abstract This structure describes a statically declared value property.
-// @field name A null-terminated UTF8 string containing the property's name.
-// @field getProperty A JSObjectGetPropertyCallback to invoke when getting the property's value.
-// @field setProperty A JSObjectSetPropertyCallback to invoke when setting the property's value. May be NULL if the ReadOnly attribute is set.
-// @field attributes A logically ORed set of JSPropertyAttributes to give to the property.
+/*!
+  @class
+  @discussion A JSStaticValue is an RAII wrapper around the
+  JavaScriptCore C API JSStaticValue, which describes a statically
+  declared value property of a JSObject.
+*/
 class JSStaticValue final	{
 	
  public:
 
-	JSStaticValue(const std::string& name) : js_static_value_(js_static_value), name_(js_static_value.name) {
-		js_static_value_.name = name_.c_str();
+	/*!
+	  @method
+
+	  @abstract .................. Create a statically declared value
+	                               property of a JSObject.
+	                               
+	  @param property_name ....... A JSString containing the property's
+	                               name.
+	  
+	  @param get_property_callback A JSObjectGetPropertyCallback to
+	                               invoke when getting the property's
+	                               value.
+	  
+	  @param set_property_callback A JSObjectSetPropertyCallback to
+	                               invoke when setting the property's
+	                               value. May be nullptr if the ReadOnly
+	                               attribute is set.
+	  
+	  @param attributes .......... A logically ORed set of
+	                               JSPropertyAttributes to give to the
+	                               property.
+	  
+	  @result .................... The JSObject result of conversion.
+	  
+	  @throws .................... std::invalid_argument exception under
+	                               these preconditions:
+
+	                               If the ReadOnly attribute is set and
+	                               either get_property_callback is not
+	                               provided or the set_property_callback
+	                               is.
+	                               
+	                               If both get_property_callback and
+	                               set_property_callback are missing.
+	                               
+	                               If property_name is empty.
+	*/
+	JSStaticValue(const JSString& property_name, JSObjectGetPropertyCallback get_property_callback, JSObjectSetPropertyCallback set_property_callback, const std::set<JSPropertyAttribute> attributes = std::set<JSPropertyAttribute>());
+
+	JSString get_property_name() const {
+		return property_name_;
+	}
+	
+	JSObjectGetPropertyCallback get_get_property_callback() const {
+		return get_property_callback_;
 	}
 
-	JSStaticValue(const JSStaticValue& js_static_value) : js_static_value_(js_static_value), name_(js_static_value.name) {
-		js_static_value_.name = name_.c_str();
+	JSObjectSetPropertyCallback get_set_property_callback() const {
+		return set_property_callback_;
 	}
-	
-	~JSStaticValue() {
-	}
-	
-	// Copy constructor.
-	JSStaticValue(const JSStaticValue& rhs) : js_static_value_(rhs.js_static_value) , name_(rhs.js_static_value.name)	{
-		js_static_value_.name = name_.c_str();
-	}
-	
-	// Create a copy of another JSStaticValue by assignment.
-	JSStaticValue& operator=(const JSStaticValue& rhs) {
-		if (this == &rhs) {
-			return *this;
-		}
 
-		js_static_value_      = rhs.js_static_value_;
-		name_                 = rhs.name_;
-		js_static_value_.name = name_.c_str();
-		
-		return *this;
+	std::set<JSPropertyAttribute> get_attributes() const {
+		return attributes_;
 	}
+
+private:
 	
-	operator JSStaticValue() const {
+	// For interoperability with the JavaScriptCore C API.
+	operator ::JSStaticValue() const {
 		return js_static_value_;
 	}
 	
- private:
-
 	// Prevent heap based objects.
 	static void* operator new(size_t);			 // #1: To prevent allocation of scalar objects
 	static void* operator new [] (size_t);	 // #2: To prevent allocation of array of objects
-
-	JSStaticValue js_static_value_;
-	std::string   name_;
+	
+	JSString                      property_name_;
+	std::string                   property_name_for_js_static_value_;
+	JSObjectGetPropertyCallback   get_property_callback_ { nullptr };
+	JSObjectSetPropertyCallback   set_property_callback_ { nullptr };
+	std::set<JSPropertyAttribute> attributes_;
+	::JSStaticValue               js_static_value_;
 };
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {

@@ -26,7 +26,7 @@ public:
 	  @param js_context The execution context to use.
 	  @result           The unique undefined value.
 	*/
-	JSUndefined(const JSContext& js_context) : JSValue(JSValueMakeUndefined(js_context), js_context) {
+	JSUndefined(const JSContext& js_context) : JSValue(js_context, JSValueMakeUndefined(js_context)) {
 	}
 };
 

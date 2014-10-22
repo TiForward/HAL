@@ -26,7 +26,7 @@ JSRegExp::JSRegExp(const std::vector<JSValue>& arguments, const JSContext& js_co
 	if (exception) {
 		// assert(!js_object_ref);
 		static const std::string log_prefix { "MDL: JSRegExp(const std::vector<Value>& arguments, const JSContext& js_context): " };
-		const std::string message = static_cast<std::string>(JSValue(exception, js_context));
+		const std::string message = static_cast<std::string>(JSValue(js_context, exception));
 		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
 		throw std::logic_error(message);
 	}

@@ -26,7 +26,7 @@ public:
 	  @param js_context The execution context to use.
 	  @result           The unique null value.
 	*/
-	JSNull(const JSContext& js_context) : JSValue(JSValueMakeNull(js_context), js_context) {
+	JSNull(const JSContext& js_context) : JSValue(js_context, JSValueMakeNull(js_context)) {
 	}
 };
 

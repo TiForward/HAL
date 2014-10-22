@@ -81,7 +81,7 @@ class JSContextGroup final	{
   friend class JSContext;
 
   // For interoperability with the JavaScriptCore C API.
-	JSContextGroup(const JSContextGroupRef& js_context_group_ref) : js_context_group_ref_(js_context_group_ref) {
+	JSContextGroup(JSContextGroupRef js_context_group_ref) : js_context_group_ref_(js_context_group_ref) {
 		JSContextGroupRetain(js_context_group_ref_);
 	}
 

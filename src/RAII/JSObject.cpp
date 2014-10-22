@@ -8,35 +8,36 @@
 #include <bitset>
 #include <type_traits>
 #include <sstream>
+#include "JavaScriptCoreCPP/RAII/JSPropertyNameAccumulator.hpp"
 #include "JSPropertyNameArray.hpp"
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-JSObject::JSObject(const JSValue& js_value) : JSValue(js_value), js_context_(js_value.js_context_) {
-	static const std::string log_prefix { "MDL: JSObject(const JSValue& js_value) " };
-	if (!IsObject()) {
-		const std::string message = "JSValue is not an object";
-		std::clog << log_prefix << " [ERROR] " << message << std::endl;
-		throw std::invalid_argument(message);
-	}
+// JSObject::JSObject(const JSValue& js_value) : JSValue(js_value), js_context_(js_value.js_context_) {
+// 	static const std::string log_prefix { "MDL: JSObject(const JSValue& js_value) " };
+// 	if (!IsObject()) {
+// 		const std::string message = "JSValue is not an object";
+// 		std::clog << log_prefix << " [ERROR] " << message << std::endl;
+// 		throw std::invalid_argument(message);
+// 	}
 	
-	JSValueRef exception { nullptr };
-	JSObjectRef js_object_ref = JSValueToObject(js_context_, js_value_ref_, &exception);
-	if (exception) {
-		std::ostringstream os;
-		os << "JSValue could not be converted to a JSObject: "<< JSValue(exception, js_context_);
-		const std::string message = os.str();
-		std::clog << log_prefix << " [ERROR] " << message << std::endl;
-		throw std::invalid_argument(message);
-	}
+// 	JSValueRef exception { nullptr };
+// 	JSObjectRef js_object_ref = JSValueToObject(js_context_, js_value_ref_, &exception);
+// 	if (exception) {
+// 		std::ostringstream os;
+// 		os << "JSValue could not be converted to a JSObject: "<< JSValue(js_context_, exception);
+// 		const std::string message = os.str();
+// 		std::clog << log_prefix << " [ERROR] " << message << std::endl;
+// 		throw std::invalid_argument(message);
+// 	}
 	
-	assert(js_object_ref);
-	js_object_ref_ = js_object_ref;
-	JSValueProtect(js_context_, js_object_ref_);
-}
+// 	assert(js_object_ref);
+// 	js_object_ref_ = js_object_ref;
+// 	JSValueProtect(js_context_, js_object_ref_);
+// }
 
 // For interoperability with the JavaScriptCore C API.
-JSObject::JSObject(JSObjectRef js_object_ref, const JSContext& js_context) : JSValue(js_object_ref, js_context), js_object_ref_(js_object_ref), js_context_(js_context) {
+JSObject::JSObject(JSGlobalContextRef js_context_ref, JSObjectRef js_object_ref) : JSValue(js_context_ref, js_object_ref), js_context_(js_context_ref), js_object_ref_(js_object_ref) {
 	static const std::string log_prefix { "MDL: JSObject(JSObjectRef js_object_ref, const JSContext& js_context): " };
 	if (!js_object_ref_) {
 		const std::string message = "js_object_ref can not be nullptr.";
@@ -68,16 +69,13 @@ JSValue JSObject::GetProperty(const JSString& property_name) const {
 		// assert(!js_value_ref);
 		static const std::string log_prefix { "MDL: JSObject::GetProperty: " };
 		std::ostringstream os;
-		os << "Caught exception getting property with name \"" << property_name << "\": " << JSValue(exception, js_context_);
+		os << "Caught exception getting property with name \"" << property_name << "\": " << JSValue(js_context_, exception);
 		const std::string message = os.str();
 		std::clog << log_prefix << " [ERROR] " << message << std::endl;
 	}
 	
-	JSValue js_value(js_value_ref, js_context_);
-	if (js_value_ref) {
-		js_value = JSValue(js_value_ref, js_context_);
-		JSValueUnprotect(js_value, js_value_ref);
-	}
+	JSValue js_value(js_context_, js_value_ref);
+	JSValueUnprotect(js_value, js_value_ref);
 	
 	return js_value;
 }
@@ -89,16 +87,13 @@ JSValue JSObject::GetPropertyAtIndex(unsigned property_index) const {
 		// assert(!js_value_ref);
 		static const std::string log_prefix { "MDL: JSObject::GetPropertyAtIndex: " };
 		std::ostringstream os;
-		os << "Caught exception getting property at index \"" << property_index << "\": " << JSValue(exception, js_context_);
+		os << "Caught exception getting property at index \"" << property_index << "\": " << JSValue(js_context_, exception);
 		const std::string message = os.str();
 		std::clog << log_prefix << " [ERROR] " << message << std::endl;
 	}
 	
-	JSValue js_value(js_value_ref, js_context_);
-	if (js_value_ref) {
-		js_value = JSValue(js_value_ref, js_context_);
-		JSValueUnprotect(js_value, js_value_ref);
-	}
+	JSValue js_value(js_context_, js_value_ref);
+	JSValueUnprotect(js_value, js_value_ref);
 	
 	return js_value;
 }
@@ -121,7 +116,7 @@ void JSObject::SetProperty(const JSString& property_name, const JSValue& propert
 		   << "\" to value \""
 		   << property_value
 		   << "\": "
-		   << JSValue(exception, js_context_);
+		   << JSValue(js_context_, exception);
 		const std::string message = os.str();
 		std::clog << log_prefix << " [ERROR] " << message << std::endl;
 	}
@@ -139,7 +134,7 @@ void JSObject::SetPropertyAtIndex(unsigned property_index, const JSValue& proper
 		   << "\" to value \""
 		   << property_value
 		   << "\": "
-		   << JSValue(exception, js_context_);
+		   << JSValue(js_context_, exception);
 		const std::string message = os.str();
 		std::clog << log_prefix << " [ERROR] " << message << std::endl;
 	}
@@ -151,7 +146,7 @@ bool JSObject::DeleteProperty(const JSString& property_name) const {
 	if (exception) {
 		static const std::string log_prefix { "MDL: JSObject::DeleteProperty: " };
 		std::ostringstream os;
-		os << "Caught exception deleting property with name \"" << property_name << "\": " << JSValue(exception, js_context_);
+		os << "Caught exception deleting property with name \"" << property_name << "\": " << JSValue(js_context_, exception);
 		const std::string message = os.str();
 		std::clog << log_prefix << " [WARN] " << message << std::endl;
 	}
@@ -181,13 +176,13 @@ JSValue JSObject::CallAsFunction(const std::vector<JSValue>& arguments) const {
 	
 	if (exception) {
 		// assert(!js_value_ref);
-		const std::string message = JSValue(exception, js_context_);
+		const std::string message = JSValue(js_context_, exception);
 		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
 		throw std::runtime_error(message);
 	}
 	
 	assert(js_value_ref);
-	JSValue js_value(js_value_ref, js_context_);
+	JSValue js_value(js_context_, js_value_ref);
 	JSValueUnprotect(js_context_, js_value_ref);
 	
 	return js_value;
@@ -214,13 +209,13 @@ JSValue JSObject::CallAsFunction(const std::vector<JSValue>& arguments, const JS
 	
 	if (exception) {
 		// assert(!js_value_ref);
-		const std::string message = JSValue(exception, js_context_);
+		const std::string message = JSValue(js_context_, exception);
 		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
 		throw std::runtime_error(message);
 	}
 	
 	assert(js_value_ref);
-	JSValue js_value(js_value_ref, js_context_);
+	JSValue js_value(js_context_, js_value_ref);
 	JSValueUnprotect(js_context_, js_value_ref);
 	
 	return js_value;
@@ -247,13 +242,13 @@ JSObject JSObject::CallAsConstructor(const std::vector<JSValue>& arguments) cons
 	
 	if (exception) {
 		// assert(!js_object_ref);
-		const std::string message = JSValue(exception, js_context_);
+		const std::string message = JSValue(js_context_, exception);
 		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
 		throw std::runtime_error(message);
 	}
 	
 	assert(js_object_ref);
-	JSObject js_object(js_object_ref, js_context_);
+	JSObject js_object(js_context_, js_object_ref);
 	JSValueUnprotect(js_context_, js_object_ref);
 	
 	return js_object;

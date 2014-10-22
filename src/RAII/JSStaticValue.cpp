@@ -1,0 +1,77 @@
+// -*- mode: c++ -*-
+//
+//  Author: Matt Langston
+//  Copyright (c) 2014 Appcelerator. All rights reserved.
+//
+
+#include "JavaScriptCoreCPP/RAII/JSStaticValue.hpp"
+#include <sstream>
+
+namespace JavaScriptCoreCPP { namespace RAII {
+
+// For interoperability with the JavaScriptCore C API.
+JSValueRef GetProperty(JSContextRef js_context_ref, JSObjectRef js_object_ref, JSStringRef property_name, JSValueRef* exception) {
+	return nullptr;
+}
+
+// For interoperability with the JavaScriptCore C API.
+bool SetProperty(JSContextRef js_context_ref, JSObjectRef js_object_ref, JSStringRef property_name, JSValueRef js_value_ref, JSValueRef* exception) {
+	return false;
+}
+
+JSStaticValue::JSStaticValue(const JSString& property_name, JSObjectGetPropertyCallback get_property_callback, JSObjectSetPropertyCallback set_property_callback, const std::set<JSPropertyAttribute> attributes)
+		: property_name_(property_name),
+		  property_name_for_js_static_value_(property_name),
+		  get_property_callback_(get_property_callback),
+		  set_property_callback_(set_property_callback),
+		  attributes_(attributes) {
+	static const std::string log_prefix { "MDL: JSStaticValue: " };
+	
+	if (attributes.find(JSPropertyAttribute::ReadOnly) != attributes.end()) {
+		if (!get_property_callback) {
+			std::ostringstream os;
+			os << "ReadOnly attribute is set but get_property_callback is missing.";
+			const std::string message = os.str();
+			std::clog << log_prefix << " [ERROR] " << message << std::endl;
+			throw std::invalid_argument(message);
+		}
+
+		if (get_property_callback) {
+			std::ostringstream os;
+			os << "ReadOnly attribute is set but set_property_callback is provided.";
+			const std::string message = os.str();
+			std::clog << log_prefix << " [ERROR] " << message << std::endl;
+			throw std::invalid_argument(message);
+		}
+	}
+
+	if (!get_property_callback && !set_property_callback) {
+		std::ostringstream os;
+		os << "Both get_property_callback and set_property_callback are missing. At least one callback must be provided.";
+		const std::string message = os.str();
+		std::clog << log_prefix << " [ERROR] " << message << std::endl;
+		throw std::invalid_argument(message);
+	}
+	
+	if (property_name_for_js_static_value_.empty()) {
+		std::ostringstream os;
+		os << "The property_name is empty. A valid JavaScript property name must be provided.";
+		const std::string message = os.str();
+		std::clog << log_prefix << " [ERROR] " << message << std::endl;
+		throw std::invalid_argument(message);
+	}
+
+	using property_attribute_underlying_type = std::underlying_type<JSPropertyAttribute>::type;
+	std::bitset<4> property_attributes;
+	for (auto property_attribute : attributes) {
+		const auto bit_position = static_cast<property_attribute_underlying_type>(property_attribute);
+		property_attributes.set(bit_position);
+	}
+	
+	js_static_value_.name        = property_name_for_js_static_value_.c_str();
+	// js_static_value_.getProperty = get_property_callback_;
+	// js_static_value_.setProperty = set_property_callback_;
+	js_static_value_.attributes   = static_cast<property_attribute_underlying_type>(property_attributes.to_ulong());
+}
+
+}} // namespace JavaScriptCoreCPP { namespace RAII {

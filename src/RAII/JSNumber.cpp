@@ -30,7 +30,7 @@ JSNumber::operator double() const {
 	if (exception) {
 		static const std::string log_prefix { "MDL: operator double() const: " };
 		std::ostringstream os;
-		os << "JSNumber could not be converted to a double: " << JSValue(exception, js_context_);
+		os << "JSNumber could not be converted to a double: " << JSValue(js_context_, exception);
 		const std::string message = os.str();
 		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
 		throw std::logic_error(message);

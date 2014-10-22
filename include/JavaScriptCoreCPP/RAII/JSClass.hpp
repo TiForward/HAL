@@ -31,58 +31,57 @@ class JSClass final	{
 	JSClass(const JSClassDefinition* definition) : js_class_(JSClassCreate(definition)) {
 	}
 	
-	~JSClass() {
-		JSClassRelease(js_class_);
+	virtual ~JSClass() {
+		JSClassRelease(js_context_, js_class_ref_);
 	}
 	
 	// Copy constructor.
-	JSClass(const JSClass& rhs) {
-		// Tell the JavaScriptCore garbage collector that we have no more
-		// interest in the object being replaced.
-		JSValueUnprotect(context_, js_object_);
-
-		js_object_ = rhs.js_object_;
-		context_   = rhs.context_;
-
-		// However, we must tell the JavaScriptCore garbage collector that
-		// we do have an interest in the object that replaced the previous
-		// one.
-		JSValueProtect(context_, js_object_);
+	JSClass(const JSClass& rhs) : JSValue(rhs) {
+		js_class_ref_ = rhs.js_class_ref_;
+		JSClassRetain(js_class_ref_);
 	}
 	
-	// Create a copy of another JSClass by assignment.
-	JSClass& operator=(const JSClass& rhs) {
-		if (this == &rhs) {
-			return *this;
-		}
-		
-		// Tell the JavaScriptCore garbage collector that we have no more
-		// interest in the object being replaced.
-		JSValueUnprotect(context_, js_object_);
-		
-		js_object_ = rhs.js_object_;
-		context_   = rhs.context_;
-		
-		// However, we must tell the JavaScriptCore garbage collector that
-		// we do have an interest in the object that replaced the previous
-		// one.
-		JSValueProtect(context_, js_object_);
-		
+	// Move constructor.
+	JSClass(JSClass&& rhs) : JSValue(rhs) {
+		js_class_ref_ = rhs.js_class_ref_;
+		JSClassRetain(js_class_ref_);
+	}
+	
+	// Create a copy of another JSClass by assignment. This is a unified
+	// assignment operator that fuses the copy assignment operator,
+	// X& X::operator=(const X&), and the move assignment operator,
+	// X& X::operator=(X&&);
+	JSClass& operator=(JSClass rhs) {
+		JSValue::operator=(rhs);
+		swap(*this, rhs);
 		return *this;
 	}
 	
-	operator JSObjectRef() const {
-		return js_object_;
+	friend void swap(JSClass& first, JSClass& second) noexcept {
+		// enable ADL (not necessary in our case, but good practice)
+		using std::swap;
+		
+		// by swapping the members of two classes,
+		// the two classes are effectively swapped
+		swap(first.js_class_ref_, second.js_class_ref_);
 	}
 	
  private:
+	
+	// For interoperability with the JavaScriptCore C API.
+	JSClass(JSClassRef js_object_ref, const JSContext& js_context);
+
+	// For interoperability with the JavaScriptCore C API.
+	operator JSClassRef() const {
+		return js_class_ref_;
+	}
 
 	// Prevent heap based objects.
 	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
 	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
 	
 	JSClassDefinition  js_class_definition_;
-	JSClassRef         js_class_;
+	JSClassRef         js_class_ref_;
 };
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {

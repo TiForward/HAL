@@ -229,19 +229,19 @@ public:
 private:
 
   // For interoperability with the JavaScriptCore C API.
-	JSValue(const JSValueRef& js_value_ref, const JSContext& js_context) : js_value_ref_(js_value_ref), js_context_(js_context) {
+	JSValue(JSGlobalContextRef js_context_ref, JSValueRef js_value_ref) : js_context_(js_context_ref), js_value_ref_(js_value_ref)  {
 		assert(js_value_ref_);
 		JSValueProtect(js_context_, js_value_ref_);
 	}
-	
-  // For interoperability with the JavaScriptCore C API.
-  operator JSValueRef() const {
-	  return js_value_ref_;
-  }
 
   // For interoperability with the JavaScriptCore C API.
-  operator JSContextRef() const {
+	operator JSGlobalContextRef() const {
 	  return js_context_;
+  }
+
+	// For interoperability with the JavaScriptCore C API.
+  operator JSValueRef() const {
+	  return js_value_ref_;
   }
 
   friend class JSUndefined;
@@ -266,8 +266,8 @@ private:
 	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
 	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
 	
-	JSValueRef js_value_ref_;
 	JSContext  js_context_;
+	JSValueRef js_value_ref_ { nullptr };
 };
 
 /*!

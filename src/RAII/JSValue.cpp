@@ -35,7 +35,7 @@ JSString JSValue::ToJSONString(unsigned indent) {
 		// assert(!js_string_ref);
 		static const std::string log_prefix { "MDL: JSValueCreateJSONString: " };
 		std::ostringstream os;
-		os << "JSValue could not be serialized to a JSON string: " << JSValue(exception, js_context_);
+		os << "JSValue could not be serialized to a JSON string: " << JSValue(js_context_, exception);
 		const std::string message = os.str();
 		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
 		throw std::logic_error(message);
@@ -56,7 +56,7 @@ JSValue::operator JSString() const {
 	if (exception) {
 		static const std::string log_prefix { "MDL: JSValue::operator JSString() const: " };
 		std::ostringstream os;
-		os << "JSValue could not be converted to a JSString: "<< JSValue(exception, js_context_);
+		os << "JSValue could not be converted to a JSString: "<< JSValue(js_context_, exception);
 		const std::string message = os.str();
 		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
 		throw std::logic_error(message);
@@ -110,7 +110,7 @@ bool JSValue::IsInstanceOfConstructor(const JSObject& constructor) {
 	if (exception) {
 		static const std::string log_prefix { "MDL: JSValue::IsInstanceOfConstructor:" };
 		std::ostringstream os;
-		os << "JSValue caught exception during JSValueIsInstanceOfConstructor: " << JSValue(exception, js_context_);
+		os << "JSValue caught exception during JSValueIsInstanceOfConstructor: " << JSValue(js_context_, exception);
 		const std::string message = os.str();
 		std::clog << log_prefix << " [DEBUG] " << message << std::endl;
 		assert(result == false);
@@ -126,7 +126,7 @@ bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs) {
 	if (exception) {
 		static const std::string log_prefix { "MDL: IsEqualWithTypeCoercion: " };
 		std::ostringstream os;
-		os << "caught exception: " << JSValue(exception, lhs.js_context_);
+		os << "caught exception: " << JSValue(lhs, exception);
 		const std::string message = os.str();
 		std::clog << log_prefix << " [ERROR] " << message << std::endl; 
 	}

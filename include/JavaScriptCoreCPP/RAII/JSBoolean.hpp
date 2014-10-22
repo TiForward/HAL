@@ -29,7 +29,7 @@ public:
     @param js_context The execution context to use.
     @result           A JavaScript value of the boolean type, representing the value of boolean.
   */
-	JSBoolean(bool boolean, const JSContext& js_context) : JSValue(JSValueMakeBoolean(js_context, boolean), js_context) {
+	JSBoolean(bool boolean, const JSContext& js_context) : JSValue(js_context, JSValueMakeBoolean(js_context, boolean)) {
 	}
 	
 	/*!

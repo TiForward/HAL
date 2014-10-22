@@ -59,6 +59,8 @@
 		C9A4E66719F5C00A00CF25BF /* JSRegExp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A4E66619F5C00A00CF25BF /* JSRegExp.cpp */; };
 		C9A4E66919F5C61900CF25BF /* JSFunction.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A4E66819F5C61900CF25BF /* JSFunction.hpp */; };
 		C9A4E66B19F5C62200CF25BF /* JSFunction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A4E66A19F5C62200CF25BF /* JSFunction.cpp */; };
+		C9A4E66F19F721C900CF25BF /* JSPropertyNameAccumulator.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A4E66E19F721C900CF25BF /* JSPropertyNameAccumulator.hpp */; };
+		C9A4E67119F7363900CF25BF /* JSStaticValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A4E67019F7363900CF25BF /* JSStaticValue.cpp */; };
 		C9BD384119D0DF3900609F73 /* JSObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9BD383F19D0DF3900609F73 /* JSObject.cpp */; };
 		C9BD384219D0DF3900609F73 /* JSObject.h in Headers */ = {isa = PBXBuildFile; fileRef = C9BD384019D0DF3900609F73 /* JSObject.h */; };
 		C9BD384419D0F9DA00609F73 /* JSObjectTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9BD384319D0F9DA00609F73 /* JSObjectTests.mm */; };
@@ -133,6 +135,8 @@
 		C9A4E66619F5C00A00CF25BF /* JSRegExp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSRegExp.cpp; path = src/RAII/JSRegExp.cpp; sourceTree = "<group>"; };
 		C9A4E66819F5C61900CF25BF /* JSFunction.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSFunction.hpp; path = include/JavaScriptCoreCPP/RAII/JSFunction.hpp; sourceTree = "<group>"; };
 		C9A4E66A19F5C62200CF25BF /* JSFunction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSFunction.cpp; path = src/RAII/JSFunction.cpp; sourceTree = "<group>"; };
+		C9A4E66E19F721C900CF25BF /* JSPropertyNameAccumulator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSPropertyNameAccumulator.hpp; path = include/JavaScriptCoreCPP/RAII/JSPropertyNameAccumulator.hpp; sourceTree = "<group>"; };
+		C9A4E67019F7363900CF25BF /* JSStaticValue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSStaticValue.cpp; path = src/RAII/JSStaticValue.cpp; sourceTree = "<group>"; };
 		C9BD383F19D0DF3900609F73 /* JSObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSObject.cpp; path = src/JSObject.cpp; sourceTree = "<group>"; };
 		C9BD384019D0DF3900609F73 /* JSObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSObject.h; path = include/JavaScriptCoreCPP/JSObject.h; sourceTree = "<group>"; };
 		C9BD384319D0F9DA00609F73 /* JSObjectTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = JSObjectTests.mm; sourceTree = "<group>"; };
@@ -226,6 +230,9 @@
 				C9A4E62119F2EC6B00CF25BF /* JSObject.hpp */,
 				C9A4E65019F4E47100CF25BF /* JSObject.cpp */,
 				C9A4E65219F553CA00CF25BF /* JSPropertyNameArray.hpp */,
+				C9A4E66E19F721C900CF25BF /* JSPropertyNameAccumulator.hpp */,
+				C9A4E62219F2EC6B00CF25BF /* JSStaticValue.hpp */,
+				C9A4E67019F7363900CF25BF /* JSStaticValue.cpp */,
 				C9A4E64C19F49E5700CF25BF /* JSArray.hpp */,
 				C9A4E65619F5914B00CF25BF /* JSArray.cpp */,
 				C9A4E65C19F5BC6E00CF25BF /* JSDate.hpp */,
@@ -238,7 +245,6 @@
 				C9A4E66A19F5C62200CF25BF /* JSFunction.cpp */,
 				C9A4E61D19F2EC6B00CF25BF /* JSClass.hpp */,
 				C9A4E61E19F2EC6B00CF25BF /* JSClassDefinition.hpp */,
-				C9A4E62219F2EC6B00CF25BF /* JSStaticValue.hpp */,
 			);
 			name = RAII;
 			sourceTree = "<group>";
@@ -311,6 +317,7 @@
 				C9A4E66119F5BEEF00CF25BF /* JSError.hpp in Headers */,
 				C936FD6D19CB97930082CB08 /* JSVirtualMachine.h in Headers */,
 				C9A4E64D19F49E5700CF25BF /* JSArray.hpp in Headers */,
+				C9A4E66F19F721C900CF25BF /* JSPropertyNameAccumulator.hpp in Headers */,
 				C936FD6B19CB97930082CB08 /* JSString.h in Headers */,
 				C9A4E64319F4533800CF25BF /* JSNull.hpp in Headers */,
 				C9A4E66919F5C61900CF25BF /* JSFunction.hpp in Headers */,
@@ -429,6 +436,7 @@
 				C9A4E66319F5BEF700CF25BF /* JSError.cpp in Sources */,
 				C936FD4619CB95EC0082CB08 /* JSString.cpp in Sources */,
 				C9A4E65F19F5BC7A00CF25BF /* JSDate.cpp in Sources */,
+				C9A4E67119F7363900CF25BF /* JSStaticValue.cpp in Sources */,
 				C936FD4819CB95EC0082CB08 /* JSVirtualMachine.cpp in Sources */,
 				C9A4E66719F5C00A00CF25BF /* JSRegExp.cpp in Sources */,
 				C9A4E66B19F5C62200CF25BF /* JSFunction.cpp in Sources */,

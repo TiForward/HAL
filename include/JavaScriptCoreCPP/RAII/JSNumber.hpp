@@ -38,7 +38,7 @@ public:
     @param js_context The execution context to use.
     @result           A JavaScript value of the number type, representing the value of number.
   */
-	JSNumber(double number, const JSContext& js_context) : JSValue(JSValueMakeNumber(js_context, number), js_context) {
+	JSNumber(double number, const JSContext& js_context) : JSValue(js_context, JSValueMakeNumber(js_context, number)) {
 	}
 
   /*!

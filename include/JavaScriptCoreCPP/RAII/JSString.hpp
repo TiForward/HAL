@@ -99,6 +99,7 @@ private:
   friend class JSValue;
   friend class JSObject;
   friend class JSPropertyNameArray;
+  friend class JSPropertyNameAccumulator;
   friend class JSFunction;
   
   // For interoperability with the JavaScriptCore C API.
