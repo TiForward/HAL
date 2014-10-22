@@ -163,7 +163,22 @@ class JSClassDefinition final	{
 	JSClassDefinition& operator=(const JSClassDefinition& rhs) = default;
 	JSClassDefinition& operator=(JSClassDefinition&& rhs) = default;
 
-	// TODO: provide getters.
+	JSString                            get_class_name()                   const { return class_name_; }
+	std::set<JSClassAttributes>         get_attributes()                   const { return attributes_; }
+	std::shared_ptr<JSClass>            get_parent_class_ptr()             const { return parent_class_ptr_; }
+	std::set<JSStaticValue>             get_static_values()                const { return static_values_; }
+	std::set<JSStaticFunction>          get_static_functions()             const { return static_functions_; }
+	JSObject::InitializeCallback        get_initialize_callback()          const { return initialize_callback_; }
+	JSObject::FinalizeCallback          get_finalize_callback()            const { return finalize_callback_; }
+	JSObject::HasPropertyCallback       get_has_property_callback()        const { return has_property_callback_; }
+	JSObject::GetPropertyCallback       get_get_property_callback()        const { return get_property_callback_; }
+	JSObject::SetPropertyCallback       get_set_property_callback()        const { return set_property_callback_; }
+	JSObject::DeletePropertyCallback    get_delete_property_callback()     const { return delete_property_callback_; }
+	JSObject::GetPropertyNamesCallback  get_get_property_names_callback()  const { return get_property_names_callback_; }
+	JSObject::CallAsFunctionCallback    get_call_as_function_callback()    const { return call_as_function_callback_; }
+	JSObject::CallAsConstructorCallback get_call_as_constructor_callback() const { return call_as_constructor_callback_; }
+	JSObject::HasInstanceCallback       get_has_instance_callback()        const { return has_instance_callback_; }
+	JSObject::ConvertToTypeCallback     get_convert_to_type_callback()     const { return convert_to_type_callback_; }
 
  private:
     
@@ -180,24 +195,24 @@ class JSClassDefinition final	{
 
 	friend class JSClass;
 
-	JSString                          class_name_;
-	std::string                       class_name_for_js_class_definition_;
-	std::set<JSClassAttributes>       attributes_;
-	std::shared_ptr<JSClass>          parent_class_ptr_             { nullptr };
-	std::set<JSStaticValue>           static_values_;
-	std::set<JSStaticFunction>        static_functions_;
-	JSObjectInitializeCallback        initialize_callback_          { nullptr };
-	JSObjectFinalizeCallback          finalize_callback_            { nullptr };
-	JSObjectHasPropertyCallback       has_property_callback_        { nullptr };
-	JSObjectGetPropertyCallback       get_property_callback_        { nullptr };
-	JSObjectSetPropertyCallback       set_property_callback_        { nullptr };
-	JSObjectDeletePropertyCallback    delete_property_callback_     { nullptr };
-	JSObjectGetPropertyNamesCallback  get_property_names_callback_  { nullptr };
-	JSObjectCallAsFunctionCallback    call_as_function_callback_    { nullptr };
-	JSObjectCallAsConstructorCallback call_as_constructor_callback_ { nullptr };
-	JSObjectHasInstanceCallback       has_instance_callback_        { nullptr };
-	JSObjectConvertToTypeCallback     convert_to_type_callback_     { nullptr };
-	::JSClassDefinition               js_class_definition_ = kJSClassDefinitionEmpty;
+	JSString                            class_name_;
+	std::string                         class_name_for_js_class_definition_;
+	std::set<JSClassAttributes>         attributes_;
+	std::shared_ptr<JSClass>            parent_class_ptr_             { nullptr };
+	std::set<JSStaticValue>             static_values_;
+	std::set<JSStaticFunction>          static_functions_;
+	JSObject::InitializeCallback        initialize_callback_          { nullptr };
+	JSObject::FinalizeCallback          finalize_callback_            { nullptr };
+	JSObject::HasPropertyCallback       has_property_callback_        { nullptr };
+	JSObject::GetPropertyCallback       get_property_callback_        { nullptr };
+	JSObject::SetPropertyCallback       set_property_callback_        { nullptr };
+	JSObject::DeletePropertyCallback    delete_property_callback_     { nullptr };
+	JSObject::GetPropertyNamesCallback  get_property_names_callback_  { nullptr };
+	JSObject::CallAsFunctionCallback    call_as_function_callback_    { nullptr };
+	JSObject::CallAsConstructorCallback call_as_constructor_callback_ { nullptr };
+	JSObject::HasInstanceCallback       has_instance_callback_        { nullptr };
+	JSObject::ConvertToTypeCallback     convert_to_type_callback_     { nullptr };
+	::JSClassDefinition                 js_class_definition_ = kJSClassDefinitionEmpty;
 };
 
 // Return true if the two JSClassDefinitions are equal.
