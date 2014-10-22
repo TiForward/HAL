@@ -252,7 +252,7 @@ class JSObject : public JSValue {
 	  or string. An object converted to boolean is 'true.' An object
 	  converted to object is itself.
 	*/
-	using ConvertToTypeCallback = std::function<JSValue(const JSObject&, JSValue::Type)>;
+	using ConvertToTypeCallback = std::function<JSValue(const JSObject&, const JSValue::Type&)>;
 	
 	/*!
 	  @method

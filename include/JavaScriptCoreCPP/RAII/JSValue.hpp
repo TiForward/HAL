@@ -295,6 +295,14 @@ std::ostream& operator << (std::ostream& ostream, const JSValue& js_value) {
 	return ostream;
 }
 
+std::string to_string(const JSValue::Type& js_value_type);
+
+inline
+std::ostream& operator << (std::ostream& ostream, const JSValue::Type& js_value_type) {
+	ostream << to_string(js_value_type);
+	return ostream;
+}
+
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 
 #endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSVALUE_HPP_

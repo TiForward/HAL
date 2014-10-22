@@ -134,4 +134,43 @@ bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs) {
 	return result;
 }
 
+std::string to_string(const JSValue::Type& js_value_type) {
+	switch (js_value_type) {
+		case JSValue::Type::Undefined:
+		return "Undefined";
+		break;
+
+		case JSValue::Type::Null:
+		return "Null";
+		break;
+
+		case JSValue::Type::Boolean:
+		return "Boolean";
+		break;
+
+		case JSValue::Type::Number:
+		return "Number";
+		break;
+
+		case JSValue::Type::String:
+		return "String";
+		break;
+
+		case JSValue::Type::Object:
+		return "Object";
+		break;
+
+		default:
+			static const std::string log_prefix { "MDL: to_string(JSValue::Type): " };
+			std::ostringstream os;
+			os << log_prefix
+			   << "Could not map JSValue::Type with value "
+			   << static_cast<std::underlying_type<JSValue::Type>::type>(js_value_type)
+			   << " to a std::string.";
+			const std::string message = os.str();
+			std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl; 
+			throw std::logic_error(message);
+	}
+}
+
 }} // namespace JavaScriptCoreCPP { namespace RAII {
