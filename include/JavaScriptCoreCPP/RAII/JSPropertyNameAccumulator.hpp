@@ -36,7 +36,7 @@ class JSPropertyNameAccumulator	{
 	  @abstract            Adds a property name to a JavaScript property name accumulator.
 	  @param property_name The property name to add.
 	*/
-	void AddName(const JSString& property_name) {
+	void AddName(const JSString& property_name) const {
 		JSPropertyNameAccumulatorAddName(js_property_name_accumulator_ref_, property_name);
 	}
 	

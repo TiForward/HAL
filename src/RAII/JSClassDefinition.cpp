@@ -5,12 +5,12 @@
 //
 
 #include "JavaScriptCoreCPP/RAII/JSClassDefinition.hpp"
-#include "JavaScriptCoreCPP/RAII/JSClassDefinitionBuilder.hpp"
+#include "JavaScriptCoreCPP/RAII/JSClassBuilder.hpp"
 #include "JavaScriptCoreCPP/RAII/JSClass.hpp"
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-JSClassDefinition::JSClassDefinition(const JSClassDefinitionBuilder& builder)
+JSClassDefinition::JSClassDefinition(const JSClassBuilder& builder)
 		: attributes_(builder.attributes_)
 		, class_name_(builder.class_name_)
 		, class_name_for_js_class_definition_(class_name_)

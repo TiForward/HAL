@@ -24,7 +24,7 @@ enum class JSClassAttributes {
 };
 
 class JSClass;
-class JSClassDefinitionBuilder;
+class JSClassBuilder;
 
 /*!
   @class
@@ -152,7 +152,7 @@ class JSClassDefinition final	{
 	
  public:
 
-	JSClassDefinition(const JSClassDefinitionBuilder& builder);
+	JSClassDefinition(const JSClassBuilder& builder);
 
 	JSClassDefinition() = delete;
 	~JSClassDefinition() = default;

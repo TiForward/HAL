@@ -5,43 +5,42 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCLASSDEFINITIONBUILDER_HPP_
-#define _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCLASSDEFINITIONBUILDER_HPP_
+#ifndef _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCLASSBUILDER_HPP_
+#define _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCLASSBUILDER_HPP_
 
 
 #include "JavaScriptCoreCPP/RAII/JSClassDefinition.hpp"
+#include "JavaScriptCoreCPP/RAII/JSClass.hpp"
 #include <set>
 #include <memory>
 #include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-class JSClass;
-
-class JSClassDefinitionBuilder final {
+class JSClassBuilder final {
 	
  public:
 	
 	/**
 	 * Create an empty builder.
 	 */
-	JSClassDefinitionBuilder(const JSString& class_name) : class_name_(class_name) {
+	JSClassBuilder(const JSString& class_name) : class_name_(class_name) {
 	}
 	
-	JSClassDefinitionBuilder() = delete;;
-	~JSClassDefinitionBuilder() = default;
+	JSClassBuilder() = delete;;
+	~JSClassBuilder() = default;
 
-	JSClassDefinitionBuilder(const JSClassDefinitionBuilder& rhs) = default;
-	JSClassDefinitionBuilder(JSClassDefinitionBuilder&& rhs) = default;
+	JSClassBuilder(const JSClassBuilder& rhs) = default;
+	JSClassBuilder(JSClassBuilder&& rhs) = default;
 
-	JSClassDefinitionBuilder& operator=(const JSClassDefinitionBuilder& rhs) = default;
-	JSClassDefinitionBuilder& operator=(JSClassDefinitionBuilder&& rhs) = default;
+	JSClassBuilder& operator=(const JSClassBuilder& rhs) = default;
+	JSClassBuilder& operator=(JSClassBuilder&& rhs) = default;
 
 	JSString get_class_name() {
 		return class_name_;
 	}
 	
-	JSClassDefinitionBuilder& set_class_name(const JSString& class_name) {
+	JSClassBuilder& set_class_name(const JSString& class_name) {
 		class_name_ = class_name;
 		return *this;
 	}
@@ -50,7 +49,7 @@ class JSClassDefinitionBuilder final {
 		return attributes_;
 	}
 
-	JSClassDefinitionBuilder& set_attributes(const std::set<JSClassAttributes>& attributes) {
+	JSClassBuilder& set_attributes(const std::set<JSClassAttributes>& attributes) {
 		attributes_ = attributes;
 		return *this;
 	}
@@ -59,7 +58,7 @@ class JSClassDefinitionBuilder final {
 		return parent_class_ptr_;
 	}
 
-	JSClassDefinitionBuilder& set_parent_class_ptr(const std::shared_ptr<JSClass>& parent_class_ptr) {
+	JSClassBuilder& set_parent_class_ptr(const std::shared_ptr<JSClass>& parent_class_ptr) {
 		parent_class_ptr_ = parent_class_ptr;
 		return *this;
 	}
@@ -68,7 +67,7 @@ class JSClassDefinitionBuilder final {
 		return static_values_;
 	}
 
-	JSClassDefinitionBuilder& set_static_values(const std::set<JSStaticValue>& static_values) {
+	JSClassBuilder& set_static_values(const std::set<JSStaticValue>& static_values) {
 		static_values_ = static_values;
 		return *this;
 	}
@@ -77,7 +76,7 @@ class JSClassDefinitionBuilder final {
 		return static_functions_;
 	}
 
-	JSClassDefinitionBuilder& set_static_functions(const std::set<JSStaticFunction>& static_functions) {
+	JSClassBuilder& set_static_functions(const std::set<JSStaticFunction>& static_functions) {
 		static_functions_ = static_functions;
 		return *this;
 	}
@@ -86,7 +85,7 @@ class JSClassDefinitionBuilder final {
 		return initialize_callback_;
 	}
 
-	JSClassDefinitionBuilder& set_initialize_callback(const JSObject::InitializeCallback& initialize_callback) {
+	JSClassBuilder& set_initialize_callback(const JSObject::InitializeCallback& initialize_callback) {
 		initialize_callback_ = initialize_callback;
 		return *this;
 	}
@@ -95,7 +94,7 @@ class JSClassDefinitionBuilder final {
 		return finalize_callback_;
 	}
 
-	JSClassDefinitionBuilder& set_finalize_callback(const JSObject::FinalizeCallback& finalize_callback) {
+	JSClassBuilder& set_finalize_callback(const JSObject::FinalizeCallback& finalize_callback) {
 		finalize_callback_ = finalize_callback;
 		return *this;
 	}
@@ -104,7 +103,7 @@ class JSClassDefinitionBuilder final {
 		return has_property_callback_;
 	}
 
-	JSClassDefinitionBuilder& set_has_property_callback(const JSObject::HasPropertyCallback& has_property_callback) {
+	JSClassBuilder& set_has_property_callback(const JSObject::HasPropertyCallback& has_property_callback) {
 		has_property_callback_ = has_property_callback;
 		return *this;
 	}
@@ -113,7 +112,7 @@ class JSClassDefinitionBuilder final {
 		return get_property_callback_;
 	}
 
-	JSClassDefinitionBuilder& set_get_property_callback(const JSObject::GetPropertyCallback& get_property_callback) {
+	JSClassBuilder& set_get_property_callback(const JSObject::GetPropertyCallback& get_property_callback) {
 		get_property_callback_ = get_property_callback;
 		return *this;
 	}
@@ -122,7 +121,7 @@ class JSClassDefinitionBuilder final {
 		return set_property_callback_;
 	}
 
-	JSClassDefinitionBuilder& set_set_property_callback(const JSObject::SetPropertyCallback& set_property_callback) {
+	JSClassBuilder& set_set_property_callback(const JSObject::SetPropertyCallback& set_property_callback) {
 		set_property_callback_ = set_property_callback;
 		return *this;
 	}
@@ -131,7 +130,7 @@ class JSClassDefinitionBuilder final {
 		return delete_property_callback_;
 	}
 
-	JSClassDefinitionBuilder& set_delete_property_callback(const JSObject::DeletePropertyCallback& delete_property_callback) {
+	JSClassBuilder& set_delete_property_callback(const JSObject::DeletePropertyCallback& delete_property_callback) {
 		delete_property_callback_ = delete_property_callback;
 		return *this;
 	}
@@ -140,7 +139,7 @@ class JSClassDefinitionBuilder final {
 		return get_property_names_callback_;
 	}
 
-	JSClassDefinitionBuilder& set_get_property_names_callback(const JSObject::GetPropertyNamesCallback& get_property_names_callback) {
+	JSClassBuilder& set_get_property_names_callback(const JSObject::GetPropertyNamesCallback& get_property_names_callback) {
 		get_property_names_callback_ = get_property_names_callback;
 		return *this;
 	}
@@ -149,7 +148,7 @@ class JSClassDefinitionBuilder final {
 		return call_as_function_callback_;
 	}
 
-	JSClassDefinitionBuilder& set_call_as_function_callback(const JSObject::CallAsFunctionCallback& call_as_function_callback) {
+	JSClassBuilder& set_call_as_function_callback(const JSObject::CallAsFunctionCallback& call_as_function_callback) {
 		call_as_function_callback_ = call_as_function_callback;
 		return *this;
 	}
@@ -158,7 +157,7 @@ class JSClassDefinitionBuilder final {
 		return call_as_constructor_callback_;
 	}
 
-	JSClassDefinitionBuilder& set_call_as_constructor_callback(const JSObject::CallAsConstructorCallback& call_as_constructor_callback) {
+	JSClassBuilder& set_call_as_constructor_callback(const JSObject::CallAsConstructorCallback& call_as_constructor_callback) {
 		call_as_constructor_callback_ = call_as_constructor_callback;
 		return *this;
 	}
@@ -167,7 +166,7 @@ class JSClassDefinitionBuilder final {
 		return has_instance_callback_;
 	}
 
-	JSClassDefinitionBuilder& set_has_instance_callback(const JSObject::HasInstanceCallback& has_instance_callback) {
+	JSClassBuilder& set_has_instance_callback(const JSObject::HasInstanceCallback& has_instance_callback) {
 		has_instance_callback_ = has_instance_callback;
 		return *this;
 	}
@@ -176,15 +175,15 @@ class JSClassDefinitionBuilder final {
 		return convert_to_type_callback_;
 	}
 
-	JSClassDefinitionBuilder& set_convert_to_type_callback(const JSObject::ConvertToTypeCallback& convert_to_type_callback) {
+	JSClassBuilder& set_convert_to_type_callback(const JSObject::ConvertToTypeCallback& convert_to_type_callback) {
 		convert_to_type_callback_ = convert_to_type_callback;
 		return *this;
 	}
 	
-	JSClassDefinition build() {
+	JSClass build() {
 		JSClassDefinition js_class_definition(*this);
 		// TODO validate js_class_definition.
-		return js_class_definition;
+		return JSClass(js_class_definition);
 	}
 	
  private:
@@ -214,4 +213,4 @@ class JSClassDefinitionBuilder final {
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 
-#endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCLASSDEFINITION_HPP_
+#endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCLASSBUILDER_HPP_

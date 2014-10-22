@@ -6,7 +6,8 @@
 //  Copyright (c) 2014 Appcelerator. All rights reserved.
 //
 
-#include "JavaScriptCoreCPP/RAII/JSClassDefinitionBuilder.hpp"
+#include "JavaScriptCoreCPP/RAII/JSClassBuilder.hpp"
+#include "JavaScriptCoreCPP/RAII/JSObject.hpp"
 #include "DerivedJSObject.hpp"
 #import <XCTest/XCTest.h>
 
@@ -15,7 +16,10 @@ using namespace JavaScriptCoreCPP::RAII;
 @interface JSClassDefinitionBuilderTests : XCTestCase
 @end
 
-@implementation JSClassDefinitionBuilderTests
+@implementation JSClassDefinitionBuilderTests {
+  JSContext js_context;
+}
+
 
 - (void)setUp {
     [super setUp];
@@ -27,9 +31,11 @@ using namespace JavaScriptCoreCPP::RAII;
     [super tearDown];
 }
 
-- (void)testJSClassDefinitionBuilder {
-  JSClassDefinitionBuilder builder("Foo");
-  auto js_class_definition = builder.build();
+- (void)testJSClassBuilder {
+  JSClassBuilder builder("Foo");
+  auto js_class = builder.build();
+  
+  JSObject js_object(js_class, js_context);
 }
 
 - (void)testPerformanceExample {
