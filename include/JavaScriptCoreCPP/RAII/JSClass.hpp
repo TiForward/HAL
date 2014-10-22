@@ -13,17 +13,13 @@
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-// Standard JavaScript practice calls for storing function objects in
-// prototypes, so they can be shared. The default constructor for
-// JSClass follows this idiom, instantiating objects with a shared,
-// automatically generated prototype containing the class's function
-// objects.
-//
-// The kJSClassAttributeNoAutomaticPrototype attribute specifies that
-// a JSClass should not automatically generate such a prototype. The
-// resulting JSClass instantiates objects with the default object
-// prototype, and gives each instance object its own copy of the
-// class's function objects.
+/*!
+  @class
+
+  @discussion A JSClass is an RAII wrapper around a JSClassRef, the
+  JavaScriptCore C API representation of a JavaScript class that can be passed to . Used
+  with JSObjectMake to construct objects with custom behavior.
+*/
 class JSClass final	{
 	
  public:
@@ -73,15 +69,12 @@ class JSClass final	{
 	
  private:
 	
-	// // For interoperability with the JavaScriptCore C API.
-	// JSClass(const ::JSClassDefinition* definition) {
-	// 	assert(definition);
-	// }
-
 	// For interoperability with the JavaScriptCore C API.
 	operator JSClassRef() const {
 		return js_class_ref_;
 	}
+
+	friend JSObject;
 
 	JSClassDefinition js_class_definition_;
 	JSClassRef        js_class_ref_ { nullptr };

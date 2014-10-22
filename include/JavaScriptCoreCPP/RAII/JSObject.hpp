@@ -33,6 +33,7 @@ enum class JSPropertyAttribute : ::JSPropertyAttributes {
 };
 
 class JSPropertyNameAccumulator;
+class JSClass;
 
 /*!
   @class
@@ -255,21 +256,31 @@ class JSObject : public JSValue {
 	
 	/*!
 	  @method
-	  @abstract       Create a JavaScript object from the given JavaScript value.
-	  @param js_value The JSValue to convert.
-	  @result         The JSObject result of conversion.
-	  @throws         std::invalid_argument if the given JavaScript value could not be converted to a JavaScript object.
-	*/
-	//JSObject(const JSValue& js_value);
-
-	/*!
-	  @method
-	  @abstract         Create a an empty JavaScript object.
+	  @abstract         Create an empty JavaScript object using the default object class.
 	  @param js_context The execution context to use.
 	  @result           An empty JavaScript object.
 	*/
 	JSObject(const JSContext& js_context) : JSObject(js_context, JSObjectMake(js_context, nullptr, nullptr)) {
 	}
+
+	/*!
+	  @method
+	  @abstract           Create a JavaScript object.
+	  @param js_class     The JSClass to assign to the object.
+	  @param js_context   The execution context to use.
+	  @param private_data An optional void* to set as the object's private data. Pass nullptr to specify no private data.
+	  @result             A JavaScript object with the given class and optional private data.
+	  
+	  @discussion The default object class does not allocate storage for
+	  private data, so you must use this constructor if you want your
+	  object to be able to store private data for callbacks.
+	  
+	  private_data is set on the created object before the intialize
+	  callbacks in its class chain are called. This enables the
+	  initialize callbacks to retrieve and manipulate private_data
+	  through GetPrivate.
+	*/
+	JSObject(const JSClass& js_class, const JSContext& js_context, void* private_data = nullptr);
 
 	/*!
 	  @method

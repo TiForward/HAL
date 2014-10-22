@@ -8,39 +8,14 @@
 #include <bitset>
 #include <type_traits>
 #include <sstream>
+#include "JavaScriptCoreCPP/RAII/JSClass.hpp"
 #include "JavaScriptCoreCPP/RAII/JSPropertyNameAccumulator.hpp"
 #include "JSPropertyNameArray.hpp"
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-/*
-JSObject::JSObject(const JSValue& js_value)
-		: JSValue(js_value)
-		, js_context_(js_value.js_context_) {
-
-	static const std::string log_prefix { "MDL: JSObject(const JSValue& js_value) " };
-	
-	if (!IsObject()) {
-		const std::string message = "JSValue is not an object";
-		std::clog << log_prefix << " [ERROR] " << message << std::endl;
-		throw std::invalid_argument(message);
-	}
-	
-	JSValueRef exception { nullptr };
-	JSObjectRef js_object_ref = JSValueToObject(js_context_, js_value_ref_, &exception);
-	if (exception) {
-		std::ostringstream os;
-		os << "JSValue could not be converted to a JSObject: "<< JSValue(js_context_, exception);
-		const std::string message = os.str();
-		std::clog << log_prefix << " [ERROR] " << message << std::endl;
-		throw std::invalid_argument(message);
-	}
-	
-	assert(js_object_ref);
-	js_object_ref_ = js_object_ref;
-	JSValueProtect(js_context_, js_object_ref_);
+JSObject::JSObject(const JSClass& js_class, const JSContext& js_context, void* private_data) : JSObject(js_context, JSObjectMake(js_context, js_class, private_data)) {
 }
-*/
 
 // For interoperability with the JavaScriptCore C API.
 JSObject::JSObject(JSGlobalContextRef js_context_ref, JSObjectRef js_object_ref)
@@ -266,3 +241,42 @@ JSObject JSObject::CallAsConstructor(const std::vector<JSValue>& arguments) cons
 }
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
+
+
+/*!
+  @method
+  @abstract       Create a JavaScript object from the given JavaScript value.
+  @param js_value The JSValue to convert.
+  @result         The JSObject result of conversion.
+  @throws         std::invalid_argument if the given JavaScript value could not be converted to a JavaScript object.
+*/
+//JSObject(const JSValue& js_value);
+
+/*
+JSObject::JSObject(const JSValue& js_value)
+		: JSValue(js_value)
+		, js_context_(js_value.js_context_) {
+
+	static const std::string log_prefix { "MDL: JSObject(const JSValue& js_value) " };
+	
+	if (!IsObject()) {
+		const std::string message = "JSValue is not an object";
+		std::clog << log_prefix << " [ERROR] " << message << std::endl;
+		throw std::invalid_argument(message);
+	}
+	
+	JSValueRef exception { nullptr };
+	JSObjectRef js_object_ref = JSValueToObject(js_context_, js_value_ref_, &exception);
+	if (exception) {
+		std::ostringstream os;
+		os << "JSValue could not be converted to a JSObject: "<< JSValue(js_context_, exception);
+		const std::string message = os.str();
+		std::clog << log_prefix << " [ERROR] " << message << std::endl;
+		throw std::invalid_argument(message);
+	}
+	
+	assert(js_object_ref);
+	js_object_ref_ = js_object_ref;
+	JSValueProtect(js_context_, js_object_ref_);
+}
+*/
