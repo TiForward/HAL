@@ -24,7 +24,7 @@ bool SetProperty(JSContextRef js_context_ref, JSObjectRef js_object_ref, JSStrin
 }
 */
 
-JSStaticValue::JSStaticValue(const JSString& property_name, JSObjectGetPropertyCallback get_property_callback, JSObjectSetPropertyCallback set_property_callback, const std::set<JSPropertyAttribute> attributes)
+JSStaticValue::JSStaticValue(const JSString& property_name, JSObject::GetPropertyCallback get_property_callback, JSObject::SetPropertyCallback set_property_callback, const std::set<JSPropertyAttribute> attributes)
 		: property_name_(property_name)
 		, property_name_for_js_static_value_(property_name)
 		, get_property_callback_(get_property_callback)
@@ -83,7 +83,7 @@ JSStaticValue::JSStaticValue(const JSString& property_name, JSObjectGetPropertyC
 // Copy constructor.
 JSStaticValue::JSStaticValue(const JSStaticValue& rhs)
 		: property_name_(rhs.property_name_)
-		, property_name_for_js_static_value_(rhs.property_name_)
+		, property_name_for_js_static_value_(rhs.property_name_for_js_static_value_)
 		, get_property_callback_(rhs.get_property_callback_)
 		, set_property_callback_(rhs.set_property_callback_)
 		, attributes_(rhs.attributes_)
@@ -94,7 +94,7 @@ JSStaticValue::JSStaticValue(const JSStaticValue& rhs)
 // Move constructor.
 JSStaticValue::JSStaticValue(JSStaticValue&& rhs)
 		: property_name_(rhs.property_name_)
-		, property_name_for_js_static_value_(rhs.property_name_)
+		, property_name_for_js_static_value_(rhs.property_name_for_js_static_value_)
 		, get_property_callback_(rhs.get_property_callback_)
 		, set_property_callback_(rhs.set_property_callback_)
 		, attributes_(rhs.attributes_)
@@ -102,18 +102,30 @@ JSStaticValue::JSStaticValue(JSStaticValue&& rhs)
 	js_static_value_.name = property_name_for_js_static_value_.c_str();
 }
 
-void JSStaticValue::swap(JSStaticValue& first, JSStaticValue& second) noexcept {
-    // enable ADL (not necessary in our case, but good practice)
-    using std::swap;
-    
-    // by swapping the members of two classes,
-    // the two classes are effectively swapped
-    swap(first.property_name_                    , second.property_name_);
-    swap(first.property_name_for_js_static_value_, second.property_name_for_js_static_value_);
-    swap(first.get_property_callback_            , second.get_property_callback_);
-    swap(first.set_property_callback_            , second.set_property_callback_);
-    swap(first.attributes_                       , second.attributes_);
-    swap(first.js_static_value_                  , second.js_static_value_);
+bool operator==(const JSStaticValue& lhs, const JSStaticValue& rhs) {
+	if (lhs.property_name_ != rhs.property_name_) {
+		return false;
+	}
+
+	// get_property_callback_
+	if (lhs.get_property_callback_ && !rhs.get_property_callback_) {
+		return false;
+	}
+	
+	if (!lhs.get_property_callback_ && rhs.get_property_callback_) {
+		return false;
+	}
+
+	// set_property_callback_
+	if (lhs.set_property_callback_ && !rhs.set_property_callback_) {
+		return false;
+	}
+
+	if (!lhs.set_property_callback_ && rhs.set_property_callback_) {
+		return false;
+	}
+
+	return lhs.attributes_ == rhs.attributes_;
 }
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {

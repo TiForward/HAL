@@ -48,13 +48,13 @@ class JSStaticFunction final	{
 	                                   statically declared function
 	                                   property of a JSObject
 	*/
-	JSStaticFunction(const JSString& function_name, JSObjectCallAsFunctionCallback call_as_function_callback, const std::set<JSPropertyAttribute> attributes = std::set<JSPropertyAttribute>());
+	JSStaticFunction(const JSString& function_name, JSObject::CallAsFunctionCallback call_as_function_callback, const std::set<JSPropertyAttribute> attributes = std::set<JSPropertyAttribute>());
 
 	JSString get_function_name() const {
 		return function_name_;
 	}
 	
-	JSObjectCallAsFunctionCallback get_call_as_function_callback() const {
+	JSObject::CallAsFunctionCallback get_call_as_function_callback() const {
 		return call_as_function_callback_;
 	}
 
@@ -81,7 +81,18 @@ class JSStaticFunction final	{
 		return *this;
   }
   
-	void swap(JSStaticFunction& first, JSStaticFunction& second) noexcept;
+	friend void swap(JSStaticFunction& first, JSStaticFunction& second) noexcept {
+		// enable ADL (not necessary in our case, but good practice)
+		using std::swap;
+		
+		// by swapping the members of two classes,
+		// the two classes are effectively swapped
+		swap(first.function_name_                       , second.function_name_);
+		swap(first.function_name_for_js_static_function_, second.function_name_for_js_static_function_);
+		swap(first.call_as_function_callback_           , second.call_as_function_callback_);
+		swap(first.attributes_                          , second.attributes_);
+    swap(first.js_static_function_                  , second.js_static_function_);
+	}
 
  private:
 	
@@ -90,16 +101,52 @@ class JSStaticFunction final	{
 		return js_static_function_;
 	}
 	
-	// Prevent heap based objects.
-	static void* operator new(size_t);			 // #1: To prevent allocation of scalar objects
-	static void* operator new [] (size_t);	 // #2: To prevent allocation of array of objects
-	
-	JSString                       function_name_;
-	std::string                    function_name_for_js_static_function_;
-	JSObjectCallAsFunctionCallback call_as_function_callback_ { nullptr };
-	std::set<JSPropertyAttribute>  attributes_;
-	::JSStaticFunction             js_static_function_ {0, 0, 0};
+	// Return true if the two JSStaticFunctions are equal.
+	friend bool operator==(const JSStaticFunction& lhs, const JSStaticFunction& rhs);
+
+	// Define a strict weak ordering for two JSStaticFunctions.
+	friend bool operator<(const JSStaticFunction& lhs, const JSStaticFunction& rhs);
+
+	JSString                         function_name_;
+	std::string                      function_name_for_js_static_function_;
+	JSObject::CallAsFunctionCallback call_as_function_callback_ { nullptr };
+	std::set<JSPropertyAttribute>    attributes_;
+	::JSStaticFunction               js_static_function_ {0, 0, 0};
 };
+
+// Return true if the two JSStaticFunctions are equal.
+bool operator==(const JSStaticFunction& lhs, const JSStaticFunction& rhs);
+
+// Return true if the two JSString are not equal.
+inline
+bool operator!=(const JSStaticFunction& lhs, const JSStaticFunction& rhs) {
+	return ! (lhs == rhs);
+}
+
+// Define a strict weak ordering for two JSStaticFunctions.
+inline
+bool operator<(const JSStaticFunction& lhs, const JSStaticFunction& rhs) {
+	if (lhs.function_name_for_js_static_function_ < rhs.function_name_for_js_static_function_) {
+		return true;
+	}
+
+	return lhs.attributes_ < rhs.attributes_;
+}
+
+inline
+bool operator>(const JSStaticFunction& lhs, const JSStaticFunction& rhs) {
+	return rhs < lhs;
+}
+
+inline
+bool operator<=(const JSStaticFunction& lhs, const JSStaticFunction& rhs) {
+	return !(lhs > rhs);
+}
+
+inline
+bool operator>=(const JSStaticFunction& lhs, const JSStaticFunction& rhs) {
+	return !(lhs < rhs);
+}
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 

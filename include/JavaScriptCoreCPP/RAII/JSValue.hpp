@@ -212,7 +212,7 @@ public:
     return *this;
   }
   
-	void swap(JSValue& first, JSValue& second) noexcept {
+	friend void swap(JSValue& first, JSValue& second) noexcept {
     // enable ADL (not necessary in our case, but good practice)
     using std::swap;
     
@@ -257,10 +257,6 @@ private:
 
 	// Return true if the two JSValues are equal as compared by the JS == operator.
 	friend bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs);
-	
-	// Prevent heap based objects.
-	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
-	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
 	
 	JSContext  js_context_;
 	JSValueRef js_value_ref_ { nullptr };

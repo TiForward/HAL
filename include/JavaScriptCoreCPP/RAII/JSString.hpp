@@ -114,20 +114,16 @@ private:
 	// Return true if the two JSStrings are equal.
 	friend bool operator==(const JSString& lhs, const JSString& rhs);
 	
-  // Prevent heap based objects.
-	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
-	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
-
 	JSStringRef js_string_ref_;
 };
 
-// Return true if the two JSString are equal.
+// Return true if the two JSStrings are equal.
 inline
 bool operator==(const JSString& lhs, const JSString& rhs) {
 	return JSStringIsEqual(lhs, rhs);
 }
 
-// Return true if the two JSString are not equal.
+// Return true if the two JSStrings are not equal.
 inline
 bool operator!=(const JSString& lhs, const JSString& rhs) {
 	return ! (lhs == rhs);
@@ -144,9 +140,9 @@ std::ostream& operator << (std::ostream& ostream, const JSString& js_string) {
 namespace std {
 
 template<>
-  struct hash<JavaScriptCoreCPP::RAII::JSString> {
-    typedef JavaScriptCoreCPP::RAII::JSString argument_type;
-	typedef std::size_t                 result_type;
+struct hash<JavaScriptCoreCPP::RAII::JSString> {
+	typedef JavaScriptCoreCPP::RAII::JSString argument_type;
+	typedef std::size_t                       result_type;
 	const std::hash<std::string> string_hash = std::hash<std::string>();
 	
 	result_type operator()(const argument_type& js_string) const {

@@ -62,17 +62,17 @@ class JSStaticValue final	{
 	                               
 	                               If property_name is empty.
 	*/
-	JSStaticValue(const JSString& property_name, JSObjectGetPropertyCallback get_property_callback, JSObjectSetPropertyCallback set_property_callback, const std::set<JSPropertyAttribute> attributes = std::set<JSPropertyAttribute>());
+	JSStaticValue(const JSString& property_name, JSObject::GetPropertyCallback get_property_callback, JSObject::SetPropertyCallback set_property_callback, const std::set<JSPropertyAttribute> attributes = std::set<JSPropertyAttribute>());
 
 	JSString get_property_name() const {
 		return property_name_;
 	}
 	
-	JSObjectGetPropertyCallback get_get_property_callback() const {
+	JSObject::GetPropertyCallback get_get_property_callback() const {
 		return get_property_callback_;
 	}
 
-	JSObjectSetPropertyCallback get_set_property_callback() const {
+	JSObject::SetPropertyCallback get_set_property_callback() const {
 		return set_property_callback_;
 	}
 
@@ -99,7 +99,19 @@ class JSStaticValue final	{
 		return *this;
   }
   
-	void swap(JSStaticValue& first, JSStaticValue& second) noexcept;
+	friend void swap(JSStaticValue& first, JSStaticValue& second) noexcept {
+		// enable ADL (not necessary in our case, but good practice)
+		using std::swap;
+		
+    // by swapping the members of two classes,
+		// the two classes are effectively swapped
+    swap(first.property_name_                    , second.property_name_);
+    swap(first.property_name_for_js_static_value_, second.property_name_for_js_static_value_);
+    swap(first.get_property_callback_            , second.get_property_callback_);
+    swap(first.set_property_callback_            , second.set_property_callback_);
+    swap(first.attributes_                       , second.attributes_);
+    swap(first.js_static_value_                  , second.js_static_value_);
+	}
 
 private:
 	
@@ -108,17 +120,53 @@ private:
 		return js_static_value_;
 	}
 	
-	// Prevent heap based objects.
-	static void* operator new(size_t);			 // #1: To prevent allocation of scalar objects
-	static void* operator new [] (size_t);	 // #2: To prevent allocation of array of objects
-	
+	// Return true if the two JSStaticValues are equal.
+	friend bool operator==(const JSStaticValue& lhs, const JSStaticValue& rhs);
+
+	// Define a strict weak ordering for two JSStaticValues.
+	friend bool operator<(const JSStaticValue& lhs, const JSStaticValue& rhs);
+
 	JSString                      property_name_;
 	std::string                   property_name_for_js_static_value_;
-	JSObjectGetPropertyCallback   get_property_callback_ { nullptr };
-	JSObjectSetPropertyCallback   set_property_callback_ { nullptr };
+	JSObject::GetPropertyCallback get_property_callback_ { nullptr };
+	JSObject::SetPropertyCallback set_property_callback_ { nullptr };
 	std::set<JSPropertyAttribute> attributes_;
 	::JSStaticValue               js_static_value_ {0, 0, 0, 0};
 };
+
+// Return true if the two JSStaticValues are equal.
+bool operator==(const JSStaticValue& lhs, const JSStaticValue& rhs);
+
+// Return true if the two JSString are not equal.
+inline
+bool operator!=(const JSStaticValue& lhs, const JSStaticValue& rhs) {
+	return ! (lhs == rhs);
+}
+
+// Define a strict weak ordering for two JSStaticValues.
+inline
+bool operator<(const JSStaticValue& lhs, const JSStaticValue& rhs) {
+	if (lhs.property_name_for_js_static_value_ < rhs.property_name_for_js_static_value_) {
+		return true;
+	}
+
+	return lhs.attributes_ < rhs.attributes_;
+}
+
+inline
+bool operator>(const JSStaticValue& lhs, const JSStaticValue& rhs) {
+	return rhs < lhs;
+}
+
+inline
+bool operator<=(const JSStaticValue& lhs, const JSStaticValue& rhs) {
+	return !(lhs > rhs);
+}
+
+inline
+bool operator>=(const JSStaticValue& lhs, const JSStaticValue& rhs) {
+	return !(lhs < rhs);
+}
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 

@@ -154,10 +154,6 @@ private:
   class JSValue;
   friend bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs);
   
-  // Prevent heap based objects.
-	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
-	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
-	
 	JSGlobalContextRef js_context_ref_ { nullptr };
 	JSContextGroup     js_context_group_;
 };

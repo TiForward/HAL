@@ -154,7 +154,7 @@ class JSClassDefinition final	{
 
 	JSClassDefinition(const JSClassDefinitionBuilder& builder);
 
-	JSClassDefinition() = delete;;
+	JSClassDefinition() = delete;
 	~JSClassDefinition() = default;
 
 	JSClassDefinition(const JSClassDefinition& rhs) = default;
@@ -172,26 +172,60 @@ class JSClassDefinition final	{
 		return &js_class_definition_;
 	}
 
+	// Return true if the two JSClassDefinitions are equal.
+	friend bool operator==(const JSClassDefinition& lhs, const JSClassDefinition& rhs);
+
+	// Define a strict weak ordering for two JSClassDefinitions.
+	friend bool operator<(const JSClassDefinition& lhs, const JSClassDefinition& rhs);
+
 	friend class JSClass;
 
-	std::set<JSClassAttributes>       attributes_;
 	JSString                          class_name_;
-	std::shared_ptr<JSClass>          parent_class_ptr_;
+	std::string                       class_name_for_js_class_definition_;
+	std::set<JSClassAttributes>       attributes_;
+	std::shared_ptr<JSClass>          parent_class_ptr_             { nullptr };
 	std::set<JSStaticValue>           static_values_;
 	std::set<JSStaticFunction>        static_functions_;
-	JSObjectInitializeCallback        initialize_callback_;
-	JSObjectFinalizeCallback          finalize_callback_;
-	JSObjectHasPropertyCallback       has_property_callback_;
-	JSObjectGetPropertyCallback       get_property_callback_;
-	JSObjectSetPropertyCallback       set_property_callback_;
-	JSObjectDeletePropertyCallback    delete_property_callback_;
-	JSObjectGetPropertyNamesCallback  get_property_names_callback_;
-	JSObjectCallAsFunctionCallback    call_as_function_callback_;
-	JSObjectCallAsConstructorCallback call_as_constructor_callback_;
-	JSObjectHasInstanceCallback       has_instance_callback_;
-	JSObjectConvertToTypeCallback     convert_to_type_callback_;
+	JSObjectInitializeCallback        initialize_callback_          { nullptr };
+	JSObjectFinalizeCallback          finalize_callback_            { nullptr };
+	JSObjectHasPropertyCallback       has_property_callback_        { nullptr };
+	JSObjectGetPropertyCallback       get_property_callback_        { nullptr };
+	JSObjectSetPropertyCallback       set_property_callback_        { nullptr };
+	JSObjectDeletePropertyCallback    delete_property_callback_     { nullptr };
+	JSObjectGetPropertyNamesCallback  get_property_names_callback_  { nullptr };
+	JSObjectCallAsFunctionCallback    call_as_function_callback_    { nullptr };
+	JSObjectCallAsConstructorCallback call_as_constructor_callback_ { nullptr };
+	JSObjectHasInstanceCallback       has_instance_callback_        { nullptr };
+	JSObjectConvertToTypeCallback     convert_to_type_callback_     { nullptr };
 	::JSClassDefinition               js_class_definition_ = kJSClassDefinitionEmpty;
 };
+
+// Return true if the two JSClassDefinitions are equal.
+bool operator==(const JSClassDefinition& lhs, const JSClassDefinition& rhs);
+// Return true if the two JSString are not equal.
+
+inline
+bool operator!=(const JSClassDefinition& lhs, const JSClassDefinition& rhs) {
+	return ! (lhs == rhs);
+}
+
+// Define a strict weak ordering for two JSClassDefinitions.
+bool operator<(const JSClassDefinition& lhs, const JSClassDefinition& rhs);
+
+inline
+bool operator>(const JSClassDefinition& lhs, const JSClassDefinition& rhs) {
+	return rhs < lhs;
+}
+
+inline
+bool operator<=(const JSClassDefinition& lhs, const JSClassDefinition& rhs) {
+	return !(lhs > rhs);
+}
+
+inline
+bool operator>=(const JSClassDefinition& lhs, const JSClassDefinition& rhs) {
+	return !(lhs < rhs);
+}
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 

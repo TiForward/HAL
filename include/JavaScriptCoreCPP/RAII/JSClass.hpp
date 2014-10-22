@@ -83,10 +83,6 @@ class JSClass final	{
 		return js_class_ref_;
 	}
 
-	// Prevent heap based objects.
-	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
-	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
-	
 	JSClassDefinition js_class_definition_;
 	JSClassRef        js_class_ref_ { nullptr };
 };

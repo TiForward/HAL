@@ -63,7 +63,7 @@ class JSClassDefinitionBuilder final {
 	
 	// Optional parameters - initialized to default values
 	std::set<JSClassAttributes>       attributes_;
-	std::shared_ptr<JSClass>          parent_class_ptr_;
+	std::shared_ptr<JSClass>          parent_class_ptr_             { nullptr };
 	std::set<JSStaticValue>           static_values_;
 	std::set<JSStaticFunction>        static_functions_;
 	JSObjectInitializeCallback        initialize_callback_          { nullptr };

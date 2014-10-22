@@ -93,10 +93,6 @@ class JSContextGroup final	{
   // Return true if the two JSContextGroups are equal.
   friend bool operator==(const JSContextGroup& lhs, const JSContextGroup& rhs);
 
-  // Prevent heap based objects.
-	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
-	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
-	
   JSContextGroupRef js_context_group_ref_ {nullptr};
 };
 

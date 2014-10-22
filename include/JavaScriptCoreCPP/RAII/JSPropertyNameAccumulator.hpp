@@ -60,10 +60,6 @@ private:
 	
 	friend class JSObject;
 
-	// Prevent heap based objects.
-	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
-	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
-	
 	JSPropertyNameAccumulatorRef js_property_name_accumulator_ref_;
 };
 

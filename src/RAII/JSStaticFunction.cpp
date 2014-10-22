@@ -26,7 +26,7 @@ JSValueRef CallAsFunction(JSContextRef js_context_ref, JSObjectRef function_ref,
 }
 */
 
-JSStaticFunction::JSStaticFunction(const JSString& function_name, JSObjectCallAsFunctionCallback call_as_function_callback, const std::set<JSPropertyAttribute> attributes)
+JSStaticFunction::JSStaticFunction(const JSString& function_name, JSObject::CallAsFunctionCallback call_as_function_callback, const std::set<JSPropertyAttribute> attributes)
 		: function_name_(function_name)
 		, function_name_for_js_static_function_(function_name)
 		, call_as_function_callback_(call_as_function_callback)
@@ -57,7 +57,7 @@ JSStaticFunction::JSStaticFunction(const JSString& function_name, JSObjectCallAs
 // Copy constructor.
 JSStaticFunction::JSStaticFunction(const JSStaticFunction& rhs)
 		: function_name_(rhs.function_name_)
-		, function_name_for_js_static_function_(rhs.function_name_)
+		, function_name_for_js_static_function_(rhs.function_name_for_js_static_function_)
 		, call_as_function_callback_(rhs.call_as_function_callback_)
 		, attributes_(rhs.attributes_)
 		, js_static_function_(rhs.js_static_function_) {
@@ -67,24 +67,27 @@ JSStaticFunction::JSStaticFunction(const JSStaticFunction& rhs)
 // Move constructor.
 JSStaticFunction::JSStaticFunction(JSStaticFunction&& rhs)
 		: function_name_(rhs.function_name_)
-		, function_name_for_js_static_function_(rhs.function_name_)
+		, function_name_for_js_static_function_(rhs.function_name_for_js_static_function_)
 		, call_as_function_callback_(rhs.call_as_function_callback_)
 		, attributes_(rhs.attributes_)
 		, js_static_function_(rhs.js_static_function_) {
 	js_static_function_.name = function_name_for_js_static_function_.c_str();
 }
 
-void JSStaticFunction::swap(JSStaticFunction& first, JSStaticFunction& second) noexcept {
-    // enable ADL (not necessary in our case, but good practice)
-    using std::swap;
-    
-    // by swapping the members of two classes,
-    // the two classes are effectively swapped
-    swap(first.function_name_                       , second.function_name_);
-    swap(first.function_name_for_js_static_function_, second.function_name_for_js_static_function_);
-    swap(first.call_as_function_callback_           , second.call_as_function_callback_);
-    swap(first.attributes_                          , second.attributes_);
-    swap(first.js_static_function_                  , second.js_static_function_);
+bool operator==(const JSStaticFunction& lhs, const JSStaticFunction& rhs) {
+	if (lhs.function_name_ != rhs.function_name_) {
+		return false;
+	}
+
+	if (lhs.call_as_function_callback_ && !rhs.call_as_function_callback_) {
+		return false;
+	}
+	
+	if (!lhs.call_as_function_callback_ && rhs.call_as_function_callback_) {
+		return false;
+	}
+
+	return lhs.attributes_ == rhs.attributes_;
 }
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
