@@ -45,7 +45,9 @@ class JSStaticValue final	{
 	                               JSPropertyAttributes to give to the
 	                               property.
 	  
-	  @result .................... The JSObject result of conversion.
+	  @result .................... An object which describes a
+	                               statically declared value property of
+	                               a JSObject.
 	  
 	  @throws .................... std::invalid_argument exception under
 	                               these preconditions:

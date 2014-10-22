@@ -9,22 +9,28 @@
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
+/*
 // For interoperability with the JavaScriptCore C API.
 JSValueRef GetProperty(JSContextRef js_context_ref, JSObjectRef js_object_ref, JSStringRef property_name, JSValueRef* exception) {
-	return nullptr;
+	JSObject js_object(js_context_ref, js_object_ref);
+	return get_property_callback(js_object, property_name);
 }
 
 // For interoperability with the JavaScriptCore C API.
 bool SetProperty(JSContextRef js_context_ref, JSObjectRef js_object_ref, JSStringRef property_name, JSValueRef js_value_ref, JSValueRef* exception) {
-	return false;
+	JSObject js_object(js_context_ref, js_object_ref);
+	JSValue  js_value(js_context_ref, js_object_ref);
+	return set_property_callback(js_object, property_name, js_value);
 }
+*/
 
 JSStaticValue::JSStaticValue(const JSString& property_name, JSObjectGetPropertyCallback get_property_callback, JSObjectSetPropertyCallback set_property_callback, const std::set<JSPropertyAttribute> attributes)
-		: property_name_(property_name),
-		  property_name_for_js_static_value_(property_name),
-		  get_property_callback_(get_property_callback),
-		  set_property_callback_(set_property_callback),
-		  attributes_(attributes) {
+		: property_name_(property_name)
+		, property_name_for_js_static_value_(property_name)
+		, get_property_callback_(get_property_callback)
+		, set_property_callback_(set_property_callback)
+		, attributes_(attributes) {
+	
 	static const std::string log_prefix { "MDL: JSStaticValue: " };
 	
 	if (attributes.find(JSPropertyAttribute::ReadOnly) != attributes.end()) {

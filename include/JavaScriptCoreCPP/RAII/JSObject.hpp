@@ -85,8 +85,8 @@ using JSObjectFinalizeCallback = std::function<void(const JSObject&)>;
   existence needs to be known, not its value, and computing its value
   would be expensive.
   
-  If this callback doesn't exist, then the getProperty callback will
-  be used to service hasProperty requests.
+  If this callback doesn't exist, then the JSObjectGetPropertyCallback
+  callback will be used instead.
 */
 using JSObjectHasPropertyCallback = std::function<bool(const JSObject&, const JSString&)>;
 
@@ -749,6 +749,7 @@ class JSObject : public JSValue {
   friend class JSError;
   friend class JSRegExp;
   friend class JSFunction;
+  friend class JSStaticValue;
 
   // Prevent heap based objects.
 	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
