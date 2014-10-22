@@ -62,7 +62,28 @@ class JSStaticFunction final	{
 		return attributes_;
 	}
 
-private:
+	~JSStaticFunction() {
+  }
+
+	// Copy constructor.
+	JSStaticFunction(const JSStaticFunction& rhs);
+	
+	// Move constructor.
+	JSStaticFunction(JSStaticFunction&& rhs);
+  
+	// Create a copy of another JSStaticFunction by assignment. This is
+	// a unified assignment operator that fuses the copy assignment
+	// operator,
+	// X& X::operator=(const X&), and the move assignment operator,
+	// X& X::operator=(X&&);
+	JSStaticFunction& operator=(JSStaticFunction rhs) {
+		swap(*this, rhs);
+		return *this;
+  }
+  
+	void swap(JSStaticFunction& first, JSStaticFunction& second) noexcept;
+
+ private:
 	
 	// For interoperability with the JavaScriptCore C API.
 	operator ::JSStaticFunction() const {
@@ -74,10 +95,10 @@ private:
 	static void* operator new [] (size_t);	 // #2: To prevent allocation of array of objects
 	
 	JSString                       function_name_;
-	std::string                    function_name_for_js_static_value_;
+	std::string                    function_name_for_js_static_function_;
 	JSObjectCallAsFunctionCallback call_as_function_callback_ { nullptr };
 	std::set<JSPropertyAttribute>  attributes_;
-	::JSStaticFunction             js_static_function_;
+	::JSStaticFunction             js_static_function_ {0, 0, 0};
 };
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {

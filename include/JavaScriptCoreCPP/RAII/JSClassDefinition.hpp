@@ -176,9 +176,9 @@ class JSClassDefinition final	{
 
 	std::set<JSClassAttributes>       attributes_;
 	JSString                          class_name_;
-	std::unique_ptr<JSClass>          parent_class_ptr_;
+	std::shared_ptr<JSClass>          parent_class_ptr_;
 	std::set<JSStaticValue>           static_values_;
-	std::set<JSStaticValue>           static_functions_;
+	std::set<JSStaticFunction>        static_functions_;
 	JSObjectInitializeCallback        initialize_callback_;
 	JSObjectFinalizeCallback          finalize_callback_;
 	JSObjectHasPropertyCallback       has_property_callback_;

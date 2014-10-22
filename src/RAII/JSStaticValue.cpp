@@ -80,4 +80,40 @@ JSStaticValue::JSStaticValue(const JSString& property_name, JSObjectGetPropertyC
 	js_static_value_.attributes   = static_cast<property_attribute_underlying_type>(property_attributes.to_ulong());
 }
 
+// Copy constructor.
+JSStaticValue::JSStaticValue(const JSStaticValue& rhs)
+		: property_name_(rhs.property_name_)
+		, property_name_for_js_static_value_(rhs.property_name_)
+		, get_property_callback_(rhs.get_property_callback_)
+		, set_property_callback_(rhs.set_property_callback_)
+		, attributes_(rhs.attributes_)
+		, js_static_value_(rhs.js_static_value_) {
+	js_static_value_.name = property_name_for_js_static_value_.c_str();
+}
+
+// Move constructor.
+JSStaticValue::JSStaticValue(JSStaticValue&& rhs)
+		: property_name_(rhs.property_name_)
+		, property_name_for_js_static_value_(rhs.property_name_)
+		, get_property_callback_(rhs.get_property_callback_)
+		, set_property_callback_(rhs.set_property_callback_)
+		, attributes_(rhs.attributes_)
+		, js_static_value_(rhs.js_static_value_) {
+	js_static_value_.name = property_name_for_js_static_value_.c_str();
+}
+
+void JSStaticValue::swap(JSStaticValue& first, JSStaticValue& second) noexcept {
+    // enable ADL (not necessary in our case, but good practice)
+    using std::swap;
+    
+    // by swapping the members of two classes,
+    // the two classes are effectively swapped
+    swap(first.property_name_                    , second.property_name_);
+    swap(first.property_name_for_js_static_value_, second.property_name_for_js_static_value_);
+    swap(first.get_property_callback_            , second.get_property_callback_);
+    swap(first.set_property_callback_            , second.set_property_callback_);
+    swap(first.attributes_                       , second.attributes_);
+    swap(first.js_static_value_                  , second.js_static_value_);
+}
+
 }} // namespace JavaScriptCoreCPP { namespace RAII {

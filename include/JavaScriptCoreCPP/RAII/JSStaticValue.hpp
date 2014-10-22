@@ -80,6 +80,27 @@ class JSStaticValue final	{
 		return attributes_;
 	}
 
+	~JSStaticValue() {
+  }
+
+	// Copy constructor.
+	JSStaticValue(const JSStaticValue& rhs);
+	
+	// Move constructor.
+	JSStaticValue(JSStaticValue&& rhs);
+  
+	// Create a copy of another JSStaticValue by assignment. This is a
+	// unified assignment operator that fuses the copy assignment
+	// operator,
+	// X& X::operator=(const X&), and the move assignment operator,
+	// X& X::operator=(X&&);
+	JSStaticValue& operator=(JSStaticValue rhs) {
+		swap(*this, rhs);
+		return *this;
+  }
+  
+	void swap(JSStaticValue& first, JSStaticValue& second) noexcept;
+
 private:
 	
 	// For interoperability with the JavaScriptCore C API.
@@ -96,7 +117,7 @@ private:
 	JSObjectGetPropertyCallback   get_property_callback_ { nullptr };
 	JSObjectSetPropertyCallback   set_property_callback_ { nullptr };
 	std::set<JSPropertyAttribute> attributes_;
-	::JSStaticValue               js_static_value_;
+	::JSStaticValue               js_static_value_ {0, 0, 0, 0};
 };
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
