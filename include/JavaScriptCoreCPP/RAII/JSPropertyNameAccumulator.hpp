@@ -28,6 +28,9 @@ class JSPropertyNameAccumulator	{
 	
  public:
 	
+	JSPropertyNameAccumulator() = default;
+	~JSPropertyNameAccumulator() = default;
+	
 	/*!
 	  @method
 	  @abstract            Adds a property name to a JavaScript property name accumulator.
@@ -38,6 +41,12 @@ class JSPropertyNameAccumulator	{
 	}
 	
 private:
+
+	JSPropertyNameAccumulator(const JSPropertyNameAccumulator& rhs) = delete;
+	JSPropertyNameAccumulator(JSPropertyNameAccumulator&& rhs) = delete;
+
+	JSPropertyNameAccumulator& operator=(const JSPropertyNameAccumulator& rhs) = delete;
+	JSPropertyNameAccumulator& operator=(JSPropertyNameAccumulator&& rhs) = delete;
 
 	// For interoperability with the JavaScriptCore C API.
 	JSPropertyNameAccumulator(const JSPropertyNameAccumulatorRef& js_property_name_accumulator_ref) : js_property_name_accumulator_ref_(js_property_name_accumulator_ref) {

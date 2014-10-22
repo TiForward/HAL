@@ -51,18 +51,16 @@ class JSString final	{
 	}
 
 	// Copy constructor.
-	JSString(const JSString& rhs) {
-		js_string_ref_ = rhs.js_string_ref_;
+	JSString(const JSString& rhs) : js_string_ref_(rhs.js_string_ref_) {
 		JSStringRetain(js_string_ref_);
 	}
 
-  // Move constructor.
-  JSString(JSString&& rhs) {
-    js_string_ref_ = rhs.js_string_ref_;
-    JSStringRetain(js_string_ref_);
-  }
-  
-  // Create a copy of another JSString by assignment. This is a
+	// Move constructor.
+	JSString(JSString&& rhs) : js_string_ref_(rhs.js_string_ref_) {
+		JSStringRetain(js_string_ref_);
+	}
+	
+	// Create a copy of another JSString by assignment. This is a
   // unified assignment operator that fuses the copy assignment
   // operator, X& X::operator=(const X&), and the move assignment
   // operator, X& X::operator=(X&&);
@@ -104,6 +102,7 @@ private:
   
   // For interoperability with the JavaScriptCore C API.
   JSString(const JSStringRef& js_string_ref) : js_string_ref_(js_string_ref) {
+	  assert(js_string_ref_);
     JSStringRetain(js_string_ref_);
   }
   

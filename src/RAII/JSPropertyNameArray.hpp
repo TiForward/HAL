@@ -73,15 +73,13 @@ private:
   }
 
 	// Copy constructor.
-	JSPropertyNameArray(const JSPropertyNameArray& rhs) {
-		js_property_name_array_ref_ = rhs.js_property_name_array_ref_;
+	JSPropertyNameArray(const JSPropertyNameArray& rhs) : js_property_name_array_ref_(rhs.js_property_name_array_ref_) {
 		JSPropertyNameArrayRetain(js_property_name_array_ref_);
 	}
 	
   // Move constructor.
-  JSPropertyNameArray(JSPropertyNameArray&& rhs) {
-    js_property_name_array_ref_ = rhs.js_property_name_array_ref_;
-    JSPropertyNameArrayRetain(js_property_name_array_ref_);
+  JSPropertyNameArray(JSPropertyNameArray&& rhs) : js_property_name_array_ref_(rhs.js_property_name_array_ref_) {
+	  JSPropertyNameArrayRetain(js_property_name_array_ref_);
   }
   
   // Create a copy of another JSPropertyNameArray by assignment. This

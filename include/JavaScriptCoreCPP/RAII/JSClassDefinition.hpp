@@ -8,7 +8,12 @@
 #ifndef _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCLASSDEFINITION_HPP_
 #define _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCLASSDEFINITION_HPP_
 
-#include <functional>
+
+#include "JavaScriptCoreCPP/RAII/JSObject.hpp"
+#include "JavaScriptCoreCPP/RAII/JSStaticValue.hpp"
+#include "JavaScriptCoreCPP/RAII/JSStaticFunction.hpp"
+#include <set>
+#include <memory>
 #include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP { namespace RAII {
@@ -18,6 +23,8 @@ enum class JSClassAttributes {
 	NoAutomaticPrototype = kJSClassAttributeNoAutomaticPrototype
 };
 
+class JSClass;
+class JSClassDefinitionBuilder;
 
 /*!
   @class
@@ -142,20 +149,36 @@ enum class JSClassAttributes {
   specifies that get_property_names_callback should substitute.
 */
 class JSClassDefinition final	{
-
-
 	
  public:
 
 	JSClassDefinition(const JSClassDefinitionBuilder& builder);
 
+	JSClassDefinition() = delete;;
+	~JSClassDefinition() = default;
+
+	JSClassDefinition(const JSClassDefinition& rhs) = default;
+	JSClassDefinition(JSClassDefinition&& rhs) = default;
+
+	JSClassDefinition& operator=(const JSClassDefinition& rhs) = default;
+	JSClassDefinition& operator=(JSClassDefinition&& rhs) = default;
+
+	// TODO: provide getters.
+
  private:
     
-	set<JSClassAttributes>            attributes_;
+	// For interoperability with the JavaScriptCore C API.
+	operator ::JSClassDefinition const*() const {
+		return &js_class_definition_;
+	}
+
+	friend class JSClass;
+
+	std::set<JSClassAttributes>       attributes_;
 	JSString                          class_name_;
-	JSClass                           parent_class_;
-	set<JSStaticValue>                static_values_;
-	set<JSStaticValue>                static_functions_;
+	std::unique_ptr<JSClass>          parent_class_ptr_;
+	std::set<JSStaticValue>           static_values_;
+	std::set<JSStaticValue>           static_functions_;
 	JSObjectInitializeCallback        initialize_callback_;
 	JSObjectFinalizeCallback          finalize_callback_;
 	JSObjectHasPropertyCallback       has_property_callback_;
@@ -167,6 +190,7 @@ class JSClassDefinition final	{
 	JSObjectCallAsConstructorCallback call_as_constructor_callback_;
 	JSObjectHasInstanceCallback       has_instance_callback_;
 	JSObjectConvertToTypeCallback     convert_to_type_callback_;
+	::JSClassDefinition               js_class_definition_ = kJSClassDefinitionEmpty;
 };
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {

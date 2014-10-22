@@ -51,8 +51,8 @@ class JSContext final	{
 	  such as Object, Function, String, and Array.
 	*/
 	JSContext(JSClassRef global_object_class = nullptr)
-			: js_context_ref_(JSGlobalContextCreate(global_object_class)) {
-		js_context_group_ = JSContextGroup(JSContextGetGroup(js_context_ref_));
+			: js_context_ref_(JSGlobalContextCreate(global_object_class))
+			, js_context_group_(JSContextGroup(JSContextGetGroup(js_context_ref_))) {
 	}
 
 	/*!
@@ -78,17 +78,17 @@ class JSContext final	{
 	}
 	
 	// Copy constructor.
-	JSContext(const JSContext& rhs) {
-		js_context_ref_   = rhs.js_context_ref_;
-		js_context_group_ = rhs.js_context_group_;
+	JSContext(const JSContext& rhs)
+			: js_context_ref_(rhs.js_context_ref_)
+			, js_context_group_(rhs.js_context_group_) {
 		JSGlobalContextRetain(js_context_ref_);
 	}
 	
   // Move constructor.
-  JSContext(JSContext&& rhs) {
-    js_context_ref_ = rhs.js_context_ref_;
-    JSGlobalContextRetain(rhs.js_context_ref_);
-    js_context_group_ = rhs.js_context_group_;
+  JSContext(JSContext&& rhs)
+		  : js_context_ref_(rhs.js_context_ref_)
+		  , js_context_group_(rhs.js_context_group_) {
+	  JSGlobalContextRetain(rhs.js_context_ref_);
   }
   
   // Create a copy of another JSContext by assignment. This is a
@@ -122,8 +122,11 @@ class JSContext final	{
 private:
 
 	// For interoperability with the JavaScriptCore C API.
-	JSContext(JSGlobalContextRef js_context_ref) : js_context_group_(JSContextGetGroup(js_context_ref)), js_context_ref_(js_context_ref) {
+	JSContext(JSGlobalContextRef js_context_ref)
+			: js_context_ref_(js_context_ref)
+			, js_context_group_(JSContextGetGroup(js_context_ref_)) {
 		assert(js_context_ref_);
+		assert(js_context_group_);
 		JSGlobalContextRetain(js_context_ref_);
 	}
 		
@@ -155,8 +158,8 @@ private:
 	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
 	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
 	
-	JSContextGroup     js_context_group_;
 	JSGlobalContextRef js_context_ref_ { nullptr };
+	JSContextGroup     js_context_group_;
 };
 
 // Return true if the two JSContexts are equal.

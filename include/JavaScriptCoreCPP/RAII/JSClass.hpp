@@ -8,6 +8,7 @@
 #ifndef _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCLASS_HPP_
 #define _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCLASS_HPP_
 
+#include "JavaScriptCoreCPP/RAII/JSClassDefinition.hpp"
 #include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP { namespace RAII {
@@ -28,22 +29,26 @@ class JSClass final	{
  public:
 
 	// Create an empty object.
-	JSClass(const JSClassDefinition* definition) : js_class_(JSClassCreate(definition)) {
+	JSClass(const JSClassDefinition& js_class_definition)
+			: js_class_definition_(js_class_definition)
+			, js_class_ref_(JSClassCreate(js_class_definition_)) {
 	}
 	
-	virtual ~JSClass() {
-		JSClassRelease(js_context_, js_class_ref_);
+	~JSClass() {
+		JSClassRelease(js_class_ref_);
 	}
 	
 	// Copy constructor.
-	JSClass(const JSClass& rhs) : JSValue(rhs) {
-		js_class_ref_ = rhs.js_class_ref_;
+	JSClass(const JSClass& rhs)
+			: js_class_definition_(rhs.js_class_definition_)
+			, js_class_ref_(rhs.js_class_ref_) {
 		JSClassRetain(js_class_ref_);
 	}
 	
 	// Move constructor.
-	JSClass(JSClass&& rhs) : JSValue(rhs) {
-		js_class_ref_ = rhs.js_class_ref_;
+	JSClass(JSClass&& rhs)
+			: js_class_definition_(rhs.js_class_definition_)
+			, js_class_ref_(rhs.js_class_ref_) {
 		JSClassRetain(js_class_ref_);
 	}
 	
@@ -52,7 +57,6 @@ class JSClass final	{
 	// X& X::operator=(const X&), and the move assignment operator,
 	// X& X::operator=(X&&);
 	JSClass& operator=(JSClass rhs) {
-		JSValue::operator=(rhs);
 		swap(*this, rhs);
 		return *this;
 	}
@@ -63,13 +67,16 @@ class JSClass final	{
 		
 		// by swapping the members of two classes,
 		// the two classes are effectively swapped
-		swap(first.js_class_ref_, second.js_class_ref_);
+		swap(first.js_class_definition_, second.js_class_definition_);
+		swap(first.js_class_ref_       , second.js_class_ref_);
 	}
 	
  private:
 	
-	// For interoperability with the JavaScriptCore C API.
-	JSClass(JSClassRef js_object_ref, const JSContext& js_context);
+	// // For interoperability with the JavaScriptCore C API.
+	// JSClass(const ::JSClassDefinition* definition) {
+	// 	assert(definition);
+	// }
 
 	// For interoperability with the JavaScriptCore C API.
 	operator JSClassRef() const {
@@ -80,8 +87,8 @@ class JSClass final	{
 	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
 	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
 	
-	JSClassDefinition  js_class_definition_;
-	JSClassRef         js_class_ref_;
+	JSClassDefinition js_class_definition_;
+	JSClassRef        js_class_ref_ { nullptr };
 };
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {

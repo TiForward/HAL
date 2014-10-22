@@ -699,16 +699,12 @@ class JSObject : public JSValue {
 	}
 	
 	// Copy constructor.
-	JSObject(const JSObject& rhs) : JSValue(rhs) {
-		js_object_ref_ = rhs.js_object_ref_;
-		js_context_    = rhs.js_context_;
+	JSObject(const JSObject& rhs) : JSValue(rhs), js_context_(rhs.js_context_), js_object_ref_(rhs.js_object_ref_) {
 		JSValueProtect(js_context_, js_object_ref_);
 	}
 	
 	// Move constructor.
-	JSObject(JSObject&& rhs) : JSValue(rhs) {
-		js_object_ref_ = rhs.js_object_ref_;
-		js_context_    = rhs.js_context_;
+	JSObject(JSObject&& rhs) : JSValue(rhs), js_context_(rhs.js_context_), js_object_ref_(rhs.js_object_ref_) {
 		JSValueProtect(js_context_, js_object_ref_);
 	}
 	
@@ -728,8 +724,8 @@ class JSObject : public JSValue {
 		
 		// by swapping the members of two classes,
 		// the two classes are effectively swapped
-		swap(first.js_object_ref_, second.js_object_ref_);
 		swap(first.js_context_   , second.js_context_);
+		swap(first.js_object_ref_, second.js_object_ref_);
 	}
 	
  private:

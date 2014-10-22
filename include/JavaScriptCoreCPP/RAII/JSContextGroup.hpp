@@ -9,6 +9,7 @@
 #define _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_HPP_
 
 #include <utility>
+#include <cassert>
 #include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP { namespace RAII {
@@ -47,15 +48,13 @@ class JSContextGroup final	{
 	}
 	
 	// Copy constructor.
-	JSContextGroup(const JSContextGroup& rhs) {
-		js_context_group_ref_ = rhs.js_context_group_ref_;
+	JSContextGroup(const JSContextGroup& rhs) : js_context_group_ref_(rhs.js_context_group_ref_) {
 		JSContextGroupRetain(js_context_group_ref_);
 	}
 	
   // Move constructor.
-  JSContextGroup(JSContextGroup&& rhs) {
-    js_context_group_ref_ = rhs.js_context_group_ref_;
-    JSContextGroupRetain(js_context_group_ref_);
+  JSContextGroup(JSContextGroup&& rhs) : js_context_group_ref_(rhs.js_context_group_ref_) {
+	  JSContextGroupRetain(js_context_group_ref_);
   }
   
   // Create a copy of another JSContextGroup by assignment. This is a
@@ -82,6 +81,7 @@ class JSContextGroup final	{
 
   // For interoperability with the JavaScriptCore C API.
 	JSContextGroup(JSContextGroupRef js_context_group_ref) : js_context_group_ref_(js_context_group_ref) {
+		assert(js_context_group_ref_);
 		JSContextGroupRetain(js_context_group_ref_);
 	}
 

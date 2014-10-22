@@ -13,32 +13,43 @@
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-// JSObject::JSObject(const JSValue& js_value) : JSValue(js_value), js_context_(js_value.js_context_) {
-// 	static const std::string log_prefix { "MDL: JSObject(const JSValue& js_value) " };
-// 	if (!IsObject()) {
-// 		const std::string message = "JSValue is not an object";
-// 		std::clog << log_prefix << " [ERROR] " << message << std::endl;
-// 		throw std::invalid_argument(message);
-// 	}
+/*
+JSObject::JSObject(const JSValue& js_value)
+		: JSValue(js_value)
+		, js_context_(js_value.js_context_) {
+
+	static const std::string log_prefix { "MDL: JSObject(const JSValue& js_value) " };
 	
-// 	JSValueRef exception { nullptr };
-// 	JSObjectRef js_object_ref = JSValueToObject(js_context_, js_value_ref_, &exception);
-// 	if (exception) {
-// 		std::ostringstream os;
-// 		os << "JSValue could not be converted to a JSObject: "<< JSValue(js_context_, exception);
-// 		const std::string message = os.str();
-// 		std::clog << log_prefix << " [ERROR] " << message << std::endl;
-// 		throw std::invalid_argument(message);
-// 	}
+	if (!IsObject()) {
+		const std::string message = "JSValue is not an object";
+		std::clog << log_prefix << " [ERROR] " << message << std::endl;
+		throw std::invalid_argument(message);
+	}
 	
-// 	assert(js_object_ref);
-// 	js_object_ref_ = js_object_ref;
-// 	JSValueProtect(js_context_, js_object_ref_);
-// }
+	JSValueRef exception { nullptr };
+	JSObjectRef js_object_ref = JSValueToObject(js_context_, js_value_ref_, &exception);
+	if (exception) {
+		std::ostringstream os;
+		os << "JSValue could not be converted to a JSObject: "<< JSValue(js_context_, exception);
+		const std::string message = os.str();
+		std::clog << log_prefix << " [ERROR] " << message << std::endl;
+		throw std::invalid_argument(message);
+	}
+	
+	assert(js_object_ref);
+	js_object_ref_ = js_object_ref;
+	JSValueProtect(js_context_, js_object_ref_);
+}
+*/
 
 // For interoperability with the JavaScriptCore C API.
-JSObject::JSObject(JSGlobalContextRef js_context_ref, JSObjectRef js_object_ref) : JSValue(js_context_ref, js_object_ref), js_context_(js_context_ref), js_object_ref_(js_object_ref) {
+JSObject::JSObject(JSGlobalContextRef js_context_ref, JSObjectRef js_object_ref)
+		: JSValue(js_context_ref, js_object_ref)
+		, js_context_(js_context_ref)
+		, js_object_ref_(js_object_ref) {
+
 	static const std::string log_prefix { "MDL: JSObject(JSObjectRef js_object_ref, const JSContext& js_context): " };
+
 	if (!js_object_ref_) {
 		const std::string message = "js_object_ref can not be nullptr.";
 		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
