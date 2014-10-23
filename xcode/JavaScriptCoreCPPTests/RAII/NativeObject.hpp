@@ -19,7 +19,9 @@ class NativeObject final : public JSNativeObject<NativeObject> {
 
  public:
 
-	NativeObject(const JSContext& js_context) : js_context_(js_context) {
+	NativeObject(const JSContext& js_context)
+			: JSNativeObject(js_context)
+			, js_context_(js_context) {
 	}
 	
 	virtual ~NativeObject() {

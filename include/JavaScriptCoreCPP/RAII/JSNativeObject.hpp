@@ -17,12 +17,29 @@ class JSNativeObject {
 	
  public:
 	
-	JSNativeObject() {
+	/*! 
+	  @typedef      InitializeCallback
+	  @abstract     The callback invoked when a JavaScript object is first created.
+	  @param object A reference to the native object that backs the JavaScript object.
+	  @discussion   If you named your function Initialize, you would declare it like this:
+	  
+	  void Initialize(T& object);
+	  
+	  Unlike the other object callbacks, the initialize callback is
+	  called on the least derived class (the parent class) first, and
+	  the most derived class last.
+	*/
+	using InitializeCallback = std::function<void(T&)>;
+
+	JSNativeObject(const JSContext& js_context) : js_context_(js_context) {
 	}
 
 	virtual ~JSNativeObject() {
 	}
-	
+
+ private:
+
+	JSContext js_context_;
 };
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
