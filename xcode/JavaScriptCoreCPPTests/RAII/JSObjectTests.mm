@@ -6,14 +6,7 @@
 //  Copyright (c) 2014 Appcelerator. All rights reserved.
 //
 
-#include "JavaScriptCoreCPP/RAII/JSObject.hpp"
-#include "JavaScriptCoreCPP/RAII/JSArray.hpp"
-#include "JavaScriptCoreCPP/RAII/JSDate.hpp"
-#include "JavaScriptCoreCPP/RAII/JSError.hpp"
-#include "JavaScriptCoreCPP/RAII/JSRegExp.hpp"
-#include "JavaScriptCoreCPP/RAII/JSFunction.hpp"
-#include "JavaScriptCoreCPP/RAII/JSNumber.hpp"
-#include "JavaScriptCoreCPP/RAII/JSBoolean.hpp"
+#include "JavaScriptCoreCPP/RAII/RAII.hpp"
 #include <limits>
 #import <XCTest/XCTest.h>
 

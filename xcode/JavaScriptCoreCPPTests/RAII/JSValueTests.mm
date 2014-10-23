@@ -6,11 +6,7 @@
 //  Copyright (c) 2014 Appcelerator. All rights reserved.
 //
 
-#include "JavaScriptCoreCPP/RAII/JSValue.hpp"
-#include "JavaScriptCoreCPP/RAII/JSUndefined.hpp"
-#include "JavaScriptCoreCPP/RAII/JSNull.hpp"
-#include "JavaScriptCoreCPP/RAII/JSBoolean.hpp"
-#include "JavaScriptCoreCPP/RAII/JSNumber.hpp"
+#include "JavaScriptCoreCPP/RAII/RAII.hpp"
 #import <XCTest/XCTest.h>
 
 using namespace JavaScriptCoreCPP::RAII;

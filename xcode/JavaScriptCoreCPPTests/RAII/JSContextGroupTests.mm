@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Appcelerator. All rights reserved.
 //
 
-#include "JavaScriptCoreCPP/RAII/JSContextGroup.hpp"
+#include "JavaScriptCoreCPP/RAII/RAII.hpp"
 #import <XCTest/XCTest.h>
 
 using namespace JavaScriptCoreCPP::RAII;

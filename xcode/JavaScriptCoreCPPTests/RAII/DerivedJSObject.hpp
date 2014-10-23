@@ -8,10 +8,7 @@
 #ifndef _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_XCODE_JAVASCRIPTCORECPPTESTS_RAII_DERIVEDJSOBJECT_HPP_
 #define _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_XCODE_JAVASCRIPTCORECPPTESTS_RAII_DERIVEDJSOBJECT_HPP_
 
-#include "JavaScriptCoreCPP/RAII/JSObject.hpp"
-#include "JavaScriptCoreCPP/RAII/JSClass.hpp"
-#include "JavaScriptCoreCPP/RAII/JSUndefined.hpp"
-#include "JavaScriptCoreCPP/RAII/JSPropertyNameAccumulator.hpp"
+#include "JavaScriptCoreCPP/RAII/RAII.hpp"
 #include <iostream>
 
 namespace JavaScriptCoreCPP { namespace RAII {

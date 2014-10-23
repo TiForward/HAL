@@ -6,8 +6,7 @@
 //  Copyright (c) 2014 Appcelerator. All rights reserved.
 //
 
-#include "JavaScriptCoreCPP/RAII/JSClassBuilder.hpp"
-#include "JavaScriptCoreCPP/RAII/JSObject.hpp"
+#include "JavaScriptCoreCPP/RAII/RAII.hpp"
 #include "DerivedJSObject.hpp"
 #import <XCTest/XCTest.h>
 
