@@ -5,12 +5,11 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCLASSBUILDER_HPP_
-#define _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCLASSBUILDER_HPP_
+#ifndef _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCLASSBUILDER2_HPP_
+#define _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCLASSBUILDER2_HPP_
 
 
-#include "JavaScriptCoreCPP/RAII/JSClassDefinition.hpp"
-#include "JavaScriptCoreCPP/RAII/JSClass.hpp"
+#include "JavaScriptCoreCPP/RAII/JSClass2.hpp"
 #include <set>
 #include <memory>
 #include <JavaScriptCore/JavaScript.h>
@@ -50,24 +49,25 @@ namespace JavaScriptCoreCPP { namespace RAII {
   has_property_callback, where it specifies that
   get_property_names_callback should substitute.
 */
-class JSClassBuilder final {
+template<typename T>
+class JSClassBuilder2 final {
 	
  public:
 	
 	/**
 	 * Create an empty builder.
 	 */
-	JSClassBuilder(const JSString& class_name) : class_name_(class_name) {
+	JSClassBuilder2(const JSString& class_name) : class_name_(class_name) {
 	}
 	
-	JSClassBuilder() = delete;;
-	~JSClassBuilder() = default;
+	JSClassBuilder2() = delete;;
+	~JSClassBuilder2() = default;
 
-	JSClassBuilder(const JSClassBuilder& rhs) = default;
-	JSClassBuilder(JSClassBuilder&& rhs) = default;
+	JSClassBuilder2(const JSClassBuilder2& rhs) = default;
+	JSClassBuilder2(JSClassBuilder2&& rhs) = default;
 
-	JSClassBuilder& operator=(const JSClassBuilder& rhs) = default;
-	JSClassBuilder& operator=(JSClassBuilder&& rhs) = default;
+	JSClassBuilder2& operator=(const JSClassBuilder2& rhs) = default;
+	JSClassBuilder2& operator=(JSClassBuilder2&& rhs) = default;
 
 	/*!
 	  @method
@@ -87,7 +87,7 @@ class JSClassBuilder final {
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSClassBuilder& set_class_name(const JSString& class_name) {
+	JSClassBuilder2& set_class_name(const JSString& class_name) {
 		class_name_ = class_name;
 		return *this;
 	}
@@ -113,7 +113,7 @@ class JSClassBuilder final {
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSClassBuilder& set_attributes(const std::set<JSClassAttributes>& attributes) {
+	JSClassBuilder2& set_attributes(const std::set<JSClassAttributes>& attributes) {
 		attributes_ = attributes;
 		return *this;
 	}
@@ -126,7 +126,7 @@ class JSClassBuilder final {
 	  
 	  @result The parent of the JSClass
 	*/
-	std::shared_ptr<JSClass> get_parent_class_ptr() const {
+	std::shared_ptr<JSClass2> get_parent_class_ptr() const {
 		return parent_class_ptr_;
 	}
 
@@ -138,7 +138,7 @@ class JSClassBuilder final {
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSClassBuilder& set_parent_class_ptr(const std::shared_ptr<JSClass>& parent_class_ptr) {
+	JSClassBuilder2& set_parent_class_ptr(const std::shared_ptr<JSClass2>& parent_class_ptr) {
 		parent_class_ptr_ = parent_class_ptr;
 		return *this;
 	}
@@ -164,7 +164,7 @@ class JSClassBuilder final {
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSClassBuilder& set_static_values(const std::set<JSStaticValue>& static_values) {
+	JSClassBuilder2& set_static_values(const std::set<JSStaticValue>& static_values) {
 		static_values_ = static_values;
 		return *this;
 	}
@@ -190,10 +190,24 @@ class JSClassBuilder final {
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSClassBuilder& set_static_functions(const std::set<JSStaticFunction>& static_functions) {
+	JSClassBuilder2& set_static_functions(const std::set<JSStaticFunction>& static_functions) {
 		static_functions_ = static_functions;
 		return *this;
 	}
+
+	/*! 
+	  @typedef      InitializeCallback
+	  @abstract     The callback invoked when an object is first created.
+	  @param object The JSObject being created.
+	  @discussion    If you named your function Initialize, you would declare it like this:
+	  
+	  void Initialize(const JSObject& object);
+	  
+	  Unlike the other object callbacks, the initialize callback is
+	  called on the least derived class (the parent class) first, and
+	  the most derived class last.
+	*/
+	using InitializeCallback = std::function<void(T&)>;
 
 	/*!
 	  @method
@@ -203,7 +217,7 @@ class JSClassBuilder final {
   
 	  @result The callback to invoke when an object is first created.
 	*/
-	JSObject::InitializeCallback get_initialize_callback() const {
+	InitializeCallback get_initialize_callback() const {
 		return initialize_callback_;
 	}
 
@@ -215,7 +229,7 @@ class JSClassBuilder final {
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSClassBuilder& set_initialize_callback(JSObject::InitializeCallback initialize_callback) {
+	JSClassBuilder2& set_initialize_callback(InitializeCallback initialize_callback) {
 		initialize_callback_ = initialize_callback;
 		return *this;
 	}
@@ -244,7 +258,7 @@ class JSClassBuilder final {
   	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSClassBuilder& set_finalize_callback(const JSObject::FinalizeCallback& finalize_callback) {
+	JSClassBuilder2& set_finalize_callback(const JSObject::FinalizeCallback& finalize_callback) {
 		finalize_callback_ = finalize_callback;
 		return *this;
 	}
@@ -278,7 +292,7 @@ class JSClassBuilder final {
   
 	  @result A reference to the builder for chaining.
 	*/
-	JSClassBuilder& set_has_property_callback(const JSObject::HasPropertyCallback& has_property_callback) {
+	JSClassBuilder2& set_has_property_callback(const JSObject::HasPropertyCallback& has_property_callback) {
 		has_property_callback_ = has_property_callback;
 		return *this;
 	}
@@ -303,7 +317,7 @@ class JSClassBuilder final {
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSClassBuilder& set_get_property_callback(const JSObject::GetPropertyCallback& get_property_callback) {
+	JSClassBuilder2& set_get_property_callback(const JSObject::GetPropertyCallback& get_property_callback) {
 		get_property_callback_ = get_property_callback;
 		return *this;
 	}
@@ -328,7 +342,7 @@ class JSClassBuilder final {
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSClassBuilder& set_set_property_callback(const JSObject::SetPropertyCallback& set_property_callback) {
+	JSClassBuilder2& set_set_property_callback(const JSObject::SetPropertyCallback& set_property_callback) {
 		set_property_callback_ = set_property_callback;
 		return *this;
 	}
@@ -351,7 +365,7 @@ class JSClassBuilder final {
   	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSClassBuilder& set_delete_property_callback(const JSObject::DeletePropertyCallback& delete_property_callback) {
+	JSClassBuilder2& set_delete_property_callback(const JSObject::DeletePropertyCallback& delete_property_callback) {
 		delete_property_callback_ = delete_property_callback;
 		return *this;
 	}
@@ -377,7 +391,7 @@ class JSClassBuilder final {
   	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSClassBuilder& set_get_property_names_callback(const JSObject::GetPropertyNamesCallback& get_property_names_callback) {
+	JSClassBuilder2& set_get_property_names_callback(const JSObject::GetPropertyNamesCallback& get_property_names_callback) {
 		get_property_names_callback_ = get_property_names_callback;
 		return *this;
 	}
@@ -403,7 +417,7 @@ class JSClassBuilder final {
   
 	  @result A reference to the builder for chaining.
 	*/
-	JSClassBuilder& set_call_as_function_callback(const JSObject::CallAsFunctionCallback& call_as_function_callback) {
+	JSClassBuilder2& set_call_as_function_callback(const JSObject::CallAsFunctionCallback& call_as_function_callback) {
 		call_as_function_callback_ = call_as_function_callback;
 		return *this;
 	}
@@ -433,7 +447,7 @@ class JSClassBuilder final {
   
 	  @result A reference to the builder for chaining.
 	*/
-	JSClassBuilder& set_call_as_constructor_callback(const JSObject::CallAsConstructorCallback& call_as_constructor_callback) {
+	JSClassBuilder2& set_call_as_constructor_callback(const JSObject::CallAsConstructorCallback& call_as_constructor_callback) {
 		call_as_constructor_callback_ = call_as_constructor_callback;
 		return *this;
 	}
@@ -463,7 +477,7 @@ class JSClassBuilder final {
 
 	  @result A reference to the builder for chaining.
 	*/
-	JSClassBuilder& set_has_instance_callback(const JSObject::HasInstanceCallback& has_instance_callback) {
+	JSClassBuilder2& set_has_instance_callback(const JSObject::HasInstanceCallback& has_instance_callback) {
 		has_instance_callback_ = has_instance_callback;
 		return *this;
 	}
@@ -489,7 +503,7 @@ class JSClassBuilder final {
 
 	  @result A reference to the builder for chaining.
 	*/
-	JSClassBuilder& set_convert_to_type_callback(const JSObject::ConvertToTypeCallback& convert_to_type_callback) {
+	JSClassBuilder2& set_convert_to_type_callback(const JSObject::ConvertToTypeCallback& convert_to_type_callback) {
 		convert_to_type_callback_ = convert_to_type_callback;
 		return *this;
 	}
@@ -503,30 +517,29 @@ class JSClassBuilder final {
 	  @result A JSClass instance with all of the properties and
 	  callbacks specified in the builder.
 	*/
-	JSClass build() {
+	JSClass2 build() const {
 		// TODO validate js_class_definition.
-		return JSClass(*this);
+		return JSClass2(*this);
 	}
 	
  private:
 
-	JSClassDefinition get_js_class_definition() const {
-		JSClassDefinition js_class_definition(*this);
+	JSClassDefinition2<T> get_js_class_definition() const {
+		JSClassDefinition2<T> js_class_definition(*this);
 		return js_class_definition;
 	}
 
-	friend class JSClassDefinition;
-	friend class JSClass;
+	friend class JSClass2;
 
 	// Required parameters
 	JSString                            class_name_;
 	
 	// Optional parameters - initialized to default values
 	std::set<JSClassAttributes>         attributes_;
-	std::shared_ptr<JSClass>            parent_class_ptr_             { nullptr };
+	std::shared_ptr<JSClass2>           parent_class_ptr_             { nullptr };
 	std::set<JSStaticValue>             static_values_;
 	std::set<JSStaticFunction>          static_functions_;
-	JSObject::InitializeCallback        initialize_callback_          { nullptr };
+	InitializeCallback        initialize_callback_          { nullptr };
 	JSObject::FinalizeCallback          finalize_callback_            { nullptr };
 	JSObject::HasPropertyCallback       has_property_callback_        { nullptr };
 	JSObject::GetPropertyCallback       get_property_callback_        { nullptr };
@@ -539,6 +552,33 @@ class JSClassBuilder final {
 	JSObject::ConvertToTypeCallback     convert_to_type_callback_     { nullptr };
 };
 
+template<typename T>
+JSClassDefinition2<T>::JSClassDefinition2(const JSClassBuilder<T>& builder)
+		: attributes_(builder.attributes_)
+		, class_name_(builder.class_name_)
+		, class_name_for_js_class_definition_(class_name_)
+		, parent_class_ptr_(builder.parent_class_ptr_)
+		, static_values_(builder.static_values_)
+		, static_functions_(builder.static_functions_)
+		, initialize_callback_(builder.initialize_callback_)
+		, finalize_callback_(builder.finalize_callback_)
+		, has_property_callback_(builder.has_property_callback_)
+		, get_property_callback_(builder.get_property_callback_)
+		, set_property_callback_(builder.set_property_callback_)
+		, delete_property_callback_(builder.delete_property_callback_)
+		, get_property_names_callback_(builder.get_property_names_callback_)
+		, call_as_function_callback_(builder.call_as_function_callback_)
+		, call_as_constructor_callback_(builder.call_as_constructor_callback_)
+		, has_instance_callback_(builder.has_instance_callback_)
+		, convert_to_type_callback_(builder.convert_to_type_callback_) {
+}
+
+template<typename T>
+JSClass::JSClass(const JSClassBuilder<t>& builder)
+		: js_class_definition_(builder.get_js_class_definition())
+		, js_class_ref_(JSClassCreate(js_class_definition_)) {
+}
+
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 
-#endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCLASSBUILDER_HPP_
+#endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCLASSBUILDER2_HPP_

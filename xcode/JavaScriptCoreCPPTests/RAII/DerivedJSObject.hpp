@@ -13,17 +13,22 @@
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-class DerivedJSObject final : public JSObject {
+class DerivedJSObject final /*: public JSObject */ {
 
  public:
 
+	/*
 	DerivedJSObject(const JSClass& js_class, const JSContext& js_context)
 			: JSObject(js_class, js_context)
 			, js_context_(js_context)
 			, js_class_(js_class)	{
 	}
+	*/
+
+	virtual ~DerivedJSObject() {
+	}
 	
-	void Initialize() {
+	virtual void Initialize() {
 		static const std::string log_prefix { "MDL: DerivedJSObject::Initialize: " };
 		std::clog << log_prefix << std::endl;
 	}

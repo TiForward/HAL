@@ -57,7 +57,7 @@ class JSObject : public JSValue {
 	  called on the least derived class (the parent class) first, and
 	  the most derived class last.
 	*/
-	using InitializeCallback = std::function<void(const JSObject&)>;
+	using InitializeCallback = std::function<void(JSObject&)>;
 	
 	/*! 
 	  @typedef       FinalizeCallback

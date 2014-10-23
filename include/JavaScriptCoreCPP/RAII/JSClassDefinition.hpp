@@ -82,8 +82,8 @@ class JSClassDefinition final	{
 	// Define a strict weak ordering for two JSClassDefinitions.
 	friend bool operator<(const JSClassDefinition& lhs, const JSClassDefinition& rhs);
 
-	friend class JSClassBuilder;
 	friend class JSClass;
+	friend class JSClassBuilder;
 
 	JSString                            class_name_;
 	std::string                         class_name_for_js_class_definition_;
@@ -107,7 +107,6 @@ class JSClassDefinition final	{
 
 // Return true if the two JSClassDefinitions are equal.
 bool operator==(const JSClassDefinition& lhs, const JSClassDefinition& rhs);
-// Return true if the two JSString are not equal.
 
 inline
 bool operator!=(const JSClassDefinition& lhs, const JSClassDefinition& rhs) {
