@@ -147,11 +147,12 @@
 		C9A4E67719F7611600CF25BF /* JSClassDefinition.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSClassDefinition.cpp; path = src/RAII/JSClassDefinition.cpp; sourceTree = "<group>"; };
 		C9A4E67A19F8359C00CF25BF /* JSClassBuilderTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = JSClassBuilderTests.mm; path = RAII/JSClassBuilderTests.mm; sourceTree = "<group>"; };
 		C9A4E67C19F835FC00CF25BF /* HashUtilitiesTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = HashUtilitiesTests.mm; path = RAII/HashUtilitiesTests.mm; sourceTree = "<group>"; };
-		C9A4E67E19F83EC200CF25BF /* DerivedJSObject.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = DerivedJSObject.hpp; path = RAII/DerivedJSObject.hpp; sourceTree = "<group>"; };
+		C9A4E67E19F83EC200CF25BF /* NativeObject.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = NativeObject.hpp; path = RAII/NativeObject.hpp; sourceTree = "<group>"; };
 		C9A4E67F19F856C500CF25BF /* JSClassBuilder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSClassBuilder.hpp; path = include/JavaScriptCoreCPP/RAII/JSClassBuilder.hpp; sourceTree = "<group>"; };
 		C9A4E68019F87C9800CF25BF /* JSClass.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSClass.cpp; path = src/RAII/JSClass.cpp; sourceTree = "<group>"; };
 		C9A4E68219F87CAF00CF25BF /* RAII.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = RAII.hpp; path = include/JavaScriptCoreCPP/RAII/RAII.hpp; sourceTree = "<group>"; };
 		C9A4E68719F8876A00CF25BF /* JSContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSContext.cpp; path = src/RAII/JSContext.cpp; sourceTree = "<group>"; };
+		C9A4E68F19F8ACB900CF25BF /* JSNativeObject.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSNativeObject.hpp; path = include/JavaScriptCoreCPP/RAII/JSNativeObject.hpp; sourceTree = "<group>"; };
 		C9BD383F19D0DF3900609F73 /* JSObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSObject.cpp; path = src/JSObject.cpp; sourceTree = "<group>"; };
 		C9BD384019D0DF3900609F73 /* JSObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSObject.h; path = include/JavaScriptCoreCPP/JSObject.h; sourceTree = "<group>"; };
 		C9BD384319D0F9DA00609F73 /* JSObjectTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = JSObjectTests.mm; sourceTree = "<group>"; };
@@ -266,6 +267,7 @@
 				C9A4E67F19F856C500CF25BF /* JSClassBuilder.hpp */,
 				C9A4E61D19F2EC6B00CF25BF /* JSClass.hpp */,
 				C9A4E68019F87C9800CF25BF /* JSClass.cpp */,
+				C9A4E68F19F8ACB900CF25BF /* JSNativeObject.hpp */,
 				C9A4E68219F87CAF00CF25BF /* RAII.hpp */,
 			);
 			name = RAII;
@@ -325,7 +327,7 @@
 				C9A4E63719F32E7900CF25BF /* JSValueTests.mm */,
 				C9A4E63C19F420EB00CF25BF /* JSObjectTests.mm */,
 				C9A4E67A19F8359C00CF25BF /* JSClassBuilderTests.mm */,
-				C9A4E67E19F83EC200CF25BF /* DerivedJSObject.hpp */,
+				C9A4E67E19F83EC200CF25BF /* NativeObject.hpp */,
 				C9A4E67C19F835FC00CF25BF /* HashUtilitiesTests.mm */,
 			);
 			name = RAII;

@@ -7,7 +7,7 @@
 //
 
 #include "JavaScriptCoreCPP/RAII/RAII.hpp"
-#include "DerivedJSObject.hpp"
+#include "NativeObject.hpp"
 #import <XCTest/XCTest.h>
 
 using namespace JavaScriptCoreCPP::RAII;
@@ -36,16 +36,13 @@ using namespace JavaScriptCoreCPP::RAII;
   auto js_class = builder.build();
   JSObject js_object(js_class, js_context);
   
-  using InitializeCallback = std::function<void(DerivedJSObject&)>;
-  InitializeCallback foo = &DerivedJSObject::Initialize;
+  using InitializeCallback = std::function<void(NativeObject&)>;
+  InitializeCallback foo = &NativeObject::Initialize;
 }
 
-//- (void)testJSClassBuilder2 {
-//  JSClassBuilder2<DerivedJSObject> builder2("Foo");
-//  builder2.set_initialize_callback(&DerivedJSObject::Initialize);
-//  auto js_class = builder2.build();
-//  JSObject js_object(js_class, js_context);
-//}
+- (void)testJSNativeObject {
+  NativeObject native_object(js_context);
+}
 
 // As of 2014.09.20 Travis CI only supports Xcode 5.1 which lacks support for
 // measureBlock.

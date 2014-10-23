@@ -9,37 +9,34 @@
 #define _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_XCODE_JAVASCRIPTCORECPPTESTS_RAII_DERIVEDJSOBJECT_HPP_
 
 #include "JavaScriptCoreCPP/RAII/RAII.hpp"
+#include "JavaScriptCoreCPP/RAII/JSNativeObject.hpp"
 #include <iostream>
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-class DerivedJSObject final /*: public JSObject */ {
+
+class NativeObject final : public JSNativeObject<NativeObject> {
 
  public:
 
-	/*
-	DerivedJSObject(const JSClass& js_class, const JSContext& js_context)
-			: JSObject(js_class, js_context)
-			, js_context_(js_context)
-			, js_class_(js_class)	{
+	NativeObject(const JSContext& js_context) : js_context_(js_context) {
 	}
-	*/
-
-	virtual ~DerivedJSObject() {
+	
+	virtual ~NativeObject() {
 	}
 	
 	virtual void Initialize() {
-		static const std::string log_prefix { "MDL: DerivedJSObject::Initialize: " };
+		static const std::string log_prefix { "MDL: NativeObject::Initialize: " };
 		std::clog << log_prefix << std::endl;
 	}
 	
 	void Finalize() {
-		static const std::string log_prefix { "MDL: DerivedJSObject::Finalize: " };
+		static const std::string log_prefix { "MDL: NativeObject::Finalize: " };
 		std::clog << log_prefix << std::endl;
 	}
 
 	bool HasProperty(const JSString& property_name) {
-		static const std::string log_prefix { "MDL: DerivedJSObject::HasProperty: " };
+		static const std::string log_prefix { "MDL: NativeObject::HasProperty: " };
 		const bool has_property = properties_.count(property_name) > 1;
 		std::clog << log_prefix
 		          << property_name
@@ -51,7 +48,7 @@ class DerivedJSObject final /*: public JSObject */ {
 	}
 
 	JSValue GetProperty(const JSString& property_name) {
-		static const std::string log_prefix { "MDL: DerivedJSObject::GetProperty: " };
+		static const std::string log_prefix { "MDL: NativeObject::GetProperty: " };
 		const auto position = properties_.find(property_name);
 		JSValue result = position != properties_.end() ? position -> second : JSUndefined(js_context_);
 		std::clog << log_prefix
@@ -70,7 +67,7 @@ class DerivedJSObject final /*: public JSObject */ {
 	}
 
 	bool SetProperty(const JSString& property_name, const JSValue& value) {
-		static const std::string log_prefix { "MDL: DerivedJSObject::SetProperty: " };
+		static const std::string log_prefix { "MDL: NativeObject::SetProperty: " };
 		const auto previous_position = properties_.find(property_name);
 		if (previous_position != properties_.end()) {
 			// The property already exists, so remove the old value.
@@ -99,7 +96,7 @@ class DerivedJSObject final /*: public JSObject */ {
 	}
 
 	bool DeleteProperty(const JSString& property_name) {
-		static const std::string log_prefix { "MDL: DerivedJSObject::DeleteProperty: " };
+		static const std::string log_prefix { "MDL: NativeObject::DeleteProperty: " };
 		
 		const auto previous_position = properties_.find(property_name);
 		if (previous_position != properties_.end()) {
@@ -122,7 +119,7 @@ class DerivedJSObject final /*: public JSObject */ {
 	}
 
 	void GetPropertyNames(const JSPropertyNameAccumulator& accumulator) {
-		static const std::string log_prefix { "MDL: DerivedJSObject::GetPropertyNames: " };
+		static const std::string log_prefix { "MDL: NativeObject::GetPropertyNames: " };
 
 		for (const auto& property : properties_) {
 			accumulator.AddName(property.first);
@@ -136,7 +133,7 @@ class DerivedJSObject final /*: public JSObject */ {
 	}
 
 	JSValue CallAsFunction(const std::vector<JSValue>& arguments, const JSObject& this_object) {
-		static const std::string log_prefix { "MDL: DerivedJSObject::CallAsFunction: " };
+		static const std::string log_prefix { "MDL: NativeObject::CallAsFunction: " };
 
 		std::clog
 				<< log_prefix
@@ -150,7 +147,7 @@ class DerivedJSObject final /*: public JSObject */ {
 	}
 
 	JSObject CallAsConstructor(const std::vector<JSValue>& arguments) {
-		static const std::string log_prefix { "MDL: DerivedJSObject::CallAsConstructor: " };
+		static const std::string log_prefix { "MDL: NativeObject::CallAsConstructor: " };
 
 		std::clog
 				<< log_prefix
@@ -162,14 +159,14 @@ class DerivedJSObject final /*: public JSObject */ {
 	}
 
 	bool HasInstance(const JSValue& possible_instance) {
-		static const std::string log_prefix { "MDL: DerivedJSObject::HasInstance: " };
+		static const std::string log_prefix { "MDL: NativeObject::HasInstance: " };
 
 		std::clog << log_prefix << possible_instance;
 		
 		bool has_instance = false;
 		std::string message;
 		try {
-			dynamic_cast<const DerivedJSObject&>(possible_instance);
+			dynamic_cast<const NativeObject&>(possible_instance);
 			has_instance = true;
 		} catch (const std::bad_cast& exception) {
 			// Expected exception if possible_instance is not of our class
@@ -194,7 +191,7 @@ class DerivedJSObject final /*: public JSObject */ {
 	}
 	
 	JSValue ConvertToType(const JSValue::Type& js_value_type) {
-		static const std::string log_prefix { "MDL: DerivedJSObject::ConvertToType: " };
+		static const std::string log_prefix { "MDL: NativeObject::ConvertToType: " };
 
 		std::clog << log_prefix
 		          << "Don't know how to convert to type "
@@ -207,7 +204,6 @@ class DerivedJSObject final /*: public JSObject */ {
 private:
 
 	JSContext                             js_context_;
-	JSClass                               js_class_;
 	std::unordered_map<JSString, JSValue> properties_;
 };
 
