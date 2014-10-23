@@ -10,11 +10,11 @@
 
 
 #include "JavaScriptCoreCPP/RAII/JSContextGroup.hpp"
+#include "JavaScriptCoreCPP/RAII/JSString.hpp"
 #include <cassert>
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-class JSString;
 class JSValue;
 class JSObject;
 
@@ -73,10 +73,45 @@ class JSContext final	{
 	*/
 	JSContext(const JSContextGroup& js_context_group, JSClassRef global_object_class = nullptr)
 			: js_context_ref_(JSGlobalContextCreateInGroup(js_context_group, global_object_class))
-			, js_context_group_(js_context_group)
-	{
+			, js_context_group_(js_context_group)	{
 	}
 
+	/* Script Evaluation */
+	
+	/*!
+	  @method
+	  @abstract                   Evaluate a string of JavaScript using the global object as "this.".
+	  @param script               A JSString containing the script to evaluate.
+	  @param source_url           An optional JSString containing a URL for the script's source file. This is used by debuggers and when reporting exceptions.
+	  @param starting_line_number An optional integer value specifying the script's starting line number in the file located at source_url. This is only used when reporting exceptions. The value is one-based, so the first line is line 1 and invalid values are clamped to 1.
+	  @result                     The JSValue that results from evaluating script.
+	  @throws                     std::runtime_error exception if the evaluated script threw an exception.
+	*/
+	JSValue JSEvaluateScript(const JSString& script, const JSString& source_url = JSString(), int starting_line_number = 1);
+	
+	/*!
+	  @method
+	  @abstract                   Evaluate a string of JavaScript.
+	  @param script               A JSString containing the script to evaluate.
+	  @param this_object          The object to use as "this".
+	  @param source_url           An optional JSString containing a URL for the script's source file. This is used by debuggers and when reporting exceptions.
+	  @param starting_line_number An optional integer value specifying the script's starting line number in the file located at source_url. This is only used when reporting exceptions. The value is one-based, so the first line is line 1 and invalid values are clamped to 1.
+	  @result                     The JSValue that results from evaluating script.
+	  @throws                     std::runtime_error exception if the evaluated script threw an exception.
+	*/
+	JSValue JSEvaluateScript(const JSString& script, const JSObject& this_object, const JSString& source_url = JSString(), int starting_line_number = 1);
+	
+	
+	/*!
+	  @method
+	  @abstract                   Check for syntax errors in a string of JavaScript.
+	  @param script               A JSString containing the script to check for syntax errors.
+	  @param source_url           An optional JSString containing a URL for the script's source file. This is used by debuggers and when reporting exceptions.
+	  @param starting_line_number An optional integer value specifying the script's starting line number in the file located at source_url. This is only used when reporting exceptions. The value is one-based, so the first line is line 1 and invalid values are clamped to 1.
+	  @result                     true if the script is syntactically correct, otherwise false.
+	*/
+	bool JSCheckScriptSyntax(const JSString& script, const JSString& source_url = JSString(), int starting_line_number = 1);
+	
 	~JSContext() {
 		JSGlobalContextRelease(js_context_ref_);
 	}

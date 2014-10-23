@@ -750,6 +750,7 @@ class JSObject : public JSValue {
 		return js_object_ref_;
 	}
 	
+  friend class JSContext;
 	friend class JSValue;
   friend class JSPropertyNameArray;
   friend class JSArray;
@@ -758,8 +759,6 @@ class JSObject : public JSValue {
   friend class JSRegExp;
   friend class JSFunction;
   friend class JSStaticValue;
-
-	friend JSValue JSEvaluateScript(const JSContext& js_context, const JSString& script, const JSObject& this_object, const JSString& source_url, int starting_line_number);
 
 	JSContext   js_context_;
 	JSObjectRef js_object_ref_ { nullptr };

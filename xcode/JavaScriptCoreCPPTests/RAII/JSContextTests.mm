@@ -24,7 +24,9 @@ JSContext makeJSContext(const JSContextGroup& js_context_group) {
 @interface JSContextTests2 : XCTestCase
 @end
 
-@implementation JSContextTests2
+@implementation JSContextTests2 {
+  JSContext js_context;
+}
 
 - (void)setUp {
   [super setUp];
@@ -34,6 +36,12 @@ JSContext makeJSContext(const JSContextGroup& js_context_group) {
 - (void)tearDown {
   // Put teardown code here. This method is called after the invocation of each test method in the class.
   [super tearDown];
+}
+
+- (void)testJSEvaluateScript {
+  JSValue js_value = js_context.JSEvaluateScript("'Hello, world.'");
+  //std::clog << "MDL: js_value = " << js_value << std::endl;
+  XCTAssertEqual("Hello, world.", static_cast<std::string>(js_value));
 }
 
 - (void)testJSContext {

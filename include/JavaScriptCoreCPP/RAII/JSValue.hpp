@@ -240,6 +240,7 @@ private:
 	  return js_value_ref_;
   }
 
+  friend class JSContext;
   friend class JSUndefined;
   friend class JSNull;
   friend class JSBoolean;
@@ -258,10 +259,6 @@ private:
 	// Return true if the two JSValues are equal as compared by the JS == operator.
 	friend bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs);
 	
-	friend JSValue JSEvaluateScript(const JSContext& js_context, const JSString& script, const JSString& source_url, int starting_line_number);
-	friend JSValue JSEvaluateScript(const JSContext& js_context, const JSString& script, const JSObject& this_object, const JSString& source_url, int starting_line_number);
-	friend bool JSCheckScriptSyntax(const JSContext& js_context, const JSString& script, const JSString& source_url, int starting_line_number);
-
 	JSContext  js_context_;
 	JSValueRef js_value_ref_ { nullptr };
 };
