@@ -15,6 +15,10 @@
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
+class JSContext;
+class JSValue;
+class JSObject;
+
 /*!
   @class JSString
   @discussion A JSString is an RAII wrapper around a JSStringRef, the
@@ -94,12 +98,6 @@ class JSString final	{
 
 private:
 
-  friend class JSValue;
-  friend class JSObject;
-  friend class JSPropertyNameArray;
-  friend class JSPropertyNameAccumulator;
-  friend class JSFunction;
-  
   // For interoperability with the JavaScriptCore C API.
   JSString(const JSStringRef& js_string_ref) : js_string_ref_(js_string_ref) {
 	  assert(js_string_ref_);
@@ -111,9 +109,19 @@ private:
     return js_string_ref_;
   }
 
+  friend class JSValue;
+  friend class JSObject;
+  friend class JSPropertyNameArray;
+  friend class JSPropertyNameAccumulator;
+  friend class JSFunction;
+  
 	// Return true if the two JSStrings are equal.
 	friend bool operator==(const JSString& lhs, const JSString& rhs);
-	
+
+	friend JSValue JSEvaluateScript(const JSContext& js_context, const JSString& script, const JSString& source_url, int starting_line_number);
+	friend JSValue JSEvaluateScript(const JSContext& js_context, const JSString& script, const JSObject& this_object, const JSString& source_url, int starting_line_number);
+	friend bool JSCheckScriptSyntax(const JSContext& js_context, const JSString& script, const JSString& source_url, int starting_line_number);
+
 	JSStringRef js_string_ref_;
 };
 

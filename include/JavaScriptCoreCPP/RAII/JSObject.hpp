@@ -408,7 +408,7 @@ class JSObject : public JSValue {
 	  @method
 	  @abstract Call this object as a function using the global object as "this."
 	  @result   The JSValue that results from calling this object as a function
-	  @throws   std::runtime_error exception if the called function through an exception, or object is not a function.
+	  @throws   std::runtime_error exception if the called function threw an exception, or object is not a function.
 	*/
 	JSValue CallAsFunction() const {
 		return CallAsFunction(std::vector<JSValue>());
@@ -418,7 +418,7 @@ class JSObject : public JSValue {
 	  @method
 	  @abstract Call this object as a function using the global object as "this."
 	  @result   The JSValue that results from calling this object as a function
-	  @throws   std::runtime_error exception if the called function through an exception, or object is not a function.
+	  @throws   std::runtime_error exception if the called function threw an exception, or object is not a function.
 	*/
 	JSValue operator()() const {
 		return CallAsFunction();
@@ -429,7 +429,7 @@ class JSObject : public JSValue {
 	  @abstract          Call this object as a function using the global object as "this."
 	  @param this_object The object to use as "this".
 	  @result            The JSValue that results from calling this object as a function
-	  @throws            std::runtime_error exception if the called function through an exception, or object is not a function.
+	  @throws            std::runtime_error exception if the called function threw an exception, or object is not a function.
 	*/
 	JSValue CallAsFunction(const JSObject& this_object) const {
 		return CallAsFunction(std::vector<JSValue>(), this_object);
@@ -440,7 +440,7 @@ class JSObject : public JSValue {
 	  @abstract          Call this object as a function using the global object as "this."
 	  @param this_object The object to use as "this".
 	  @result            The JSValue that results from calling this object as a function
-	  @throws            std::runtime_error exception if the called function through an exception, or object is not a function.
+	  @throws            std::runtime_error exception if the called function threw an exception, or object is not a function.
 	*/
 	JSValue operator()(const JSObject& this_object) const {
 		return CallAsFunction(this_object);
@@ -451,7 +451,7 @@ class JSObject : public JSValue {
 	  @abstract       Call this object as a function using the global object as "this."
 	  @param argument A JSValue to pass as the sole argument to the function.
 	  @result         The JSValue that results from calling this object as a function
-	  @throws         std::runtime_error exception if the called function through an exception, or object is not a function.
+	  @throws         std::runtime_error exception if the called function threw an exception, or object is not a function.
 	*/
 	JSValue CallAsFunction(const JSValue& argument) const {
 		return CallAsFunction(std::vector<JSValue>{argument});
@@ -462,7 +462,7 @@ class JSObject : public JSValue {
 	  @abstract       Call this object as a function using the global object as "this."
 	  @param argument A JSValue to pass as the sole argument to the function.
 	  @result         The JSValue that results from calling this object as a function
-	  @throws         std::runtime_error exception if the called function through an exception, or object is not a function.
+	  @throws         std::runtime_error exception if the called function threw an exception, or object is not a function.
 	*/
 	JSValue operator()(const JSValue& argument) const {
 		return CallAsFunction(argument);
@@ -473,7 +473,7 @@ class JSObject : public JSValue {
 	  @abstract       Call this object as a function using the global object as "this."
 	  @param argument A JSString to pass as the sole argument to the function.
 	  @result         The JSValue that results from calling this object as a function
-	  @throws         std::runtime_error exception if the called function through an exception, or object is not a function.
+	  @throws         std::runtime_error exception if the called function threw an exception, or object is not a function.
 	*/
 	JSValue CallAsFunction(const JSString& argument) const {
 		return CallAsFunction(std::vector<JSString>{argument});
@@ -484,7 +484,7 @@ class JSObject : public JSValue {
 	  @abstract       Call this object as a function using the global object as "this."
 	  @param argument A JSString to pass as the sole argument to the function.
 	  @result         The JSValue that results from calling this object as a function
-	  @throws         std::runtime_error exception if the called function through an exception, or object is not a function.
+	  @throws         std::runtime_error exception if the called function threw an exception, or object is not a function.
 	*/
 	JSValue operator()(const JSString& argument) const {
 		return CallAsFunction(argument);
@@ -496,7 +496,7 @@ class JSObject : public JSValue {
 	  @param argument    A JSValue to pass as the sole argument to the function.
 	  @param this_object The object to use as "this".
 	  @result            The JSValue that results from calling this object as a function
-	  @throws            std::runtime_error exception if the called function through an exception, or object is not a function.
+	  @throws            std::runtime_error exception if the called function threw an exception, or object is not a function.
 	*/
 	JSValue CallAsFunction(const JSValue& argument, const JSObject& this_object) const {
 		return CallAsFunction(std::vector<JSValue>{argument}, this_object);
@@ -508,7 +508,7 @@ class JSObject : public JSValue {
 	  @param argument    A JSValue to pass as the sole argument to the function.
 	  @param this_object The object to use as "this".
 	  @result            The JSValue that results from calling this object as a function
-	  @throws            std::runtime_error exception if the called function through an exception, or object is not a function.
+	  @throws            std::runtime_error exception if the called function threw an exception, or object is not a function.
 	*/
 	JSValue operator()(const JSValue& argument, const JSObject& this_object) const {
 		return CallAsFunction(argument, this_object);
@@ -520,7 +520,7 @@ class JSObject : public JSValue {
 	  @param argument    A JSString to pass as the sole argument to the function.
 	  @param this_object The object to use as "this".
 	  @result            The JSValue that results from calling this object as a function
-	  @throws            std::runtime_error exception if the called function through an exception, or object is not a function.
+	  @throws            std::runtime_error exception if the called function threw an exception, or object is not a function.
 	*/
 	JSValue CallAsFunction(const JSString& argument, const JSObject& this_object) const {
 		return CallAsFunction(std::vector<JSString>{argument}, this_object);
@@ -532,7 +532,7 @@ class JSObject : public JSValue {
 	  @param argument    A JSString to pass as the sole argument to the function.
 	  @param this_object The object to use as "this".
 	  @result            The JSValue that results from calling this object as a function
-	  @throws            std::runtime_error exception if the called function through an exception, or object is not a function.
+	  @throws            std::runtime_error exception if the called function threw an exception, or object is not a function.
 	*/
 	JSValue operator()(const JSString& argument, const JSObject& this_object) const {
 		return CallAsFunction(argument, this_object);
@@ -543,7 +543,7 @@ class JSObject : public JSValue {
 	  @abstract        Call this object as a function using the global object as "this."
 	  @param arguments A JSValue array of arguments to pass to the function.
 	  @result          The JSValue that results from calling this object as a function
-	  @throws          std::runtime_error exception if the called function through an exception, or object is not a function.
+	  @throws          std::runtime_error exception if the called function threw an exception, or object is not a function.
 	*/
 	JSValue CallAsFunction(const std::vector<JSValue>& arguments) const;
 
@@ -552,7 +552,7 @@ class JSObject : public JSValue {
 	  @abstract        Call this object as a function using the global object as "this."
 	  @param arguments A JSValue array of arguments to pass to the function.
 	  @result          The JSValue that results from calling this object as a function
-	  @throws          std::runtime_error exception if the called function through an exception, or object is not a function.
+	  @throws          std::runtime_error exception if the called function threw an exception, or object is not a function.
 	*/
 	JSValue operator()(const std::vector<JSValue>& arguments) const {
 		return CallAsFunction(arguments);
@@ -563,7 +563,7 @@ class JSObject : public JSValue {
 	  @abstract        Call this object as a function using the global object as "this."
 	  @param arguments A JSString array of arguments to pass to the function.
 	  @result          The JSValue that results from calling this object as a function
-	  @throws          std::runtime_error exception if the called function through an exception, or object is not a function.
+	  @throws          std::runtime_error exception if the called function threw an exception, or object is not a function.
 	*/
 	JSValue CallAsFunction(const std::vector<JSString>& arguments) const {
 		std::vector<JSValue> arguments_array;
@@ -576,7 +576,7 @@ class JSObject : public JSValue {
 	  @abstract        Call this object as a function using the global object as "this."
 	  @param arguments A JSString array of arguments to pass to the function.
 	  @result          The JSValue that results from calling this object as a function
-	  @throws          std::runtime_error exception if the called function through an exception, or object is not a function.
+	  @throws          std::runtime_error exception if the called function threw an exception, or object is not a function.
 	*/
 	JSValue operator()(const std::vector<JSString>& arguments) const {
 		return CallAsFunction(arguments);
@@ -588,7 +588,7 @@ class JSObject : public JSValue {
 	  @param arguments   A JSValue array of arguments to pass to the function.
 	  @param this_object The object to use as "this".
 	  @result            The JSValue that results from calling this object as a function.
-	  @throws            std::runtime_error exception if the called function through an exception, or object is not a function.
+	  @throws            std::runtime_error exception if the called function threw an exception, or object is not a function.
 	*/
 	JSValue CallAsFunction(const std::vector<JSValue>& arguments, const JSObject& this_object) const;
 
@@ -598,7 +598,7 @@ class JSObject : public JSValue {
 	  @param arguments   A JSValue array of arguments to pass to the function.
 	  @param this_object The object to use as "this".
 	  @result            The JSValue that results from calling this object as a function.
-	  @throws            std::runtime_error exception if the called function through an exception, or object is not a function.
+	  @throws            std::runtime_error exception if the called function threw an exception, or object is not a function.
 	*/
 	JSValue operator()(const std::vector<JSValue>& arguments, const JSObject& this_object) const {
 		return CallAsFunction(arguments, this_object);
@@ -610,7 +610,7 @@ class JSObject : public JSValue {
 	  @param arguments   A JSString array of arguments to pass to the function.
 	  @param this_object The object to use as "this".
 	  @result            The JSValue that results from calling this object as a function
-	  @throws            std::runtime_error exception if the called function through an exception, or object is not a function.
+	  @throws            std::runtime_error exception if the called function threw an exception, or object is not a function.
 	*/
 	JSValue CallAsFunction(const std::vector<JSString>& arguments, const JSObject& this_object) const {
 		std::vector<JSValue> arguments_array;
@@ -625,7 +625,7 @@ class JSObject : public JSValue {
 	  @param arguments   A JSString array of arguments to pass to the function.
 	  @param this_object The object to use as "this".
 	  @result            The JSValue that results from calling this object as a function
-	  @throws            std::runtime_error exception if the called function through an exception, or object is not a function.
+	  @throws            std::runtime_error exception if the called function threw an exception, or object is not a function.
 	*/
 	JSValue operator()(const std::vector<JSString>& arguments, const JSObject& this_object) const {
 		return CallAsFunction(arguments, this_object);
@@ -644,7 +644,7 @@ class JSObject : public JSValue {
 	  @method
 	  @abstract Calls this object as a constructor.
 	  @result   The JSObject that results from calling this object as a constructor
-	  @throws   std::runtime_error exception if the called constructor through an exception, or object is not a constructor.
+	  @throws   std::runtime_error exception if the called constructor threw an exception, or object is not a constructor.
 	*/
 	JSObject CallAsConstructor() const {
 		return CallAsConstructor(std::vector<JSValue>());
@@ -655,7 +655,7 @@ class JSObject : public JSValue {
 	  @abstract       Calls this object as a constructor.
 	  @param argument A JSValue to pass as the sole argument to the constructor.
 	  @result         The JSObject that results from calling this object as a constructor
-	  @throws         std::runtime_error exception if the called constructor through an exception, or object is not a constructor.
+	  @throws         std::runtime_error exception if the called constructor threw an exception, or object is not a constructor.
 	*/
 	JSObject CallAsConstructor(const JSValue& argument) const {
 		return CallAsConstructor(std::vector<JSValue>{argument});
@@ -666,7 +666,7 @@ class JSObject : public JSValue {
 	  @abstract       Calls this object as a constructor.
 	  @param argument A JSString to pass as the sole argument to the constructor.
 	  @result         The JSObject that results from calling this object as a constructor
-	  @throws         std::runtime_error exception if the called constructor through an exception, or object is not a constructor.
+	  @throws         std::runtime_error exception if the called constructor threw an exception, or object is not a constructor.
 	*/
 	JSObject CallAsConstructor(const JSString& argument) const {
 		return CallAsConstructor(std::vector<JSString>{argument});
@@ -677,7 +677,7 @@ class JSObject : public JSValue {
 	  @abstract        Calls this object as a constructor.
 	  @param arguments A JSValue array of arguments to pass to the constructor.
 	  @result          The JSObject that results from calling this object as a constructor
-	  @throws          std::runtime_error exception if the called constructor through an exception, or object is not a constructor.
+	  @throws          std::runtime_error exception if the called constructor threw an exception, or object is not a constructor.
 	*/
 	JSObject CallAsConstructor(const std::vector<JSValue>& arguments) const;
 
@@ -686,7 +686,7 @@ class JSObject : public JSValue {
 	  @abstract        Calls this object as a constructor.
 	  @param arguments A JSString array of arguments to pass to the constructor.
 	  @result          The JSObject that results from calling this object as a constructor
-	  @throws          std::runtime_error exception if the called constructor through an exception, or object is not a constructor.
+	  @throws          std::runtime_error exception if the called constructor threw an exception, or object is not a constructor.
 	*/
 	JSObject CallAsConstructor(const std::vector<JSString>& arguments) const {
 		std::vector<JSValue> arguments_array;
@@ -758,6 +758,8 @@ class JSObject : public JSValue {
   friend class JSRegExp;
   friend class JSFunction;
   friend class JSStaticValue;
+
+	friend JSValue JSEvaluateScript(const JSContext& js_context, const JSString& script, const JSObject& this_object, const JSString& source_url, int starting_line_number);
 
 	JSContext   js_context_;
 	JSObjectRef js_object_ref_ { nullptr };

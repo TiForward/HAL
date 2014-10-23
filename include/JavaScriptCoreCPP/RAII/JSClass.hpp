@@ -17,19 +17,20 @@ namespace JavaScriptCoreCPP { namespace RAII {
   @class
 
   @discussion A JSClass is an RAII wrapper around a JSClassRef, the
-  JavaScriptCore C API representation of a JavaScript class that can be passed to . Used
-  with JSObjectMake to construct objects with custom behavior.
+  JavaScriptCore C API representation of a JavaScript class. An
+  instance of JSClass can be passed to the JSObject constructor to
+  create JavaScript objects with custom behavior.
+
+  The only way to create a JSClass is to use the JSClassBuilder.
 */
 class JSClass final	{
 	
  public:
 
-	// Create an empty object.
-	JSClass(const JSClassDefinition& js_class_definition)
-			: js_class_definition_(js_class_definition)
-			, js_class_ref_(JSClassCreate(js_class_definition_)) {
+	JSClassDefinition get_js_class_definition() const {
+		return js_class_definition_;
 	}
-	
+
 	~JSClass() {
 		JSClassRelease(js_class_ref_);
 	}
@@ -69,12 +70,16 @@ class JSClass final	{
 	
  private:
 	
+	// Only the JSClassBuilder can create instances of JSClass.
+	JSClass(const JSClassBuilder& builder);
+	
 	// For interoperability with the JavaScriptCore C API.
 	operator JSClassRef() const {
 		return js_class_ref_;
 	}
 
-	friend JSObject;
+	friend class JSObject;
+	friend class JSClassBuilder;
 
 	JSClassDefinition js_class_definition_;
 	JSClassRef        js_class_ref_ { nullptr };

@@ -187,7 +187,7 @@ public:
     @param constructor The constructor to test against.
     @result            true if this JavaScript value was constructed by the given constructor, as compared by the JS instanceof operator, otherwise false.
   */
-  bool IsInstanceOfConstructor(const JSObject& constructor);
+	bool IsInstanceOfConstructor(const JSObject& constructor);
 
 	virtual ~JSValue() {
 	  JSValueUnprotect(js_context_, js_value_ref_);
@@ -258,6 +258,10 @@ private:
 	// Return true if the two JSValues are equal as compared by the JS == operator.
 	friend bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs);
 	
+	friend JSValue JSEvaluateScript(const JSContext& js_context, const JSString& script, const JSString& source_url, int starting_line_number);
+	friend JSValue JSEvaluateScript(const JSContext& js_context, const JSString& script, const JSObject& this_object, const JSString& source_url, int starting_line_number);
+	friend bool JSCheckScriptSyntax(const JSContext& js_context, const JSString& script, const JSString& source_url, int starting_line_number);
+
 	JSContext  js_context_;
 	JSValueRef js_value_ref_ { nullptr };
 };

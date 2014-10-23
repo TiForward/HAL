@@ -14,6 +14,10 @@
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
+class JSString;
+class JSValue;
+class JSObject;
+
 /*!
   @class
   @discussion A JSContext is an RAII wrapper around a JSContextRef,
@@ -151,9 +155,12 @@ private:
   friend bool operator==(const JSContext& lhs, const JSContext& rhs);
 
   // Return true if the two JSValues are equal as compared by the JS == operator.
-  class JSValue;
   friend bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs);
   
+	friend JSValue JSEvaluateScript(const JSContext& js_context, const JSString& script, const JSString& source_url, int starting_line_number);
+	friend JSValue JSEvaluateScript(const JSContext& js_context, const JSString& script, const JSObject& this_object, const JSString& source_url, int starting_line_number);
+	friend bool JSCheckScriptSyntax(const JSContext& js_context, const JSString& script, const JSString& source_url, int starting_line_number);
+
 	JSGlobalContextRef js_context_ref_ { nullptr };
 	JSContextGroup     js_context_group_;
 };

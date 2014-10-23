@@ -150,8 +150,8 @@ JSValue JSObject::CallAsFunction(const std::vector<JSValue>& arguments) const {
 	}
 	
 	JSValueRef exception { nullptr };
-	JSValueRef js_value_ref = nullptr;
-	const JSObjectRef this_object = nullptr;
+	JSValueRef js_value_ref { nullptr };
+	const JSObjectRef this_object { nullptr };
 	if (!arguments.empty()) {
 		std::vector<JSValueRef> arguments_array;
 		std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [](const JSValue& js_value) { return static_cast<JSValueRef>(js_value); });
@@ -184,7 +184,7 @@ JSValue JSObject::CallAsFunction(const std::vector<JSValue>& arguments, const JS
 	}
 	
 	JSValueRef exception { nullptr };
-	JSValueRef js_value_ref = nullptr;
+	JSValueRef js_value_ref { nullptr };
 	if (!arguments.empty()) {
 		std::vector<JSValueRef> arguments_array;
 		std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [](const JSValue& js_value) { return static_cast<JSValueRef>(js_value); });
