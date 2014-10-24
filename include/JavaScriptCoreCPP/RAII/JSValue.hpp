@@ -225,13 +225,13 @@ public:
 private:
 
   // For interoperability with the JavaScriptCore C API.
-	JSValue(JSGlobalContextRef js_context_ref, JSValueRef js_value_ref) : js_context_(js_context_ref), js_value_ref_(js_value_ref)  {
+	JSValue(JSContextRef js_context_ref, JSValueRef js_value_ref) : js_context_(js_context_ref), js_value_ref_(js_value_ref)  {
 		assert(js_value_ref_);
 		JSValueProtect(js_context_, js_value_ref_);
 	}
 
   // For interoperability with the JavaScriptCore C API.
-	operator JSGlobalContextRef() const {
+	operator JSContextRef() const {
 	  return js_context_;
   }
 

@@ -54,8 +54,8 @@ class JSContext final	{
 	  such as Object, Function, String, and Array.
 	*/
 	JSContext(JSClassRef global_object_class = nullptr)
-			: js_context_ref_(JSGlobalContextCreate(global_object_class))
-			, js_context_group_(JSContextGroup(JSContextGetGroup(js_context_ref_))) {
+			: js_global_context_ref_(JSGlobalContextCreate(global_object_class))
+			, js_context_group_(JSContextGroup(JSContextGetGroup(js_global_context_ref_))) {
 	}
 
 	/*!
@@ -71,7 +71,7 @@ class JSContext final	{
 	  such as Object, Function, String, and Array.
 	*/
 	JSContext(const JSContextGroup& js_context_group, JSClassRef global_object_class = nullptr)
-			: js_context_ref_(JSGlobalContextCreateInGroup(js_context_group, global_object_class))
+			: js_global_context_ref_(JSGlobalContextCreateInGroup(js_context_group, global_object_class))
 			, js_context_group_(js_context_group)	{
 	}
 
@@ -112,21 +112,21 @@ class JSContext final	{
 	bool JSCheckScriptSyntax(const JSString& script, const JSString& source_url = JSString(), int starting_line_number = 1);
 	
 	~JSContext() {
-		JSGlobalContextRelease(js_context_ref_);
+		JSGlobalContextRelease(js_global_context_ref_);
 	}
 	
 	// Copy constructor.
 	JSContext(const JSContext& rhs)
-			: js_context_ref_(rhs.js_context_ref_)
+			: js_global_context_ref_(rhs.js_global_context_ref_)
 			, js_context_group_(rhs.js_context_group_) {
-		JSGlobalContextRetain(js_context_ref_);
+		JSGlobalContextRetain(js_global_context_ref_);
 	}
 	
   // Move constructor.
   JSContext(JSContext&& rhs)
-		  : js_context_ref_(rhs.js_context_ref_)
+		  : js_global_context_ref_(rhs.js_global_context_ref_)
 		  , js_context_group_(rhs.js_context_group_) {
-	  JSGlobalContextRetain(rhs.js_context_ref_);
+	  JSGlobalContextRetain(rhs.js_global_context_ref_);
   }
   
   // Create a copy of another JSContext by assignment. This is a
@@ -144,8 +144,8 @@ class JSContext final	{
     
     // by swapping the members of two classes,
     // the two classes are effectively swapped
-    swap(first.js_context_ref_  , second.js_context_ref_  );
-    swap(first.js_context_group_, second.js_context_group_);
+    swap(first.js_global_context_ref_, second.js_global_context_ref_);
+    swap(first.js_context_group_     , second.js_context_group_);
   }
 
 	JSContextGroup get_context_group() const {
@@ -154,23 +154,28 @@ class JSContext final	{
 	
   // TODO: Change JSObjectRef to JSObject
 	JSObjectRef get_global_object() const {
-		return JSContextGetGlobalObject(js_context_ref_);
+		return JSContextGetGlobalObject(js_global_context_ref_);
 	}
 
 private:
 
 	// For interoperability with the JavaScriptCore C API.
-	JSContext(JSGlobalContextRef js_context_ref)
-			: js_context_ref_(js_context_ref)
-			, js_context_group_(JSContextGetGroup(js_context_ref_)) {
-		assert(js_context_ref_);
+	JSContext(JSGlobalContextRef js_global_context_ref)
+			: js_global_context_ref_(js_global_context_ref)
+			, js_context_group_(JSContextGetGroup(js_global_context_ref)) {
+		assert(js_global_context_ref_);
 		assert(js_context_group_);
-		JSGlobalContextRetain(js_context_ref_);
+		JSGlobalContextRetain(js_global_context_ref);
 	}
 		
 	// For interoperability with the JavaScriptCore C API.
-	operator JSGlobalContextRef() const {
-		return js_context_ref_;
+	JSContext(JSContextRef js_context_ref)
+			: JSContext(const_cast<JSGlobalContextRef>(js_context_ref)) {
+	}
+
+	// For interoperability with the JavaScriptCore C API.
+	operator JSContextRef() const {
+		return js_global_context_ref_;
 	}
 
 	friend class JSValue;
@@ -198,14 +203,14 @@ private:
 	friend JSValue JSEvaluateScript(const JSContext& js_context, const JSString& script, const JSObject& this_object, const JSString& source_url, int starting_line_number);
 	friend bool JSCheckScriptSyntax(const JSContext& js_context, const JSString& script, const JSString& source_url, int starting_line_number);
 
-	JSGlobalContextRef js_context_ref_ { nullptr };
+	JSGlobalContextRef js_global_context_ref_ { nullptr };
 	JSContextGroup     js_context_group_;
 };
 
 // Return true if the two JSContexts are equal.
 inline
 bool operator==(const JSContext& lhs, const JSContext& rhs) {
-  return (lhs.js_context_ref_ == rhs.js_context_ref_) && (lhs.js_context_group_ == rhs.js_context_group_);
+  return (lhs.js_global_context_ref_ == rhs.js_global_context_ref_) && (lhs.js_context_group_ == rhs.js_context_group_);
 }
   
 // Return true if the two JSContextGroups are not equal.

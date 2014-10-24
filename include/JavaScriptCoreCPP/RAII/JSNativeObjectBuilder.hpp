@@ -77,7 +77,7 @@ class JSNativeObjectBuilder final {
 	  
 	  @result The JSContext in which the JSNativeObject is created.
 	*/
-	JSContext get_js_context() {
+	JSContext get_js_context() const {
 		return js_context_;
 	}
 	
@@ -101,7 +101,7 @@ class JSNativeObjectBuilder final {
 	  
 	  @result The class's name.
 	*/
-	JSString get_class_name() {
+	JSString get_class_name() const {
 		return class_name_;
 	}
 	

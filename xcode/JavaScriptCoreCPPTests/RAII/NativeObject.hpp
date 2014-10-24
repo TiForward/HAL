@@ -9,7 +9,6 @@
 #define _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_XCODE_JAVASCRIPTCORECPPTESTS_RAII_DERIVEDJSOBJECT_HPP_
 
 #include "JavaScriptCoreCPP/RAII/RAII.hpp"
-#include "JavaScriptCoreCPP/RAII/JSNativeObject.hpp"
 #include <iostream>
 
 namespace JavaScriptCoreCPP { namespace RAII {

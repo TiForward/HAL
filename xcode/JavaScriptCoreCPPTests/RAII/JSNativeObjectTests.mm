@@ -8,6 +8,7 @@
 
 #include "JavaScriptCoreCPP/RAII/RAII.hpp"
 #include "NativeObject.hpp"
+//#include "JavaScriptCoreCPP/RAII/JSNativeObject.hpp"
 #import <XCTest/XCTest.h>
 
 using namespace JavaScriptCoreCPP::RAII;
@@ -36,7 +37,7 @@ using namespace JavaScriptCoreCPP::RAII;
 }
 
 - (void)testJSNativeObject {
-  //NativeObject native_object(js_context);
+  NativeObject native_object(js_context);
 }
 
 // As of 2014.09.20 Travis CI only supports Xcode 5.1 which lacks support for

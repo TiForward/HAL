@@ -18,7 +18,7 @@ JSObject::JSObject(const JSClass& js_class, const JSContext& js_context, void* p
 }
 
 // For interoperability with the JavaScriptCore C API.
-JSObject::JSObject(JSGlobalContextRef js_context_ref, JSObjectRef js_object_ref)
+JSObject::JSObject(JSContextRef js_context_ref, JSObjectRef js_object_ref)
 		: JSValue(js_context_ref, js_object_ref)
 		, js_context_(js_context_ref)
 		, js_object_ref_(js_object_ref) {
