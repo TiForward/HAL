@@ -81,17 +81,16 @@ class JSContext final	{
 	  String, and Array. Scripts may execute in this context
 	  concurrently with scripts executing in other contexts.
 
-	  @discussion A JSContext created in a specific context group allows
-	  JavaScript objects to be shared and exchanged with other contexts
-	  within that group.
-	  
+	  @discussion All JSContexts within the same context group may share
+	  and exchange JavaScript objects with one another.
+
 	  When JavaScript objects from the same context group are used in
 	  multiple threads, explicit synchronization is required.
 
 	  @param js_context_group The context group within which the
 	  JSContext is created.
 	*/
-	JSContext(const JSContextGroup& js_context_group)
+	explicit JSContext(const JSContextGroup& js_context_group)
 			: js_global_context_ref_(JSGlobalContextCreateInGroup(js_context_group, nullptr))
 			, js_context_group_(js_context_group)	{
 	}
@@ -107,7 +106,7 @@ class JSContext final	{
 	  @param global_object_class The JSClass used to create the global
 	  object.
 	*/
-	JSContext(JSClass global_object_class)
+	explicit JSContext(JSClass global_object_class)
 			: js_global_context_ref_(JSGlobalContextCreate(global_object_class))
 			, js_context_group_(JSContextGroup(JSContextGetGroup(js_global_context_ref_))) {
 	}
@@ -120,9 +119,8 @@ class JSContext final	{
 	  JSClass. Scripts may execute in this context concurrently with
 	  scripts executing in other contexts.
 
-	  @discussion A JSContext created in a specific context group allows
-	  JavaScript objects to be shared and exchanged with other contexts
-	  within that group.
+	  @discussion All JSContexts within the same context group may share
+	  and exchange JavaScript objects with one another.
 	  
 	  When JavaScript objects from the same context group are used in
 	  multiple threads, explicit synchronization is required.

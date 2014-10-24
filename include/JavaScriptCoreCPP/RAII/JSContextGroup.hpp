@@ -16,6 +16,9 @@
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
+class JSContext;
+class JSClass;
+
 /*!
   @class
   
@@ -23,13 +26,8 @@ namespace JavaScriptCoreCPP { namespace RAII {
   JSContextGroupRef, the JavaScriptCore C API representation of a
   group that associates JavaScript contexts with one another.
 
-  JSContexts within the same group may share and exchange JavaScript
-  objects. However, sharing and/or exchanging JavaScript objects
-  between contexts in different groups will produce undefined
-  behavior.
-
-  When objects from the same context group are used in multiple
-  threads, explicit synchronization is required.
+  JSContexts within the same context group may share and exchange
+  JavaScript objects with one another.
 */
 class JSContextGroup final	{
 	
@@ -38,19 +36,49 @@ class JSContextGroup final	{
 	/*!
 	  @method
 	  
-	  @abstract Create a JavaScript context group.
-	  
-	  @discussion JSContexts within the same group may share and
-	  exchange JavaScript objects. However, sharing and/or exchanging
-	  JavaScript objects between contexts in different groups will
-	  produce undefined behavior.
-
-	  When objects from the same context group are used in multiple
-	  threads, explicit synchronization is required.
+	  @abstract Create a JavaScript context group. JSContexts within
+	  this context group may share and exchange JavaScript objects with
+	  one another.
 	*/
 	JSContextGroup() : js_context_group_ref_(JSContextGroupCreate()) {
 	}
 	
+	/*!
+	  @method
+	  
+	  @abstract Create a JavaScript execution context within this
+	  context group with a default global object populated with all of
+	  the standard built-in JavaScript objects, such as Object,
+	  Function, String, and Array. Scripts may execute in this context
+	  concurrently with scripts executing in other contexts.
+
+	  @discussion All JSContexts within this context group may share and
+	  exchange JavaScript objects with one another.
+	  
+	  When JavaScript objects from the same context group are used in
+	  multiple threads, explicit synchronization is required.
+	*/
+	JSContext CreateContext() const;
+
+	/*!
+	  @method
+	  
+	  @abstract Create a JavaScript execution context within this
+	  context group with a global object created from a custom
+	  JSClass. Scripts may execute in this context concurrently with
+	  scripts executing in other contexts.
+
+	  @discussion All JSContexts within this context group may share and
+	  exchange JavaScript objects with one another.
+	  
+	  When JavaScript objects from the same context group are used in
+	  multiple threads, explicit synchronization is required.
+
+	  @param global_object_class The JSClass used to create the global
+	  object.
+	*/
+	JSContext CreateContext(JSClass global_object_class) const;
+
 	~JSContextGroup() {
 		JSContextGroupRelease(js_context_group_ref_);
 	}
