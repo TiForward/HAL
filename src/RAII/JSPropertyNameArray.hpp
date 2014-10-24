@@ -1,7 +1,9 @@
 /**
- * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2014 by Appcelerator, Inc. All Rights Reserved.
- * Licensed under the terms of the Apache Public License
+ * JavaScriptCoreCPP
+ * Author: Matthew D. Langston
+ *
+ * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Apache Public License.
  * Please see the LICENSE included with this distribution for details.
  */
 
@@ -15,10 +17,11 @@
 #include <cassert>
 #include <JavaScriptCore/JavaScript.h>
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP { namespace detail {
 
 /*!
   @class
+  
   @discussion A JSPropertyNameArray is an RAII wrapper around a
   JSPropertyNameArrayRef, the JavaScriptCore C API representation of
   an array of JavaScript property names.
@@ -29,21 +32,29 @@ private:
 
 	// This class is only intended to be used as a helper class by
 	// JSObject.
-	friend class JSObject;
+	friend class RAII::JSObject;
 	
 	/*!
 	  @method
-	  @abstract     Gets the names of an object's enumerable properties.
+	  
+	  @abstract Gets the names of an object's enumerable properties.
+	  
 	  @param object The object whose property names you want to get.
-	  @result       A JSPropertyNameArray containing the names of the object's enumerable properties.
+	  
+	  @result A JSPropertyNameArray containing the names of the object's
+	  enumerable properties.
 	*/
-	JSPropertyNameArray(const JSObject& js_object) : js_property_name_array_ref_(JSObjectCopyPropertyNames(js_object, js_object)) {
+	JSPropertyNameArray(const RAII::JSObject& js_object) : js_property_name_array_ref_(JSObjectCopyPropertyNames(js_object, js_object)) {
 	}
   
 	/*!
 	  @method
-	  @abstract Return the number of items in this JavaScript property name array.
-	  @result   The number of names in this JavaScript property name array.
+	  
+	  @abstract Return the number of items in this JavaScript property
+	  name array.
+	  
+	  @result The number of names in this JavaScript property name
+	  array.
 	*/
 	size_t GetCount() const {
 		return JSPropertyNameArrayGetCount(js_property_name_array_ref_);
@@ -51,16 +62,20 @@ private:
 	
 	/*!
 	  @method
-	  @abstract    Gets a property name at a given index in this JavaScript property name array.
+	  
+	  @abstract Gets a property name at a given index in this JavaScript
+	  property name array.
+	  
 	  @param index The index of the property name to retrieve.
-	  @result      A JSString containing the property name.
+	  
+	  @result A JSString containing the property name.
 	*/
-	JSString GetNameAtIndex(size_t index) const {
+	RAII::JSString GetNameAtIndex(size_t index) const {
 		return JSPropertyNameArrayGetNameAtIndex(js_property_name_array_ref_, index);
 	}
 	
-	operator std::vector<JSString>() const {
-		std::vector<JSString> property_names;
+	operator std::vector<RAII::JSString>() const {
+		std::vector<RAII::JSString> property_names;
 		for (size_t i = 0, count = GetCount(); i < count; ++i) {
 			property_names.emplace_back(GetNameAtIndex(i));
 		}
@@ -112,6 +127,6 @@ private:
 	JSPropertyNameArrayRef js_property_name_array_ref_;
 };
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP { namespace detail {
 
 #endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSPROPERTYNAMEARRAY_HPP_

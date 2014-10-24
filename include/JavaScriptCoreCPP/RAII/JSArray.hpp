@@ -1,7 +1,9 @@
 /**
- * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2014 by Appcelerator, Inc. All Rights Reserved.
- * Licensed under the terms of the Apache Public License
+ * JavaScriptCoreCPP
+ * Author: Matthew D. Langston
+ *
+ * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Apache Public License.
  * Please see the LICENSE included with this distribution for details.
  */
 
@@ -15,43 +17,24 @@ namespace JavaScriptCoreCPP { namespace RAII {
 
 /*!
   @class
+  
   @discussion A JavaScript object of the Array type.
+  
+  The only way to create a JSArray is by using the
+  JSContext::CreateArray member function.
 */
 class JSArray final : public JSObject {
 	
- public:
+ private:
 
-	/*!
-	  @method
-
-	  @abstract Create JavaScript Array object.
-	  
-	  @param js_context The execution context to use.
-	  
-    @result A JavaScript object that is an Array.
-	*/
-	JSArray(const JSContext& js_context) : JSArray(std::vector<JSValue>(), js_context) {
+	// Only a JSContext can create a JSArray.
+	JSArray(const JSContext& js_context) : JSArray(js_context, std::vector<JSValue>()) {
 	}
 	
-	/*!
-	  @method
-	  
-	  @abstract Create a JavaScript Array object.
-	  
-	  @discussion The behavior of this constructor does not exactly
-	  match the behavior of the built-in Array constructor in that if
-	  the vector of arguments contains one element then the JSArray is
-	  also created with on element.
-	  
-	  @param arguments The JavaScript values to populate the array.
-	  
-	  @param js_context The execution context to use.
-	  
-    @result A JavaScript object that is an Array, populated with the
-    given JavaScript values.
-	*/
-	JSArray(const std::vector<JSValue>& arguments, const JSContext& js_context);
-	
+	// Only a JSContext can create a JSArray.
+	JSArray(const JSContext& js_context, const std::vector<JSValue>& arguments);
+
+	friend JSContext;
 };
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {

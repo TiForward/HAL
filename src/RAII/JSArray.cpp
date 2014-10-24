@@ -1,8 +1,11 @@
-// -*- mode: c++ -*-
-//
-//  Author: Matt Langston
-//  Copyright (c) 2014 Appcelerator. All rights reserved.
-//
+/**
+ * JavaScriptCoreCPP
+ * Author: Matthew D. Langston
+ *
+ * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Apache Public License.
+ * Please see the LICENSE included with this distribution for details.
+ */
 
 #include "JavaScriptCoreCPP/RAII/JSArray.hpp"
 #include <vector>
@@ -12,7 +15,7 @@
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-JSArray::JSArray(const std::vector<JSValue>& arguments, const JSContext& js_context) : JSObject(js_context) {
+JSArray::JSArray(const JSContext& js_context, const std::vector<JSValue>& arguments) : JSObject(js_context) {
 	JSValueRef exception { nullptr };
 	JSObjectRef js_object_ref = nullptr;
 	if (!arguments.empty()) {

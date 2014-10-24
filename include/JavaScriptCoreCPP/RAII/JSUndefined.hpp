@@ -1,7 +1,9 @@
 /**
- * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2014 by Appcelerator, Inc. All Rights Reserved.
- * Licensed under the terms of the Apache Public License
+ * JavaScriptCoreCPP
+ * Author: Matthew D. Langston
+ *
+ * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Apache Public License.
  * Please see the LICENSE included with this distribution for details.
  */
 
@@ -14,20 +16,21 @@ namespace JavaScriptCoreCPP { namespace RAII {
 
 /*!
   @class
+  
   @discussion A JavaScript value of the undefined type.
+
+  The only way to create a JSUndefined is by using the
+  JSContext::CreateUndefined member function.
 */
 class JSUndefined final : public JSValue {
 	
-public:
+private:
 	
-	/*!
-	  @method
-	  @abstract         Create a JavaScript value of the undefined type.
-	  @param js_context The execution context to use.
-	  @result           The unique undefined value.
-	*/
+	// Only a JSContext can create a JSUndefined.
 	JSUndefined(const JSContext& js_context) : JSValue(js_context, JSValueMakeUndefined(js_context)) {
 	}
+
+	friend JSContext;
 };
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {

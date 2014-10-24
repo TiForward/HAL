@@ -1,7 +1,9 @@
 /**
- * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2014 by Appcelerator, Inc. All Rights Reserved.
- * Licensed under the terms of the Apache Public License
+ * JavaScriptCoreCPP
+ * Author: Matthew D. Langston
+ *
+ * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Apache Public License.
  * Please see the LICENSE included with this distribution for details.
  */
 
@@ -13,14 +15,22 @@
 #include <iostream>
 #include <cassert>
 
+namespace JavaScriptCoreCPP { namespace detail {
+class JSPropertyNameArray;
+}}
+
 namespace JavaScriptCoreCPP { namespace RAII {
 
 class JSObject;
 
 /*!
   @class
+  
   @discussion A JSValue is an RAII wrapper around a JSValueRef, the
   JavaScriptCore C API representation of a JavaScript value.
+
+  The only way to create a JSValue is by using the
+  JSContext::CreateValue member function.
 */
 class JSValue	{
 	
@@ -49,36 +59,40 @@ public:
 	
 	/*!
 	  @method
-	  @abstract            Create a JavaScript value either of the string type, or from a JSON formatted string.
-	  @param string        The JSString to either assign to the newly created JSValue, or that contains the JSON string to be parsed.
-    @param js_context    The execution context to use.
-    @param parse_as_json If true then parse string as a JSON formatted string, otherwise simply assign to the string to the newly created JavaScript value.
-	  @result              A JSValue either of the string type that represents the value of string, or a JavaScript value containing the parsed JSON formatted string.
-	  @throws              std::invalid_argument exception if parse_as_json is true but the string isn't a valid JSON formatted string.
-	*/
-	JSValue(const JSString& js_string, const JSContext& js_context, bool parse_as_json = false);
-
-	/*!
-	  @method
-	  @abstract       Return a JSString containing the JSON serialized representation of this JavaScript value.
-	  @param indent   The number of spaces to indent when nesting. If 0 (the default), the resulting JSON will not contain newlines. The size of the indent is clamped to 10 spaces.
-	  @result         A JSString containing the JSON serialized representation of this JavaScript value.
+	  
+	  @abstract Return a JSString containing the JSON serialized
+	  representation of this JavaScript value.
+	  
+	  @param indent The number of spaces to indent when nesting. If 0
+	  (the default), the resulting JSON will not contain newlines. The
+	  size of the indent is clamped to 10 spaces.
+	  
+	  @result A JSString containing the JSON serialized representation
+	  of this JavaScript value.
 	*/
 	JSString ToJSONString(unsigned indent = 0);
 	
 	/*!
 	  @method
+	  
 	  @abstract Convert this JSValue to a JSString.
-	  @result   A JSString with the result of conversion.
-	  @throws   std::logic_error if this JSValue could not be converted to a JSString.
+	  
+	  @result A JSString with the result of conversion.
+	  
+	  @throws std::logic_error if this JSValue could not be converted to
+	  a JSString.
 	*/
 	operator JSString() const;
 	
 	/*!
 	  @method
+	  
 	  @abstract Convert this JSValue to a std::string.
-	  @result   A std::string with the result of conversion.
-	  @throws   std::logic_error if this JSValue could not be converted to a std::string.
+	  
+	  @result A std::string with the result of conversion.
+	  
+	  @throws std::logic_error if this JSValue could not be converted to
+	  a std::string.
 	*/
 	operator std::string() const {
 		return operator JSString();
@@ -86,51 +100,111 @@ public:
 
 	/*!
 	  @method
-	  @abstract Convert this JSValue to a JSObject and return the resulting object.
-	  @result   The JSObject result of conversion.
-	  @throws   std::logic_error if this JSValue could not be converted to a JSObject.
+	  
+	  @abstract Convert a JSValue to a boolean.
+	  
+	  @result The boolean result of conversion.
 	*/
-	// operator JSObject() const {
-	// 	JSValueRef exception { nullptr };
-	// 	JSObjectRef js_object_ref = JSValueToObject(js_context_, js_value_ref_, &exception);
-	// 	if (exception) {
-	// 		static const std::string log_prefix { "MDL: JSValue::operator JSObject() const: " };
-	// 		std::ostringstream os;
-	// 		os << "JSValue could not be converted to a JSObject: " << JSValue(exception, js_context_);
-	// 		const std::string message = os.str();
-	// 		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
-			
-	// 		assert(!js_object_ref);
-	// 		// if (js_object_ref) {
-	// 		// 	JSValueUnprotect(js_context_, js_object_ref);
-	// 		// }
-			
-	// 		throw std::logic_error(message);
-	// 	}
-		
-	// 	assert(js_object_ref);
-	// 	JSObject js_object(js_object, js_context_);
-	// 	JSValueUnprotect(js_context_, js_object_ref);
-		
-	// 	return js_object;
-	// }
+	explicit operator bool() const {
+		return JSValueToBoolean(js_context_, js_value_ref_);
+	}
 	
+	/*!
+	  @method
+	  
+	  @abstract Convert this JSValue to a JSBoolean.
+	  
+	  @result A JSBoolean with the result of conversion.
+	  
+	  @throws std::logic_error if this JSValue could not be converted to
+	  a JSBoolean.
+	*/
+	operator JSBoolean() const;
+
+	/*!
+	  @method
+	  
+	  @abstract Convert a JSValue to a double.
+	  
+	  @result The double result of conversion.
+	*/
+	explicit operator double() const;
+
+	/*!
+	  @method
+	  
+	  @abstract Convert a JSValue to an int32_t according to the rules
+	  specified by the JavaScript language.
+	  
+	  @result The int32_t result of conversion.
+	*/
+	explicit operator int32_t() const;
+	
+	/*!
+	  @method
+	  
+	  @abstract Convert a JSValue to an uint32_t according to the rules
+	  specified by the JavaScript language.
+	  
+	  @discussion The JSValue is converted to an uint32_t according to
+	  the rules specified by the JavaScript language (implements
+	  ToUInt32, defined in ECMA-262 9.6).
+	  
+	  @result The uint32_t result of the conversion.
+	*/
+	explicit operator uint32_t() const  {
+		// As commented in the spec, the operation of ToInt32 and ToUint32
+		// only differ in how the result is interpreted; see NOTEs in
+		// sections 9.5 and 9.6.
+		return operator int32_t();
+	}
+
+	/*!
+	  @method
+	  
+	  @abstract Convert this JSValue to a JSNumber.
+	  
+	  @result A JSNumber with the result of conversion.
+	  
+	  @throws std::logic_error if this JSValue could not be converted to
+	  a JSNumber.
+	*/
+	operator JSNumber() const;
+
+	/*!
+	  @method
+	  
+	  @abstract Convert this JSValue to a JSObject.
+	  
+	  @result A JSObject with the result of conversion.
+	  
+	  @throws std::logic_error if this JSValue could not be converted to
+	  a JSObject.
+	*/
+	operator JSObject() const;
+
 	JSContext get_js_context() const {
 		return js_context_;
 	}
 
   /*!
     @method
+    
     @abstract Return this JavaScript value's type.
-    @result   A value of type JSValue::Type that identifies this JavaScript value's type.
+    
+    @result A value of type JSValue::Type that identifies this
+    JavaScript value's type.
   */
 	Type GetType() const;
 
-
 	/*!
     @method
-    @abstract Tests whether this JavaScript value's type is the undefined type.
-    @result   true if this JavaScript value's type is the undefined type, otherwise false.
+    
+    @abstract Determine whether this JavaScript value's type is the
+    undefined type.
+    
+    @result true if this JavaScript value's type is the undefined
+    type, otherwise false.
   */
   bool IsUndefined() const {
 	  return JSValueIsUndefined(js_context_, js_value_ref_);
@@ -138,8 +212,12 @@ public:
 
   /*!
     @method
-    @abstract Tests whether this JavaScript value's type is the null type.
-    @result   true if this JavaScript value's type is the null type, otherwise false.
+    
+    @abstract Determine whether this JavaScript value's type is the
+    null type.
+    
+    @result true if this JavaScript value's type is the null type,
+    otherwise false.
   */
   bool IsNull() const {
 	  return JSValueIsNull(js_context_, js_value_ref_);
@@ -147,8 +225,12 @@ public:
   
   /*!
     @method
-    @abstract Tests whether this JavaScript value's type is the boolean type.
-    @result   true if this JavaScript value's type is the boolean type, otherwise false.
+    
+    @abstract Determine whether this JavaScript value's type is the
+    boolean type.
+    
+    @result true if this JavaScript value's type is the boolean type,
+    otherwise false.
   */
   bool IsBoolean() const {
 	  return JSValueIsBoolean(js_context_, js_value_ref_);
@@ -156,8 +238,12 @@ public:
 
   /*!
     @method
-    @abstract Tests whether this JavaScript value's type is the number type.
-    @result   true if this JavaScript value's type is the number type, otherwise false.
+    
+    @abstract Determine whether this JavaScript value's type is the
+    number type.
+    
+    @result true if this JavaScript value's type is the number type,
+    otherwise false.
   */
   bool IsNumber() const {
 	  return JSValueIsNumber(js_context_, js_value_ref_);
@@ -165,8 +251,12 @@ public:
 
   /*!
     @method
-    @abstract Tests whether this JavaScript value's type is the string type.
-    @result   true if this JavaScript value's type is the string type, otherwise false.
+    
+    @abstract Determine whether this JavaScript value's type is the
+    string type.
+    
+    @result true if this JavaScript value's type is the string type,
+    otherwise false.
   */
   bool IsString() const {
 	  return JSValueIsString(js_context_, js_value_ref_);
@@ -174,8 +264,12 @@ public:
 
   /*!
     @method
-    @abstract Tests whether this JavaScript value's type is the object type.
-    @result   true if this JavaScript value's type is the object type, otherwise false.
+    
+    @abstract Determine whether this JavaScript value's type is the
+    object type.
+    
+    @result true if this JavaScript value's type is the object type,
+    otherwise false.
   */
   bool IsObject() const {
 	  return JSValueIsObject(js_context_, js_value_ref_);
@@ -183,9 +277,16 @@ public:
 
   /*!
     @method
-    @abstract          Determine whether this JavaScript value was constructed by the given constructor, as compared by the JS instanceof operator.
+    
+    @abstract Determine whether this JavaScript value was constructed
+    by the given constructor, as compared by the JS instanceof
+    operator.
+    
     @param constructor The constructor to test against.
-    @result            true if this JavaScript value was constructed by the given constructor, as compared by the JS instanceof operator, otherwise false.
+    
+    @result true if this JavaScript value was constructed by the given
+    constructor, as compared by the JS instanceof operator, otherwise
+    false.
   */
 	bool IsInstanceOfConstructor(const JSObject& constructor);
 
@@ -222,9 +323,14 @@ public:
     swap(first.js_value_ref_, second.js_value_ref_);
   }
   
-private:
+ protected:
 
-  // For interoperability with the JavaScriptCore C API.
+	// Only a JSContext can create a JSValue.
+	JSValue(const JSContext& js_context, const JSString& js_string, bool parse_as_json = false);
+
+ private:
+
+	// For interoperability with the JavaScriptCore C API.
 	JSValue(JSContextRef js_context_ref, JSValueRef js_value_ref) : js_context_(js_context_ref), js_value_ref_(js_value_ref)  {
 		assert(js_value_ref_);
 		JSValueProtect(js_context_, js_value_ref_);
@@ -246,7 +352,7 @@ private:
   friend class JSBoolean;
   friend class JSNumber;
   friend class JSObject;
-  friend class JSPropertyNameArray;
+	friend class detail::JSPropertyNameArray;
   friend class JSArray;
   friend class JSDate;
   friend class JSError;
@@ -268,7 +374,7 @@ private:
 
 /*!
   @function
-  @abstract Tests whether two JavaScript values are strict equal, as compared by the JS === operator.
+  @abstract Determine whether two JavaScript values are strict equal, as compared by the JS === operator.
   @param    lhs The first value to test.
   @param    rhs The second value to test.
   @result   true if the two values are equal, false if they are not equal.
@@ -286,10 +392,16 @@ bool operator!=(const JSValue& lhs, const JSValue& rhs) {
 
 /*!
   @function
-  @abstract Tests whether two JavaScript values are equal, as compared by the JS == operator.
-  @param    lhs The first value to test.
-  @param    rhs The second value to test.
-  @result   true if the two values are equal, false if they are not equal.
+  
+  @abstract Determine whether two JavaScript values are equal, as
+  compared by the JS == operator.
+  
+  @param lhs The first value to test.
+  
+  @param rhs The second value to test.
+  
+  @result true if the two values are equal, false if they are not
+  equal.
 */
 bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs);
 

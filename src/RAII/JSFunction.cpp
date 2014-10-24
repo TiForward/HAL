@@ -1,8 +1,11 @@
-// -*- mode: c++ -*-
-//
-//  Author: Matt Langston
-//  Copyright (c) 2014 Appcelerator. All rights reserved.
-//
+/**
+ * JavaScriptCoreCPP
+ * Author: Matthew D. Langston
+ *
+ * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Apache Public License.
+ * Please see the LICENSE included with this distribution for details.
+ */
 
 #include "JavaScriptCoreCPP/RAII/JSFunction.hpp"
 #include <vector>
@@ -12,7 +15,7 @@
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-JSFunction::JSFunction(const JSString& function_name, const std::vector<JSString>& parameter_names, const JSString& body, const JSContext& js_context, const JSString& source_url, int starting_line_number) : JSObject(js_context) {
+JSFunction::JSFunction(const JSContext& js_context, const JSString& function_name, const std::vector<JSString>& parameter_names, const JSString& body, const JSString& source_url, int starting_line_number) : JSObject(js_context) {
 	JSValueRef exception { nullptr };
 	const JSStringRef source_url_ref = (source_url.length() > 0) ? static_cast<JSStringRef>(source_url) : nullptr;
 	JSObjectRef js_object_ref = nullptr;

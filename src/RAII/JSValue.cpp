@@ -1,18 +1,24 @@
-// -*- mode: c++ -*-
-//
-//  Author: Matt Langston
-//  Copyright (c) 2014 Appcelerator. All rights reserved.
-//
+/**
+ * JavaScriptCoreCPP
+ * Author: Matthew D. Langston
+ *
+ * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Apache Public License.
+ * Please see the LICENSE included with this distribution for details.
+ */
 
 #include "JavaScriptCoreCPP/RAII/JSValue.hpp"
+#include "JavaScriptCoreCPP/RAII/JSBoolean.hpp"
+#include "JavaScriptCoreCPP/RAII/JSNumber.hpp"
 #include "JavaScriptCoreCPP/RAII/JSObject.hpp"
+#include "JSUtil.hpp"
 #include <stdexcept>
 #include <sstream>
 #include <cassert>
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-JSValue::JSValue(const JSString& js_string, const JSContext& js_context, bool parse_as_json) : js_context_(js_context) {
+JSValue::JSValue(const JSContext& js_context, const JSString& js_string, bool parse_as_json) : js_context_(js_context) {
 	if (parse_as_json) {
 		JSValueRef js_value_ref = JSValueMakeFromJSONString(js_context, js_string);
 		if (!js_value_ref) {
@@ -67,6 +73,54 @@ JSValue::operator JSString() const {
 	JSStringRelease(js_string_ref);
 	
 	return js_string;
+}
+
+JSValue::operator JSBoolean() const {
+	return JSBoolean(js_context_, operator bool());
+}
+
+JSValue::operator double() const {
+	JSValueRef exception { nullptr };
+	const double result = JSValueToNumber(js_context_, js_value_ref_, &exception);
+	
+	if (exception) {
+		static const std::string log_prefix { "MDL: JSValue::operator JSNumber(): " };
+		std::ostringstream os;
+		os << "JSValue could not be converted to a JSNumber: "<< JSValue(js_context_, exception);
+		const std::string message = os.str();
+		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
+		throw std::logic_error(message);
+	}
+	
+	return result;
+}
+
+JSValue::operator int32_t() const {
+	return JavaScriptCoreCPP::detail::to_int32_t(operator double());
+}
+
+JSValue::operator JSNumber() const {
+	return JSNumber(js_context_, operator double());
+}
+
+JSValue::operator JSObject() const {
+	JSValueRef exception { nullptr };
+	JSObjectRef js_object_ref = JSValueToObject(js_context_, js_value_ref_, &exception);
+	
+	if (exception) {
+		static const std::string log_prefix { "MDL: JSValue::operator JSObject(): " };
+		std::ostringstream os;
+		os << "JSValue could not be converted to a JSObject: "<< JSValue(js_context_, exception);
+		const std::string message = os.str();
+		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
+		throw std::logic_error(message);
+	}
+	
+	assert(js_object_ref);
+	JSObject js_object(js_context_, js_object_ref);
+	JSValueUnprotect(js_context_, js_object_ref);
+	
+	return js_object;
 }
 
 JSValue::Type JSValue::GetType() const {

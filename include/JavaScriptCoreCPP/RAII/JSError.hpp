@@ -1,7 +1,9 @@
 /**
- * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2014 by Appcelerator, Inc. All Rights Reserved.
- * Licensed under the terms of the Apache Public License
+ * JavaScriptCoreCPP
+ * Author: Matthew D. Langston
+ *
+ * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Apache Public License.
  * Please see the LICENSE included with this distribution for details.
  */
 
@@ -14,38 +16,24 @@ namespace JavaScriptCoreCPP { namespace RAII {
 
 /*!
   @class
+  
   @discussion A JavaScript object of the Error type.
+
+  The only way to create a JSError is by using the
+  JSContext::CreateError member function.
 */
 class JSError final : public JSObject {
 	
- public:
+ private:
 
-	/*!
-	  @method
-	  
-	  @abstract Create JavaScript Error object.
-	  
-	  @param js_context The execution context to use.
-	  
-    @result A JavaScript object of the Error type.
-	*/
-	JSError(const JSContext& js_context) : JSError(std::vector<JSValue>(), js_context) {
+	// Only a JSContext can create a JSError.
+	JSError(const JSContext& js_context) : JSError(js_context, std::vector<JSValue>()) {
 	}
 	
-	/*!
-	  @method
-	  
-	  @abstract Create a JavaScript Error object, as if by invoking the
-	  built-in Error constructor.
-	  
-	  @param arguments The JavaScript values to pass to the Error
-	  Constructor.
-	  
-	  @param js_context The execution context to use.
-	  
-    @result A JSObject that is a Error.
-	*/
-	JSError(const std::vector<JSValue>& arguments, const JSContext& js_context);
+	// Only a JSContext can create a JSError.
+	JSError(const JSContext& js_context, const std::vector<JSValue>& arguments);
+
+	friend JSContext;
 };
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {

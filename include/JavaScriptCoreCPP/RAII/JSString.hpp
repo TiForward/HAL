@@ -1,7 +1,9 @@
 /**
- * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2014 by Appcelerator, Inc. All Rights Reserved.
- * Licensed under the terms of the Apache Public License
+ * JavaScriptCoreCPP
+ * Author: Matthew D. Langston
+ *
+ * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Apache Public License.
  * Please see the LICENSE included with this distribution for details.
  */
 
@@ -12,6 +14,10 @@
 #include <cstddef>
 #include <codecvt>
 #include <JavaScriptCore/JavaScript.h>
+
+namespace JavaScriptCoreCPP { namespace detail {
+class JSPropertyNameArray;
+}}
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
@@ -133,7 +139,7 @@ private:
   friend class JSContext;
   friend class JSValue;
   friend class JSObject;
-  friend class JSPropertyNameArray;
+  friend class detail::JSPropertyNameArray;
   friend class JSPropertyNameAccumulator;
   friend class JSFunction;
   

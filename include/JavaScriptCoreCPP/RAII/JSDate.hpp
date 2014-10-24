@@ -1,7 +1,9 @@
 /**
- * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2014 by Appcelerator, Inc. All Rights Reserved.
- * Licensed under the terms of the Apache Public License
+ * JavaScriptCoreCPP
+ * Author: Matthew D. Langston
+ *
+ * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Apache Public License.
  * Please see the LICENSE included with this distribution for details.
  */
 
@@ -14,38 +16,24 @@ namespace JavaScriptCoreCPP { namespace RAII {
 
 /*!
   @class
+  
   @discussion A JavaScript object of the Date type.
+
+  The only way to create a JSDate is by using the
+  JSContext::CreateDate member function.
 */
 class JSDate final : public JSObject {
 	
- public:
+ private:
 
-	/*!
-	  @method
-	  
-	  @abstract Create JavaScript Date object.
-	  
-	  @param js_context The execution context to use.
-	  
-    @result A JavaScript object of the Date type.
-	*/
-	JSDate(const JSContext& js_context) : JSDate(std::vector<JSValue>(), js_context) {
+	// Only a JSContext can create a JSDate.
+	JSDate(const JSContext& js_context) : JSDate(js_context, std::vector<JSValue>()) {
 	}
 	
-	/*!
-	  @method
-	  
-	  @abstract Create a JavaScript Date object, as if by invoking the
-	  built-in Date constructor.
-	  
-	  @param arguments The JavaScript values to pass to the Date
-	  Constructor.
-	  
-	  @param js_context The execution context to use.
-	  
-    @result A JSObject that is a Date.
-	*/
-	JSDate(const std::vector<JSValue>& arguments, const JSContext& js_context);
+	// Only a JSContext can create a JSDate.
+	JSDate(const JSContext& js_context, const std::vector<JSValue>& arguments);
+
+	friend JSContext;
 };
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {

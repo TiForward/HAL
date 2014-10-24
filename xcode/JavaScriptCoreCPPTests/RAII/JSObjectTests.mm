@@ -34,7 +34,7 @@ using namespace JavaScriptCoreCPP::RAII;
 }
 
 - (void)testJSObject {
-  JSObject js_object(js_context);
+  JSObject js_object = js_context.CreateObject();
   JSValue prototype = js_object.GetPrototype();
   XCTAssertFalse(prototype.IsUndefined());
   XCTAssertFalse(prototype.IsNull());
@@ -46,13 +46,13 @@ using namespace JavaScriptCoreCPP::RAII;
   XCTAssertFalse(js_object.HasProperty("foo"));
   XCTAssertTrue(js_object.GetProperty("foo").IsUndefined());
   
-  js_object.SetProperty("foo", JSNumber(42, js_context));
+  js_object.SetProperty("foo", js_context.CreateNumber(42));
   XCTAssertTrue(js_object.HasProperty("foo"));
   JSNumber foo = js_object.GetProperty("foo");
-  XCTAssertEqual(42, foo);
+  XCTAssertEqual(42, static_cast<int32_t>(42));
   XCTAssertTrue(js_object.DeleteProperty("foo"));
 
-  js_object.SetProperty("bar", JSBoolean(true, js_context), {JSPropertyAttribute::DontDelete});
+  js_object.SetProperty("bar", js_context.CreateBoolean(true), {JSPropertyAttribute::DontDelete});
   XCTAssertTrue(js_object.HasProperty("bar"));
   JSBoolean bar = js_object.GetProperty("bar");
   XCTAssertTrue(bar);
@@ -62,7 +62,7 @@ using namespace JavaScriptCoreCPP::RAII;
   XCTAssertTrue(bar);
 
   XCTAssertTrue(js_object.GetPropertyAtIndex(42).IsUndefined());
-  js_object.SetPropertyAtIndex(42, JSNumber(UnitTestConstants::pi, js_context));
+  js_object.SetPropertyAtIndex(42, js_context.CreateNumber(UnitTestConstants::pi));
   JSNumber pi = js_object.GetPropertyAtIndex(42);
   XCTAssertEqualWithAccuracy(UnitTestConstants::pi, static_cast<double>(pi), std::numeric_limits<double>::epsilon());
 
@@ -102,23 +102,23 @@ using namespace JavaScriptCoreCPP::RAII;
 }
 
 - (void)testJSArray {
-  JSArray js_array(js_context);
+  JSArray js_array = js_context.CreateArray();
 }
 
 - (void)testJSDate {
-  JSDate js_date(js_context);
+  JSDate js_date = js_context.CreateDate();
 }
 
 - (void)testJSError {
-  JSError js_error(js_context);
+  JSError js_error = js_context.CreateError();
 }
 
 - (void)testJSRegExp {
-  JSRegExp js_regexp(js_context);
+  JSRegExp js_regexp = js_context.CreateRegExp();
 }
 
 - (void)testJSFunction {
-  JSFunction js_function("foo", {"name"}, "return 'Hello, ' + name;", js_context);
+  JSFunction js_function = js_context.CreateFunction("foo", {"name"}, "return 'Hello, ' + name;");
   XCTAssertTrue(js_function.IsFunction());
   XCTAssertTrue(js_function.IsObject());
   //std::clog << "MDL: js_function(\"world\") = " << js_function("world") << std::endl;

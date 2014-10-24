@@ -1,7 +1,9 @@
 /**
- * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2014 by Appcelerator, Inc. All Rights Reserved.
- * Licensed under the terms of the Apache Public License
+ * JavaScriptCoreCPP
+ * Author: Matthew D. Langston
+ *
+ * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Apache Public License.
  * Please see the LICENSE included with this distribution for details.
  */
 
@@ -15,6 +17,10 @@
 #include <unordered_map>
 #include <set>
 #include <algorithm>
+
+namespace JavaScriptCoreCPP { namespace detail {
+class JSPropertyNameArray;
+}}
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
@@ -41,54 +47,13 @@ class JSClass;
   @discussion A JSObject is an RAII wrapper around a JSObjectRef, the
   JavaScriptCore C API representation of a JavaScript object. A
   JSObject is a JSValue.
+
+  The only way to create a JSObject is by using the
+  JSContext::CreateObject member function.
 */
 class JSObject : public JSValue {
 	
  public:
-
-	/*!
-	  @method
-	  
-	  @abstract Create an empty JavaScript object using the default
-	  object class.
-	  
-	  @discussion The default object class does not allocate storage for
-	  private data, so you cannot use the GetPrivate and SetPrivate
-	  methods when using this constructor.
-	  
-	  @param js_context The execution context to use.
-	  
-	  @result An empty JavaScript object.
-	*/
-	JSObject(const JSContext& js_context) : JSObject(js_context, JSObjectMake(js_context, nullptr, nullptr)) {
-	}
-
-	/*!
-	  @method
-	  
-	  @abstract Create a JavaScript object from a custom JSClass and
-	  optional private data.
-	  
-	  @discussion This constructor allocates storage for private data
-	  that you can use the GetPrivate and SetPrivate methods to store
-	  private data for callbacks.
-	  
-	  The private data is set on the created object before the intialize
-	  callbacks in its class chain are called. This enables the
-	  initialize callbacks to retrieve and manipulate the private data
-	  through the GetPrivate method.
-
-	  @param js_class The JSClass used to create this object.
-	  
-	  @param js_context The execution context to use.
-	  
-	  @param private_data An optional void* to set as the object's
-	  private data. Pass nullptr to specify no private data.
-	  
-	  @result A JavaScript object created from a custom JSClass and
-	  optional private data.
-	*/
-	JSObject(const JSClass& js_class, const JSContext& js_context, void* private_data = nullptr);
 
 	/*!
 	  @method
@@ -541,7 +506,7 @@ class JSObject : public JSValue {
 	*/
 	JSValue CallAsFunction(const std::vector<JSString>& arguments) const {
 		std::vector<JSValue> arguments_array;
-		std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [this](const JSString& js_string) { return JSValue(js_string, js_context_); });
+		std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [this](const JSString& js_string) { return JSValue(js_context_, js_string); });
 		return CallAsFunction(arguments_array);
 	}
 
@@ -623,7 +588,7 @@ class JSObject : public JSValue {
 	*/
 	JSValue CallAsFunction(const std::vector<JSString>& arguments, const JSObject& this_object) const {
 		std::vector<JSValue> arguments_array;
-		std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [this](const JSString& js_string) { return JSValue(js_string, js_context_); });
+		std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [this](const JSString& js_string) { return JSValue(js_context_, js_string); });
 		return CallAsFunction(arguments_array, this_object);
 	}
 
@@ -745,7 +710,7 @@ class JSObject : public JSValue {
 	*/
 	JSObject CallAsConstructor(const std::vector<JSString>& arguments) const {
 		std::vector<JSValue> arguments_array;
-		std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [this](const JSString& js_string) { return JSValue(js_string, js_context_); });
+		std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [this](const JSString& js_string) { return JSValue(js_context_, js_string); });
 		return CallAsConstructor(arguments_array);
 	}
 
@@ -799,6 +764,15 @@ class JSObject : public JSValue {
 		swap(first.js_context_   , second.js_context_);
 		swap(first.js_object_ref_, second.js_object_ref_);
 	}
+
+ protected:
+
+	// Only a JSContext can create a JSObject.
+	JSObject(const JSContext& js_context) : JSObject(js_context, JSObjectMake(js_context, nullptr, nullptr)) {
+	}
+
+	// Only a JSContext can create a JSObject.
+	JSObject(const JSContext& js_context, const JSClass& js_class, void* private_data = nullptr);
 	
  private:
 	
@@ -812,7 +786,7 @@ class JSObject : public JSValue {
 	
   friend class JSContext;
 	friend class JSValue;
-  friend class JSPropertyNameArray;
+	friend class detail::JSPropertyNameArray;
   friend class JSArray;
   friend class JSDate;
   friend class JSError;

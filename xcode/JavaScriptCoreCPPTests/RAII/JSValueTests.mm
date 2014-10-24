@@ -38,7 +38,7 @@ namespace UnitTestConstants {
 //}
 
 - (void)testJSUndefined {
-  JSUndefined js_undefined(js_context);
+  JSUndefined js_undefined = js_context.CreateUndefined();
   XCTAssertEqual("undefined", static_cast<std::string>(js_undefined));
   XCTAssertTrue(js_undefined.IsUndefined());
   XCTAssertFalse(js_undefined.IsNull());
@@ -49,7 +49,7 @@ namespace UnitTestConstants {
 }
 
 - (void)testJSNull {
-  JSNull js_null(js_context);
+  JSNull js_null = js_context.CreateNull();
   XCTAssertEqual("null", static_cast<std::string>(js_null));
   XCTAssertFalse(js_null.IsUndefined());
   XCTAssertTrue(js_null.IsNull());
@@ -60,7 +60,7 @@ namespace UnitTestConstants {
 }
 
 - (void)testJSBoolean {
-  JSBoolean js_false(false, js_context);
+  JSBoolean js_false = js_context.CreateBoolean(false);
   XCTAssertFalse(js_false);
   
   XCTAssertEqual("false", static_cast<std::string>(js_false));
@@ -71,7 +71,7 @@ namespace UnitTestConstants {
   XCTAssertFalse(js_false.IsString());
   XCTAssertFalse(js_false.IsObject());
   
-  JSBoolean js_true(true, js_context);
+  JSBoolean js_true = js_context.CreateBoolean(true);
   XCTAssertTrue(js_true);
   
   XCTAssertEqual("true", static_cast<std::string>(js_true));
@@ -82,14 +82,14 @@ namespace UnitTestConstants {
   XCTAssertFalse(js_false.IsString());
   XCTAssertFalse(js_false.IsObject());
   
-  JSBoolean js_boolean(true, js_context);
+  JSBoolean js_boolean = js_context.CreateBoolean(true);
   XCTAssertTrue(js_boolean);
   js_boolean = false;
   XCTAssertFalse(js_boolean);
 }
 
 - (void)testJSNumber {
-  JSNumber js_double(UnitTestConstants::pi, js_context);
+  JSNumber js_double = js_context.CreateNumber(UnitTestConstants::pi);
   XCTAssertEqualWithAccuracy(UnitTestConstants::pi, static_cast<double>(js_double), std::numeric_limits<double>::epsilon());
   
   XCTAssertEqual("3.141592653589793", static_cast<std::string>(js_double));
@@ -101,7 +101,7 @@ namespace UnitTestConstants {
   XCTAssertFalse(js_double.IsObject());
   
   const int32_t int32_value = 42;
-  JSNumber js_int32(int32_value, js_context);
+  JSNumber js_int32 = js_context.CreateNumber(int32_value);
   XCTAssertEqual(int32_value, static_cast<int32_t>(js_int32));
   
   XCTAssertEqual("42", static_cast<std::string>(js_int32));
@@ -113,7 +113,7 @@ namespace UnitTestConstants {
   XCTAssertFalse(js_int32.IsObject());
 
   const uint32_t uint32_value = 42;
-  JSNumber js_uint32(uint32_value, js_context);
+  JSNumber js_uint32 = js_context.CreateNumber(uint32_value);
   XCTAssertEqual(uint32_value, static_cast<uint32_t>(js_uint32));
   
   XCTAssertEqual("42", static_cast<std::string>(js_uint32));
@@ -135,44 +135,44 @@ namespace UnitTestConstants {
 }
 
 - (void)testToJSONString {
-  JSUndefined js_undefined(js_context);
+  JSUndefined js_undefined = js_context.CreateUndefined();
   JSString js_undefined_json = js_undefined.ToJSONString();
   //std::clog << "MDL: js_undefined_json = " << js_undefined_json << std::endl;
   XCTAssertEqual(0, js_undefined_json.length());
   
-  JSNull js_null(js_context);
+  JSNull js_null = js_context.CreateNull();
   JSString js_null_json = js_null.ToJSONString();
   std::clog << "MDL: js_null_json = " << js_null_json << std::endl;
   XCTAssertEqual("null", js_null_json);
   
-  JSBoolean js_false(false, js_context);
+  JSBoolean js_false = js_context.CreateBoolean(false);
   JSString js_false_sjon = js_false.ToJSONString();
   //std::clog << "MDL: js_false_sjon = " << js_false_sjon << std::endl;
   XCTAssertEqual("false", js_false_sjon);
 
-  JSBoolean js_true(true, js_context);
+  JSBoolean js_true = js_context.CreateBoolean(true);
   JSString js_true_sjon = js_true.ToJSONString();
   //std::clog << "MDL: js_true_sjon = " << js_true_sjon << std::endl;
   XCTAssertEqual("true", js_true_sjon);
   
-  JSNumber js_double(UnitTestConstants::pi, js_context);
+  JSNumber js_double = js_context.CreateNumber(UnitTestConstants::pi);
   JSString js_double_sjon = js_double.ToJSONString();
   //std::clog << "MDL: js_double_sjon = " << js_double_sjon << std::endl;
   XCTAssertEqual("3.141592653589793", js_double_sjon);
 
-  JSNumber js_int32(int32_t(42), js_context);
+  JSNumber js_int32 = js_context.CreateNumber(int32_t(42));
   JSString js_int32_sjon = js_int32.ToJSONString();
   //std::clog << "MDL: js_int32_sjon = " << js_int32_sjon << std::endl;
   XCTAssertEqual("42", js_int32_sjon);
 
-  JSNumber js_uint32(uint32_t(42), js_context);
+  JSNumber js_uint32 = js_context.CreateNumber(uint32_t(42));
   JSString js_uint32_sjon = js_uint32.ToJSONString();
   //std::clog << "MDL: js_uint32_sjon = " << js_uint32_sjon << std::endl;
   XCTAssertEqual("42", js_uint32_sjon);
 }
 
 - (void)testString {
-  JSValue js_value("hello, world", js_context);
+  JSValue js_value = js_context.CreateString("hello, world");
   XCTAssertEqual("hello, world", static_cast<std::string>(js_value));
   
   XCTAssertFalse(js_value.IsUndefined());

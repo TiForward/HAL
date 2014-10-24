@@ -1,8 +1,11 @@
-// -*- mode: c++ -*-
-//
-//  Author: Matt Langston
-//  Copyright (c) 2014 Appcelerator. All rights reserved.
-//
+/**
+ * JavaScriptCoreCPP
+ * Author: Matthew D. Langston
+ *
+ * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Apache Public License.
+ * Please see the LICENSE included with this distribution for details.
+ */
 
 #include "JavaScriptCoreCPP/RAII/JSObject.hpp"
 #include <bitset>
@@ -14,7 +17,7 @@
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-JSObject::JSObject(const JSClass& js_class, const JSContext& js_context, void* private_data) : JSObject(js_context, JSObjectMake(js_context, js_class, private_data)) {
+JSObject::JSObject(const JSContext& js_context, const JSClass& js_class, void* private_data) : JSObject(js_context, JSObjectMake(js_context, js_class, private_data)) {
 }
 
 // For interoperability with the JavaScriptCore C API.
@@ -35,7 +38,7 @@ JSObject::JSObject(JSContextRef js_context_ref, JSObjectRef js_object_ref)
 }
 
 std::vector<JSString> JSObject::GetPropertyNames() const {
-	return JSPropertyNameArray(*this);
+	return detail::JSPropertyNameArray(*this);
 }
 
 std::unordered_map<JSString, JSValue> JSObject::GetProperties() const {

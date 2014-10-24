@@ -1,7 +1,9 @@
 /**
- * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2014 by Appcelerator, Inc. All Rights Reserved.
- * Licensed under the terms of the Apache Public License
+ * JavaScriptCoreCPP
+ * Author: Matthew D. Langston
+ *
+ * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Apache Public License.
  * Please see the LICENSE included with this distribution for details.
  */
 
@@ -16,37 +18,22 @@ namespace JavaScriptCoreCPP { namespace RAII {
   @class
   
   @discussion A JavaScript object of the RegExp type.
+
+  The only way to create a JSRegExp is by using the
+  JSContext::CreateRegExp member function.
 */
 class JSRegExp final : public JSObject {
 	
- public:
+ private:
 
-	/*!
-	  @method
-	  
-	  @abstract Create a JavaScript RegExp object.
-	  
-	  @param js_context The execution context to use.
-	  
-    @result A JavaScript object of the RegExp type.
-	*/
-	JSRegExp(const JSContext& js_context) : JSRegExp(std::vector<JSValue>(), js_context) {
+	// Only a JSContext can create a JSRegExp.
+	JSRegExp(const JSContext& js_context) : JSRegExp(js_context, std::vector<JSValue>()) {
 	}
 	
-	/*!
-	  @method
-	  
-	  @abstract Create a JavaScript RegExp object, as if by invoking the
-	  built-in RegExp constructor.
-	  
-	  @param arguments The JavaScript values to pass to the RegExp
-	  Constructor.
-	  
-	  @param js_context The execution context to use.
-	  
-    @result A JSObject that is a RegExp.
-	*/
-	JSRegExp(const std::vector<JSValue>& arguments, const JSContext& js_context);
+	// Only a JSContext can create a JSRegExp.
+	JSRegExp(const JSContext& js_context, const std::vector<JSValue>& arguments);
+
+	friend JSContext;
 };
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {

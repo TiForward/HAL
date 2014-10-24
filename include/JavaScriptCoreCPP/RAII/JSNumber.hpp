@@ -1,7 +1,9 @@
 /**
- * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2014 by Appcelerator, Inc. All Rights Reserved.
- * Licensed under the terms of the Apache Public License
+ * JavaScriptCoreCPP
+ * Author: Matthew D. Langston
+ *
+ * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Apache Public License.
  * Please see the LICENSE included with this distribution for details.
  */
 
@@ -18,91 +20,13 @@ namespace JavaScriptCoreCPP { namespace RAII {
   @class
   
   @discussion A JavaScript value of the number type.
+
+  The only way to create a JSNumber is by using the
+  JSContext::CreateNumber member function.
 */
 class JSNumber final : public JSValue {
 	
 public:
-	
-  /*!
-    @method
-    
-    @abstract Create a JavaScript value of the number type with the
-    value 0.
-    
-    @param js_context The execution context to use.
-    
-    @result A JavaScript value of the number type, representing the
-    value of 0.
-  */
-	JSNumber(const JSContext& js_context) : JSNumber(0, js_context) {
-	}
-
-	/*!
-    @method
-    
-    @abstract Create a JavaScript value of the number type from a
-    double.
-    
-    @param number The double to assign to the newly created JSNumber.
-    
-    @param js_context The execution context to use.
-    
-    @result A JavaScript value of the number type, representing the
-    value of number.
-  */
-	JSNumber(double number, const JSContext& js_context) : JSValue(js_context, JSValueMakeNumber(js_context, number)) {
-	}
-
-  /*!
-    @method
-    
-    @abstract Create a JavaScript value of the number type an int32_t.
-    
-    @param number The int32_t to assign to the newly created JSNumber.
-    
-    @param js_context The execution context to use.
-    
-    @result A JavaScript value of the number type, representing the
-    value of number.
-  */
-	JSNumber(int32_t number, const JSContext& js_context) : JSNumber(static_cast<double>(number), js_context) {
-	}
-
-  /*!
-    @method
-    
-    @abstract Create a JavaScript value of the number type from a
-    uint32_t.
-    
-    @param number The uint32_t to assign to the newly created
-    JSNumber.
-    
-    @param js_context The execution context to use.
-    
-    @result A JavaScript value of the number type, representing the
-    value of number.
-  */
-	JSNumber(uint32_t number, const JSContext& js_context) : JSNumber(static_cast<double>(number), js_context) {
-	}
-
-	/*!
-	  @method
-	  
-	  @abstract Convert a JavaScript value to a JavaScript number type.
-	  
-	  @param js_value The JSValue to convert.
-	  
-	  @throws std::invalid_argument if the given JavaScript value could
-	  not be converted to a JavaScript number.
-	*/
-	JSNumber(const JSValue& js_value) : JSValue(js_value) {
-		static const std::string log_prefix { "MDL: JSNumber(const JSValue& js_value): " };
-		if (!IsNumber()) {
-			const std::string message = "JSValue is not a number value";
-			std::clog << log_prefix << " [ERROR] " << message << std::endl;
-			throw std::invalid_argument(message);
-		}
-	}
 	
 	/*!
     @method
@@ -114,7 +38,7 @@ public:
     @result The JSNumber with a new value of the given number.
   */
 	JSNumber& operator=(double number) {
-		return operator=(JSNumber(number, js_context_));
+		return operator=(JSNumber(js_context_, number));
   }
 
 	/*!
@@ -127,7 +51,7 @@ public:
     @result The JSNumber with the new value of the given number.
   */
 	JSNumber& operator=(int32_t number) {
-		return operator=(JSNumber(number, js_context_));
+		return operator=(JSNumber(js_context_, number));
   }
 
 	/*!
@@ -140,7 +64,7 @@ public:
     @result The JSNumber with the new value of the given number.
   */
 	JSNumber& operator=(uint32_t number) {
-		return operator=(JSNumber(number, js_context_));
+		return operator=(JSNumber(js_context_, number));
   }
 
 	/*!
@@ -158,7 +82,8 @@ public:
 	  not be converted to a JavaScript number.
 	*/
 	JSNumber& operator=(const JSValue& js_value) {
-		JSValue::operator=(JSNumber(js_value));
+		//JSValue::operator=(JSNumber(js_value));
+		JSValue::operator JSNumber();
 		return *this;
   }
 
@@ -170,7 +95,7 @@ public:
 	  @result The double result of conversion.
 	*/
 	operator double() const;
-
+	
 	/*!
 	  @method
 	  
@@ -179,7 +104,7 @@ public:
 	  
 	  @result The int32_t result of conversion.
 	*/
-	explicit operator int32_t() const;
+	operator int32_t() const;
 	
 	/*!
 	  @method
@@ -193,12 +118,33 @@ public:
 	  
 	  @result The uint32_t result of the conversion.
 	*/
-	explicit operator uint32_t() const  {
+	operator uint32_t() const  {
 		// As commented in the spec, the operation of ToInt32 and ToUint32
 		// only differ in how the result is interpreted; see NOTEs in
 		// sections 9.5 and 9.6.
 		return operator int32_t();
 	}
+
+ private:
+	
+	// Only JSContext and JSValue can create a JSNumber.
+	JSNumber(const JSContext& js_context) : JSNumber(js_context, 0) {
+	}
+	
+	// Only JSContext and JSValue can create a JSNumber.
+	JSNumber(const JSContext& js_context, double number) : JSValue(js_context, JSValueMakeNumber(js_context, number)) {
+	}
+	
+	// Only JSContext and JSValue can create a JSNumber.
+	JSNumber(const JSContext& js_context, int32_t number) : JSNumber(js_context, static_cast<double>(number)) {
+	}
+	
+	// Only JSContext and JSValue can create a JSNumber.
+	JSNumber(const JSContext& js_context, uint32_t number) : JSNumber(js_context, static_cast<double>(number)) {
+	}
+	
+	friend JSContext;
+	friend JSValue;
 };
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {

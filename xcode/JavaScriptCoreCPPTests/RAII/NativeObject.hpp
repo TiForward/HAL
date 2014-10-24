@@ -49,7 +49,7 @@ class NativeObject final {
 	JSValue GetProperty(const JSString& property_name) {
 		static const std::string log_prefix { "MDL: NativeObject::GetProperty: " };
 		const auto position = properties_.find(property_name);
-		JSValue result = position != properties_.end() ? position -> second : JSUndefined(js_context_);
+		JSValue result = position != properties_.end() ? position -> second : js_context_.CreateUndefined();
 		std::clog << log_prefix
 		          << property_name
 		          << " = "
@@ -142,7 +142,7 @@ class NativeObject final {
 				<< this_object
 				<< std::endl;
 
-		return JSUndefined(js_context_);
+		return js_context_.CreateUndefined();
 	}
 
 	JSObject CallAsConstructor(const std::vector<JSValue>& arguments) {
@@ -154,7 +154,7 @@ class NativeObject final {
 				<< arguments.size()
 				<< std::endl;
 		
-		return JSObject(js_context_);
+		return js_context_.CreateObject();
 	}
 
 	bool HasInstance(const JSValue& possible_instance) {
@@ -197,7 +197,7 @@ class NativeObject final {
 		          << js_value_type
 		          << std::endl;
 		
-		return JSUndefined(js_context_);
+		return js_context_.CreateUndefined();
 	}
 
 private:
