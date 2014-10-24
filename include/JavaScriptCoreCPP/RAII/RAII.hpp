@@ -29,5 +29,10 @@
 #include "JavaScriptCoreCPP/RAII/JSClass.hpp"
 #include "JavaScriptCoreCPP/RAII/JSPropertyNameAccumulator.hpp"
 
+#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER
+#include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
+#include "JavaScriptCoreCPP/detail/JSPerformanceCounterPrinter.hpp"
+#endif
+
 #endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_RAII_HPP_
 
