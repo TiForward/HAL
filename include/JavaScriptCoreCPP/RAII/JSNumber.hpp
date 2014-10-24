@@ -16,7 +16,8 @@ namespace JavaScriptCoreCPP { namespace RAII {
 
 /*!
   @class
-  @discussion A JavaScript value of the boolean type.
+  
+  @discussion A JavaScript value of the number type.
 */
 class JSNumber final : public JSValue {
 	
@@ -24,48 +25,75 @@ public:
 	
   /*!
     @method
-    @abstract         Create a JavaScript value of the number type with the value 0.
+    
+    @abstract Create a JavaScript value of the number type with the
+    value 0.
+    
     @param js_context The execution context to use.
-    @result           A JavaScript value of the number type, representing the value of 0.
+    
+    @result A JavaScript value of the number type, representing the
+    value of 0.
   */
 	JSNumber(const JSContext& js_context) : JSNumber(0, js_context) {
 	}
 
 	/*!
     @method
-    @abstract         Create a JavaScript value of the number type.
-    @param number     The double to assign to the newly created JSNumber.
+    
+    @abstract Create a JavaScript value of the number type from a
+    double.
+    
+    @param number The double to assign to the newly created JSNumber.
+    
     @param js_context The execution context to use.
-    @result           A JavaScript value of the number type, representing the value of number.
+    
+    @result A JavaScript value of the number type, representing the
+    value of number.
   */
 	JSNumber(double number, const JSContext& js_context) : JSValue(js_context, JSValueMakeNumber(js_context, number)) {
 	}
 
   /*!
     @method
-    @abstract         Create a JavaScript value of the number type.
-    @param number     The int32_t to assign to the newly created JSNumber.
+    
+    @abstract Create a JavaScript value of the number type an int32_t.
+    
+    @param number The int32_t to assign to the newly created JSNumber.
+    
     @param js_context The execution context to use.
-    @result           A JavaScript value of the number type, representing the value of number.
+    
+    @result A JavaScript value of the number type, representing the
+    value of number.
   */
 	JSNumber(int32_t number, const JSContext& js_context) : JSNumber(static_cast<double>(number), js_context) {
 	}
 
   /*!
     @method
-    @abstract         Create a JavaScript value of the number type.
-    @param number     The uint32_t to assign to the newly created JSNumber.
+    
+    @abstract Create a JavaScript value of the number type from a
+    uint32_t.
+    
+    @param number The uint32_t to assign to the newly created
+    JSNumber.
+    
     @param js_context The execution context to use.
-    @result           A JavaScript value of the number type, representing the value of number.
+    
+    @result A JavaScript value of the number type, representing the
+    value of number.
   */
 	JSNumber(uint32_t number, const JSContext& js_context) : JSNumber(static_cast<double>(number), js_context) {
 	}
 
 	/*!
 	  @method
-	  @abstract       Create a JavaScript value of the number type from the given JavaScript value.
+	  
+	  @abstract Convert a JavaScript value to a JavaScript number type.
+	  
 	  @param js_value The JSValue to convert.
-	  @throws         std::invalid_argument if the given JavaScript value could not be converted to a JavaScript number.
+	  
+	  @throws std::invalid_argument if the given JavaScript value could
+	  not be converted to a JavaScript number.
 	*/
 	JSNumber(const JSValue& js_value) : JSValue(js_value) {
 		static const std::string log_prefix { "MDL: JSNumber(const JSValue& js_value): " };
@@ -78,9 +106,12 @@ public:
 	
 	/*!
     @method
-    @abstract     Assign the given number to this JSNumber.
-    @param number The number to assign to this JSNumber
-    @result       The JSNumber with the new value of the given number.
+    
+    @abstract Assign a double to this JSNumber.
+    
+    @param number The double to assign to this JSNumber
+    
+    @result The JSNumber with a new value of the given number.
   */
 	JSNumber& operator=(double number) {
 		return operator=(JSNumber(number, js_context_));
@@ -88,9 +119,12 @@ public:
 
 	/*!
     @method
-    @abstract     Assign the given number to this JSNumber.
-    @param number The number to assign to this JSNumber
-    @result       The JSNumber with the new value of the given number.
+    
+    @abstract Assign an int32_t to this JSNumber.
+    
+    @param number The int32_t to assign to this JSNumber
+    
+    @result The JSNumber with the new value of the given number.
   */
 	JSNumber& operator=(int32_t number) {
 		return operator=(JSNumber(number, js_context_));
@@ -98,9 +132,12 @@ public:
 
 	/*!
     @method
-    @abstract     Assign the given number to this JSNumber.
-    @param number The number to assign to this JSNumber
-    @result       The JSNumber with the new value of the given number.
+    
+    @abstract Assign an uint32_t to this JSNumber.
+    
+    @param number The uint32_t to assign to this JSNumber
+    
+    @result The JSNumber with the new value of the given number.
   */
 	JSNumber& operator=(uint32_t number) {
 		return operator=(JSNumber(number, js_context_));
@@ -108,10 +145,17 @@ public:
 
 	/*!
     @method
-    @abstract       Assign the given JavaScript value to this JSNumber.
+    
+    @abstract Convert the given JavaScript value to a JavaScript
+    number and assign it to this JSNumber.
+    
     @param js_value The JavaScript value to assign to this JSNumber
-    @result         The JSNumber with the new value of the given JavaScript value.
-	  @throws         std::invalid_argument if the given JavaScript value is not a number.
+    
+    @result The JSNumber with the new value of the given JavaScript
+    value.
+    
+	  @throws std::invalid_argument if the given JavaScript value could
+	  not be converted to a JavaScript number.
 	*/
 	JSNumber& operator=(const JSValue& js_value) {
 		JSValue::operator=(JSNumber(js_value));
@@ -120,28 +164,34 @@ public:
 
 	/*!
 	  @method
+	  
 	  @abstract Convert a JSNumber to a double.
-	  @result   The double result of conversion.
-	  @throws   std::logic_error if this JSNumber could not be converted to a double.
+	  
+	  @result The double result of conversion.
 	*/
 	operator double() const;
 
 	/*!
 	  @method
-	  @abstract Convert a JSNumber to an int32_t according to the rules specified by the JavaScript language.
-	  @result   The int32_t result of conversion.
-	  @throws   std::logic_error if this JSNumber could not be converted to an int32_t.
+	  
+	  @abstract Convert a JSNumber to an int32_t according to the rules
+	  specified by the JavaScript language.
+	  
+	  @result The int32_t result of conversion.
 	*/
 	explicit operator int32_t() const;
 	
 	/*!
 	  @method
-	  @abstract Convert a JSNumber to an uint32_t according to the rules specified by the JavaScript language.
+	  
+	  @abstract Convert a JSNumber to an uint32_t according to the rules
+	  specified by the JavaScript language.
+	  
 	  @discussion The JSNumber is converted to an uint32_t according to
 	  the rules specified by the JavaScript language (implements
 	  ToUInt32, defined in ECMA-262 9.6).
+	  
 	  @result The uint32_t result of the conversion.
-	  @throws   std::logic_error if this JSNumber could not be converted to an uint32_t.
 	*/
 	explicit operator uint32_t() const  {
 		// As commented in the spec, the operation of ToInt32 and ToUint32

@@ -22,19 +22,28 @@ class JSDate final : public JSObject {
 
 	/*!
 	  @method
-	  @abstract         Create JavaScript Date object.
+	  
+	  @abstract Create JavaScript Date object.
+	  
 	  @param js_context The execution context to use.
-    @result           A JavaScript object of the Date type.
+	  
+    @result A JavaScript object of the Date type.
 	*/
 	JSDate(const JSContext& js_context) : JSDate(std::vector<JSValue>(), js_context) {
 	}
 	
 	/*!
 	  @method
-	  @abstract         Create a JavaScript Date object, as if by invoking the built-in Date constructor.
-	  @param arguments  The JavaScript values to pass to the Date Constructor.
+	  
+	  @abstract Create a JavaScript Date object, as if by invoking the
+	  built-in Date constructor.
+	  
+	  @param arguments The JavaScript values to pass to the Date
+	  Constructor.
+	  
 	  @param js_context The execution context to use.
-    @result           A JSObject that is a Date.
+	  
+    @result A JSObject that is a Date.
 	*/
 	JSDate(const std::vector<JSValue>& arguments, const JSContext& js_context);
 };

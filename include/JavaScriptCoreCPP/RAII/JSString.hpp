@@ -17,31 +17,56 @@ namespace JavaScriptCoreCPP { namespace RAII {
 
 /*!
   @class JSString
+  
   @discussion A JSString is an RAII wrapper around a JSStringRef, the
   JavaScriptCore C API representation of a JavaScript string.
+
+  A JSString satisfies satisfies all the requirements for use in all
+  STL containers. For example, a JSString can be used as a key in a
+  std::unordered_map.
+
+  Specifically, a JSString is comparable with an equivalence relation,
+  provides a strict weak ordering, and provides a custom hash
+  function.
 */
 class JSString final	{
 	
  public:
 	
-	// Create an empty JSString with a length of zero characters.
+	/*!
+	  @method
+	  
+	  @abstract Create an empty JavaScript string with a length of zero.
+	  
+	  @result An empty JavaScript string with a length of zero.
+	*/
 	JSString() : js_string_ref_(JSStringCreateWithUTF8CString(nullptr)) {
 	}
 	
 	/*!
 	  @method
-	  @abstract     Create a JavaScript string from a null-terminated UTF8 string.
-	  @param string The null-terminated UTF8 string to copy into the new JSString.
-	  @result       A JSString containing string.
+	  
+	  @abstract Create a JavaScript string from a null-terminated UTF8
+	  string.
+	  
+	  @param string The null-terminated UTF8 string to copy into the new
+	  JSString.
+	  
+	  @result A JSString containing string.
 	*/
 	JSString(const char* string) : js_string_ref_(JSStringCreateWithUTF8CString(string)) {
   }
 
 	/*!
 	  @method
-	  @abstract     Create a JavaScript string from a null-terminated UTF8 string.
-	  @param string The null-terminated UTF8 string to copy into the new JSString.
-	  @result       A JSString containing string.
+	  
+	  @abstract Create a JavaScript string from a null-terminated UTF8
+	  string.
+	  
+	  @param string The null-terminated UTF8 string to copy into the new
+	  JSString.
+	  
+	  @result A JSString containing string.
 	*/
 	JSString(const std::string& string) : JSString(string.c_str()) {
 	}
@@ -133,6 +158,27 @@ bool operator!=(const JSString& lhs, const JSString& rhs) {
 	return ! (lhs == rhs);
 }
 
+// Define a strict weak ordering for two JSNativeObjectDefinitions.
+inline
+bool operator<(const JSString& lhs, const JSString& rhs) {
+	return static_cast<std::string>(lhs) < static_cast<std::string>(rhs);
+}
+
+inline
+bool operator>(const JSString& lhs, const JSString& rhs) {
+	return rhs < lhs;
+}
+
+inline
+bool operator<=(const JSString& lhs, const JSString& rhs) {
+	return !(lhs > rhs);
+}
+
+inline
+bool operator>=(const JSString& lhs, const JSString& rhs) {
+	return !(lhs < rhs);
+}
+
 inline
 std::ostream& operator << (std::ostream& ostream, const JSString& js_string) {
 	ostream << static_cast<std::string>(js_string);
@@ -155,6 +201,5 @@ struct hash<JavaScriptCoreCPP::RAII::JSString> {
 };
 
 }  // namespace std
-
 
 #endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSSTRING_HPP_

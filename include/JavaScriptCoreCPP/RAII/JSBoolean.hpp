@@ -24,19 +24,29 @@ public:
 	
 	/*!
     @method
-    @abstract         Create a JavaScript value of the boolean type.
-    @param boolean    The bool to assign to the newly created JSBoolean.
+    
+    @abstract Create a JavaScript value of the boolean type.
+    
+    @param boolean The bool to assign to the newly created JSBoolean.
+    
     @param js_context The execution context to use.
-    @result           A JavaScript value of the boolean type, representing the value of boolean.
+    
+    @result A JavaScript value of the boolean type, representing the
+    value of boolean.
   */
 	JSBoolean(bool boolean, const JSContext& js_context) : JSValue(js_context, JSValueMakeBoolean(js_context, boolean)) {
 	}
 	
 	/*!
 	  @method
-	  @abstract       Create a JavaScript value of the number type from the given JavaScript value.
+	  
+	  @abstract Create a JavaScript value of the boolean type from the
+	  given JavaScript value.
+	  
 	  @param js_value The JSValue to convert.
-	  @throws         std::invalid_argument if the given JavaScript value could not be converted to a JavaScript boolean.
+	  
+	  @throws std::invalid_argument if the given JavaScript value could
+	  not be converted to a JavaScript boolean.
 	*/
 	JSBoolean(const JSValue& js_value) : JSValue(js_value) {
 		static const std::string log_prefix { "MDL: JSBoolean(const JSValue& js_value): " };
@@ -49,9 +59,12 @@ public:
 
 	/*!
     @method
-    @abstract      Assign the given boolean value to the JSBoolean.
+    
+    @abstract Assign the given boolean value to the JSBoolean.
+    
     @param boolean The bool to assign to the JSBoolean
-    @result        The JSBoolean with the new value of the given boolean.
+    
+    @result The JSBoolean with the new value of the given boolean.
   */
 	JSBoolean& operator=(bool boolean) {
 		const bool current_value = operator bool();
@@ -63,10 +76,16 @@ public:
 
 	/*!
     @method
-    @abstract       Assign the given JavaScript value to this JSBoolean.
+    
+    @abstract Assign the given JavaScript value to this JSBoolean.
+    
     @param js_value The JavaScript value to assign to this JSBoolean
-    @result         The JSBoolean with the new value of the given JavaScript value.
-	  @throws         std::invalid_argument if the given JavaScript value is not a boolean.
+    
+    @result The JSBoolean with the new value of the given JavaScript
+    value.
+    
+	  @throws std::invalid_argument if the given JavaScript value could
+	  not be converted to a boolean.
 	*/
 	JSBoolean& operator=(const JSValue& js_value) {
 		JSValue::operator=(JSBoolean(js_value));
@@ -75,8 +94,10 @@ public:
 
 	/*!
 	  @method
+	  
 	  @abstract Convert a JSBoolean to a boolean.
-	  @result   The boolean result of conversion.
+	  
+	  @result The boolean result of conversion.
 	*/
 	operator bool() const {
 		return JSValueToBoolean(js_context_, js_value_ref_);

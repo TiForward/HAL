@@ -71,6 +71,7 @@ class JSClass final	{
 		return js_class_ref_;
 	}
 	
+	friend class JSContext;
 	friend class JSObject;
 	
 	template<typename T>

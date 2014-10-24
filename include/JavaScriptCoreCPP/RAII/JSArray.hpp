@@ -23,20 +23,32 @@ class JSArray final : public JSObject {
 
 	/*!
 	  @method
-	  @abstract         Create JavaScript Array object.
+
+	  @abstract Create JavaScript Array object.
+	  
 	  @param js_context The execution context to use.
-    @result           A JavaScript object that is an Array.
+	  
+    @result A JavaScript object that is an Array.
 	*/
 	JSArray(const JSContext& js_context) : JSArray(std::vector<JSValue>(), js_context) {
 	}
 	
 	/*!
 	  @method
-	  @abstract         Create a JavaScript Array object.
-	  @discussion       The behavior of this constructor does not exactly match the behavior of the built-in Array constructor. Specifically, if one argument is supplied, this function returns an array with one element.
-	  @param arguments  The JavaScript values to populate the array.
+	  
+	  @abstract Create a JavaScript Array object.
+	  
+	  @discussion The behavior of this constructor does not exactly
+	  match the behavior of the built-in Array constructor in that if
+	  the vector of arguments contains one element then the JSArray is
+	  also created with on element.
+	  
+	  @param arguments The JavaScript values to populate the array.
+	  
 	  @param js_context The execution context to use.
-    @result           A JavaScript object that is an Array, populated with the given JavaScript values.
+	  
+    @result A JavaScript object that is an Array, populated with the
+    given JavaScript values.
 	*/
 	JSArray(const std::vector<JSValue>& arguments, const JSContext& js_context);
 	

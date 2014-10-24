@@ -9,6 +9,7 @@
 #define _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCONTEXT_HPP_
 
 #include "JavaScriptCoreCPP/RAII/JSContextGroup.hpp"
+#include "JavaScriptCoreCPP/RAII/JSClass.hpp"
 #include "JavaScriptCoreCPP/RAII/JSString.hpp"
 #include <cassert>
 
@@ -19,58 +20,108 @@ class JSObject;
 
 /*!
   @class
+  
   @discussion A JSContext is an RAII wrapper around a JSContextRef,
   the JavaScriptCore C API representation of a JavaScript execution
   context that holds the global object and other execution state.
+
+  Scripts may execute concurrently with scripts executing in other
+  contexts.
   
-  A JSContext allocates a global object and populates it with all the
+  The default constructor creates JSContext in a unique context group
+  with a default global object populated with all the standard
   built-in JavaScript objects, such as Object, Function, String, and
   Array.
-  
-  The context is created within a unique context group. Therefore,
-  scripts may execute in it concurrently with scripts executing in
-  other contexts. However, you may not use values created in the
-  context in other contexts.
 
-  JSContexts within the same group may share and exchange JavaScript
-  objects. Sharing and/or exchanging JavaScript objects between
-  contexts in different groups will produce undefined behavior. When
-  objects from the same context group are used in multiple threads,
-  explicit synchronization is required.
+  A JSContext may also be created in a specific context group so that
+  JavaScript objects may be shared and exchanged with other contexts
+  within that group.
+
+  When JavaScript objects from the same context group are used in
+  multiple threads, explicit synchronization is required.
 */
 class JSContext final	{
 	
  public:
 
+ public:
+
 	/*!
 	  @method
-	  @abstract Create a global JavaScript execution context.
-	  @discussion Create a global JavaScript execution context within a
-	  unique context group using the given object class (parameter
-	  global_object_class). Passing nullptr (the default) for the
-	  global_object_class will use the default object class.
-
-	  The context is populated with all the built-in JavaScript objects,
-	  such as Object, Function, String, and Array.
+	  
+	  @abstract Create a JavaScript execution context in a unique
+	  context group with a default global object populated with all the
+	  standard built-in JavaScript objects, such as Object, Function,
+	  String, and Array. Scripts may execute in this context
+	  concurrently with scripts executing in other contexts.
 	*/
-	JSContext(JSClassRef global_object_class = nullptr)
+	JSContext()
+			: js_global_context_ref_(JSGlobalContextCreate(nullptr))
+			, js_context_group_(JSContextGroup(JSContextGetGroup(js_global_context_ref_))) {
+	}
+
+	/*!
+	  @method
+
+	  @abstract Create a JavaScript execution context in a specific
+	  context group with a default global object populated with all the
+	  standard built-in JavaScript objects, such as Object, Function,
+	  String, and Array. Scripts may execute in this context
+	  concurrently with scripts executing in other contexts.
+
+	  @discussion A JSContext created in a specific context group allows
+	  JavaScript objects to be shared and exchanged with other contexts
+	  within that group.
+	  
+	  When JavaScript objects from the same context group are used in
+	  multiple threads, explicit synchronization is required.
+
+	  @param js_context_group The context group within which the
+	  JSContext is created.
+	*/
+	JSContext(const JSContextGroup& js_context_group)
+			: js_global_context_ref_(JSGlobalContextCreateInGroup(js_context_group, nullptr))
+			, js_context_group_(js_context_group)	{
+	}
+
+	/*!
+	  @method
+	  
+	  @abstract Create a JavaScript execution context in a unique
+	  context group with a global object created from a custom
+	  JSClass. Scripts may execute in this context concurrently with
+	  scripts executing in other contexts.
+
+	  @param global_object_class The JSClass used to create the global
+	  object.
+	*/
+	JSContext(JSClass global_object_class)
 			: js_global_context_ref_(JSGlobalContextCreate(global_object_class))
 			, js_context_group_(JSContextGroup(JSContextGetGroup(js_global_context_ref_))) {
 	}
 
 	/*!
 	  @method
-	  @abstract Create a global JavaScript execution context in the
-	  context group provided.
-	  @discussion Create a global JavaScript execution context within
-	  the given context group using the given object class (parameter
-	  global_object_class). Passing nullptr (the default) for the
-	  global_object_class will use the default object class.
+	  
+	  @abstract Create a JavaScript execution context in a specific
+	  context group with a global object created from a custom
+	  JSClass. Scripts may execute in this context concurrently with
+	  scripts executing in other contexts.
 
-	  The context is populated with all the built-in JavaScript objects,
-	  such as Object, Function, String, and Array.
+	  @discussion A JSContext created in a specific context group allows
+	  JavaScript objects to be shared and exchanged with other contexts
+	  within that group.
+	  
+	  When JavaScript objects from the same context group are used in
+	  multiple threads, explicit synchronization is required.
+
+	  @param js_context_group The context group within which the
+	  JSContext is created.
+	  
+	  @param global_object_class The JSClass used to create the global
+	  object.
 	*/
-	JSContext(const JSContextGroup& js_context_group, JSClassRef global_object_class = nullptr)
+	JSContext(const JSContextGroup& js_context_group, JSClass global_object_class)
 			: js_global_context_ref_(JSGlobalContextCreateInGroup(js_context_group, global_object_class))
 			, js_context_group_(js_context_group)	{
 	}
@@ -79,35 +130,77 @@ class JSContext final	{
 	
 	/*!
 	  @method
-	  @abstract                   Evaluate a string of JavaScript using the global object as "this.".
-	  @param script               A JSString containing the script to evaluate.
-	  @param source_url           An optional JSString containing a URL for the script's source file. This is used by debuggers and when reporting exceptions.
-	  @param starting_line_number An optional integer value specifying the script's starting line number in the file located at source_url. This is only used when reporting exceptions. The value is one-based, so the first line is line 1 and invalid values are clamped to 1.
-	  @result                     The JSValue that results from evaluating script.
-	  @throws                     std::runtime_error exception if the evaluated script threw an exception.
+	  
+	  @abstract Evaluate a string of JavaScript using the global object
+	  as "this.".
+	  
+	  @param script A JSString containing the script to evaluate.
+	  
+	  @param source_url An optional JSString containing a URL for the
+	  script's source file. This is used by debuggers and when reporting
+	  exceptions.
+	  
+	  @param starting_line_number An optional integer value specifying
+	  the script's starting line number in the file located at
+	  source_url. This is only used when reporting exceptions. The value
+	  is one-based, so the first line is line 1 and invalid values are
+	  clamped to 1.
+	  
+	  @result The JSValue that results from evaluating script.
+
+	  @throws std::runtime_error exception if the evaluated script threw
+	  an exception.
 	*/
 	JSValue JSEvaluateScript(const JSString& script, const JSString& source_url = JSString(), int starting_line_number = 1);
 	
 	/*!
 	  @method
-	  @abstract                   Evaluate a string of JavaScript.
-	  @param script               A JSString containing the script to evaluate.
-	  @param this_object          The object to use as "this".
-	  @param source_url           An optional JSString containing a URL for the script's source file. This is used by debuggers and when reporting exceptions.
-	  @param starting_line_number An optional integer value specifying the script's starting line number in the file located at source_url. This is only used when reporting exceptions. The value is one-based, so the first line is line 1 and invalid values are clamped to 1.
-	  @result                     The JSValue that results from evaluating script.
-	  @throws                     std::runtime_error exception if the evaluated script threw an exception.
+	  
+	  @abstract Evaluate a string of JavaScript.
+	  
+	  @param script A JSString containing the script to evaluate.
+	  
+	  @param this_object The object to use as "this".
+	  
+	  @param source_url An optional JSString containing a URL for the
+	  script's source file. This is used by debuggers and when reporting
+	  exceptions.
+	  
+	  @param starting_line_number An optional integer value specifying
+	  the script's starting line number in the file located at
+	  source_url. This is only used when reporting exceptions. The value
+	  is one-based, so the first line is line 1 and invalid values are
+	  clamped to 1.
+	  
+	  @result The JSValue that results from evaluating script.
+	  
+	  @throws std::runtime_error exception if the evaluated script threw
+	  an exception.
+	  
 	*/
 	JSValue JSEvaluateScript(const JSString& script, const JSObject& this_object, const JSString& source_url = JSString(), int starting_line_number = 1);
 	
 	
 	/*!
 	  @method
-	  @abstract                   Check for syntax errors in a string of JavaScript.
-	  @param script               A JSString containing the script to check for syntax errors.
-	  @param source_url           An optional JSString containing a URL for the script's source file. This is used by debuggers and when reporting exceptions.
-	  @param starting_line_number An optional integer value specifying the script's starting line number in the file located at source_url. This is only used when reporting exceptions. The value is one-based, so the first line is line 1 and invalid values are clamped to 1.
-	  @result                     true if the script is syntactically correct, otherwise false.
+	  
+	  @abstract Check for syntax errors in a string of JavaScript.
+	  
+	  @param script A JSString containing the script to check for syntax
+	  errors.
+	  
+	  @param source_url An optional JSString containing a URL for the
+	  script's source file. This is used by debuggers and when reporting
+	  exceptions.
+	  
+	  @param starting_line_number An optional integer value specifying
+	  the script's starting line number in the file located at
+	  source_url. This is only used when reporting exceptions. The value
+	  is one-based, so the first line is line 1 and invalid values are
+	  clamped to 1.
+	  
+	  @result true if the script is syntactically correct, otherwise
+	  false.
 	*/
 	bool JSCheckScriptSyntax(const JSString& script, const JSString& source_url = JSString(), int starting_line_number = 1);
 	
@@ -199,10 +292,6 @@ private:
   // Return true if the two JSValues are equal as compared by the JS == operator.
   friend bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs);
   
-	friend JSValue JSEvaluateScript(const JSContext& js_context, const JSString& script, const JSString& source_url, int starting_line_number);
-	friend JSValue JSEvaluateScript(const JSContext& js_context, const JSString& script, const JSObject& this_object, const JSString& source_url, int starting_line_number);
-	friend bool JSCheckScriptSyntax(const JSContext& js_context, const JSString& script, const JSString& source_url, int starting_line_number);
-
 	JSGlobalContextRef js_global_context_ref_ { nullptr };
 	JSContextGroup     js_context_group_;
 };

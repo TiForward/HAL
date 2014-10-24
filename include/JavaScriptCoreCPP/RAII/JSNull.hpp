@@ -14,6 +14,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
 
 /*!
   @class
+  
   @discussion A JavaScript value of the null type.
 */
 class JSNull final : public JSValue {
@@ -22,9 +23,12 @@ public:
 	
 	/*!
 	  @method
-	  @abstract         Create a JavaScript value of the null type.
+	  
+	  @abstract Create a JavaScript value of the null type.
+	  
 	  @param js_context The execution context to use.
-	  @result           The unique null value.
+	  
+	  @result The unique null value.
 	*/
 	JSNull(const JSContext& js_context) : JSValue(js_context, JSValueMakeNull(js_context)) {
 	}

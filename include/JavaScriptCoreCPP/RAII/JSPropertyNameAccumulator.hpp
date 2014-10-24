@@ -18,6 +18,7 @@ class JSObject;
 
 /*!
   @class
+  
   @discussion A JSPropertyNameAccumulator is an RAII wrapper around a
   JSPropertyNameAccumulatorRef, the JavaScriptCore C API
   representation of a JavaScript property name accumulator which is an
@@ -33,7 +34,10 @@ class JSPropertyNameAccumulator	{
 	
 	/*!
 	  @method
-	  @abstract            Adds a property name to a JavaScript property name accumulator.
+	  
+	  @abstract Adds a property name to a JavaScript property name
+	  accumulator.
+	  
 	  @param property_name The property name to add.
 	*/
 	void AddName(const JSString& property_name) const {

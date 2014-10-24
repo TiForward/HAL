@@ -16,15 +16,18 @@ namespace JavaScriptCoreCPP { namespace RAII {
 
 /*!
   @class
+  
   @discussion A JSContextGroup is an RAII wrapper around a
   JSContextGroupRef, the JavaScriptCore C API representation of a
   group that associates JavaScript contexts with one another.
-  
+
   JSContexts within the same group may share and exchange JavaScript
-  objects. Sharing and/or exchanging JavaScript objects between
-  contexts in different groups will produce undefined behavior. When
-  objects from the same context group are used in multiple threads,
-  explicit synchronization is required.
+  objects. However, sharing and/or exchanging JavaScript objects
+  between contexts in different groups will produce undefined
+  behavior.
+
+  When objects from the same context group are used in multiple
+  threads, explicit synchronization is required.
 */
 class JSContextGroup final	{
 	
@@ -32,13 +35,16 @@ class JSContextGroup final	{
 
 	/*!
 	  @method
+	  
 	  @abstract Create a JavaScript context group.
-	  @discussion A JSContextGroup associates JavaScript contexts with
-	  one another.  Contexts in the same group may share and exchange
-	  JavaScript objects. Sharing and/or exchanging JavaScript objects
-	  between contexts in different groups will produce undefined
-	  behavior. When objects from the same context group are used in
-	  multiple threads, explicit synchronization is required.
+	  
+	  @discussion JSContexts within the same group may share and
+	  exchange JavaScript objects. However, sharing and/or exchanging
+	  JavaScript objects between contexts in different groups will
+	  produce undefined behavior.
+
+	  When objects from the same context group are used in multiple
+	  threads, explicit synchronization is required.
 	*/
 	JSContextGroup() : js_context_group_ref_(JSContextGroupCreate()) {
 	}

@@ -14,6 +14,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
 
 /*!
   @class
+  
   @discussion A JavaScript object of the RegExp type.
 */
 class JSRegExp final : public JSObject {
@@ -22,19 +23,28 @@ class JSRegExp final : public JSObject {
 
 	/*!
 	  @method
-	  @abstract         Create JavaScript RegExp object.
+	  
+	  @abstract Create a JavaScript RegExp object.
+	  
 	  @param js_context The execution context to use.
-    @result           A JavaScript object of the RegExp type.
+	  
+    @result A JavaScript object of the RegExp type.
 	*/
 	JSRegExp(const JSContext& js_context) : JSRegExp(std::vector<JSValue>(), js_context) {
 	}
 	
 	/*!
 	  @method
-	  @abstract         Create a JavaScript RegExp object, as if by invoking the built-in RegExp constructor.
-	  @param arguments  The JavaScript values to pass to the RegExp Constructor.
+	  
+	  @abstract Create a JavaScript RegExp object, as if by invoking the
+	  built-in RegExp constructor.
+	  
+	  @param arguments The JavaScript values to pass to the RegExp
+	  Constructor.
+	  
 	  @param js_context The execution context to use.
-    @result           A JSObject that is a RegExp.
+	  
+    @result A JSObject that is a RegExp.
 	*/
 	JSRegExp(const std::vector<JSValue>& arguments, const JSContext& js_context);
 };

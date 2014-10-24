@@ -22,19 +22,28 @@ class JSError final : public JSObject {
 
 	/*!
 	  @method
-	  @abstract         Create JavaScript Error object.
+	  
+	  @abstract Create JavaScript Error object.
+	  
 	  @param js_context The execution context to use.
-    @result           A JavaScript object of the Error type.
+	  
+    @result A JavaScript object of the Error type.
 	*/
 	JSError(const JSContext& js_context) : JSError(std::vector<JSValue>(), js_context) {
 	}
 	
 	/*!
 	  @method
-	  @abstract         Create a JavaScript Error object, as if by invoking the built-in Error constructor.
-	  @param arguments  The JavaScript values to pass to the Error Constructor.
+	  
+	  @abstract Create a JavaScript Error object, as if by invoking the
+	  built-in Error constructor.
+	  
+	  @param arguments The JavaScript values to pass to the Error
+	  Constructor.
+	  
 	  @param js_context The execution context to use.
-    @result           A JSObject that is a Error.
+	  
+    @result A JSObject that is a Error.
 	*/
 	JSError(const std::vector<JSValue>& arguments, const JSContext& js_context);
 };
