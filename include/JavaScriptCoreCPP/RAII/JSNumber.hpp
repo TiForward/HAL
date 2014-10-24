@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSNUMBER_HPP_
-#define _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSNUMBER_HPP_
+#ifndef _JAVASCRIPTCORECPP_RAII_JSNUMBER_HPP_
+#define _JAVASCRIPTCORECPP_RAII_JSNUMBER_HPP_
 
 #include "JavaScriptCoreCPP/RAII/JSValue.hpp"
 #include <cstdint>
@@ -153,4 +153,4 @@ public:
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 
-#endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSNUMBER_HPP_
+#endif // _JAVASCRIPTCORECPP_RAII_JSNUMBER_HPP_

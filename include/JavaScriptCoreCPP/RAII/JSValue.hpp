@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSVALUE_HPP_
-#define _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSVALUE_HPP_
+#ifndef _JAVASCRIPTCORECPP_RAII_JSVALUE_HPP_
+#define _JAVASCRIPTCORECPP_RAII_JSVALUE_HPP_
 
 #include "JavaScriptCoreCPP/RAII/JSContext.hpp"
 #include "JavaScriptCoreCPP/RAII/JSString.hpp"
@@ -428,4 +428,4 @@ std::ostream& operator << (std::ostream& ostream, const JSValue::Type& js_value_
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 
-#endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSVALUE_HPP_
+#endif // _JAVASCRIPTCORECPP_RAII_JSVALUE_HPP_

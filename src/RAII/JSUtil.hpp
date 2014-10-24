@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSUTIL_HPP_
-#define _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSUTIL_HPP_
+#ifndef _JAVASCRIPTCORECPP_RAII_JSUTIL_HPP_
+#define _JAVASCRIPTCORECPP_RAII_JSUTIL_HPP_
 
 #include <cstdint>
 
@@ -27,4 +27,4 @@ int32_t to_int32_t(double number);
 
 }} // namespace JavaScriptCoreCPP { namespace detail {
 
-#endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSUTIL_HPP_
+#endif // _JAVASCRIPTCORECPP_RAII_JSUTIL_HPP_

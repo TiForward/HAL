@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSBOOLEAN_HPP_
-#define _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSBOOLEAN_HPP_
+#ifndef _JAVASCRIPTCORECPP_RAII_JSBOOLEAN_HPP_
+#define _JAVASCRIPTCORECPP_RAII_JSBOOLEAN_HPP_
 
 #include "JavaScriptCoreCPP/RAII/JSValue.hpp"
 #include <stdexcept>
@@ -90,4 +90,4 @@ class JSBoolean final : public JSValue {
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 
-#endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSBOOLEAN_HPP_
+#endif // _JAVASCRIPTCORECPP_RAII_JSBOOLEAN_HPP_

@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSERROR_HPP_
-#define _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSERROR_HPP_
+#ifndef _JAVASCRIPTCORECPP_RAII_JSERROR_HPP_
+#define _JAVASCRIPTCORECPP_RAII_JSERROR_HPP_
 
 #include "JavaScriptCoreCPP/RAII/JSObject.hpp"
 
@@ -42,4 +42,4 @@ class JSError final : public JSObject {
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 
-#endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSERROR_HPP_
+#endif // _JAVASCRIPTCORECPP_RAII_JSERROR_HPP_
