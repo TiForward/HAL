@@ -9,7 +9,9 @@
 #include "JavaScriptCoreCPP/RAII/RAII.hpp"
 #import <XCTest/XCTest.h>
 
+#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER
 static JavaScriptCoreCPP::detail::JSPerformanceCounterPrinter js_performancecounter_printer;
+#endif
 
 using namespace JavaScriptCoreCPP::RAII;
 

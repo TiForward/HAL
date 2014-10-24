@@ -29,6 +29,9 @@
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
+// Definition of class static memner;
+std::atomic<long> JSContext::js_context_id_counter_;
+
 JSValue JSContext::CreateValueFromJSON(const JSString& js_string) const {
 	return JSValue(*this, js_string, true);
 }

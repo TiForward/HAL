@@ -582,6 +582,9 @@ private:
   
 	JSGlobalContextRef js_global_context_ref_ { nullptr };
 	JSContextGroup     js_context_group_;
+	long               js_context_id_ { ++js_context_id_ };
+
+	static std::atomic<long> js_context_id_counter_;
 };
 
 // Return true if the two JSContexts are equal.
