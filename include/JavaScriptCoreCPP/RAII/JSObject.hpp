@@ -18,9 +18,6 @@
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-template<typename T>
-class JSNativeObject;
-
 /*!
   @enum JSPropertyAttribute
   @constant None         Specifies that a property has no special attributes.

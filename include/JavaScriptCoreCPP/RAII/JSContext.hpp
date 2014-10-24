@@ -17,9 +17,6 @@ namespace JavaScriptCoreCPP { namespace RAII {
 class JSValue;
 class JSObject;
 
-template<typename T>
-class JSNativeObject;
-
 /*!
   @class
   @discussion A JSContext is an RAII wrapper around a JSContextRef,

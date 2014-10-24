@@ -15,9 +15,6 @@
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-template<typename T>
-class JSNativeObject;
-
 /*!
   @class JSString
   @discussion A JSString is an RAII wrapper around a JSStringRef, the

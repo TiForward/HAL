@@ -13,6 +13,7 @@
 #endif
 
 #include "JavaScriptCoreCPP/RAII/JSNativeObjectDefinition.hpp"
+#include "JavaScriptCoreCPP/RAII/JSContext.hpp"
 #include "JavaScriptCoreCPP/RAII/JSClass.hpp"
 #include "JavaScriptCoreCPP/RAII/JSString.hpp"
 #include "JavaScriptCoreCPP/RAII/JSContext.hpp"
@@ -25,6 +26,7 @@
 #include <cassert>
 #include <iostream>
 #include <sstream>
+#include <type_traits>
 #include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP { namespace RAII {
@@ -95,8 +97,10 @@ class JSNativeObject {
 template<typename T>
 JSValueRef JSNativeObject<T>::JSStaticValueGetPropertyCallback(JSContextRef js_context_ref, JSObjectRef js_object_ref, JSStringRef property_name_ref, JSValueRef* exception) {
 	static const std::string log_prefix { "MDL: JSStaticValueGetPropertyCallback:" };
+
 	
 	JSObject js_object(js_context_ref, js_object_ref);
+	//JSObject js_object(const_cast<JSContextRef>(js_context_ref), js_object_ref);
 
 	auto js_native_object_ptr = static_cast<JSNativeObject<T>>(js_object.GetPrivate());
 	
