@@ -31,17 +31,12 @@ using namespace JavaScriptCoreCPP::RAII;
 }
 
 - (void)testJSClassBuilder {
-  JSClassBuilder builder("Foo");
-  //builder.set_initialize_callback(&DerivedJSObject::Initialize);
-  auto js_class = builder.build();
-  JSObject js_object(js_class, js_context);
-  
   using InitializeCallback = std::function<void(NativeObject&)>;
   InitializeCallback foo = &NativeObject::Initialize;
 }
 
 - (void)testJSNativeObject {
-  NativeObject native_object(js_context);
+  //NativeObject native_object(js_context);
 }
 
 // As of 2014.09.20 Travis CI only supports Xcode 5.1 which lacks support for

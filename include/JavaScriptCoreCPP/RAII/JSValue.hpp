@@ -253,6 +253,9 @@ private:
   friend class JSRegExp;
   friend class JSFunction;
 
+	template<typename T>
+	friend class JSNativeObject;
+
 	// Return true if the two JSValues are equal as compared by the JS === operator.
 	friend bool operator==(const JSValue& lhs, const JSValue& rhs);
 

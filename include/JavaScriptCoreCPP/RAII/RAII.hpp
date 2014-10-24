@@ -27,12 +27,7 @@
 #include "JavaScriptCoreCPP/RAII/JSRegExp.hpp"
 
 #include "JavaScriptCoreCPP/RAII/JSClass.hpp"
-#include "JavaScriptCoreCPP/RAII/JSClassBuilder.hpp"
-#include "JavaScriptCoreCPP/RAII/JSClassDefinition.hpp"
 #include "JavaScriptCoreCPP/RAII/JSPropertyNameAccumulator.hpp"
-
-#include "JavaScriptCoreCPP/RAII/JSStaticFunction.hpp"
-#include "JavaScriptCoreCPP/RAII/JSStaticValue.hpp"
 
 #endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_RAII_HPP_
 

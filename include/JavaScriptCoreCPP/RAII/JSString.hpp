@@ -15,6 +15,9 @@
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
+template<typename T>
+class JSNativeObject;
+
 /*!
   @class JSString
   @discussion A JSString is an RAII wrapper around a JSStringRef, the
@@ -112,7 +115,10 @@ private:
   friend class JSPropertyNameAccumulator;
   friend class JSFunction;
   
-	// Return true if the two JSStrings are equal.
+  template<typename T>
+	class JSNativeObject;
+
+  // Return true if the two JSStrings are equal.
 	friend bool operator==(const JSString& lhs, const JSString& rhs);
 
 	JSStringRef js_string_ref_;

@@ -8,7 +8,6 @@
 #ifndef _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCONTEXT_HPP_
 #define _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCONTEXT_HPP_
 
-
 #include "JavaScriptCoreCPP/RAII/JSContextGroup.hpp"
 #include "JavaScriptCoreCPP/RAII/JSString.hpp"
 #include <cassert>
@@ -17,6 +16,9 @@ namespace JavaScriptCoreCPP { namespace RAII {
 
 class JSValue;
 class JSObject;
+
+template<typename T>
+class JSNativeObject;
 
 /*!
   @class
@@ -186,7 +188,10 @@ private:
   friend class JSRegExp;
   friend class JSFunction;
 
-  // Return true if the two JSContexts are equal.
+	template<typename T>
+	friend class JSNativeObject;
+	
+	// Return true if the two JSContexts are equal.
   friend bool operator==(const JSContext& lhs, const JSContext& rhs);
 
   // Return true if the two JSValues are equal as compared by the JS == operator.

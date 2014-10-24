@@ -18,13 +18,16 @@
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-	/*!
-	  @enum JSPropertyAttribute
-	  @constant None         Specifies that a property has no special attributes.
-	  @constant ReadOnly     Specifies that a property is read-only.
-	  @constant DontEnum     Specifies that a property should not be enumerated by JSPropertyEnumerators and JavaScript for...in loops.
-	  @constant DontDelete   Specifies that the delete operation should fail on a property.
-	*/
+template<typename T>
+class JSNativeObject;
+
+/*!
+  @enum JSPropertyAttribute
+  @constant None         Specifies that a property has no special attributes.
+  @constant ReadOnly     Specifies that a property is read-only.
+  @constant DontEnum     Specifies that a property should not be enumerated by JSPropertyEnumerators and JavaScript for...in loops.
+  @constant DontDelete   Specifies that the delete operation should fail on a property.
+*/
 enum class JSPropertyAttribute : ::JSPropertyAttributes {
 	None,      // kJSPropertyAttributeNone,
 	ReadOnly,  // kJSPropertyAttributeReadOnly,
@@ -45,215 +48,6 @@ class JSObject : public JSValue {
 	
  public:
 
-	/*! 
-	  @typedef      InitializeCallback
-	  @abstract     The callback invoked when an object is first created.
-	  @param object The JSObject being created.
-	  @discussion    If you named your function Initialize, you would declare it like this:
-	  
-	  void Initialize(const JSObject& object);
-	  
-	  Unlike the other object callbacks, the initialize callback is
-	  called on the least derived class (the parent class) first, and
-	  the most derived class last.
-	*/
-	using InitializeCallback = std::function<void(JSObject&)>;
-	
-	/*! 
-	  @typedef       FinalizeCallback
-	  @abstract      The callback invoked when an object is finalized (prepared for garbage collection). An object may be finalized on any thread.
-	  @param object  The JSObject being finalized.
-	  @discussion    If you named your function Finalize, you would declare it like this:
-	  
-	  void Finalize(const JSObject& object);
-	  
-	  The finalize callback is called on the most derived class first,
-	  and the least derived class (the parent class) last.
-	  
-	  You must not call any function that may cause a garbage collection
-	  or an allocation of a garbage collected object from within a
-	  JSObjectFinalizeCallback. This includes all methods on all objects
-	  that take a JSContext in their constructor parameter list.
-	*/
-	using FinalizeCallback = std::function<void(const JSObject&)>;
-	
-	/*! 
-	  @typedef             HasPropertyCallback
-	  @abstract            The callback invoked when determining whether an object has a property.
-	  @param object        The JSObject to search for the property.
-	  @param property_name A JSString containing the name of the property to look up.
-	  @result              true if object has the property, otherwise false.
-	  @discussion          If you named your function HasProperty, you would declare it like this:
-	  
-	  bool HasProperty(const JSObject& object, const JSString& property_name);
-	  
-	  If this function returns false, the hasProperty request forwards
-	  to object's statically declared properties, then its parent class
-	  chain (which includes the default object class), then its
-	  prototype chain.
-	  
-	  This callback enables optimization in cases where only a
-	  property's existence needs to be known, not its value, and
-	  computing its value would be expensive.
-	  
-	  If this callback doesn't exist, then the
-	  JSObjectGetPropertyCallback callback will be used instead.
-	*/
-	using HasPropertyCallback = std::function<bool(const JSObject&, const JSString&)>;
-	
-	/*! 
-	  @typedef             GetPropertyCallback
-	  @abstract            The callback invoked when getting a property's value.
-	  @param object        The JSObject to search for the property.
-	  @param property_name A JSString containing the name of the property to get.
-	  @result              The property's value if object has the property, otherwise JSUndefined.
-	  @discussion          If you named your function GetProperty, you would declare it like this:
-	  
-	  JSValue GetProperty(const JSObject& object, const JSString& property_name);
-	  
-	  If this function returns JSUndefined, the get request forwards to
-	  object's statically declared properties, then its parent class
-	  chain (which includes the default object class), then its
-	  prototype chain.
-	*/
-	using GetPropertyCallback = std::function<JSValue(const JSObject&, const JSString&)>;
-	
-	/*! 
-	  @typedef             SetPropertyCallback
-	  @abstract            The callback invoked when setting a property's value.
-	  @param object        The JSObject on which to set the property's value.
-	  @param property_name A JSString containing the name of the property to set.
-	  @param value         A JSValue to use as the property's value.
-	  @result              true if the property was set, otherwise false.
-	  @discussion          If you named your function SetProperty, you would declare it like this:
-	  
-	  bool SetProperty(const JSObject& object, const JSString& property_name, const JSValue& value);
-	  
-	  If this function returns false, the set request forwards to
-	  object's statically declared properties, then its parent class
-	  chain (which includes the default object class).
-	*/
-	using SetPropertyCallback = std::function<bool(const JSObject&, const JSString&, const JSValue&)>;
-	
-	/*! 
-	  @typedef             DeletePropertyCallback
-	  @abstract            The callback invoked when deleting a property.
-	  @param object        The JSObject in which to delete the property.
-	  @param property_name A JSString containing the name of the property to delete.
-	  @result              true if propertyName was successfully deleted, otherwise false.
-	  @discussion          If you named your function DeleteProperty, you would declare it like this:
-	  
-	  bool DeleteProperty(const JSObject& object, const JSString& property)name);
-	  
-	  If this function returns false, the delete request forwards to
-	  object's statically declared properties, then its parent class
-	  chain (which includes the default object class).
-	*/
-	using DeletePropertyCallback = std::function<bool(const JSObject&, const JSString&)>;
-	
-	/*! 
-	  @typedef           GetPropertyNamesCallback
-	  @abstract          The callback invoked when collecting the names of an object's properties.
-	  @param object      The JSObject whose property names are being collected.
-	  @param accumulator A JavaScript property name accumulator in which to accumulate the names of object's properties.
-	  @discussion        If you named your function GetPropertyNames, you would declare it like this:
-	  
-	  void GetPropertyNames(const JSObject& object, const JSPropertyNameAccumulator& accumulator);
-	  
-	  Property name accumulators are used by JSObject::CopyPropertyNames
-	  and JavaScript for...in loops.
-	  
-	  Use JSPropertyNameAccumulator::AddName to add property names to
-	  accumulator. A class's getPropertyNames callback only needs to
-	  provide the names of properties that the class vends through a
-	  custom getProperty or setProperty callback. Other properties,
-	  including statically declared properties, properties vended by
-	  other classes, and properties belonging to object's prototype, are
-	  added independently.
-	*/
-	using GetPropertyNamesCallback = std::function<void(const JSObject&, const JSPropertyNameAccumulator&)>;
-	
-	/*! 
-	  @typedef           CallAsFunctionCallback
-	  @abstract          The callback invoked when an object is called as a function.
-	  @param function    A JSObject that is the function being called.
-	  @param arguments   A JSValue array of arguments to pass to the function.
-	  @param this_object The object to use as "this".
-	  @result            A JSValue that is the function's return value.
-	  @discussion        If you named your function CallAsFunction, you would declare it like this:
-	  
-	  JSValue CallAsFunction(const JSObject& object, const std::vector<JSValue>& arguments, const JSObject& this_object);
-	  
-	  If your callback were invoked by the JavaScript expression
-	  'myObject.myFunction()', function would be set to myFunction, and
-	  thisObject would be set to myObject.
-	  
-	  If this callback is does not exist, then calling your object as a
-	  function will throw an exception.
-	*/
-	using CallAsFunctionCallback = std::function<JSValue(const JSObject&, const std::vector<JSValue>&, const JSObject&)>;
-	
-	/*! 
-	  @typedef           CallAsConstructorCallback
-	  @abstract          The callback invoked when an object is used as a constructor in a 'new' expression.
-	  @param constructor A JSObject that is the constructor being called.
-	  @param arguments   A JSValue array of arguments to pass to the constructor.
-	  @result            A JSObject that is the constructor's return value.
-	  @discussion        If you named your function CallAsConstructor, you would declare it like this:
-	  
-	  JSObject CallAsConstructor(const JSObject& constructor, const std::vector<JSValue>& arguments);
-	  
-	  If your callback were invoked by the JavaScript expression 'new
-	  myConstructor()', constructor would be set to myConstructor.
-	  
-	  If this callback is doest not exist, using your object as a
-	  constructor in a 'new' expression will throw an exception.
-	*/
-	using CallAsConstructorCallback = std::function<JSObject(const JSObject&, const std::vector<JSValue>&)>;
-	
-	/*! 
-	  @typedef                 HasInstanceCallback
-	  @abstract                The callback invoked when an object is used as the target of an 'instanceof' expression.
-	  @param constructor       The JSObject that is the target of the 'instanceof' expression.
-	  @param possible_instance The JSValue being tested to determine if it is an instance of constructor.
-	  @result                  true if possible_instance is an instance of constructor, otherwise false.
-	  @discussion If you named your function HasInstance, you would declare it like this:
-	  
-	  bool HasInstance(const JSObject& constructor, const JSValue possible_instance);
-	  
-	  If your callback were invoked by the JavaScript expression
-	  'someValue instanceof myObject', constructor would be set to
-	  myObject and possible_instance would be set to someValue.
-	  
-	  If this callback is does not exist, 'instanceof' expressions that
-	  target your object will return false.
-	  
-	  Standard JavaScript practice calls for objects that implement the
-	  callAsConstructor callback to implement the
-	  JSObjectHasInstanceCallback callback as well.
-	*/
-	using HasInstanceCallback = std::function<bool(const JSObject&, const JSValue&)>;
-	
-	/*! 
-	  @typedef       ConvertToTypeCallback
-	  @abstract      The callback invoked when converting an object to a particular JavaScript type.
-	  @param object  The JSObject to convert.
-	  @param type    A JSValue::Type specifying the JavaScript type to convert to.
-	  @result        The objects's converted value, or JSUndefined if the object was not converted.
-	  @discussion    If you named your function ConvertToType, you would declare it like this:
-	  
-	  JSValue ConvertToType(const JSObject& object, JSValue::Type type);
-	  
-	  If this function returns JSUndefined, the conversion request
-	  forwards to object's parent class chain (which includes the
-	  default object class).
-	  
-	  This function is only invoked when converting an object to number
-	  or string. An object converted to boolean is 'true.' An object
-	  converted to object is itself.
-	*/
-	using ConvertToTypeCallback = std::function<JSValue(const JSObject&, const JSValue::Type&)>;
-	
 	/*!
 	  @method
 	  @abstract         Create an empty JavaScript object using the default object class.
@@ -758,7 +552,9 @@ class JSObject : public JSValue {
   friend class JSError;
   friend class JSRegExp;
   friend class JSFunction;
-  friend class JSStaticValue;
+
+	template<typename T>
+	friend class JSNativeObject;
 
 	JSContext   js_context_;
 	JSObjectRef js_object_ref_ { nullptr };

@@ -15,13 +15,11 @@
 namespace JavaScriptCoreCPP { namespace RAII {
 
 
-class NativeObject final : public JSNativeObject<NativeObject> {
+class NativeObject final {
 
  public:
 
-	NativeObject(const JSContext& js_context)
-			: JSNativeObject(js_context)
-			, js_context_(js_context) {
+	NativeObject(const JSContext& js_context) : js_context_(js_context) {
 	}
 	
 	virtual ~NativeObject() {
