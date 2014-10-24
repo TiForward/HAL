@@ -29,9 +29,6 @@
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-// Definition of class static memner;
-std::atomic<long> JSContext::js_context_id_counter_;
-
 JSValue JSContext::CreateValueFromJSON(const JSString& js_string) const {
 	return JSValue(*this, js_string, true);
 }
@@ -166,5 +163,14 @@ bool JSContext::JSCheckScriptSyntax(const JSString& script, const JSString& sour
 
 	return result;
 }
+
+JSObject JSContext::get_global_object() const {
+	return JSObject(js_global_context_ref_, JSContextGetGlobalObject(js_global_context_ref_));
+}
+
+#ifdef JAVASCRIPTCORECPP_RAII_JSCONTEXT_ENABLE_CONTEXT_ID
+// Definition of class static memner;
+std::atomic<long> JSContext::js_context_id_counter_;
+#endif
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {

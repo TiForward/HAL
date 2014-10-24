@@ -493,6 +493,52 @@ class JSContext final	{
 	*/
 	bool JSCheckScriptSyntax(const JSString& script, const JSString& source_url = JSString(), int starting_line_number = 1);
 	
+	/*!
+	  @method
+	  
+	  @abstract Return the global object of this JavaScript execution
+	  context.
+	  
+	  @result the global object of this JavaScript execution context.
+	*/
+	JSObject get_global_object() const;
+
+	/*!
+	  @method
+	  
+	  @abstract Return the global object of this JavaScript execution
+	  context.
+	  
+	  @result the global object of this JavaScript execution context.
+	*/
+
+	/*!
+	  @method
+	  
+	  @abstract Return the context group to which this JavaScript
+	  execution context belongs.
+	  
+	  @result The context group to which this JavaScript execution
+	  context belongs.
+	*/
+	JSContextGroup get_context_group() const {
+		return js_context_group_;
+	}
+
+#ifdef JAVASCRIPTCORECPP_RAII_JSCONTEXT_ENABLE_CONTEXT_ID
+	/*!
+	  @method
+	  
+	  @abstract Return the unique ID of this JavaScript execution
+	  context.
+	  
+	  @result The unique ID of this JavaScript execution context.
+	*/
+	long get_context_id() const {
+		return js_context_id_;
+	}
+#endif
+
 	~JSContext() {
 		JSGlobalContextRelease(js_global_context_ref_);
 	}
@@ -529,15 +575,6 @@ class JSContext final	{
     swap(first.js_global_context_ref_, second.js_global_context_ref_);
     swap(first.js_context_group_     , second.js_context_group_);
   }
-
-	JSContextGroup get_context_group() const {
-		return js_context_group_;
-	}
-	
-  // TODO: Change JSObjectRef to JSObject
-	JSObjectRef get_global_object() const {
-		return JSContextGetGlobalObject(js_global_context_ref_);
-	}
 
 private:
 
@@ -582,9 +619,11 @@ private:
   
 	JSGlobalContextRef js_global_context_ref_ { nullptr };
 	JSContextGroup     js_context_group_;
-	long               js_context_id_ { ++js_context_id_ };
 
+#ifdef JAVASCRIPTCORECPP_RAII_JSCONTEXT_ENABLE_CONTEXT_ID
+	long               js_context_id_ { ++js_context_id_ };
 	static std::atomic<long> js_context_id_counter_;
+#endif
 };
 
 // Return true if the two JSContexts are equal.
