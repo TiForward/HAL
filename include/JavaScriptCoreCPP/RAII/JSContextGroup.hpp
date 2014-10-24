@@ -10,6 +10,7 @@
 #ifndef _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_HPP_
 #define _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_HPP_
 
+#include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 #include <utility>
 #include <cassert>
 #include <JavaScriptCore/JavaScript.h>
@@ -29,7 +30,11 @@ class JSClass;
   JSContexts within the same context group may share and exchange
   JavaScript objects with one another.
 */
+#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER
+class JSContextGroup final : public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSContextGroup> {
+#else
 class JSContextGroup final	{
+#endif
 	
  public:
 

@@ -51,7 +51,11 @@ class JSClass;
   The only way to create a JSObject is by using the
   JSContext::CreateObject member function.
 */
+#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER
+class JSObject : public JSValue, public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSObject> {
+#else
 class JSObject : public JSValue {
+#endif
 	
  public:
 

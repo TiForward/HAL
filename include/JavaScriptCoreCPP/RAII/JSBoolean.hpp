@@ -24,7 +24,11 @@ namespace JavaScriptCoreCPP { namespace RAII {
   The only way to create a JSBoolean is by using the
   JSContext::CreateBoolean member function.
 */
+#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER
+class JSBoolean final : public JSValue, public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSBoolean> {
+#else
 class JSBoolean final : public JSValue {
+#endif
 	
  public:
 	

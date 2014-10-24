@@ -10,6 +10,7 @@
 #ifndef _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCLASS_HPP_
 #define _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_RAII_JSCLASS_HPP_
 
+#include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 #include <utility>
 #include <JavaScriptCore/JavaScript.h>
 
@@ -26,7 +27,11 @@ namespace JavaScriptCoreCPP { namespace RAII {
 
   Only JSObject and JSNativeObjectBuilder may create a JSClass.
 */
+#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER
+class JSClass final : public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSClass> {
+#else
 class JSClass final	{
+#endif
 	
  public:
 

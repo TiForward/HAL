@@ -14,6 +14,7 @@
 #include "JavaScriptCoreCPP/RAII/JSClass.hpp"
 #include "JavaScriptCoreCPP/RAII/JSString.hpp"
 #include <vector>
+#include <atomic>
 #include <cassert>
 
 namespace JavaScriptCoreCPP { namespace RAII {
@@ -52,10 +53,12 @@ class JSFunction;
   When JavaScript objects from the same context group are used in
   multiple threads, explicit synchronization is required.
 */
+#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER
+class JSContext final	: public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSContext> {
+#else
 class JSContext final	{
+#endif
 	
- public:
-
  public:
 
 	/*!
@@ -548,10 +551,9 @@ private:
 	}
 		
 	// For interoperability with the JavaScriptCore C API.
-	JSContext(JSContextRef js_context_ref)
-			: JSContext(const_cast<JSGlobalContextRef>(js_context_ref)) {
+	JSContext(JSContextRef js_context_ref) : JSContext(const_cast<JSGlobalContextRef>(js_context_ref)) {
 	}
-
+	
 	// For interoperability with the JavaScriptCore C API.
 	operator JSContextRef() const {
 		return js_global_context_ref_;

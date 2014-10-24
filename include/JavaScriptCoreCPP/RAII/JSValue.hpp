@@ -12,6 +12,7 @@
 
 #include "JavaScriptCoreCPP/RAII/JSContext.hpp"
 #include "JavaScriptCoreCPP/RAII/JSString.hpp"
+#include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 #include <iostream>
 #include <cassert>
 
@@ -32,7 +33,11 @@ class JSObject;
   The only way to create a JSValue is by using the
   JSContext::CreateValue member function.
 */
+#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER
+class JSValue	: public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSValue> {
+#else
 class JSValue	{
+#endif
 	
  public:
 

@@ -22,7 +22,11 @@ namespace JavaScriptCoreCPP { namespace RAII {
   The only way to create a JSUndefined is by using the
   JSContext::CreateUndefined member function.
 */
+#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER
+class JSUndefined final : public JSValue, public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSUndefined> {
+#else
 class JSUndefined final : public JSValue {
+#endif
 	
 private:
 	

@@ -25,7 +25,11 @@ namespace JavaScriptCoreCPP { namespace RAII {
   The only way to create a JSFunction is by using the
   JSContext::CreateFunction member function.
 */
+#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER
+class JSFunction final : public JSObject, public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSFunction> {
+#else
 class JSFunction final : public JSObject {
+#endif
 	
  private:
 

@@ -7,7 +7,10 @@
 //
 
 #include "JavaScriptCoreCPP/RAII/RAII.hpp"
+#include "JavaScriptCoreCPP/detail/JSPerformanceCounterPrinter.hpp"
 #import <XCTest/XCTest.h>
+
+static JavaScriptCoreCPP::detail::JSPerformanceCounterPrinter js_performancecounter_printer;
 
 using namespace JavaScriptCoreCPP::RAII;
 

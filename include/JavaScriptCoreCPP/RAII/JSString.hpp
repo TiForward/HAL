@@ -35,7 +35,11 @@ namespace JavaScriptCoreCPP { namespace RAII {
   provides a strict weak ordering, and provides a custom hash
   function.
 */
+#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER
+class JSString final	: public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSString> {
+#else
 class JSString final	{
+#endif
 	
  public:
 	
