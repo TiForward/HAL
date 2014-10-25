@@ -29,7 +29,7 @@
 #include "JavaScriptCoreCPP/RAII/JSClass.hpp"
 #include "JavaScriptCoreCPP/RAII/JSPropertyNameAccumulator.hpp"
 
-#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER
+#ifdef JAVASCRIPTCORECPP_RAII_ENABLE_PERFORMANCE_COUNTER
 #include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 #include "JavaScriptCoreCPP/detail/JSPerformanceCounterPrinter.hpp"
 #endif

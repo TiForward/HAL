@@ -22,7 +22,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
   The only way to create a JSNull is by using the
   JSContext::CreateNull member function.
 */
-#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER
+#ifdef JAVASCRIPTCORECPP_RAII_ENABLE_PERFORMANCE_COUNTER
 class JSNull final : public JSValue, public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSNull> {
 #else
 class JSNull final : public JSValue {

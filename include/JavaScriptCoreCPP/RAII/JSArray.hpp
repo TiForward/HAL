@@ -23,7 +23,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
   The only way to create a JSArray is by using the
   JSContext::CreateArray member function.
 */
-#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER
+#ifdef JAVASCRIPTCORECPP_RAII_ENABLE_PERFORMANCE_COUNTER
 class JSArray final : public JSObject, public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSArray> {
 #else
 class JSArray final : public JSObject {

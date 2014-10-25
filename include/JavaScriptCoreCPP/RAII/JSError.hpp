@@ -22,7 +22,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
   The only way to create a JSError is by using the
   JSContext::CreateError member function.
 */
-#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER
+#ifdef JAVASCRIPTCORECPP_RAII_ENABLE_PERFORMANCE_COUNTER
 class JSError final : public JSObject, public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSError> {
 #else
 class JSError final : public JSObject {
