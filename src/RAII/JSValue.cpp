@@ -158,7 +158,7 @@ JSValue::Type JSValue::GetType() const {
 	}
 }
 
-bool JSValue::IsInstanceOfConstructor(const JSObject& constructor) {
+bool JSValue::IsInstanceOfConstructor(const JSObject& constructor) const {
 	JSValueRef exception { nullptr };
 	const bool result = JSValueIsInstanceOfConstructor(js_context_, js_value_ref_, constructor, &exception);
 	if (exception) {
@@ -173,14 +173,13 @@ bool JSValue::IsInstanceOfConstructor(const JSObject& constructor) {
 	return result;
 }
 
-bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs) {
+bool JSValue::IsEqualWithTypeCoercion(const JSValue& rhs) const {
 	JSValueRef exception { nullptr };
-	//const bool result = JSValueIsEqual(lhs.js_context_, lhs.js_value_ref_, rhs.js_value_ref_, &exception);
-	const bool result = JSValueIsEqual(lhs, lhs, rhs, &exception);
+	const bool result = JSValueIsEqual(js_context_, js_value_ref_, rhs.js_value_ref_, &exception);
 	if (exception) {
 		static const std::string log_prefix { "MDL: IsEqualWithTypeCoercion: " };
 		std::ostringstream os;
-		os << "caught exception: " << JSValue(lhs, exception);
+		os << "caught exception: " << JSValue(js_context_, exception);
 		const std::string message = os.str();
 		std::clog << log_prefix << " [ERROR] " << message << std::endl; 
 	}

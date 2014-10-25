@@ -14,6 +14,7 @@
 #include "JavaScriptCoreCPP/RAII/JSString.hpp"
 #include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 #include <iostream>
+#include <sstream>
 #include <cassert>
 
 namespace JavaScriptCoreCPP { namespace detail {
@@ -293,8 +294,10 @@ public:
     constructor, as compared by the JS instanceof operator, otherwise
     false.
   */
-	bool IsInstanceOfConstructor(const JSObject& constructor);
+	bool IsInstanceOfConstructor(const JSObject& constructor) const;
 
+	bool IsEqualWithTypeCoercion(const JSValue& rhs) const;
+	
 	virtual ~JSValue() {
 	  JSValueUnprotect(js_context_, js_value_ref_);
   }
@@ -372,9 +375,6 @@ public:
 	// Return true if the two JSValues are equal as compared by the JS === operator.
 	friend bool operator==(const JSValue& lhs, const JSValue& rhs);
 
-	// Return true if the two JSValues are equal as compared by the JS == operator.
-	friend bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs);
-	
 	JSContext  js_context_;
 	JSValueRef js_value_ref_ { nullptr };
 };
@@ -410,7 +410,11 @@ bool operator!=(const JSValue& lhs, const JSValue& rhs) {
   @result true if the two values are equal, false if they are not
   equal.
 */
-bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs);
+inline
+bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs) {
+	return lhs.IsEqualWithTypeCoercion(rhs);
+}
+
 
 inline
 std::ostream& operator << (std::ostream& ostream, const JSValue& js_value) {
