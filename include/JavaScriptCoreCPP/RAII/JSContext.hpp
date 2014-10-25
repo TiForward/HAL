@@ -17,6 +17,10 @@
 #include <atomic>
 #include <cassert>
 
+#ifdef DEBUG
+extern "C" JS_EXPORT void JSSynchronousGarbageCollectForDebugging(JSContextRef);
+#endif
+
 namespace JavaScriptCoreCPP { namespace RAII {
 
 class JSValue;
@@ -494,6 +498,26 @@ class JSContext final	{
 	bool JSCheckScriptSyntax(const JSString& script, const JSString& source_url = JSString(), int starting_line_number = 1);
 	
 	/*!
+	  @method
+	  
+	  @abstract Performs a JavaScript garbage collection.
+	  
+	  @discussion JavaScript values that are on the machine stack, in a
+	  register, protected by JSValueProtect, set as the global object of
+	  an execution context, or reachable from any such value will not be
+	  collected.
+	  
+	  During JavaScript execution, you are not required to call this
+	  function; the JavaScript engine will garbage collect as
+	  needed. JavaScript values created within a context group are
+	  automatically destroyed when the last reference to the context
+	  group is released.
+	*/
+	void GarbageCollect() const {
+		JSGarbageCollect(js_global_context_ref_);
+	}
+
+/*!
 	  @method
 	  
 	  @abstract Return the global object of this JavaScript execution

@@ -99,23 +99,23 @@ class JSNativeObjectBuilder final {
 	/*!
 	  @method
 	  
-	  @abstract Return the class's name.
+	  @abstract Return the native object's name.
 	  
-	  @result The class's name.
+	  @result The native object's name.
 	*/
-	JSString ClassName() const {
-		return class_name_;
+	JSString Name() const {
+		return name_;
 	}
 	
 	/*!
 	  @method
 	  
-	  @abstract Set the class's name.
+	  @abstract Set the object's name.
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeObjectBuilder& ClassName(const JSString& class_name) {
-		class_name_ = class_name;
+	JSNativeObjectBuilder& Name(const JSString& name) {
+		name_ = name;
 		return *this;
 	}
 	
@@ -140,7 +140,7 @@ class JSNativeObjectBuilder final {
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeObjectBuilder& set_attributes(const std::unordered_set<JSNativeObjectAttributes>& attributes) {
+	JSNativeObjectBuilder& JSNativeObjectAttributes(const std::unordered_set<JSNativeObjectAttributes>& attributes) {
 		attributes_ = attributes;
 		return *this;
 	}
@@ -148,8 +148,8 @@ class JSNativeObjectBuilder final {
 	/*!
 	  @method
 	  
-	  @abstract Return the parent of the JSNativeObject. A nullptr means
-	  to use the default object class.
+	  @abstract Return the parent of the JSNativeObject created by this
+	  builder. A nullptr means to use the default object class.
 	  
 	  @result The parent of the the JSNativeObject created by this
 	  builder.
