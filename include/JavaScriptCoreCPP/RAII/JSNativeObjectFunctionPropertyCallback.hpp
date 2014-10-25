@@ -11,6 +11,9 @@
 #define _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTFUNCTIONPROPERTYCALLBACK_HPP_
 
 #include "JavaScriptCoreCPP/RAII/JSNativeObjectCallbacks.hpp"
+#include "JavaScriptCoreCPP/RAII/JSPropertyAttribute.hpp"
+#include "JavaScriptCoreCPP/RAII/detail/HashUtilities.hpp"
+#include <functional>
 #include <sstream>
 
 namespace JavaScriptCoreCPP { namespace RAII {
@@ -127,15 +130,14 @@ class JSNativeObjectFunctionPropertyCallback final	{
 
  private:
 	
-	// Return true if the two JSNativeObjectFunctionPropertyCallbacks are
-	// equal.
 	template<typename U>
 	friend bool operator==(const JSNativeObjectFunctionPropertyCallback<U>& lhs, const JSNativeObjectFunctionPropertyCallback<U>& rhs);
 
-	// Define a strict weak ordering for two
-	// JSNativeObjectFunctionPropertyCallbacks.
-	// template<typename U>
-	// friend bool operator<(const JSNativeObjectFunctionPropertyCallback<U>& lhs, const JSNativeObjectFunctionPropertyCallback<U>& rhs);
+	template<typename U>
+	friend bool operator<(const JSNativeObjectFunctionPropertyCallback<U>& lhs, const JSNativeObjectFunctionPropertyCallback<U>& rhs);
+
+	template<typename U>
+	friend struct hash<JSNativeObjectFunctionPropertyCallback<U>>;
 
 	JSString                                function_name_;
 	std::string                             function_name_for_js_static_function_;
@@ -230,30 +232,43 @@ bool operator!=(const JSNativeObjectFunctionPropertyCallback<T>& lhs, const JSNa
 	return ! (lhs == rhs);
 }
 
-// // Define a strict weak ordering for two JSNativeObjectFunctionPropertyCallbacks.
-// template<typename T>
-// bool operator<(const JSNativeObjectFunctionPropertyCallback<T>& lhs, const JSNativeObjectFunctionPropertyCallback<T>& rhs) {
-// 	if (lhs.function_name_for_js_static_function_ < rhs.function_name_for_js_static_function_) {
-// 		return true;
-// 	}
+// Define a strict weak ordering for two JSNativeObjectFunctionPropertyCallbacks.
+template<typename T>
+bool operator<(const JSNativeObjectFunctionPropertyCallback<T>& lhs, const JSNativeObjectFunctionPropertyCallback<T>& rhs) {
+	if (lhs.function_name_for_js_static_function_ < rhs.function_name_for_js_static_function_) {
+		return true;
+	}
 	
-// 	return lhs.attributes_ < rhs.attributes_;
-// }
+	return lhs.attributes_ < rhs.attributes_;
+}
 
-// template<typename T>
-// bool operator>(const JSNativeObjectFunctionPropertyCallback<T>& lhs, const JSNativeObjectFunctionPropertyCallback<T>& rhs) {
-// 	return rhs < lhs;
-// }
+template<typename T>
+bool operator>(const JSNativeObjectFunctionPropertyCallback<T>& lhs, const JSNativeObjectFunctionPropertyCallback<T>& rhs) {
+	return rhs < lhs;
+}
 
-// template<typename T>
-// bool operator<=(const JSNativeObjectFunctionPropertyCallback<T>& lhs, const JSNativeObjectFunctionPropertyCallback<T>& rhs) {
-// 	return ! (lhs > rhs);
-// }
+template<typename T>
+bool operator<=(const JSNativeObjectFunctionPropertyCallback<T>& lhs, const JSNativeObjectFunctionPropertyCallback<T>& rhs) {
+	return ! (lhs > rhs);
+}
 
-// template<typename T>
-// bool operator>=(const JSNativeObjectFunctionPropertyCallback<T>& lhs, const JSNativeObjectFunctionPropertyCallback<T>& rhs) {
-// 	return ! (lhs < rhs);
-// }
+template<typename T>
+bool operator>=(const JSNativeObjectFunctionPropertyCallback<T>& lhs, const JSNativeObjectFunctionPropertyCallback<T>& rhs) {
+	return ! (lhs < rhs);
+}
+
+// Provide a hash function so that a
+// JSNativeObjectFunctionPropertyCallback can be stored in an
+// unordered container.
+template<typename T>
+struct hash<JSNativeObjectFunctionPropertyCallback<T>> {
+	using argument_type = JSNativeObjectFunctionPropertyCallback<T>;
+	using result_type   = std::size_t;
+	
+	result_type operator()(const argument_type& property_attribute) const {
+		return std::hash(property_attribute.get_property_name());
+	}
+};
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 

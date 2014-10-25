@@ -58,7 +58,7 @@ class JSContextGroup final	{
 	  concurrently with scripts executing in other contexts.
 
 	  @discussion All JSContexts within this context group may share and
-	  exchange JavaScript objects with one another.
+	  exchange JavaScript values with one another.
 	  
 	  When JavaScript objects from the same context group are used in
 	  multiple threads, explicit synchronization is required.
@@ -74,7 +74,7 @@ class JSContextGroup final	{
 	  scripts executing in other contexts.
 
 	  @discussion All JSContexts within this context group may share and
-	  exchange JavaScript objects with one another.
+	  exchange JavaScript values with one another.
 	  
 	  When JavaScript objects from the same context group are used in
 	  multiple threads, explicit synchronization is required.
@@ -121,7 +121,7 @@ class JSContextGroup final	{
   friend class JSContext;
 
   // For interoperability with the JavaScriptCore C API.
-	JSContextGroup(JSContextGroupRef js_context_group_ref) : js_context_group_ref_(js_context_group_ref) {
+  explicit JSContextGroup(JSContextGroupRef js_context_group_ref) : js_context_group_ref_(js_context_group_ref) {
 		assert(js_context_group_ref_);
 		JSContextGroupRetain(js_context_group_ref_);
 	}
@@ -131,6 +131,10 @@ class JSContextGroup final	{
 		return js_context_group_ref_;
 	}
 	
+	// Prevent heap based objects.
+	void* operator new(size_t)     = delete; // #1: To prevent allocation of scalar objects
+	void* operator new [] (size_t) = delete; // #2: To prevent allocation of array of objects
+
   // Return true if the two JSContextGroups are equal.
   friend bool operator==(const JSContextGroup& lhs, const JSContextGroup& rhs);
 

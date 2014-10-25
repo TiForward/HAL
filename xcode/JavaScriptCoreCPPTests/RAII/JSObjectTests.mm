@@ -10,18 +10,18 @@
 #include <limits>
 #import <XCTest/XCTest.h>
 
+using namespace JavaScriptCoreCPP::RAII;
+
+static JSContextGroup js_context_group;
+
 namespace UnitTestConstants {
   static const double pi { 3.141592653589793 };
 }
 
-using namespace JavaScriptCoreCPP::RAII;
-
 @interface JSObjectTests2 : XCTestCase
 @end
 
-@implementation JSObjectTests2 {
-  JSContext js_context;
-}
+@implementation JSObjectTests2
 
 - (void)setUp {
     [super setUp];
@@ -34,6 +34,7 @@ using namespace JavaScriptCoreCPP::RAII;
 }
 
 - (void)testJSObject {
+  JSContext js_context = js_context_group.CreateContext();
   JSObject js_object = js_context.CreateObject();
   JSValue prototype = js_object.GetPrototype();
   XCTAssertFalse(prototype.IsUndefined());
@@ -102,22 +103,27 @@ using namespace JavaScriptCoreCPP::RAII;
 }
 
 - (void)testJSArray {
+  JSContext js_context = js_context_group.CreateContext();
   JSArray js_array = js_context.CreateArray();
 }
 
 - (void)testJSDate {
+  JSContext js_context = js_context_group.CreateContext();
   JSDate js_date = js_context.CreateDate();
 }
 
 - (void)testJSError {
+  JSContext js_context = js_context_group.CreateContext();
   JSError js_error = js_context.CreateError();
 }
 
 - (void)testJSRegExp {
+  JSContext js_context = js_context_group.CreateContext();
   JSRegExp js_regexp = js_context.CreateRegExp();
 }
 
 - (void)testJSFunction {
+  JSContext js_context = js_context_group.CreateContext();
   JSFunction js_function = js_context.CreateFunction("foo", {"name"}, "return 'Hello, ' + name;");
   XCTAssertTrue(js_function.IsFunction());
   XCTAssertTrue(js_function.IsObject());

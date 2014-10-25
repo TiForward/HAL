@@ -189,10 +189,6 @@ public:
 	*/
 	operator JSObject() const;
 
-	JSContext get_js_context() const {
-		return js_context_;
-	}
-
   /*!
     @method
     
@@ -341,7 +337,10 @@ public:
  private:
 
 	// For interoperability with the JavaScriptCore C API.
-	JSValue(JSContextRef js_context_ref, JSValueRef js_value_ref) : js_context_(js_context_ref), js_value_ref_(js_value_ref)  {
+	explicit JSValue(JSContextRef js_context_ref, JSValueRef js_value_ref)
+			: js_context_(JSContextGetGlobalContext(js_context_ref))
+			, js_value_ref_(js_value_ref)  {
+		assert(js_context_ref);
 		assert(js_value_ref_);
 		JSValueProtect(js_context_, js_value_ref_);
 	}

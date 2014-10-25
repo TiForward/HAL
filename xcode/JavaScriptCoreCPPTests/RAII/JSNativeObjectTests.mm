@@ -13,13 +13,12 @@
 
 using namespace JavaScriptCoreCPP::RAII;
 
+static JSContextGroup js_context_group;
+
 @interface JSClassDefinitionBuilderTests : XCTestCase
 @end
 
-@implementation JSClassDefinitionBuilderTests {
-  JSContext js_context;
-}
-
+@implementation JSClassDefinitionBuilderTests
 
 - (void)setUp {
     [super setUp];
@@ -37,6 +36,7 @@ using namespace JavaScriptCoreCPP::RAII;
 }
 
 - (void)testJSNativeObject {
+  JSContext js_context = js_context_group.CreateContext();
   NativeObject native_object(js_context);
 }
 

@@ -497,7 +497,10 @@ class JSObject : public JSValue {
 	*/
 	JSValue CallAsFunction(const std::vector<JSString>& arguments) const {
 		std::vector<JSValue> arguments_array;
-		std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [this](const JSString& js_string) { return JSValue(this -> operator JSContextRef(), js_string); });
+		std::transform(arguments.begin(),
+		               arguments.end(),
+		               std::back_inserter(arguments_array),
+		               [this](const JSString& js_string) { return JSValue(js_context_.CreateString(js_string)); });
 		return CallAsFunction(arguments_array);
 	}
 
@@ -579,7 +582,10 @@ class JSObject : public JSValue {
 	*/
 	JSValue CallAsFunction(const std::vector<JSString>& arguments, const JSObject& this_object) const {
 		std::vector<JSValue> arguments_array;
-		std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [this](const JSString& js_string) { return JSValue(this -> operator JSContextRef(), js_string); });
+		std::transform(arguments.begin(),
+		               arguments.end(),
+		               std::back_inserter(arguments_array),
+		               [this](const JSString& js_string) { return js_context_.CreateString(js_string); });
 		return CallAsFunction(arguments_array, this_object);
 	}
 
@@ -701,7 +707,10 @@ class JSObject : public JSValue {
 	*/
 	JSObject CallAsConstructor(const std::vector<JSString>& arguments) const {
 		std::vector<JSValue> arguments_array;
-		std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [this](const JSString& js_string) { return JSValue(this -> operator JSContextRef(), js_string); });
+		std::transform(arguments.begin(),
+		               arguments.end(),
+		               std::back_inserter(arguments_array),
+		               [this](const JSString& js_string) { return js_context_.CreateString(js_string); });
 		return CallAsConstructor(arguments_array);
 	}
 

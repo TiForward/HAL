@@ -11,6 +11,8 @@
 #define _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTVALUEPROPERTYCALLBACK_HPP_
 
 #include "JavaScriptCoreCPP/RAII/JSNativeObjectCallbacks.hpp"
+#include "JavaScriptCoreCPP/RAII/JSPropertyAttribute.hpp"
+#include <functional>
 #include <sstream>
 
 namespace JavaScriptCoreCPP { namespace RAII {

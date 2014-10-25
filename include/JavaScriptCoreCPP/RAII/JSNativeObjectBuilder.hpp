@@ -978,11 +978,6 @@ JSNativeObjectBuilder<T>& JSNativeObjectBuilder<T>::RemoveAllValuePropertyCallba
 	return *this;
 }
 
-
-
-
-
-
 template<typename T>
 JSNativeObjectBuilder<T>& JSNativeObjectBuilder<T>::AddFunctionPropertyCallback(const JSNativeObjectFunctionPropertyCallback<T>& function_property_callback) {
 	static const std::string log_prefix { "MDL: JSNativeObjectBuilder::AddFunctionPropertyCallback:" };
@@ -1085,7 +1080,7 @@ JSNativeObjectBuilder<T>& JSNativeObjectBuilder<T>::RemoveAllFunctionPropertyCal
 }
 
 
-/* JSNativeObjectDefinition */
+/* JSNativeObjectDefinition constructor */
 
 template<typename T>
 JSNativeObjectDefinition<T>::JSNativeObjectDefinition(const JSNativeObjectBuilder<T>& builder)
@@ -1108,6 +1103,9 @@ JSNativeObjectDefinition<T>::JSNativeObjectDefinition(const JSNativeObjectBuilde
 		, has_instance_callback_(builder.has_instance_callback_)
 		, convert_to_type_callback_(builder.convert_to_type_callback_) {
 }
+
+
+/* JSNativeObject constructor */
 
 template<typename T>
 JSNativeObject<T>::JSNativeObject(const JSNativeObjectBuilder<T>& builder)

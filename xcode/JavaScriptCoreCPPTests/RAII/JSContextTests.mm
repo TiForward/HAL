@@ -11,22 +11,16 @@
 
 using namespace JavaScriptCoreCPP::RAII;
 
-JSContext makeJSContext() {
-  JSContext js_context;
-  return js_context;
-}
+static JSContextGroup js_context_group;
 
-JSContext makeJSContext(const JSContextGroup& js_context_group) {
-  JSContext js_context(js_context_group);
-  return js_context;
+JSContext makeJSContext() {
+  return js_context_group.CreateContext();
 }
 
 @interface JSContextTests2 : XCTestCase
 @end
 
-@implementation JSContextTests2 {
-  JSContext js_context;
-}
+@implementation JSContextTests2
 
 - (void)setUp {
   [super setUp];
@@ -39,14 +33,15 @@ JSContext makeJSContext(const JSContextGroup& js_context_group) {
 }
 
 - (void)testJSEvaluateScript {
+  JSContext js_context = js_context_group.CreateContext();
   JSValue js_value = js_context.JSEvaluateScript("'Hello, world.'");
   //std::clog << "MDL: js_value = " << js_value << std::endl;
   XCTAssertEqual("Hello, world.", static_cast<std::string>(js_value));
 }
 
 - (void)testJSContext {
-  JSContext js_context_1;
-  JSContext js_context_2;
+  JSContext js_context_1 = js_context_group.CreateContext();
+  JSContext js_context_2 = js_context_group.CreateContext();
   XCTAssertNotEqual(js_context_1, js_context_2);
   
   // Test copy constructor.
@@ -65,11 +60,9 @@ JSContext makeJSContext(const JSContextGroup& js_context_group) {
   XCTAssertEqual(js_context_1, js_context_6);
   
   // Test creating JSContexts in different groups.
-  JSContextGroup js_context_group;
-  JSContext js_context_7(js_context_group);
-  JSContext js_context_8(js_context_group);
+  JSContext js_context_7 = js_context_group.CreateContext();
+  JSContext js_context_8 = js_context_group.CreateContext();
   XCTAssertNotEqual(js_context_7, js_context_8);
-  XCTAssertEqual(js_context_7.get_context_group(), js_context_8.get_context_group());
   
   // Test copy constructor.
   JSContext js_context_9(js_context_7);
@@ -80,7 +73,7 @@ JSContext makeJSContext(const JSContextGroup& js_context_group) {
   XCTAssertEqual(js_context_7, js_context_10);
   
   // Test move constructor.
-  JSContext js_context_11(makeJSContext(js_context_group));
+  JSContext js_context_11(makeJSContext());
   
   // Test unified assignment operator
   JSContext js_context_12 = js_context_7;

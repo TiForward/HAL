@@ -11,6 +11,8 @@
 
 using namespace JavaScriptCoreCPP::RAII;
 
+static JSContextGroup js_context_group;
+
 namespace UnitTestConstants {
   static const double pi { 3.141592653589793 };
 }
@@ -18,9 +20,7 @@ namespace UnitTestConstants {
 @interface JSValueTests2 : XCTestCase
 @end
 
-@implementation JSValueTests2 {
-  JSContext js_context;
-}
+@implementation JSValueTests2
 
 - (void)setUp {
   [super setUp];
@@ -38,6 +38,7 @@ namespace UnitTestConstants {
 //}
 
 - (void)testJSUndefined {
+  JSContext js_context = js_context_group.CreateContext();
   JSUndefined js_undefined = js_context.CreateUndefined();
   XCTAssertEqual("undefined", static_cast<std::string>(js_undefined));
   XCTAssertTrue(js_undefined.IsUndefined());
@@ -49,6 +50,7 @@ namespace UnitTestConstants {
 }
 
 - (void)testJSNull {
+  JSContext js_context = js_context_group.CreateContext();
   JSNull js_null = js_context.CreateNull();
   XCTAssertEqual("null", static_cast<std::string>(js_null));
   XCTAssertFalse(js_null.IsUndefined());
@@ -60,6 +62,7 @@ namespace UnitTestConstants {
 }
 
 - (void)testJSBoolean {
+  JSContext js_context = js_context_group.CreateContext();
   JSBoolean js_false = js_context.CreateBoolean(false);
   XCTAssertFalse(js_false);
   
@@ -89,6 +92,7 @@ namespace UnitTestConstants {
 }
 
 - (void)testJSNumber {
+  JSContext js_context = js_context_group.CreateContext();
   JSNumber js_double = js_context.CreateNumber(UnitTestConstants::pi);
   XCTAssertEqualWithAccuracy(UnitTestConstants::pi, static_cast<double>(js_double), std::numeric_limits<double>::epsilon());
   
@@ -135,6 +139,7 @@ namespace UnitTestConstants {
 }
 
 - (void)testToJSONString {
+  JSContext js_context = js_context_group.CreateContext();
   JSUndefined js_undefined = js_context.CreateUndefined();
   JSString js_undefined_json = js_undefined.ToJSONString();
   //std::clog << "MDL: js_undefined_json = " << js_undefined_json << std::endl;
@@ -172,6 +177,7 @@ namespace UnitTestConstants {
 }
 
 - (void)testString {
+  JSContext js_context = js_context_group.CreateContext();
   JSValue js_value = js_context.CreateString("hello, world");
   XCTAssertEqual("hello, world", static_cast<std::string>(js_value));
   
