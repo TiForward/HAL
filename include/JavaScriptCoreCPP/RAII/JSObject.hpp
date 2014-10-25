@@ -67,7 +67,7 @@ class JSObject : public JSValue {
 	  @result A JSValue that is this object's prototype.
 	*/
 	JSValue GetPrototype() const {
-		return JSValue(js_context_, JSObjectGetPrototype(js_context_, js_object_ref_));
+		return JSValue(*this, JSObjectGetPrototype(*this, js_object_ref_));
 	}
 
 	/*!
@@ -78,7 +78,7 @@ class JSObject : public JSValue {
 	  @param value A JSValue to set as this object's prototype.
 	*/
 	void SetPrototype(const JSValue& js_value) {
-		JSObjectSetPrototype(js_context_, js_object_ref_, js_value);
+		JSObjectSetPrototype(*this, js_object_ref_, js_value);
 	}
 
 	/*!
@@ -144,7 +144,7 @@ class JSObject : public JSValue {
 	  propertyName, otherwise false.
 	*/
 	bool HasProperty(const JSString& property_name) const {
-		return JSObjectHasProperty(js_context_, js_object_ref_, property_name);
+		return JSObjectHasProperty(*this, js_object_ref_, property_name);
 	}
 
 	/*!
@@ -226,7 +226,7 @@ class JSObject : public JSValue {
 	  false.
 	*/
 	bool IsFunction() const {
-		return JSObjectIsFunction(js_context_, js_object_ref_);
+		return JSObjectIsFunction(*this, js_object_ref_);
 	}
 
 	/*!
@@ -510,7 +510,7 @@ class JSObject : public JSValue {
 	*/
 	JSValue CallAsFunction(const std::vector<JSString>& arguments) const {
 		std::vector<JSValue> arguments_array;
-		std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [this](const JSString& js_string) { return JSValue(js_context_, js_string); });
+		std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [this](const JSString& js_string) { return JSValue(this -> operator JSContextRef(), js_string); });
 		return CallAsFunction(arguments_array);
 	}
 
@@ -592,7 +592,7 @@ class JSObject : public JSValue {
 	*/
 	JSValue CallAsFunction(const std::vector<JSString>& arguments, const JSObject& this_object) const {
 		std::vector<JSValue> arguments_array;
-		std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [this](const JSString& js_string) { return JSValue(js_context_, js_string); });
+		std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [this](const JSString& js_string) { return JSValue(this -> operator JSContextRef(), js_string); });
 		return CallAsFunction(arguments_array, this_object);
 	}
 
@@ -628,7 +628,7 @@ class JSObject : public JSValue {
 	  otherwise false.
 	*/
 	bool IsConstructor() const {
-		return JSObjectIsConstructor(js_context_, js_object_ref_);
+		return JSObjectIsConstructor(*this, js_object_ref_);
 	}
 
 	/*!
@@ -714,7 +714,7 @@ class JSObject : public JSValue {
 	*/
 	JSObject CallAsConstructor(const std::vector<JSString>& arguments) const {
 		std::vector<JSValue> arguments_array;
-		std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [this](const JSString& js_string) { return JSValue(js_context_, js_string); });
+		std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [this](const JSString& js_string) { return JSValue(this -> operator JSContextRef(), js_string); });
 		return CallAsConstructor(arguments_array);
 	}
 
@@ -731,22 +731,26 @@ class JSObject : public JSValue {
 	  chain, otherwise false.
 	*/
 	bool IsObjectOfClass(const JSClass& js_class) {
-		return JSValueIsObjectOfClass(js_context_, js_object_ref_, js_class);
+		return JSValueIsObjectOfClass(*this, js_object_ref_, js_class);
 	}
 
 
 	virtual ~JSObject() {
-		JSValueUnprotect(js_context_, js_object_ref_);
+		JSValueUnprotect(*this, js_object_ref_);
 	}
 	
 	// Copy constructor.
-	JSObject(const JSObject& rhs) : JSValue(rhs), js_context_(rhs.js_context_), js_object_ref_(rhs.js_object_ref_) {
-		JSValueProtect(js_context_, js_object_ref_);
+	JSObject(const JSObject& rhs)
+			: JSValue(rhs)
+			, js_object_ref_(rhs.js_object_ref_) {
+		JSValueProtect(*this, js_object_ref_);
 	}
 	
 	// Move constructor.
-	JSObject(JSObject&& rhs) : JSValue(rhs), js_context_(rhs.js_context_), js_object_ref_(rhs.js_object_ref_) {
-		JSValueProtect(js_context_, js_object_ref_);
+	JSObject(JSObject&& rhs)
+			: JSValue(rhs)
+			, js_object_ref_(rhs.js_object_ref_) {
+		JSValueProtect(*this, js_object_ref_);
 	}
 	
 	// Create a copy of another JSObject by assignment. This is a unified
@@ -765,7 +769,6 @@ class JSObject : public JSValue {
 		
 		// by swapping the members of two classes,
 		// the two classes are effectively swapped
-		swap(first.js_context_   , second.js_context_);
 		swap(first.js_object_ref_, second.js_object_ref_);
 	}
 
@@ -800,7 +803,6 @@ class JSObject : public JSValue {
 	template<typename T>
 	friend class JSNativeObject;
 
-	JSContext   js_context_;
 	JSObjectRef js_object_ref_ { nullptr };
 };
 
