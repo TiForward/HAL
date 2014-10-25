@@ -127,8 +127,8 @@ class JSNativeObjectFunctionPropertyCallback final	{
 
 	// Define a strict weak ordering for two
 	// JSNativeObjectFunctionPropertyCallbacks.
-	template<typename U>
-	friend bool operator<(const JSNativeObjectFunctionPropertyCallback<U>& lhs, const JSNativeObjectFunctionPropertyCallback<U>& rhs);
+	// template<typename U>
+	// friend bool operator<(const JSNativeObjectFunctionPropertyCallback<U>& lhs, const JSNativeObjectFunctionPropertyCallback<U>& rhs);
 
 	JSString                                function_name_;
 	std::string                             function_name_for_js_static_function_;
@@ -223,30 +223,30 @@ bool operator!=(const JSNativeObjectFunctionPropertyCallback<T>& lhs, const JSNa
 	return ! (lhs == rhs);
 }
 
-// Define a strict weak ordering for two JSNativeObjectFunctionPropertyCallbacks.
-template<typename T>
-bool operator<(const JSNativeObjectFunctionPropertyCallback<T>& lhs, const JSNativeObjectFunctionPropertyCallback<T>& rhs) {
-	if (lhs.function_name_for_js_static_function_ < rhs.function_name_for_js_static_function_) {
-		return true;
-	}
+// // Define a strict weak ordering for two JSNativeObjectFunctionPropertyCallbacks.
+// template<typename T>
+// bool operator<(const JSNativeObjectFunctionPropertyCallback<T>& lhs, const JSNativeObjectFunctionPropertyCallback<T>& rhs) {
+// 	if (lhs.function_name_for_js_static_function_ < rhs.function_name_for_js_static_function_) {
+// 		return true;
+// 	}
 	
-	return lhs.attributes_ < rhs.attributes_;
-}
+// 	return lhs.attributes_ < rhs.attributes_;
+// }
 
-template<typename T>
-bool operator>(const JSNativeObjectFunctionPropertyCallback<T>& lhs, const JSNativeObjectFunctionPropertyCallback<T>& rhs) {
-	return rhs < lhs;
-}
+// template<typename T>
+// bool operator>(const JSNativeObjectFunctionPropertyCallback<T>& lhs, const JSNativeObjectFunctionPropertyCallback<T>& rhs) {
+// 	return rhs < lhs;
+// }
 
-template<typename T>
-bool operator<=(const JSNativeObjectFunctionPropertyCallback<T>& lhs, const JSNativeObjectFunctionPropertyCallback<T>& rhs) {
-	return ! (lhs > rhs);
-}
+// template<typename T>
+// bool operator<=(const JSNativeObjectFunctionPropertyCallback<T>& lhs, const JSNativeObjectFunctionPropertyCallback<T>& rhs) {
+// 	return ! (lhs > rhs);
+// }
 
-template<typename T>
-bool operator>=(const JSNativeObjectFunctionPropertyCallback<T>& lhs, const JSNativeObjectFunctionPropertyCallback<T>& rhs) {
-	return ! (lhs < rhs);
-}
+// template<typename T>
+// bool operator>=(const JSNativeObjectFunctionPropertyCallback<T>& lhs, const JSNativeObjectFunctionPropertyCallback<T>& rhs) {
+// 	return ! (lhs < rhs);
+// }
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 

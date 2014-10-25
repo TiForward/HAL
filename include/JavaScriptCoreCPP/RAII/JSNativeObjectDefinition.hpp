@@ -77,8 +77,8 @@ class JSNativeObjectDefinition final	{
 	friend bool operator==(const JSNativeObjectDefinition<U>& lhs, const JSNativeObjectDefinition<U>& rhs);
 
 	// Define a strict weak ordering for two JSNativeObjectDefinitions.
-	template<typename U>
-	friend bool operator<(const JSNativeObjectDefinition<U>& lhs, const JSNativeObjectDefinition<U>& rhs);
+	// template<typename U>
+	// friend bool operator<(const JSNativeObjectDefinition<U>& lhs, const JSNativeObjectDefinition<U>& rhs);
 
 	JSString                                                      class_name_;
 	std::string                                                   class_name_for_js_class_definition_;
@@ -231,41 +231,41 @@ bool operator!=(const JSNativeObjectDefinition<T>& lhs, const JSNativeObjectDefi
 }
 
 // Define a strict weak ordering for two JSNativeObjectDefinitions.
-template<typename T>
-bool operator<(const JSNativeObjectDefinition<T>& lhs, const JSNativeObjectDefinition<T>& rhs) {
-	if (lhs.class_name_for_js_class_definition_ < rhs.class_name_for_js_class_definition_) {
-		return true;
-	}
+// template<typename T>
+// bool operator<(const JSNativeObjectDefinition<T>& lhs, const JSNativeObjectDefinition<T>& rhs) {
+// 	if (lhs.class_name_for_js_class_definition_ < rhs.class_name_for_js_class_definition_) {
+// 		return true;
+// 	}
 
-	if (lhs.attributes_ < rhs.attributes_) {
-		return true;
-	}
+// 	if (lhs.attributes_ < rhs.attributes_) {
+// 		return true;
+// 	}
 
-	if (lhs.parent_class_ptr_ < rhs.parent_class_ptr_) {
-		return true;
-	}
+// 	if (lhs.parent_class_ptr_ < rhs.parent_class_ptr_) {
+// 		return true;
+// 	}
 
-	if (lhs.static_values_ < rhs.static_values_) {
-		return true;
-	}
+// 	if (lhs.static_values_ < rhs.static_values_) {
+// 		return true;
+// 	}
 
-	return lhs.static_functions_ < rhs.static_functions_;
-}
+// 	return lhs.static_functions_ < rhs.static_functions_;
+// }
 
-template<typename T>
-bool operator>(const JSNativeObjectDefinition<T>& lhs, const JSNativeObjectDefinition<T>& rhs) {
-	return rhs < lhs;
-}
+// template<typename T>
+// bool operator>(const JSNativeObjectDefinition<T>& lhs, const JSNativeObjectDefinition<T>& rhs) {
+// 	return rhs < lhs;
+// }
 
-template<typename T>
-bool operator<=(const JSNativeObjectDefinition<T>& lhs, const JSNativeObjectDefinition<T>& rhs) {
-	return !(lhs > rhs);
-}
+// template<typename T>
+// bool operator<=(const JSNativeObjectDefinition<T>& lhs, const JSNativeObjectDefinition<T>& rhs) {
+// 	return !(lhs > rhs);
+// }
 
-template<typename T>
-bool operator>=(const JSNativeObjectDefinition<T>& lhs, const JSNativeObjectDefinition<T>& rhs) {
-	return !(lhs < rhs);
-}
+// template<typename T>
+// bool operator>=(const JSNativeObjectDefinition<T>& lhs, const JSNativeObjectDefinition<T>& rhs) {
+// 	return !(lhs < rhs);
+// }
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 
