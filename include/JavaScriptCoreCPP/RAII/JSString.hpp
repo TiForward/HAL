@@ -201,8 +201,8 @@ namespace std {
 
 template<>
 struct hash<JavaScriptCoreCPP::RAII::JSString> {
-	typedef JavaScriptCoreCPP::RAII::JSString argument_type;
-	typedef std::size_t                       result_type;
+	using argument_type = JavaScriptCoreCPP::RAII::JSString;
+	using result_type   = std::size_t;
 	const std::hash<std::string> string_hash = std::hash<std::string>();
 	
 	result_type operator()(const argument_type& js_string) const {

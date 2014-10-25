@@ -45,8 +45,8 @@ namespace std {
 
 template<>
 struct hash<JavaScriptCoreCPP::RAII::JSPropertyAttribute> {
-	typedef JavaScriptCoreCPP::RAII::JSPropertyAttribute argument_type;
-	typedef std::size_t                                  result_type;
+	using argument_type = JavaScriptCoreCPP::RAII::JSPropertyAttribute;
+	using result_type   = std::size_t;
 
 	using property_attribute_underlying_type = std::underlying_type<JavaScriptCoreCPP::RAII::JSPropertyAttribute>::type;
 	const std::hash<property_attribute_underlying_type> property_attribute_hash = std::hash<property_attribute_underlying_type>();
