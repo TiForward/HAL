@@ -11,8 +11,6 @@
 
 using namespace JavaScriptCoreCPP::RAII;
 
-static JSContextGroup js_context_group;
-
 namespace UnitTestConstants {
   static const double pi { 3.141592653589793 };
 }
@@ -20,7 +18,9 @@ namespace UnitTestConstants {
 @interface JSValueTests2 : XCTestCase
 @end
 
-@implementation JSValueTests2
+@implementation JSValueTests2 {
+  JSContextGroup js_context_group;
+}
 
 - (void)setUp {
   [super setUp];
@@ -31,11 +31,6 @@ namespace UnitTestConstants {
   // Put teardown code here. This method is called after the invocation of each test method in the class.
   [super tearDown];
 }
-
-//- (void)testJSValue {
-//  JSValue js_value(js_context);
-//  XCTAssertTrue(js_value.IsUndefined());
-//}
 
 - (void)testJSUndefined {
   JSContext js_context = js_context_group.CreateContext();
@@ -193,6 +188,51 @@ namespace UnitTestConstants {
   
 //  auto result_ptr  = context_ptr . evaluateScript("\"hello, JavaScript\"");
 //  XCTAssertEqual("hello, JavaScript", static_cast<std::string>(*result_ptr));
+}
+
+- (void)testCopyingValuesBetweenContexts {
+  JSContext js_context_1 = js_context_group.CreateContext();
+  JSValue js_value_1 = js_context_1.CreateString("foo");
+  XCTAssertEqual("foo", static_cast<std::string>(js_value_1));
+  
+  JSContext js_context_2 = js_context_group.CreateContext();
+  JSValue js_value_2 = js_context_1.CreateString("bar");
+  XCTAssertEqual("bar", static_cast<std::string>(js_value_2));
+  
+  XCTAssertNotEqual(js_context_1, js_context_2);
+  XCTAssertEqual(JSContextGroup(js_context_1), JSContextGroup(js_context_2));
+  js_value_2 = js_value_1;
+  XCTAssertEqual("foo", static_cast<std::string>(js_value_2));
+  
+  // Show that copying JSValues between different JSContextGroups throws a
+  // std::runtime_error exception.
+  JSContextGroup js_context_group_2;
+
+  JSContext js_context_3 = js_context_group_2.CreateContext();
+  JSValue js_value_3 = js_context_3.CreateString("baz");
+  XCTAssertEqual("baz", static_cast<std::string>(js_value_3));
+
+  JSContext js_context_4 = js_context_group_2.CreateContext();
+  JSValue js_value_4 = js_context_4.CreateString("foobar");
+  XCTAssertEqual("foobar", static_cast<std::string>(js_value_4));
+
+  XCTAssertNotEqual(js_context_3, js_context_4);
+  XCTAssertEqual(JSContextGroup(js_context_3), JSContextGroup(js_context_4));
+  
+  XCTAssertNotEqual(JSContextGroup(js_context_1), JSContextGroup(js_context_3));
+  XCTAssertNotEqual(JSContextGroup(js_context_1), JSContextGroup(js_context_4));
+
+  XCTAssertNotEqual(JSContextGroup(js_context_2), JSContextGroup(js_context_3));
+  XCTAssertNotEqual(JSContextGroup(js_context_2), JSContextGroup(js_context_4));
+  
+  try {
+    js_value_3 = js_value_1;
+    XCTFail("Copying JSValues between different JSContextGroups did not throw a std::runtime_error exception");
+  } catch (const std::runtime_error& exception) {
+    XCTAssert(YES, @"Caught expected std::runtime_error exception.");
+  } catch (...) {
+    XCTFail("Caught unexpected unknown exception, but we expected a std::runtime_error exception.");
+  }
 }
 
 // As of 2014.09.20 Travis CI only supports Xcode 5.1 which lacks support for

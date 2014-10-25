@@ -13,12 +13,12 @@
 
 using namespace JavaScriptCoreCPP::RAII;
 
-static JSContextGroup js_context_group;
-
 @interface JSClassDefinitionBuilderTests : XCTestCase
 @end
 
-@implementation JSClassDefinitionBuilderTests
+@implementation JSClassDefinitionBuilderTests {
+  JSContextGroup js_context_group;
+}
 
 - (void)setUp {
     [super setUp];

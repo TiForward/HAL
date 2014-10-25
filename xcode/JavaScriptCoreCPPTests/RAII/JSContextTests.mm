@@ -11,16 +11,12 @@
 
 using namespace JavaScriptCoreCPP::RAII;
 
-static JSContextGroup js_context_group;
-
-JSContext makeJSContext() {
-  return js_context_group.CreateContext();
-}
-
 @interface JSContextTests2 : XCTestCase
 @end
 
-@implementation JSContextTests2
+@implementation JSContextTests2 {
+  JSContextGroup js_context_group;
+}
 
 - (void)setUp {
   [super setUp];
@@ -53,7 +49,7 @@ JSContext makeJSContext() {
   XCTAssertEqual(js_context_1, js_context_4);
   
   // Test move constructor.
-  JSContext js_context_5(makeJSContext());
+  JSContext js_context_5(js_context_group.CreateContext());
   
   // Test unified assignment operator
   JSContext js_context_6 = js_context_1;
@@ -73,7 +69,7 @@ JSContext makeJSContext() {
   XCTAssertEqual(js_context_7, js_context_10);
   
   // Test move constructor.
-  JSContext js_context_11(makeJSContext());
+  JSContext js_context_11(js_context_group.CreateContext());
   
   // Test unified assignment operator
   JSContext js_context_12 = js_context_7;

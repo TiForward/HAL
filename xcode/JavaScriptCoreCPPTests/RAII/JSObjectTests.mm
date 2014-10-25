@@ -12,8 +12,6 @@
 
 using namespace JavaScriptCoreCPP::RAII;
 
-static JSContextGroup js_context_group;
-
 namespace UnitTestConstants {
   static const double pi { 3.141592653589793 };
 }
@@ -21,7 +19,9 @@ namespace UnitTestConstants {
 @interface JSObjectTests2 : XCTestCase
 @end
 
-@implementation JSObjectTests2
+@implementation JSObjectTests2 {
+  JSContextGroup js_context_group;
+}
 
 - (void)setUp {
     [super setUp];
