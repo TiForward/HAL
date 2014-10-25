@@ -29,6 +29,9 @@
 #include "JavaScriptCoreCPP/RAII/JSClass.hpp"
 #include "JavaScriptCoreCPP/RAII/JSPropertyNameAccumulator.hpp"
 
+#include "JavaScriptCoreCPP/RAII/JSNativeObjectAttribute.hpp"
+#include "JavaScriptCoreCPP/RAII/JSNativeObjectCallbacks.hpp"
+
 #ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
 #include "JavaScriptCoreCPP/RAII/detail/JSPerformanceCounter.hpp"
 #include "JavaScriptCoreCPP/RAII/detail/JSPerformanceCounterPrinter.hpp"

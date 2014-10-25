@@ -30,9 +30,32 @@ using namespace JavaScriptCoreCPP::RAII;
     [super tearDown];
 }
 
-- (void)testJSClassBuilder {
-  using InitializeCallback = std::function<void(NativeObject&)>;
-  InitializeCallback foo = &NativeObject::Initialize;
+- (void)testJSPropertyAttribute {
+  std::unordered_set<JSNativeObjectAttribute> attributes;
+  XCTAssertEqual(0, attributes.count(JSNativeObjectAttribute::None));
+  XCTAssertEqual(0, attributes.count(JSNativeObjectAttribute::NoAutomaticPrototype));
+  
+  const auto insert_result = attributes.insert(JSNativeObjectAttribute::NoAutomaticPrototype);
+  XCTAssertTrue(insert_result.second);
+  XCTAssertEqual(1, attributes.count(JSNativeObjectAttribute::NoAutomaticPrototype));
+  XCTAssertEqual(*insert_result.first, JSNativeObjectAttribute::NoAutomaticPrototype);
+  
+  XCTAssertEqual(1, attributes.size());
+}
+
+- (void)testInitializeCallback {
+  InitializeCallback<NativeObject>             InitializeCallback             = &NativeObject::Initialize;
+  FinalizeCallback<NativeObject>               FinalizeCallback               = &NativeObject::Finalize;
+  HasPropertyCallback<NativeObject>            HasPropertyCallback            = &NativeObject::HasProperty;
+  GetPropertyCallback<NativeObject>            GetPropertyCallback            = &NativeObject::GetProperty;
+  SetPropertyCallback<NativeObject>            SetPropertyCallback            = &NativeObject::SetProperty;
+  DeletePropertyCallback<NativeObject>         DeletePropertyCallback         = &NativeObject::DeleteProperty;
+  GetPropertyNamesCallback<NativeObject>       GetPropertyNamesCallback       = &NativeObject::GetPropertyNames;
+  CallAsFunctionCallback<NativeObject>         CallAsFunctionCallback         = &NativeObject::CallAsFunction;
+  CallAsFunctionWithThisCallback<NativeObject> CallAsFunctionWithThisCallback = &NativeObject::CallAsFunctionWithThis;
+  CallAsConstructorCallback<NativeObject>      CallAsConstructorCallback      = &NativeObject::CallAsConstructor;
+  HasInstanceCallback<NativeObject>            HasInstanceCallback            = &NativeObject::HasInstance;
+  ConvertToTypeCallback<NativeObject>          ConvertToTypeCallback          = &NativeObject::ConvertToType;
 }
 
 - (void)testJSNativeObject {

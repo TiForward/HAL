@@ -34,7 +34,7 @@ class NativeObject final {
 		std::clog << log_prefix << std::endl;
 	}
 
-	bool HasProperty(const JSString& property_name) {
+	bool HasProperty(const JSString& property_name) const {
 		static const std::string log_prefix { "MDL: NativeObject::HasProperty: " };
 		const bool has_property = properties_.count(property_name) > 1;
 		std::clog << log_prefix
@@ -46,7 +46,7 @@ class NativeObject final {
 		return has_property;
 	}
 
-	JSValue GetProperty(const JSString& property_name) {
+	JSValue GetProperty(const JSString& property_name) const {
 		static const std::string log_prefix { "MDL: NativeObject::GetProperty: " };
 		const auto position = properties_.find(property_name);
 		JSValue result = position != properties_.end() ? position -> second : js_context_.CreateUndefined();
@@ -117,7 +117,7 @@ class NativeObject final {
 		return previous_position != properties_.end();
 	}
 
-	void GetPropertyNames(const JSPropertyNameAccumulator& accumulator) {
+	void GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const {
 		static const std::string log_prefix { "MDL: NativeObject::GetPropertyNames: " };
 
 		for (const auto& property : properties_) {
@@ -131,7 +131,20 @@ class NativeObject final {
 		          << std::endl;
 	}
 
-	JSValue CallAsFunction(const std::vector<JSValue>& arguments, const JSObject& this_object) {
+	JSValue CallAsFunction(const std::vector<JSValue>& arguments) {
+		static const std::string log_prefix { "MDL: NativeObject::CallAsFunction: " };
+
+		std::clog
+				<< log_prefix
+				<< "called with "
+				<< arguments.size()
+				<< " arguments."
+				<< std::endl;
+
+		return js_context_.CreateUndefined();
+	}
+
+	JSValue CallAsFunctionWithThis(const std::vector<JSValue>& arguments, const JSObject& this_object) {
 		static const std::string log_prefix { "MDL: NativeObject::CallAsFunction: " };
 
 		std::clog
@@ -157,7 +170,7 @@ class NativeObject final {
 		return js_context_.CreateObject();
 	}
 
-	bool HasInstance(const JSValue& possible_instance) {
+	bool HasInstance(const JSValue& possible_instance) const {
 		static const std::string log_prefix { "MDL: NativeObject::HasInstance: " };
 
 		std::clog << log_prefix << possible_instance;
@@ -189,7 +202,7 @@ class NativeObject final {
 		return has_instance;
 	}
 	
-	JSValue ConvertToType(const JSValue::Type& js_value_type) {
+	JSValue ConvertToType(const JSValue::Type& js_value_type) const {
 		static const std::string log_prefix { "MDL: NativeObject::ConvertToType: " };
 
 		std::clog << log_prefix

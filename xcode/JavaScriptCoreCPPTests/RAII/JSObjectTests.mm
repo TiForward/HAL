@@ -7,6 +7,7 @@
 //
 
 #include "JavaScriptCoreCPP/RAII/RAII.hpp"
+#include <unordered_set>
 #include <limits>
 #import <XCTest/XCTest.h>
 
@@ -31,6 +32,21 @@ namespace UnitTestConstants {
 - (void)tearDown {
     // Put teardown code here. This method is called after the invocation of each test method in the class.
     [super tearDown];
+}
+
+- (void)testJSPropertyAttribute {
+  std::unordered_set<JSPropertyAttribute> attributes;
+  XCTAssertEqual(0, attributes.count(JSPropertyAttribute::None));
+  XCTAssertEqual(0, attributes.count(JSPropertyAttribute::ReadOnly));
+  XCTAssertEqual(0, attributes.count(JSPropertyAttribute::DontEnum));
+  XCTAssertEqual(0, attributes.count(JSPropertyAttribute::DontDelete));
+  
+  const auto insert_result = attributes.insert(JSPropertyAttribute::DontDelete);
+  XCTAssertTrue(insert_result.second);
+  XCTAssertEqual(1, attributes.count(JSPropertyAttribute::DontDelete));
+  XCTAssertEqual(*insert_result.first, JSPropertyAttribute::DontDelete);
+
+  XCTAssertEqual(1, attributes.size());
 }
 
 - (void)testJSObject {
