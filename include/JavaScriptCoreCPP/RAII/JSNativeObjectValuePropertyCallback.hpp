@@ -61,7 +61,7 @@ class JSNativeObjectValuePropertyCallback final	{
     4. If both get_property_callback and set_property_callback are
 	  missing.
 	*/
-	JSNativeObjectValuePropertyCallback(const JSString& property_name, GetPropertyCallback<T> get_property_callback, SetPropertyCallback<T> set_property_callback, const std::set<JSPropertyAttribute> attributes = std::set<JSPropertyAttribute>());
+	JSNativeObjectValuePropertyCallback(const JSString& property_name, GetPropertyCallback<T> get_property_callback, SetPropertyCallback<T> set_property_callback, const std::unordered_set<JSPropertyAttribute> attributes = std::unordered_set<JSPropertyAttribute>());
 
 	JSString get_property_name() const {
 		return property_name_;
@@ -75,7 +75,7 @@ class JSNativeObjectValuePropertyCallback final	{
 		return set_property_callback_;
 	}
 
-	std::set<JSPropertyAttribute> get_attributes() const {
+	std::unordered_set<JSPropertyAttribute> get_attributes() const {
 		return attributes_;
 	}
 
@@ -122,15 +122,15 @@ private:
 	template<typename U>
 	friend bool operator<(const JSNativeObjectValuePropertyCallback<U>& lhs, const JSNativeObjectValuePropertyCallback<U>& rhs);
 
-	JSString                      property_name_;
-	std::string                   property_name_for_js_static_value_;
-	GetPropertyCallback<T>        get_property_callback_ { nullptr };
-	SetPropertyCallback<T>        set_property_callback_ { nullptr };
-	std::set<JSPropertyAttribute> attributes_;
+	JSString                                property_name_;
+	std::string                             property_name_for_js_static_value_;
+	GetPropertyCallback<T>                  get_property_callback_ { nullptr };
+	SetPropertyCallback<T>                  set_property_callback_ { nullptr };
+	std::unordered_set<JSPropertyAttribute> attributes_;
 };
 
 template<typename T>
-JSNativeObjectValuePropertyCallback<T>::JSNativeObjectValuePropertyCallback(const JSString& property_name, GetPropertyCallback<T> get_property_callback, SetPropertyCallback<T> set_property_callback, const std::set<JSPropertyAttribute> attributes)
+JSNativeObjectValuePropertyCallback<T>::JSNativeObjectValuePropertyCallback(const JSString& property_name, GetPropertyCallback<T> get_property_callback, SetPropertyCallback<T> set_property_callback, const std::unordered_set<JSPropertyAttribute> attributes)
 		: property_name_(property_name)
 		, property_name_for_js_static_value_(property_name)
 		, get_property_callback_(get_property_callback)

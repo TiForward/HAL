@@ -15,7 +15,7 @@
 #include "JavaScriptCoreCPP/RAII/JSNativeObjectDefinition.hpp"
 #include "JavaScriptCoreCPP/RAII/JSContext.hpp"
 #include "JavaScriptCoreCPP/RAII/JSClass.hpp"
-#include <set>
+#include <unordered_set>
 #include <memory>
 #include <JavaScriptCore/JavaScript.h>
 
@@ -128,7 +128,7 @@ class JSNativeObjectBuilder final {
 	  @result The JSNativeObjectAttributes that describe the
 	  characteristics of the JSNativeObject created by this builder.
 	*/
-	std::set<JSNativeObjectAttributes> get_attributes() const {
+	std::unordered_set<JSNativeObjectAttributes> get_attributes() const {
 		return attributes_;
 	}
 
@@ -140,7 +140,7 @@ class JSNativeObjectBuilder final {
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeObjectBuilder& set_attributes(const std::set<JSNativeObjectAttributes>& attributes) {
+	JSNativeObjectBuilder& set_attributes(const std::unordered_set<JSNativeObjectAttributes>& attributes) {
 		attributes_ = attributes;
 		return *this;
 	}
@@ -181,7 +181,7 @@ class JSNativeObjectBuilder final {
 	  @result The current set of of JSNativeObjectValuePropertyCallbacks
 	  that describe the JSNativeObject's value properties.
 	*/
-	std::set<JSNativeObjectValuePropertyCallback<T>> get_value_property_callbacks() const {
+	std::unordered_set<JSNativeObjectValuePropertyCallback<T>> get_value_property_callbacks() const {
 		return value_property_callbacks_;
 	}
 	
@@ -194,7 +194,7 @@ class JSNativeObjectBuilder final {
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeObjectBuilder& set_value_property_callbacks(const std::set<JSNativeObjectValuePropertyCallback<T>>& value_property_callbacks) {
+	JSNativeObjectBuilder& set_value_property_callbacks(const std::unordered_set<JSNativeObjectValuePropertyCallback<T>>& value_property_callbacks) {
 		value_property_callbacks_ = value_property_callbacks;
 		return *this;
 	}
@@ -210,7 +210,7 @@ class JSNativeObjectBuilder final {
 	  JSNativeObjectFunctionPropertyCallbacks that describe the
 	  JSNativeObject's function properties.
 	*/
-	std::set<JSNativeObjectFunctionPropertyCallback<T>> get_function_property_callbacks() const {
+	std::unordered_set<JSNativeObjectFunctionPropertyCallback<T>> get_function_property_callbacks() const {
 		return function_property_callbacks_;
 	}
 	
@@ -222,7 +222,7 @@ class JSNativeObjectBuilder final {
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeObjectBuilder& set_function_property_callbacks(const std::set<JSNativeObjectFunctionPropertyCallback<T>>& function_property_callbacks) {
+	JSNativeObjectBuilder& set_function_property_callbacks(const std::unordered_set<JSNativeObjectFunctionPropertyCallback<T>>& function_property_callbacks) {
 		function_property_callbacks_ = function_property_callbacks;
 		return *this;
 	}
@@ -814,23 +814,23 @@ class JSNativeObjectBuilder final {
 	JSContext js_context_;
 	
 	// Optional parameters - initialized to default values
-	JSString                                         class_name_;
-	std::set<JSNativeObjectAttributes>               attributes_;
-	std::shared_ptr<JSNativeObject>                  parent_ptr_                          { nullptr };
-	std::set<JSNativeObjectValuePropertyCallback>    value_property_callbacks_;
-	std::set<JSNativeObjectFunctionPropertyCallback> function_property_callbacks_;
-	InitializeCallback                               initialize_callback_                 { nullptr };
-	FinalizeCallback<T>                              finalize_callback_                   { nullptr };
-	HasPropertyCallback<T>                           has_property_callback_               { nullptr };
-	GetPropertyCallback<T>                           get_property_callback_               { nullptr };
-	SetPropertyCallback<T>                           set_property_callback_               { nullptr };
-	DeletePropertyCallback<T>                        delete_property_callback_            { nullptr };
-	GetPropertyNamesCallback<T>                      get_property_names_callback_         { nullptr };
-	CallAsFunctionCallback<T>                        call_as_function_callback_           { nullptr };
-	CallAsConstructorCallback<T>                     call_as_constructor_callback_        { nullptr };
-	CallAsFunctionWithThisCallback<T>                call_as_function_with_this_callback_ { nullptr };
-	HasInstanceCallback<T>                           has_instance_callback_               { nullptr };
-	ConvertToTypeCallback<T>                         convert_to_type_callback_            { nullptr };
+	JSString                                                   class_name_;
+	std::unordered_set<JSNativeObjectAttributes>               attributes_;
+	std::shared_ptr<JSNativeObject>                            parent_ptr_                          { nullptr };
+	std::unordered_set<JSNativeObjectValuePropertyCallback>    value_property_callbacks_;
+	std::unordered_set<JSNativeObjectFunctionPropertyCallback> function_property_callbacks_;
+	InitializeCallback                                         initialize_callback_                 { nullptr };
+	FinalizeCallback<T>                                        finalize_callback_                   { nullptr };
+	HasPropertyCallback<T>                                     has_property_callback_               { nullptr };
+	GetPropertyCallback<T>                                     get_property_callback_               { nullptr };
+	SetPropertyCallback<T>                                     set_property_callback_               { nullptr };
+	DeletePropertyCallback<T>                                  delete_property_callback_            { nullptr };
+	GetPropertyNamesCallback<T>                                get_property_names_callback_         { nullptr };
+	CallAsFunctionCallback<T>                                  call_as_function_callback_           { nullptr };
+	CallAsConstructorCallback<T>                               call_as_constructor_callback_        { nullptr };
+	CallAsFunctionWithThisCallback<T>                          call_as_function_with_this_callback_ { nullptr };
+	HasInstanceCallback<T>                                     has_instance_callback_               { nullptr };
+	ConvertToTypeCallback<T>                                   convert_to_type_callback_            { nullptr };
 };
 
 template<typename T>

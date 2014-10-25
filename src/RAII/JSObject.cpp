@@ -86,7 +86,7 @@ JSValue JSObject::GetPropertyAtIndex(unsigned property_index) const {
 	return js_value;
 }
 
-void JSObject::SetProperty(const JSString& property_name, const JSValue& property_value, const std::set<JSPropertyAttribute> attributes) {
+void JSObject::SetProperty(const JSString& property_name, const JSValue& property_value, const std::unordered_set<JSPropertyAttribute> attributes) {
 	using property_attribute_underlying_type = std::underlying_type<JSPropertyAttribute>::type;
 	std::bitset<4> property_attributes;
 	for (auto property_attribute : attributes) {

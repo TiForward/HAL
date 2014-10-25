@@ -67,7 +67,7 @@ class JSNativeObjectFunctionPropertyCallback final	{
 	  as a function either directly or when it is a property of another
 	  JavaScript object.
 	*/
-	JSNativeObjectFunctionPropertyCallback(const JSString& function_name, CallAsFunctionCallback<T> call_as_function_callback, CallAsFunctionWithThisCallback<T> call_as_function_with_this_callback, const std::set<JSPropertyAttribute> attributes = std::set<JSPropertyAttribute>());
+	JSNativeObjectFunctionPropertyCallback(const JSString& function_name, CallAsFunctionCallback<T> call_as_function_callback, CallAsFunctionWithThisCallback<T> call_as_function_with_this_callback, const std::unordered_set<JSPropertyAttribute> attributes = std::unordered_set<JSPropertyAttribute>());
 	
 
 	JSString get_function_name() const {
@@ -82,7 +82,7 @@ class JSNativeObjectFunctionPropertyCallback final	{
 		return call_as_function_with_this_callback_;
 	}
 
-	std::set<JSPropertyAttribute> get_attributes() const {
+	std::unordered_set<JSPropertyAttribute> get_attributes() const {
 		return attributes_;
 	}
 
@@ -130,15 +130,15 @@ class JSNativeObjectFunctionPropertyCallback final	{
 	template<typename U>
 	friend bool operator<(const JSNativeObjectFunctionPropertyCallback<U>& lhs, const JSNativeObjectFunctionPropertyCallback<U>& rhs);
 
-	JSString                          function_name_;
-	std::string                       function_name_for_js_static_function_;
-	CallAsFunctionCallback<T>         call_as_function_callback_           { nullptr };
-	CallAsFunctionWithThisCallback<T> call_as_function_with_this_callback_ { nullptr };
-	std::set<JSPropertyAttribute>     attributes_;
+	JSString                                function_name_;
+	std::string                             function_name_for_js_static_function_;
+	CallAsFunctionCallback<T>               call_as_function_callback_           { nullptr };
+	CallAsFunctionWithThisCallback<T>       call_as_function_with_this_callback_ { nullptr };
+	std::unordered_set<JSPropertyAttribute> attributes_;
 };
 
 template<typename T>
-JSNativeObjectFunctionPropertyCallback<T>::JSNativeObjectFunctionPropertyCallback(const JSString& function_name, CallAsFunctionCallback<T> call_as_function_callback, CallAsFunctionWithThisCallback<T> call_as_function_with_this_callback, const std::set<JSPropertyAttribute> attributes)
+JSNativeObjectFunctionPropertyCallback<T>::JSNativeObjectFunctionPropertyCallback(const JSString& function_name, CallAsFunctionCallback<T> call_as_function_callback, CallAsFunctionWithThisCallback<T> call_as_function_with_this_callback, const std::unordered_set<JSPropertyAttribute> attributes)
 		: function_name_(function_name)
 		, function_name_for_js_static_function_(function_name)
 		, call_as_function_callback_(call_as_function_callback)

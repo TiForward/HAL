@@ -15,12 +15,13 @@
 #include "JavaScriptCoreCPP/RAII/JSString.hpp"
 #include <vector>
 #include <unordered_map>
-#include <set>
+#include <unordered_set>
 #include <algorithm>
 
 namespace JavaScriptCoreCPP { namespace detail {
 class JSPropertyNameArray;
 }}
+
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
@@ -37,6 +38,26 @@ enum class JSPropertyAttribute : ::JSPropertyAttributes {
 	DontEnum,  // kJSPropertyAttributeDontEnum,
 	DontDelete // kJSPropertyAttributeDontDelete
 };
+
+}} // namespace JavaScriptCoreCPP { namespace RAII {
+
+namespace std {
+
+template<>
+struct hash<JavaScriptCoreCPP::RAII::JSPropertyAttribute> {
+	typedef JavaScriptCoreCPP::RAII::JSPropertyAttribute argument_type;
+	typedef std::size_t                                  result_type;
+
+	using property_attribute_underlying_type = std::underlying_type<JavaScriptCoreCPP::RAII::JSPropertyAttribute>::type;
+	const std::hash<property_attribute_underlying_type> property_attribute_hash = std::hash<property_attribute_underlying_type>();
+	
+	result_type operator()(const argument_type& property_attribute) const {
+		return property_attribute_hash(static_cast<property_attribute_underlying_type>(property_attribute));
+	}
+};
+}  // namespace std {
+
+namespace JavaScriptCoreCPP { namespace RAII {
 
 class JSPropertyNameAccumulator;
 class JSClass;
@@ -187,7 +208,7 @@ class JSObject : public JSValue {
 	  @param attributes An optional set of JSPropertyAttributes that
 	  describe the characteristics of this property.
 	*/
-	void SetProperty(const JSString& property_name, const JSValue& property_value, const std::set<JSPropertyAttribute> attributes = std::set<JSPropertyAttribute>());
+	void SetProperty(const JSString& property_name, const JSValue& property_value, const std::unordered_set<JSPropertyAttribute> attributes = std::unordered_set<JSPropertyAttribute>());
 	
 	/*!
 	  @method
