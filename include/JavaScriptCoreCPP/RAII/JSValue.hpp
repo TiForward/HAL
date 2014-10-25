@@ -318,7 +318,7 @@ public:
 	  
 	  // Values can only be copied between contexts within the same
 	  // context group.
-		if (JSContextGroup(js_context_) != JSContextGroup(rhs.js_context_)) {
+		if (js_context_.js_context_group_ != rhs.js_context_.js_context_group_) {
 		  static const std::string log_prefix { "MDL: JSValue& JSValue::operator=(JSValue rhs): " };
 		  const std::string message = "JSValues must belong to JSContexts within the same JSContextGroup to be shared and exchanged.";
 		  std::clog << log_prefix << " [ERROR] " << message << std::endl;
@@ -347,13 +347,21 @@ public:
  private:
 
 	// For interoperability with the JavaScriptCore C API.
-	explicit JSValue(JSContextRef js_context_ref, JSValueRef js_value_ref)
-			: js_context_(JSContextGetGlobalContext(js_context_ref))
+	explicit JSValue(const JSContext& js_context, JSValueRef js_value_ref)
+			: js_context_(js_context)
 			, js_value_ref_(js_value_ref)  {
-		assert(js_context_ref);
 		assert(js_value_ref_);
 		JSValueProtect(js_context_, js_value_ref_);
 	}
+
+	// // For interoperability with the JavaScriptCore C API.
+	// explicit JSValue(JSContextRef js_context_ref, JSValueRef js_value_ref)
+	// 		: js_context_(JSContextGetGlobalContext(js_context_ref))
+	// 		, js_value_ref_(js_value_ref)  {
+	// 	assert(js_context_ref);
+	// 	assert(js_value_ref_);
+	// 	JSValueProtect(js_context_, js_value_ref_);
+	// }
 
   // For interoperability with the JavaScriptCore C API.
 	operator JSContextRef() const {

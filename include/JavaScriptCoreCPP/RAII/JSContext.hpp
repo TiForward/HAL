@@ -439,10 +439,22 @@ class JSContext final	{
 	  @abstract Return the global object of this JavaScript execution
 	  context.
 	  
-	  @result the global object of this JavaScript execution context.
+	  @result The global object of this JavaScript execution context.
 	*/
 	JSObject get_global_object() const;
 	
+	/*!
+	  @method
+	  
+	  @abstract Return the context group of this JavaScript execution
+	  context.
+	  
+	  @result The context group of this JavaScript execution context.
+	*/
+	JSContextGroup get_context_group() const {
+		return js_context_group_;
+	}
+
 #ifdef JAVASCRIPTCORECPP_RAII_JSCONTEXT_ENABLE_CONTEXT_ID
 	/*!
 	  @method
@@ -462,11 +474,16 @@ class JSContext final	{
 	}
 	
 	// Copy constructor.
-	JSContext(const JSContext& rhs) : JSContext(rhs.operator JSGlobalContextRef()) {
+	JSContext(const JSContext& rhs)
+			: js_context_group_(rhs.js_context_group_)
+			, js_context_ref_(rhs.js_context_ref_) {
+		JSGlobalContextRetain(*this);
 	}
 	
   // Move constructor.
-	JSContext(JSContext&& rhs) : js_context_ref_(rhs.js_context_ref_) {
+	JSContext(JSContext&& rhs)
+			: js_context_group_(rhs.js_context_group_)
+			, js_context_ref_(rhs.js_context_ref_) {
 		JSGlobalContextRetain(*this);
 	}
 	
@@ -485,27 +502,30 @@ class JSContext final	{
     
     // by swapping the members of two classes,
     // the two classes are effectively swapped
-    swap(first.js_context_ref_, second.js_context_ref_);
+    swap(first.js_context_group_, second.js_context_group_);
+    swap(first.js_context_ref_  , second.js_context_ref_);
   }
 
 private:
   
   // Only a JSContextGroup can create a JSContext.
   explicit JSContext(const JSContextGroup& js_context_group)
-		  : JSContext(JSGlobalContextCreateInGroup(js_context_group, nullptr)) {
+		  : js_context_group_(js_context_group)
+		  , js_context_ref_(JSGlobalContextCreateInGroup(js_context_group, nullptr)) {
   }
   
   // Only a JSContextGroup can create a JSContext.
   explicit JSContext(const JSContextGroup& js_context_group, JSClass global_object_class)
-		  : JSContext(JSGlobalContextCreateInGroup(js_context_group, global_object_class)) {
+		  : js_context_group_(js_context_group)
+		  , js_context_ref_(JSGlobalContextCreateInGroup(js_context_group, global_object_class)) {
   }
   
   // For interoperability with the JavaScriptCore C API.
-  explicit JSContext(JSGlobalContextRef js_global_context_ref)
-		  : js_context_ref_(js_global_context_ref) {
-	  assert(js_context_ref_);
-	  JSGlobalContextRetain(js_global_context_ref);
-  }
+  // explicit JSContext(JSGlobalContextRef js_global_context_ref)
+	// 	  : js_context_ref_(js_global_context_ref) {
+	//   assert(js_context_ref_);
+	//   JSGlobalContextRetain(js_global_context_ref);
+  // }
 		
 	// For interoperability with the JavaScriptCore C API.
 	operator JSContextRef() const {
@@ -518,9 +538,9 @@ private:
 	}
 
 	// For interoperability with the JavaScriptCore C API.
-	operator JSContextGroupRef() const {
-		return JSContextGetGroup(js_context_ref_);
-	}
+	// operator JSContextGroupRef() const {
+	// 	return JSContextGetGroup(js_context_ref_);
+	// }
 
 	friend class JSContextGroup;
 	friend class JSValue;
@@ -544,7 +564,8 @@ private:
   // Return true if the two JSValues are equal as compared by the JS == operator.
   friend bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs);
   
-  JSContextRef js_context_ref_ { nullptr };
+  JSContextGroup js_context_group_;
+  JSContextRef   js_context_ref_ { nullptr };
 };
 
 // Return true if the two JSContexts are equal.

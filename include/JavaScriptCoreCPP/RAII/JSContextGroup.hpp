@@ -51,14 +51,6 @@ class JSContextGroup final	{
 	/*!
 	  @method
 	  
-	  @abstract Implicitly allow conversion of a JSContext to a
-	  JSContextGroup.
-	*/
-	JSContextGroup(const JSContext& js_context);
-
-	/*!
-	  @method
-	  
 	  @abstract Create a JavaScript execution context within this
 	  context group with a default global object populated with all of
 	  the standard built-in JavaScript objects, such as Object,

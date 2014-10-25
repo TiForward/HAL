@@ -200,7 +200,7 @@ namespace UnitTestConstants {
   XCTAssertEqual("bar", static_cast<std::string>(js_value_2));
   
   XCTAssertNotEqual(js_context_1, js_context_2);
-  XCTAssertEqual(JSContextGroup(js_context_1), JSContextGroup(js_context_2));
+  XCTAssertEqual(js_context_1.get_context_group(), js_context_2.get_context_group());
   js_value_2 = js_value_1;
   XCTAssertEqual("foo", static_cast<std::string>(js_value_2));
   
@@ -217,13 +217,13 @@ namespace UnitTestConstants {
   XCTAssertEqual("foobar", static_cast<std::string>(js_value_4));
 
   XCTAssertNotEqual(js_context_3, js_context_4);
-  XCTAssertEqual(JSContextGroup(js_context_3), JSContextGroup(js_context_4));
+  XCTAssertEqual(js_context_3.get_context_group(), js_context_4.get_context_group());
   
-  XCTAssertNotEqual(JSContextGroup(js_context_1), JSContextGroup(js_context_3));
-  XCTAssertNotEqual(JSContextGroup(js_context_1), JSContextGroup(js_context_4));
+  XCTAssertNotEqual(js_context_1.get_context_group(), js_context_3.get_context_group());
+  XCTAssertNotEqual(js_context_1.get_context_group(), js_context_4.get_context_group());
 
-  XCTAssertNotEqual(JSContextGroup(js_context_2), JSContextGroup(js_context_3));
-  XCTAssertNotEqual(JSContextGroup(js_context_2), JSContextGroup(js_context_4));
+  XCTAssertNotEqual(js_context_2.get_context_group(), js_context_3.get_context_group());
+  XCTAssertNotEqual(js_context_2.get_context_group(), js_context_4.get_context_group());
   
   try {
     js_value_3 = js_value_1;

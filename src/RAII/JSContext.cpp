@@ -119,12 +119,12 @@ JSValue JSContext::JSEvaluateScript(const JSString& script, const JSString& sour
 	if (exception) {
 		// assert(!js_object_ref);
 		static const std::string log_prefix { "MDL: JSEvaluateScript: " };
-		const std::string message = static_cast<std::string>(JSValue(js_context_ref_, exception));
+		const std::string message = static_cast<std::string>(JSValue(*this, exception));
 		std::clog << log_prefix << " [ERROR] " << message << std::endl;
 		throw std::invalid_argument(message);
 	}
 
-	JSValue result(js_context_ref_, js_value_ref);
+	JSValue result(*this, js_value_ref);
 	JSValueUnprotect(js_context_ref_, js_value_ref);
 	return result;
 }
@@ -138,12 +138,12 @@ JSValue JSContext::JSEvaluateScript(const JSString& script, const JSObject& this
 	if (exception) {
 		// assert(!js_object_ref);
 		static const std::string log_prefix { "MDL: JSEvaluateScript: " };
-		const std::string message = static_cast<std::string>(JSValue(js_context_ref_, exception));
+		const std::string message = static_cast<std::string>(JSValue(*this, exception));
 		std::clog << log_prefix << " [ERROR] " << message << std::endl;
 		throw std::invalid_argument(message);
 	}
 
-	JSValue result(js_context_ref_, js_value_ref);
+	JSValue result(*this, js_value_ref);
 	JSValueUnprotect(js_context_ref_, js_value_ref);
 	return result;
 }
@@ -156,7 +156,7 @@ bool JSContext::JSCheckScriptSyntax(const JSString& script, const JSString& sour
 	if (exception) {
 		// assert(!js_object_ref);
 		static const std::string log_prefix { "MDL: JSCheckScriptSyntax: " };
-		const std::string message = static_cast<std::string>(JSValue(js_context_ref_, exception));
+		const std::string message = static_cast<std::string>(JSValue(*this, exception));
 		std::clog << log_prefix << " [ERROR] " << message << std::endl;
 		throw std::invalid_argument(message);
 	}
@@ -165,7 +165,7 @@ bool JSContext::JSCheckScriptSyntax(const JSString& script, const JSString& sour
 }
 
 JSObject JSContext::get_global_object() const {
-	return JSObject(js_context_ref_, JSContextGetGlobalObject(js_context_ref_));
+	return JSObject(*this, JSContextGetGlobalObject(js_context_ref_));
 }
 
 #ifdef JAVASCRIPTCORECPP_RAII_JSCONTEXT_ENABLE_CONTEXT_ID

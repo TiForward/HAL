@@ -54,7 +54,7 @@ class JSObject : public JSValue {
 	  @result A JSValue that is this object's prototype.
 	*/
 	JSValue GetPrototype() const {
-		return JSValue(*this, JSObjectGetPrototype(*this, js_object_ref_));
+		return JSValue(js_context_, JSObjectGetPrototype(js_context_, js_object_ref_));
 	}
 
 	/*!
@@ -65,7 +65,7 @@ class JSObject : public JSValue {
 	  @param value A JSValue to set as this object's prototype.
 	*/
 	void SetPrototype(const JSValue& js_value) {
-		JSObjectSetPrototype(*this, js_object_ref_, js_value);
+		JSObjectSetPrototype(js_context_, js_object_ref_, js_value);
 	}
 
 	/*!
@@ -131,7 +131,7 @@ class JSObject : public JSValue {
 	  propertyName, otherwise false.
 	*/
 	bool HasProperty(const JSString& property_name) const {
-		return JSObjectHasProperty(*this, js_object_ref_, property_name);
+		return JSObjectHasProperty(js_context_, js_object_ref_, property_name);
 	}
 
 	/*!
@@ -213,7 +213,7 @@ class JSObject : public JSValue {
 	  false.
 	*/
 	bool IsFunction() const {
-		return JSObjectIsFunction(*this, js_object_ref_);
+		return JSObjectIsFunction(js_context_, js_object_ref_);
 	}
 
 	/*!
@@ -621,7 +621,7 @@ class JSObject : public JSValue {
 	  otherwise false.
 	*/
 	bool IsConstructor() const {
-		return JSObjectIsConstructor(*this, js_object_ref_);
+		return JSObjectIsConstructor(js_context_, js_object_ref_);
 	}
 
 	/*!
@@ -727,26 +727,26 @@ class JSObject : public JSValue {
 	  chain, otherwise false.
 	*/
 	bool IsObjectOfClass(const JSClass& js_class) {
-		return JSValueIsObjectOfClass(*this, js_object_ref_, js_class);
+		return JSValueIsObjectOfClass(js_context_, js_object_ref_, js_class);
 	}
 
 
 	virtual ~JSObject() {
-		JSValueUnprotect(*this, js_object_ref_);
+		JSValueUnprotect(js_context_, js_object_ref_);
 	}
 	
 	// Copy constructor.
 	JSObject(const JSObject& rhs)
 			: JSValue(rhs)
 			, js_object_ref_(rhs.js_object_ref_) {
-		JSValueProtect(*this, js_object_ref_);
+		JSValueProtect(js_context_, js_object_ref_);
 	}
 	
 	// Move constructor.
 	JSObject(JSObject&& rhs)
 			: JSValue(rhs)
 			, js_object_ref_(rhs.js_object_ref_) {
-		JSValueProtect(*this, js_object_ref_);
+		JSValueProtect(js_context_, js_object_ref_);
 	}
 	
 	// Create a copy of another JSObject by assignment. This is a unified
@@ -779,8 +779,10 @@ class JSObject : public JSValue {
 	
  private:
 	
-	// For interoperability with the JavaScriptCore C API.
-	JSObject(JSContextRef js_context_ref, JSObjectRef js_object_ref);
+	JSObject(const JSContext& js_context, JSObjectRef js_object_ref);
+
+	// // For interoperability with the JavaScriptCore C API.
+	// JSObject(JSContextRef js_context_ref, JSObjectRef js_object_ref);
 	
 	// For interoperability with the JavaScriptCore C API.
 	operator JSObjectRef() const {
