@@ -99,9 +99,9 @@ class JSNativeObjectBuilder final {
 	/*!
 	  @method
 	  
-	  @abstract Return the native object's name.
+	  @abstract Return the JSNativeObject's name.
 	  
-	  @result The native object's name.
+	  @result The JSNativeObject's name.
 	*/
 	JSString Name() const {
 		return name_;
@@ -110,7 +110,7 @@ class JSNativeObjectBuilder final {
 	/*!
 	  @method
 	  
-	  @abstract Set the object's name.
+	  @abstract Set the JSNativeObject's name.
 	  
 	  @result A reference to the builder for chaining.
 	*/
@@ -123,10 +123,10 @@ class JSNativeObjectBuilder final {
 	  @method
 	  
 	  @abstract Return the JSNativeObjectAttributes that describe the
-	  characteristics of JSNativeObject created by this builder.
+	  characteristics of the JSNativeObject.
 	  
 	  @result The JSNativeObjectAttributes that describe the
-	  characteristics of the JSNativeObject created by this builder.
+	  characteristics of the JSNativeObject.
 	*/
 	std::unordered_set<JSNativeObjectAttributes> JSNativeObjectAttributes() const {
 		return attributes_;
@@ -136,7 +136,7 @@ class JSNativeObjectBuilder final {
 	  @method
 	  
 	  @abstract Set the JSNativeObjectAttributes that describe the
-	  characteristics of the JSNativeObject created by this builder.
+	  characteristics of the JSNativeObject.
 	  
 	  @result A reference to the builder for chaining.
 	*/
@@ -148,11 +148,10 @@ class JSNativeObjectBuilder final {
 	/*!
 	  @method
 	  
-	  @abstract Return the parent of the JSNativeObject created by this
-	  builder. A nullptr means to use the default object class.
+	  @abstract Return the parent of the JSNativeObject. A nullptr means
+	  to use the default object class.
 	  
-	  @result The parent of the the JSNativeObject created by this
-	  builder.
+	  @result The parent of the the JSNativeObject.
 	*/
 	std::shared_ptr<JSNativeObject<T>> Parent() const {
 		return parent_ptr_;
@@ -161,8 +160,8 @@ class JSNativeObjectBuilder final {
 	/*!
 	  @method
 	  
-	  @abstract Set the parent of the JSNativeObject created by this
-	  builder. A nullptr means to use the default object class.
+	  @abstract Set the parent of the JSNativeObject. A nullptr means to
+	  use the default object class.
 	  
 	  @result A reference to the builder for chaining.
 	*/
@@ -174,12 +173,11 @@ class JSNativeObjectBuilder final {
 	/*!
 	  @method
 
-	  @abstract Return the current set of
-	  JSNativeObjectValuePropertyCallbacks that describe the
-	  JSNativeObject's value properties.
+	  @abstract Return the JSNativeObjectValuePropertyCallbacks that
+	  describe the JSNativeObject's value properties.
   
-	  @result The current set of of JSNativeObjectValuePropertyCallbacks
-	  that describe the JSNativeObject's value properties.
+	  @result The JSNativeObjectValuePropertyCallbacks that describe the
+	  JSNativeObject's value properties.
 	*/
 	std::unordered_set<JSNativeObjectValuePropertyCallback<T>> JSNativeObjectValuePropertyCallbacks() const {
 		return value_property_callbacks_;
@@ -188,9 +186,8 @@ class JSNativeObjectBuilder final {
 	/*!
 	  @method
 
-	  @abstract Replace the current set of of
-	  JSNativeObjectValuePropertyCallbacks that describe the
-	  JSNativeObject's value properties.
+	  @abstract Set the JSNativeObjectValuePropertyCallbacks that
+	  describe the JSNativeObject's value properties.
 	  
 	  @result A reference to the builder for chaining.
 	*/
@@ -202,13 +199,11 @@ class JSNativeObjectBuilder final {
 	/*!
 	  @method
 
-	  @abstract Return the current set of
-	  JSNativeObjectFunctionPropertyCallbacks that describe the
-	  JSNativeObject's function properties.
+	  @abstract Return the JSNativeObjectFunctionPropertyCallbacks that
+	  describe the JSNativeObject's function properties.
 
-	  @result The current set of of
-	  JSNativeObjectFunctionPropertyCallbacks that describe the
-	  JSNativeObject's function properties.
+	  @result The JSNativeObjectFunctionPropertyCallbacks that describe
+	  the JSNativeObject's function properties.
 	*/
 	std::unordered_set<JSNativeObjectFunctionPropertyCallback<T>> JSNativeObjectFunctionPropertyCallbacks() const {
 		return function_property_callbacks_;
@@ -217,8 +212,8 @@ class JSNativeObjectBuilder final {
 	/*!
 	  @method
 
-	  @abstract Replace the current set of of JSNativeObjectFunctionPropertyCallbacks that
-	  describe the class's statically declared function properties.
+	  @abstract Set the JSNativeObjectFunctionPropertyCallbacks that
+	  describe the JSNativeObject's function properties.
 	  
 	  @result A reference to the builder for chaining.
 	*/
@@ -798,9 +793,9 @@ class JSNativeObjectBuilder final {
 	  @result A JSClass instance with all of the properties and
 	  callbacks specified in the builder.
 	*/
-	JSClass2 build() const {
+	JSNativeObject<T> build() const {
 		// TODO validate js_class_definition.
-		return JSClass2(*this);
+		return JSClass(*this);
 	}
 	
  private:
@@ -814,7 +809,7 @@ class JSNativeObjectBuilder final {
 	JSContext js_context_;
 	
 	// Optional parameters - initialized to default values
-	JSString                                                   class_name_;
+	JSString                                                   name_;
 	std::unordered_set<JSNativeObjectAttributes>               attributes_;
 	std::shared_ptr<JSNativeObject>                            parent_ptr_                          { nullptr };
 	std::unordered_set<JSNativeObjectValuePropertyCallback>    value_property_callbacks_;
@@ -835,8 +830,8 @@ class JSNativeObjectBuilder final {
 
 template<typename T>
 JSNativeObjectDefinition<T>::JSNativeObjectDefinition(const JSNativeObjectBuilder<T>& builder)
-		: class_name_(builder.class_name_)
-		, class_name_for_js_class_definition_(class_name_)
+		: name_(builder.name_)
+		, class_name_for_js_class_definition_(name_)
 		, attributes_(builder.attributes_)
 		, parent_ptr_(builder.parent_ptr_)
 		, value_property_callbacks_(builder.value_property_callbacks_)

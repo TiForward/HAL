@@ -13,11 +13,12 @@
 #include <sstream>
 #include "JavaScriptCoreCPP/RAII/JSClass.hpp"
 #include "JavaScriptCoreCPP/RAII/JSPropertyNameAccumulator.hpp"
-#include "JSPropertyNameArray.hpp"
+#include "JavaScriptCoreCPP/RAII/detail/JSPropertyNameArray.hpp"
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-JSObject::JSObject(const JSContext& js_context, const JSClass& js_class, void* private_data) : JSObject(js_context, JSObjectMake(js_context, js_class, private_data)) {
+JSObject::JSObject(const JSContext& js_context, const JSClass& js_class, void* private_data)
+		: JSObject(js_context, JSObjectMake(js_context, js_class, private_data)) {
 }
 
 // For interoperability with the JavaScriptCore C API.

@@ -13,6 +13,7 @@
 #include "JavaScriptCoreCPP/RAII/JSContext.hpp"
 #include "JavaScriptCoreCPP/RAII/JSValue.hpp"
 #include "JavaScriptCoreCPP/RAII/JSString.hpp"
+#include "JavaScriptCoreCPP/RAII/JSPropertyAttribute.hpp"
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
@@ -21,41 +22,6 @@
 namespace JavaScriptCoreCPP { namespace detail {
 class JSPropertyNameArray;
 }}
-
-
-namespace JavaScriptCoreCPP { namespace RAII {
-
-/*!
-  @enum JSPropertyAttribute
-  @constant None         Specifies that a property has no special attributes.
-  @constant ReadOnly     Specifies that a property is read-only.
-  @constant DontEnum     Specifies that a property should not be enumerated by JSPropertyEnumerators and JavaScript for...in loops.
-  @constant DontDelete   Specifies that the delete operation should fail on a property.
-*/
-enum class JSPropertyAttribute : ::JSPropertyAttributes {
-	None,      // kJSPropertyAttributeNone,
-	ReadOnly,  // kJSPropertyAttributeReadOnly,
-	DontEnum,  // kJSPropertyAttributeDontEnum,
-	DontDelete // kJSPropertyAttributeDontDelete
-};
-
-}} // namespace JavaScriptCoreCPP { namespace RAII {
-
-namespace std {
-
-template<>
-struct hash<JavaScriptCoreCPP::RAII::JSPropertyAttribute> {
-	using argument_type = JavaScriptCoreCPP::RAII::JSPropertyAttribute;
-	using result_type   = std::size_t;
-
-	using property_attribute_underlying_type = std::underlying_type<JavaScriptCoreCPP::RAII::JSPropertyAttribute>::type;
-	const std::hash<property_attribute_underlying_type> property_attribute_hash = std::hash<property_attribute_underlying_type>();
-	
-	result_type operator()(const argument_type& property_attribute) const {
-		return property_attribute_hash(static_cast<property_attribute_underlying_type>(property_attribute));
-	}
-};
-}  // namespace std {
 
 namespace JavaScriptCoreCPP { namespace RAII {
 

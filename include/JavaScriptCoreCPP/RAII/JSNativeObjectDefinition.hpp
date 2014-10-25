@@ -45,7 +45,7 @@ class JSNativeObjectDefinition final	{
 	JSNativeObjectDefinition& operator=(const JSNativeObjectDefinition& rhs) = default;
 	JSNativeObjectDefinition& operator=(JSNativeObjectDefinition&& rhs) = default;
 	
-	JSString                                                      get_class_name()                          const { return class_name_; }
+	JSString                                                      get_name()                                const { return name_; }
 	std::unordered_set<JSNativeObjectAttributes>                  get_attributes()                          const { return attributes_; }
 	std::shared_ptr<JSNativeObject<T>>                            get_parent_ptr()                          const { return parent_ptr_; }
 	std::unordered_set<JSNativeObjectValuePropertyCallback<T>>    get_value_property_callbacks()            const { return value_property_callbacks_; }
@@ -80,7 +80,7 @@ class JSNativeObjectDefinition final	{
 	// template<typename U>
 	// friend bool operator<(const JSNativeObjectDefinition<U>& lhs, const JSNativeObjectDefinition<U>& rhs);
 
-	JSString                                                      class_name_;
+	JSString                                                      name_;
 	std::string                                                   class_name_for_js_class_definition_;
 	std::unordered_set<JSNativeObjectAttributes>                  attributes_;
 	std::shared_ptr<JSNativeObject<T>>                            parent_ptr_                          { nullptr };

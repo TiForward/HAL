@@ -12,7 +12,7 @@
 
 #include "JavaScriptCoreCPP/RAII/JSContext.hpp"
 #include "JavaScriptCoreCPP/RAII/JSString.hpp"
-#include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
+#include "JavaScriptCoreCPP/RAII/detail/JSPerformanceCounter.hpp"
 #include <iostream>
 #include <sstream>
 #include <cassert>

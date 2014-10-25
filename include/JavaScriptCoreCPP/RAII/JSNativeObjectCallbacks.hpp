@@ -10,18 +10,13 @@
 #ifndef _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTCALLBACKS_HPP_
 #define _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTCALLBACKS_HPP_
 
-
-#include "JavaScriptCoreCPP/RAII/JSString.hpp"
-#include "JavaScriptCoreCPP/RAII/JSValue.hpp"
-#include "JavaScriptCoreCPP/RAII/JSObject.hpp"
-#include <set>
+#include "JavaScriptCoreCPP/RAII/JSNativeObjectAttribute.hpp"
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-enum class JSNativeObjectAttributes {
-	None                 = kJSClassAttributeNone,
-	NoAutomaticPrototype = kJSClassAttributeNoAutomaticPrototype
-};
+class JSString;
+class JSObject;
+class JSValue;
 
 /*! 
   @typedef InitializeCallback

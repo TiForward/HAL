@@ -80,7 +80,7 @@ class JSNativeObject {
 	std::mutex                                        js_static_function_map_mutex_;
 	
 	static JSValueRef JSStaticFunctionCallAsFunctionCallback(JSContextRef js_context_ref, JSObjectRef function_ref, JSObjectRef this_object_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception);
-
+	
 	// Remaining callbacks.
 	static void JSObjectInitializeCallback(JSContextRef js_context_ref, JSObjectRef js_object_ref);
 	static void JSObjectFinalizeCallback(JSObjectRef js_object_ref);
