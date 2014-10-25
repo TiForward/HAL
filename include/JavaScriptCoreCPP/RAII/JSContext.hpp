@@ -487,7 +487,7 @@ class JSContext final	{
     // the two classes are effectively swapped
     swap(first.js_context_ref_, second.js_context_ref_);
   }
-  
+
 private:
   
   // Only a JSContextGroup can create a JSContext.

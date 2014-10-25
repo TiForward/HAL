@@ -26,9 +26,8 @@ JSObject::JSObject(JSContextRef js_context_ref, JSObjectRef js_object_ref)
 		: JSValue(js_context_ref, js_object_ref)
 		, js_object_ref_(js_object_ref) {
 
-	static const std::string log_prefix { "MDL: JSObject(JSObjectRef js_object_ref, const JSContext& js_context): " };
-
 	if (!js_object_ref_) {
+		static const std::string log_prefix { "MDL: JSObject(JSObjectRef js_object_ref, const JSContext& js_context): " };
 		const std::string message = "js_object_ref can not be nullptr.";
 		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
 		throw std::logic_error(message);

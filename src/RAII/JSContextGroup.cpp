@@ -13,6 +13,9 @@
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
+JSContextGroup::JSContextGroup(const JSContext& js_context) : js_context_group_ref_(js_context) {
+}
+
 JSContext JSContextGroup::CreateContext() const {
 	return JSContext(*this);
 }

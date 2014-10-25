@@ -51,6 +51,14 @@ class JSContextGroup final	{
 	/*!
 	  @method
 	  
+	  @abstract Implicitly allow conversion of a JSContext to a
+	  JSContextGroup.
+	*/
+	JSContextGroup(const JSContext& js_context);
+
+	/*!
+	  @method
+	  
 	  @abstract Create a JavaScript execution context within this
 	  context group with a default global object populated with all of
 	  the standard built-in JavaScript objects, such as Object,
@@ -118,8 +126,6 @@ class JSContextGroup final	{
 
  private:
 
-  friend class JSContext;
-
   // For interoperability with the JavaScriptCore C API.
   explicit JSContextGroup(JSContextGroupRef js_context_group_ref) : js_context_group_ref_(js_context_group_ref) {
 		assert(js_context_group_ref_);
@@ -134,6 +140,8 @@ class JSContextGroup final	{
 	// Prevent heap based objects.
 	void* operator new(size_t)     = delete; // #1: To prevent allocation of scalar objects
 	void* operator new [] (size_t) = delete; // #2: To prevent allocation of array of objects
+
+  friend class JSContext;
 
   // Return true if the two JSContextGroups are equal.
   friend bool operator==(const JSContextGroup& lhs, const JSContextGroup& rhs);

@@ -314,7 +314,17 @@ public:
 	// assignment operator that fuses the copy assignment operator,
   // X& X::operator=(const X&), and the move assignment operator,
   // X& X::operator=(X&&);
-  JSValue& operator=(JSValue rhs) {
+	JSValue& operator=(JSValue rhs) {
+	  
+	  // Values can only be copied between contexts within the same
+	  // context group.
+	  if (JSContextGroup(js_context_) != JSContextGroup(rhs.js_context_)) {
+		  static const std::string log_prefix { "MDL: JSValue& JSValue::operator=(JSValue rhs): " };
+		  const std::string message = "JSValues must belong to JSContexts within the same JSContextGroup to be shared and exchanged.";
+		  std::clog << log_prefix << " [ERROR] " << message << std::endl;
+		  throw std::runtime_error(message);
+	  }
+	  
     swap(*this, rhs);
     return *this;
   }
