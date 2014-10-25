@@ -34,7 +34,7 @@ class JSObject;
   The only way to create a JSValue is by using the
   JSContext::CreateValue member function.
 */
-#ifdef JAVASCRIPTCORECPP_RAII_ENABLE_PERFORMANCE_COUNTER
+#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
 class JSValue	: public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSValue> {
 #else
 class JSValue	{

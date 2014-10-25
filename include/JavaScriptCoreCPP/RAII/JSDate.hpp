@@ -22,7 +22,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
   The only way to create a JSDate is by using the
   JSContext::CreateDate member function.
 */
-#ifdef JAVASCRIPTCORECPP_RAII_ENABLE_PERFORMANCE_COUNTER
+#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
 class JSDate final : public JSObject, public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSDate> {
 #else
 class JSDate final : public JSObject {

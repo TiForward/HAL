@@ -27,7 +27,7 @@ class JSObject;
   ordered set used to collect the names of a JavaScript object's
   properties
 */
-#ifdef JAVASCRIPTCORECPP_RAII_ENABLE_PERFORMANCE_COUNTER
+#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
 class JSPropertyNameAccumulator	: public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSPropertyNameAccumulator> {
 #else
 class JSPropertyNameAccumulator	{

@@ -49,9 +49,7 @@ class JSNativeObjectFunctionPropertyCallback final	{
 	  CallAsFunctionCallback callback(&Foo::CallAsFunction);
 	  CallAsFunctionWithThisCallback callback(&Foo::CallAsFunction);
 	  
-	  @param function_name A JSString containing the function's name. If
-	  function_name is empty then the callback refers to an anonymous
-	  function.
+	  @param function_name A JSString containing the function's name.
 	  
 	  @param call_as_function_callback The callback to invoke when
 	  calling the JavaScript object as a function.
@@ -66,6 +64,15 @@ class JSNativeObjectFunctionPropertyCallback final	{
 	  @result The callback to invoke when a JavaScript object is called
 	  as a function either directly or when it is a property of another
 	  JavaScript object.
+
+	  @throws std::invalid_argument exception under these preconditions:
+
+	  1. If property_name is empty or otherwise has a JavaScript syntax
+	  error.
+	  
+	  2. If the call_as_function_callback is not provided.
+	                               
+	  3. If the call_as_function_with_this_callback is not provided.
 	*/
 	JSNativeObjectFunctionPropertyCallback(const JSString& function_name, CallAsFunctionCallback<T> call_as_function_callback, CallAsFunctionWithThisCallback<T> call_as_function_with_this_callback, const std::unordered_set<JSPropertyAttribute> attributes = std::unordered_set<JSPropertyAttribute>());
 	

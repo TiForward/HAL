@@ -15,12 +15,12 @@
 #endif
 
 #include "JavaScriptCoreCPP/RAII/JSNativeObjectDefinition.hpp"
-#include "JavaScriptCoreCPP/RAII/JSContext.hpp"
 #include "JavaScriptCoreCPP/RAII/JSClass.hpp"
 #include "JavaScriptCoreCPP/RAII/JSString.hpp"
 #include "JavaScriptCoreCPP/RAII/JSContext.hpp"
 #include "JavaScriptCoreCPP/RAII/JSValue.hpp"
 #include "JavaScriptCoreCPP/RAII/JSObject.hpp"
+#include <cstdint>
 #include <memory>
 #include <vector>
 #include <unordered_map>
@@ -35,6 +35,12 @@ namespace JavaScriptCoreCPP { namespace RAII {
 
 template<typename T>
 class JSNativeObjectBuilder;
+
+template<typename T>
+class JSNativeObject;
+
+template<typename T>
+using JSNativeObject_shared_ptr = std::shared_ptr<JSNativeObject<T>>;
 
 template<typename T>
 class JSNativeObject {
@@ -57,28 +63,19 @@ class JSNativeObject {
 	template<typename U>
 	friend class JSNativeObjectBuilder;
 	
-	JSContext                   js_context_;
-	JSNativeObjectDefinition<T> js_native_object_definition_;
-	JSClassDefinition           js_class_definition_ = kJSClassDefinitionEmpty;
-	JSClass                     js_class_;
-	std::shared_ptr<T>          native_object_ptr_;
-	std::string                 js_native_object_identifier_;
-
+	JSContext                     js_context_;
+	JSNativeObjectDefinition<T>   js_native_object_definition_;
+	std::mutex                    js_native_object_mutex_;
+	
 	// For interoperability with the JavaScriptCore C API.
+	static std::unordered_map<std::intptr_t, JSNativeObject_shared_ptr<T>> native_ptr_to_js_native_object_ptr_map_;
+	static std::mutex                                                      native_ptr_to_js_native_object_ptr_map_mutex_;
 
 	// Support for JSStaticValue
-	std::vector<JSStaticValue>                        js_static_value_vector_;
-	std::unordered_map<std::string, JSStaticValue>    js_static_value_map_;
-	std::mutex                                        js_static_value_map_mutex_;
-	
 	static JSValueRef JSStaticValueGetPropertyCallback(JSContextRef js_context_ref, JSObjectRef js_object_ref, JSStringRef property_name_ref, JSValueRef* exception);
 	static bool JSStaticValueSetPropertyCallback(JSContextRef js_context_ref, JSObjectRef js_object_ref, JSStringRef property_name_ref, JSValueRef js_value_ref, JSValueRef* exception);
-
-	// Support for JSStaticFunction
-	std::vector<JSStaticFunction>                     js_static_function_vector_;
-	std::unordered_map<std::string, JSStaticFunction> js_static_function_map_;
-	std::mutex                                        js_static_function_map_mutex_;
 	
+	// Support for JSStaticFunction
 	static JSValueRef JSStaticFunctionCallAsFunctionCallback(JSContextRef js_context_ref, JSObjectRef function_ref, JSObjectRef this_object_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception);
 	
 	// Remaining callbacks.
@@ -95,19 +92,57 @@ class JSNativeObject {
 	static JSValueRef JSObjectConvertToTypeCallback(JSContextRef js_context_ref, JSObjectRef js_object_ref, JSType js_type, JSValueRef* exception);
 };
 
+template<typename T>
+std::unordered_map<std::intptr_t, JSNativeObject_shared_ptr<T>> JSNativeObject<T>::native_ptr_to_js_native_object_ptr_map_;
+
+template<typename T>
+std::mutex JSNativeObject<T>::native_ptr_to_js_native_object_ptr_map_mutex_;
+
 // Support for JSStaticValue: getter
 template<typename T>
 JSValueRef JSNativeObject<T>::JSStaticValueGetPropertyCallback(JSContextRef js_context_ref, JSObjectRef js_object_ref, JSStringRef property_name_ref, JSValueRef* exception) {
 	static const std::string log_prefix { "MDL: JSStaticValueGetPropertyCallback:" };
-
 	
 	JSObject js_object(js_context_ref, js_object_ref);
-	//JSObject js_object(const_cast<JSContextRef>(js_context_ref), js_object_ref);
 
-	auto js_native_object_ptr = static_cast<JSNativeObject<T>>(js_object.GetPrivate());
+	const auto native_object_ptr = static_cast<T>(js_object.GetPrivate());
+	const auto key               = reinterpret_cast<std::intptr_t>(native_object_ptr);
+
+#ifdef DEBUG_JSNATIVEOBJECT
+	const auto js_object_identifier = static_cast<std::string>(js_object);
+#endif
 	
+#ifdef DEBUG_JSNATIVEOBJECT
+	std::clog << log_prefix
+	          << " [DEBUG] "
+	          << js_object_identifier
+	          << ": look for key "
+	          << key
+	          << " in JSNativeObject map."
+	          << std::endl;
+#endif
+	
+	const auto native_object_ptr_map_position = native_ptr_to_js_native_object_ptr_map_.find(key);
+	const bool js_native_object_ptr_found = native_object_ptr_map_position != native_ptr_to_js_native_object_ptr_map_.end();
+
+#ifdef DEBUG_JSNATIVEOBJECT
+	std::clog << log_prefix
+	          << " [DEBUG] "
+	          << js_object_identifier
+	          << ": found js_native_object_ptr_found = "
+	          << std::boolalpha
+	          << js_native_object_ptr_found
+	          << "."
+	          << std::endl;
+#endif
+
+	// precondition
+	assert(js_native_object_ptr_found);
+
+	const auto js_native_object_ptr_ = native_object_ptr_map_position -> second;
+
 	// Begin critical section.
-	std::lock_guard<std::mutex> js_static_value_map_lock(js_native_object_ptr -> js_static_value_map_mutex_);
+	std::lock_guard<std::mutex> js_native_object_lock(js_native_object_ptr_ -> js_native_object_mutex_);
 	
 	JSString property_name(property_name_ref);
 

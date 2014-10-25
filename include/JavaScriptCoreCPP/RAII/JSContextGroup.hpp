@@ -30,7 +30,7 @@ class JSClass;
   JSContexts within the same context group may share and exchange
   JavaScript objects with one another.
 */
-#ifdef JAVASCRIPTCORECPP_RAII_ENABLE_PERFORMANCE_COUNTER
+#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
 class JSContextGroup final : public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSContextGroup> {
 #else
 class JSContextGroup final	{

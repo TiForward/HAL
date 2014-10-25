@@ -14,7 +14,7 @@
 
 namespace JavaScriptCoreCPP { namespace detail {
 
-// Add -DJAVASCRIPTCORECPP_RAII_ENABLE_PERFORMANCE_COUNTER=1 to enable the performance counters.
+// Add -DJAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE=1 to enable the performance counters.
 
 template <typename T>
 class JSPerformanceCounter {

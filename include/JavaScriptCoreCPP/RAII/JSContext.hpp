@@ -57,7 +57,7 @@ class JSFunction;
   When JavaScript objects from the same context group are used in
   multiple threads, explicit synchronization is required.
 */
-#ifdef JAVASCRIPTCORECPP_RAII_ENABLE_PERFORMANCE_COUNTER
+#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
 class JSContext final	: public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSContext> {
 #else
 class JSContext final	{

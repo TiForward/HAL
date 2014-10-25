@@ -24,7 +24,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
   The only way to create a JSNumber is by using the
   JSContext::CreateNumber member function.
 */
-#ifdef JAVASCRIPTCORECPP_RAII_ENABLE_PERFORMANCE_COUNTER
+#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
 class JSNumber final : public JSValue, public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSNumber> {
 #else
 class JSNumber final : public JSValue {

@@ -27,7 +27,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
 
   Only JSObject and JSNativeObjectBuilder may create a JSClass.
 */
-#ifdef JAVASCRIPTCORECPP_RAII_ENABLE_PERFORMANCE_COUNTER
+#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
 class JSClass final : public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSClass> {
 #else
 class JSClass final	{

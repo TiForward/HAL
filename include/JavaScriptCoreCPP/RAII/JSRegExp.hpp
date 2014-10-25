@@ -22,7 +22,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
   The only way to create a JSRegExp is by using the
   JSContext::CreateRegExp member function.
 */
-#ifdef JAVASCRIPTCORECPP_RAII_ENABLE_PERFORMANCE_COUNTER
+#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
 class JSRegExp final : public JSObject, public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSRegExp> {
 #else
 class JSRegExp final : public JSObject {
