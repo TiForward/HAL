@@ -8,7 +8,6 @@
 
 #include "JavaScriptCoreCPP/RAII/RAII.hpp"
 #include "NativeObject.hpp"
-//#include "JavaScriptCoreCPP/RAII/JSNativeObject.hpp"
 #import <XCTest/XCTest.h>
 
 using namespace JavaScriptCoreCPP::RAII;
@@ -44,18 +43,18 @@ using namespace JavaScriptCoreCPP::RAII;
 }
 
 - (void)testInitializeCallback {
-  InitializeCallback<NativeObject>             InitializeCallback             = &NativeObject::Initialize;
-  FinalizeCallback<NativeObject>               FinalizeCallback               = &NativeObject::Finalize;
-  HasPropertyCallback<NativeObject>            HasPropertyCallback            = &NativeObject::HasProperty;
-  GetPropertyCallback<NativeObject>            GetPropertyCallback            = &NativeObject::GetProperty;
-  SetPropertyCallback<NativeObject>            SetPropertyCallback            = &NativeObject::SetProperty;
-  DeletePropertyCallback<NativeObject>         DeletePropertyCallback         = &NativeObject::DeleteProperty;
-  GetPropertyNamesCallback<NativeObject>       GetPropertyNamesCallback       = &NativeObject::GetPropertyNames;
-  CallAsFunctionCallback<NativeObject>         FooCallback                    = &NativeObject::FooFunction;
-  CallAsFunctionCallback<NativeObject>         BarCallback                    = &NativeObject::BarFunction;
-  CallAsConstructorCallback<NativeObject>      CallAsConstructorCallback      = &NativeObject::Constructor;
-  HasInstanceCallback<NativeObject>            HasInstanceCallback            = &NativeObject::HasInstance;
-  ConvertToTypeCallback<NativeObject>          ConvertToTypeCallback          = &NativeObject::ConvertToType;
+  InitializeCallback<NativeObject>        InitializeCallback        = &NativeObject::Initialize;
+  FinalizeCallback<NativeObject>          FinalizeCallback          = &NativeObject::Finalize;
+  HasPropertyCallback<NativeObject>       HasPropertyCallback       = &NativeObject::HasProperty;
+  GetPropertyCallback<NativeObject>       GetPropertyCallback       = &NativeObject::GetProperty;
+  SetPropertyCallback<NativeObject>       SetPropertyCallback       = &NativeObject::SetProperty;
+  DeletePropertyCallback<NativeObject>    DeletePropertyCallback    = &NativeObject::DeleteProperty;
+  GetPropertyNamesCallback<NativeObject>  GetPropertyNamesCallback  = &NativeObject::GetPropertyNames;
+  CallAsFunctionCallback<NativeObject>    FooCallback               = &NativeObject::FooFunction;
+  CallAsFunctionCallback<NativeObject>    BarCallback               = &NativeObject::BarFunction;
+  CallAsConstructorCallback<NativeObject> CallAsConstructorCallback = &NativeObject::Constructor;
+  HasInstanceCallback<NativeObject>       HasInstanceCallback       = &NativeObject::HasInstance;
+  ConvertToTypeCallback<NativeObject>     ConvertToTypeCallback     = &NativeObject::ConvertToType;
 }
 
 - (void)testJSNativeObjectFunctionPropertyCallback {
@@ -105,6 +104,12 @@ using namespace JavaScriptCoreCPP::RAII;
   XCTAssertEqual(1, value_property_callbacks.count(PiPropertyCallback));
   XCTAssertEqual(*insert_pi_result.first, PiPropertyCallback);
   XCTAssertEqual(2, value_property_callbacks.size());
+}
+
+- (void)testJSNativeObjectBuilder {
+  JSContext js_context = js_context_group.CreateContext();
+  JSNativeObjectBuilder<NativeObject> builder(js_context);
+  builder.name("MyObject");
 }
 
 - (void)testJSNativeObject {

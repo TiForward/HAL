@@ -11,9 +11,14 @@
 #define _JAVASCRIPTCORECPP_RAII_JSUTIL_HPP_
 
 #include <cstdint>
+#include <memory>
 
 namespace JavaScriptCoreCPP { namespace detail {
 
+template<typename T, typename... Ts>
+std::unique_ptr<T> make_unique(Ts&&... params) {
+	return std::unique_ptr<T>(new T(std::forward<Ts>(params)...));
+}
 
 // This in the ToInt32 operation as defined in section 9.5 of the
 // ECMA-262 spec. Note that this operation is identical to ToUInt32

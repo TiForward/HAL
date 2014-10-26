@@ -50,9 +50,9 @@ class JSNativeObject final {
 	JSNativeObject() {
 	}
 
-	JSNativeObjectDefinition<T> get_js_native_object_definition() const {
-		return js_native_object_definition_;
-	}
+	// JSNativeObjectDefinition<T> get_js_native_object_definition() const {
+	// 	return js_native_object_definition_;
+	// }
 	
  private:
 
