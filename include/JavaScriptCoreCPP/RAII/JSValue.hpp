@@ -299,7 +299,9 @@ public:
 	}
 	
 	// Move constructor.
-	JSValue(JSValue&& rhs) : js_context_(rhs.js_context_), js_value_ref_(rhs.js_value_ref_) {
+	JSValue(JSValue&& rhs)
+			: js_context_(rhs.js_context_)
+			, js_value_ref_(rhs.js_value_ref_) {
 		JSValueProtect(js_context_, js_value_ref_);
   }
   

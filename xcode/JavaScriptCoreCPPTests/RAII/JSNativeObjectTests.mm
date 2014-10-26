@@ -139,6 +139,8 @@ using namespace JavaScriptCoreCPP::RAII;
       .has_property_callback(&NativeObject::HasProperty)
       .call_as_function_callback(&NativeObject::CallAsFunction)
       .convert_to_type_callback(&NativeObject::ConvertToType);
+
+  auto NativeObjectProxy = builder.build();
 }
 
 - (void)testJSNativeObject {

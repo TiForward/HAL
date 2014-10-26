@@ -50,11 +50,41 @@ class JSNativeObject final {
 	JSNativeObject() {
 	}
 
-	// JSNativeObjectDefinition<T> get_js_native_object_definition() const {
-	// 	return js_native_object_definition_;
-	// }
+	~JSNativeObject() {
+	}
+
+	// Copy constructor.
+	JSNativeObject(const JSNativeObject& rhs)
+			: js_context_(rhs.js_context_)
+			, js_native_object_definition_(rhs.js_native_object_definition_) {
+	}
 	
- private:
+	// Move constructor.
+	JSNativeObject(JSNativeObject&& rhs)
+			: js_context_(rhs.js_context_)
+			, js_native_object_definition_(rhs.js_native_object_definition_) {
+  }
+  
+  // Create a copy of another JSNativeObject by assignment. This is a unified
+	// assignment operator that fuses the copy assignment operator,
+  // X& X::operator=(const X&), and the move assignment operator,
+  // X& X::operator=(X&&);
+	JSNativeObject& operator=(JSNativeObject rhs) {
+    swap(*this, rhs);
+    return *this;
+  }
+  
+	friend void swap(JSNativeObject& first, JSNativeObject& second) noexcept {
+    // enable ADL (not necessary in our case, but good practice)
+    using std::swap;
+    
+    // By swapping the members of two classes, the two classes are
+    // effectively swapped.
+    swap(first.js_context_                 , second.js_context_);
+    swap(first.js_native_object_definition_, second.js_native_object_definition_);
+  }
+
+private:
 
 	// Only the JSNativeObjectBuilder can create instances of
 	// JSNativeObject.

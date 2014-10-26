@@ -18,6 +18,9 @@
 
 namespace JavaScriptCoreCPP { namespace detail {
 
+template<typename T>
+class JSNativeObjectDefinition;
+
 using namespace JavaScriptCoreCPP::RAII;
 
 /*!
