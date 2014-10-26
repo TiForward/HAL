@@ -23,7 +23,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
   JSContext::CreateRegExp member function.
 */
 #ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
-class JSRegExp final : public JSObject, public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSRegExp> {
+class JSRegExp final : public JSObject, public detail::JSPerformanceCounter<JSRegExp> {
 #else
 class JSRegExp final : public JSObject {
 #endif

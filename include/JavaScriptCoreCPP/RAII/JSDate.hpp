@@ -23,7 +23,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
   JSContext::CreateDate member function.
 */
 #ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
-class JSDate final : public JSObject, public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSDate> {
+class JSDate final : public JSObject, public detail::JSPerformanceCounter<JSDate> {
 #else
 class JSDate final : public JSObject {
 #endif

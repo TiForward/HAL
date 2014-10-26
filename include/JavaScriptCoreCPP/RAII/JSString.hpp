@@ -36,7 +36,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
   function.
 */
 #ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
-class JSString final	: public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSString> {
+class JSString final	: public detail::JSPerformanceCounter<JSString> {
 #else
 class JSString final	{
 #endif

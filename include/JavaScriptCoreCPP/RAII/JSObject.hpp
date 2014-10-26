@@ -39,7 +39,7 @@ class JSClass;
   JSContext::CreateObject member function.
 */
 #ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
-class JSObject : public JSValue, public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSObject> {
+class JSObject : public JSValue, public detail::JSPerformanceCounter<JSObject> {
 #else
 class JSObject : public JSValue {
 #endif

@@ -26,7 +26,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
   JSContext::CreateFunction member function.
 */
 #ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
-class JSFunction final : public JSObject, public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSFunction> {
+class JSFunction final : public JSObject, public detail::JSPerformanceCounter<JSFunction> {
 #else
 class JSFunction final : public JSObject {
 #endif

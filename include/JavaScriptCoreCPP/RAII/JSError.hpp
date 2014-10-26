@@ -23,7 +23,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
   JSContext::CreateError member function.
 */
 #ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
-class JSError final : public JSObject, public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSError> {
+class JSError final : public JSObject, public detail::JSPerformanceCounter<JSError> {
 #else
 class JSError final : public JSObject {
 #endif

@@ -23,7 +23,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
   JSContext::CreateNull member function.
 */
 #ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
-class JSNull final : public JSValue, public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSNull> {
+class JSNull final : public JSValue, public detail::JSPerformanceCounter<JSNull> {
 #else
 class JSNull final : public JSValue {
 #endif

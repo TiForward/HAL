@@ -28,7 +28,7 @@ class JSObject;
   properties
 */
 #ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
-class JSPropertyNameAccumulator	: public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSPropertyNameAccumulator> {
+class JSPropertyNameAccumulator	: public detail::JSPerformanceCounter<JSPropertyNameAccumulator> {
 #else
 class JSPropertyNameAccumulator	{
 #endif

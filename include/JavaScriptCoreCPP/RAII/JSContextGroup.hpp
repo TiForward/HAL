@@ -31,7 +31,7 @@ class JSClass;
   JavaScript objects with one another.
 */
 #ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
-class JSContextGroup final : public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSContextGroup> {
+class JSContextGroup final : public detail::JSPerformanceCounter<JSContextGroup> {
 #else
 class JSContextGroup final	{
 #endif

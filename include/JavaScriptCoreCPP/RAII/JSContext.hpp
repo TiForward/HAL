@@ -52,7 +52,7 @@ class JSFunction;
   multiple threads, explicit synchronization is required.
 */
 #ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
-class JSContext final	: public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSContext> {
+class JSContext final	: public detail::JSPerformanceCounter<JSContext> {
 #else
 class JSContext final	{
 #endif

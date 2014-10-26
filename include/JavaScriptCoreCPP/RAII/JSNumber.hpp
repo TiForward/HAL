@@ -25,7 +25,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
   JSContext::CreateNumber member function.
 */
 #ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
-class JSNumber final : public JSValue, public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSNumber> {
+class JSNumber final : public JSValue, public detail::JSPerformanceCounter<JSNumber> {
 #else
 class JSNumber final : public JSValue {
 #endif

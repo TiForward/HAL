@@ -23,7 +23,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
   JSContext::CreateUndefined member function.
 */
 #ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
-class JSUndefined final : public JSValue, public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSUndefined> {
+class JSUndefined final : public JSValue, public detail::JSPerformanceCounter<JSUndefined> {
 #else
 class JSUndefined final : public JSValue {
 #endif
