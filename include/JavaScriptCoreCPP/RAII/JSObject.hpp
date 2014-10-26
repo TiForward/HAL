@@ -459,7 +459,9 @@ class JSObject : public JSValue {
 	  @throws std::runtime_error exception if the called function threw
 	  an exception, or object is not a function.
 	*/
-	JSValue CallAsFunction(const std::vector<JSValue>& arguments) const;
+	JSValue CallAsFunction(const std::vector<JSValue>& arguments) const {
+		return CallAsFunction(arguments, js_context_.get_global_object());
+	}
 
 	/*!
 	  @method
