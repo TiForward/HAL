@@ -63,7 +63,9 @@ class JSNativeObjectBuilder final {
 
  public:
 	
-	JSNativeObjectBuilder(const JSContext& js_context) : js_context_(js_context) {
+	JSNativeObjectBuilder(const JSContext& js_context)
+			: js_context_(js_context)
+			, parent_(&kJSClassDefinitionEmpty) {
 	}
 	
 	JSNativeObjectBuilder() = delete;;
@@ -152,25 +154,25 @@ class JSNativeObjectBuilder final {
 	/*!
 	  @method
 	  
-	  @abstract Return the parent of the JSNativeObject. A nullptr means
-	  to use the default object class.
+	  @abstract Return the parent of the JSNativeObject. The default
+	  value is default object class.
 	  
 	  @result The parent of the the JSNativeObject.
 	*/
-	std::shared_ptr<JSNativeObject<T>> parent() const {
-		return parent_ptr_;
+	JSClass parent() const {
+		return parent_;
 	}
 
 	/*!
 	  @method
 	  
-	  @abstract Set the parent of the JSNativeObject. A nullptr means to
-	  use the default object class.
+	  @abstract Set the parent of the JSNativeObject.  The default value
+	  is default object class.
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeObjectBuilder<T>& parent(const std::shared_ptr<JSNativeObject<T>>& parent_ptr) {
-		parent_ptr_ = parent_ptr;
+	JSNativeObjectBuilder<T>& parent(const JSClass& parent) {
+		parent_ = parent;
 		return *this;
 	}
 
@@ -772,9 +774,7 @@ class JSNativeObjectBuilder final {
 	  @result A JSClass instance with all of the properties and
 	  callbacks specified in the builder.
 	*/
-	JSNativeObject<T> build() const {
-		return JSNativeObject<T>(*this);
-	}
+	JSNativeObject<T> build() const;
 	
  private:
 
@@ -782,10 +782,7 @@ class JSNativeObjectBuilder final {
 	JSNativeObjectBuilder<T>& AddFunctionPropertyCallback(const JSNativeObjectFunctionPropertyCallback<T>& function_property_callback);
 
 	template<typename U>
-	friend class JSNativeObjectBuilder;
-
-	template<typename U>
-	friend class JSNativeObject;
+	friend class detail::JSNativeObjectDefinition;
 
 	// Require parameters
 	JSContext js_context_;
@@ -793,7 +790,7 @@ class JSNativeObjectBuilder final {
 	// Optional parameters - initialized to default values
 	JSString                                       name_;
 	std::unordered_set<JSNativeObjectAttribute>    attributes_;
-	std::shared_ptr<JSNativeObject<T>>             parent_ptr_                      { nullptr };
+	JSClass                                        parent_;
 	JSNativeObjectValuePropertyCallbackMap_t<T>    value_property_callback_map_;
 	JSNativeObjectFunctionPropertyCallbackMap_t<T> function_property_callback_map_;
 	InitializeCallback<T>                          initialize_callback_             { nullptr };
@@ -921,15 +918,6 @@ JSNativeObjectBuilder<T>& JSNativeObjectBuilder<T>::RemoveAllFunctionPropertyCal
 	return *this;
 }
 
-
-/* JSNativeObject constructor */
-
-template<typename T>
-JSNativeObject<T>::JSNativeObject(const JSNativeObjectBuilder<T>& builder)
-		: js_context_(builder.js_context_)
-		, js_native_object_definition_(JSNativeObjectDefinition<T>(builder)) {
-}
-
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 
 
@@ -944,7 +932,7 @@ JSNativeObjectDefinition<T>::JSNativeObjectDefinition(const JSNativeObjectBuilde
 		: name_(builder.name_)
 		, class_name_for_js_class_definition_(name_)
 		, attributes_(builder.attributes_)
-		, parent_ptr_(builder.parent_ptr_)
+		, parent_(builder.parent_)
 		, value_property_callback_map_(builder.value_property_callback_map_)
 		, function_property_callback_map_(builder.function_property_callback_map_)
 		, initialize_callback_(builder.initialize_callback_)
@@ -1011,7 +999,7 @@ template<typename T>
 void JSNativeObjectDefinition<T>::InitializeJSClassDefinition() {
 	!name_.empty()                           && (js_class_definition_.className         = class_name_for_js_class_definition_.c_str());
 	!attributes_.empty()                     && (js_class_definition_.attributes        = ToJSClassAttributes(attributes_));
-	parent_ptr_                              && (js_class_definition_.parentClass       = parent_ptr_ -> js_native_object_definition_.js_class_);
+	parent_                                  && (js_class_definition_.parentClass       = js_class_);
 	!value_property_callback_map_.empty()    && (js_class_definition_.staticValues      = &js_static_values_[0]);
 	!function_property_callback_map_.empty() && (js_class_definition_.staticFunctions   = &js_static_functions_[0]);
 	initialize_callback_                     && (js_class_definition_.initialize        = JSNativeObject<T>::JSObjectInitializeCallback);
@@ -1028,5 +1016,15 @@ void JSNativeObjectDefinition<T>::InitializeJSClassDefinition() {
 }
 
 }} // namespace JavaScriptCoreCPP { namespace detail {
+
+
+namespace JavaScriptCoreCPP { namespace RAII {
+
+template<typename T>
+JSNativeObject<T> JSNativeObjectBuilder<T>::build() const {
+	return JSNativeObject<T>(js_context_, JSNativeObjectDefinition<T>(*this));
+}
+
+}} // namespace JavaScriptCoreCPP { namespace RAII {
 
 #endif // _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTBUILDER_HPP_

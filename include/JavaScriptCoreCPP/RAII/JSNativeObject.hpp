@@ -33,8 +33,7 @@
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-template<typename T>
-class JSNativeObjectBuilder;
+using namespace JavaScriptCoreCPP::detail;
 
 template<typename T>
 class JSNativeObject;
@@ -47,7 +46,9 @@ class JSNativeObject final {
 	
  public:
 	
-	JSNativeObject() {
+	JSNativeObject(const JSContext& js_context, const JSNativeObjectDefinition<T>& js_native_object_definition)
+			: js_context_(js_context)
+			, js_native_object_definition_(js_native_object_definition) {
 	}
 
 	~JSNativeObject() {
@@ -86,13 +87,9 @@ class JSNativeObject final {
 
 private:
 
-	// Only the JSNativeObjectBuilder can create instances of
-	// JSNativeObject.
-	JSNativeObject(const JSNativeObjectBuilder<T>& builder);
-
 	template<typename U>
-	friend class JSNativeObjectBuilder;
-	
+	friend class JSNativeObjectDefinition;
+
 	JSContext                           js_context_;
 	detail::JSNativeObjectDefinition<T> js_native_object_definition_;
 	std::mutex                          js_native_object_mutex_;
@@ -180,7 +177,7 @@ JSValueRef JSNativeObject<T>::JSStaticValueGetPropertyCallback(JSContextRef js_c
 	JSObject  js_object(js_context, js_object_ref);
 
 	const auto js_native_object_ptr = get_JSNativeObject_shared_ptr(js_object);
-	const auto native_object_ptr    = static_cast<T>(js_native_object_ptr.get());
+	const auto native_object_ptr    = static_cast<T*>(js_object.GetPrivate());
 		
 	// Begin critical section.
 	std::lock_guard<std::mutex> js_native_object_lock(js_native_object_ptr -> js_native_object_mutex_);
@@ -238,7 +235,7 @@ bool JSNativeObject<T>::JSStaticValueSetPropertyCallback(JSContextRef js_context
 	JSObject  js_object(js_context, js_object_ref);
 
 	const auto js_native_object_ptr = get_JSNativeObject_shared_ptr(js_object);
-	const auto native_object_ptr    = static_cast<T>(js_native_object_ptr.get());
+	const auto native_object_ptr    = static_cast<T*>(js_object.GetPrivate());
 
 	// Begin critical section.
 	std::lock_guard<std::mutex> js_native_object_lock(js_native_object_ptr -> js_native_object_mutex_);
@@ -300,7 +297,7 @@ JSValueRef JSNativeObject<T>::JSStaticFunctionCallAsFunctionCallback(JSContextRe
 	JSObject  js_function(js_context, js_function_ref);
 
 	const auto js_native_object_ptr = get_JSNativeObject_shared_ptr(js_function);
-	const auto native_object_ptr    = static_cast<T>(js_native_object_ptr.get());
+	const auto native_object_ptr    = static_cast<T*>(js_function.GetPrivate());
 
 	// Begin critical section.
 	std::lock_guard<std::mutex> js_native_object_lock(js_native_object_ptr -> js_native_object_mutex_);
@@ -366,7 +363,7 @@ void JSNativeObject<T>::JSObjectInitializeCallback(JSContextRef js_context_ref, 
 	JSObject  js_object(js_context, js_object_ref);
 	
 	const auto js_native_object_ptr = get_JSNativeObject_shared_ptr(js_object);
-	const auto native_object_ptr    = static_cast<T>(js_native_object_ptr.get());
+	const auto native_object_ptr    = static_cast<T*>(js_object.GetPrivate());
 
 	// Begin critical section.
 	std::lock_guard<std::mutex> js_native_object_lock(js_native_object_ptr -> js_native_object_mutex_);

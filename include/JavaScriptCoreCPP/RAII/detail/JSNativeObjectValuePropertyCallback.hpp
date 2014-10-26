@@ -144,7 +144,7 @@ class JSNativeObjectValuePropertyCallback final	{
 private:
 	
 	template<typename U>
-	friend class JSNativeObjectBuilder;
+	friend class JSNativeObjectDefinition;
 	
 	template<typename U>
 	friend bool operator==(const JSNativeObjectValuePropertyCallback<U>& lhs, const JSNativeObjectValuePropertyCallback<U>& rhs);

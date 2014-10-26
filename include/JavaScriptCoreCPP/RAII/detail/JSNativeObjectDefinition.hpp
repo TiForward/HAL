@@ -51,6 +51,8 @@ class JSNativeObjectDefinition final	{
 
  public:
 	
+	JSNativeObjectDefinition(const JSNativeObjectBuilder<T>& builder);
+
 	~JSNativeObjectDefinition() {
 	}
 
@@ -59,7 +61,7 @@ class JSNativeObjectDefinition final	{
 			: name_(rhs.name_)
 			, class_name_for_js_class_definition_(name_)
 			, attributes_(rhs.attributes_)
-			, parent_ptr_(rhs.parent_ptr_)
+			, parent_(rhs.parent_)
 			, value_property_callback_map_(rhs.value_property_callback_map_)
 			, function_property_callback_map_(rhs.function_property_callback_map_)
 			, initialize_callback_(rhs.initialize_callback_)
@@ -87,7 +89,7 @@ class JSNativeObjectDefinition final	{
 			: name_(rhs.name_)
 			, class_name_for_js_class_definition_(name_)
 			, attributes_(rhs.attributes_)
-			, parent_ptr_(rhs.parent_ptr_)
+			, parent_(rhs.parent_)
 			, value_property_callback_map_(rhs.value_property_callback_map_)
 			, function_property_callback_map_(rhs.function_property_callback_map_)
 			, initialize_callback_(rhs.initialize_callback_)
@@ -125,7 +127,7 @@ class JSNativeObjectDefinition final	{
     swap(first.name_                              , second.name_);
     swap(first.class_name_for_js_class_definition_, second.class_name_for_js_class_definition_);
     swap(first.attributes_                        , second.attributes_);
-    swap(first.parent_ptr_                        , second.parent_ptr_);
+    swap(first.parent_                            , second.parent_);
     swap(first.value_property_callback_map_       , second.value_property_callback_map_);
     swap(first.function_property_callback_map_    , second.function_property_callback_map_);
     swap(first.initialize_callback_               , second.initialize_callback_);
@@ -149,7 +151,7 @@ class JSNativeObjectDefinition final	{
 
 	// Only the JSNativeObjectBuilder can create instances of
 	// JSNativeObjectDefinition.
-	JSNativeObjectDefinition(const JSNativeObjectBuilder<T>& builder);
+	//JSNativeObjectDefinition(const JSNativeObjectBuilder<T>& builder);
 
 	std::vector<JSStaticValue>    CreateJSStaticValueVector();
 	std::vector<JSStaticFunction> CreateJSStaticFunctionVector();
@@ -164,7 +166,7 @@ class JSNativeObjectDefinition final	{
 	JSString                                       name_;
 	std::string                                    class_name_for_js_class_definition_;
 	std::unordered_set<JSNativeObjectAttribute>    attributes_;
-	std::shared_ptr<JSNativeObject<T>>             parent_ptr_                          { nullptr };
+	JSClass                                        parent_;
 	JSNativeObjectValuePropertyCallbackMap_t<T>    value_property_callback_map_;
 	JSNativeObjectFunctionPropertyCallbackMap_t<T> function_property_callback_map_;
 	InitializeCallback<T>                          initialize_callback_                 { nullptr };

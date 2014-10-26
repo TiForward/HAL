@@ -142,7 +142,7 @@ class JSNativeObjectFunctionPropertyCallback final	{
  private:
 	
 	template<typename U>
-	friend class JSNativeObjectBuilder;
+	friend class JSNativeObjectDefinition;
 	
 	template<typename U>
 	friend bool operator==(const JSNativeObjectFunctionPropertyCallback<U>& lhs, const JSNativeObjectFunctionPropertyCallback<U>& rhs);
