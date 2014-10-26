@@ -11,6 +11,8 @@
 #define _JAVASCRIPTCORECPP_RAII_JSPROPERTYATTRIBUTE_HPP_
 
 #include <functional>
+#include <unordered_set>
+#include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
@@ -36,6 +38,7 @@ enum class JSPropertyAttribute : ::JSPropertyAttributes {
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 
+
 // Provide a hash function so that a JSPropertyAttribute can be stored
 // in an unordered container.
 namespace std {
@@ -46,12 +49,32 @@ struct hash<JavaScriptCoreCPP::RAII::JSPropertyAttribute> {
 	using result_type   = std::size_t;
 	
 	using property_attribute_underlying_type = std::underlying_type<JavaScriptCoreCPP::RAII::JSPropertyAttribute>::type;
-	const std::hash<property_attribute_underlying_type> property_attribute_hash = std::hash<property_attribute_underlying_type>();
+	const std::hash<property_attribute_underlying_type> hash_function = std::hash<property_attribute_underlying_type>();
 	
 	result_type operator()(const argument_type& property_attribute) const {
-		return property_attribute_hash(static_cast<property_attribute_underlying_type>(property_attribute));
+		return hash_function(static_cast<property_attribute_underlying_type>(property_attribute));
 	}
 };
+
 }  // namespace std {
+
+
+namespace JavaScriptCoreCPP { namespace detail {
+
+// For hash functions for std::unordered_set<JSPropertyAttribute> and
+// interoperability with the JavaScriptCore C API.
+inline
+::JSPropertyAttributes ToJSPropertyAttribute(const std::unordered_set<RAII::JSPropertyAttribute>& attributes) {
+	using property_attribute_underlying_type = std::underlying_type<RAII::JSPropertyAttribute>::type;
+	std::bitset<4> property_attributes;
+	for (auto property_attribute : attributes) {
+		const auto bit_position = static_cast<property_attribute_underlying_type>(property_attribute);
+		property_attributes.set(bit_position);
+	}
+	
+	return static_cast<property_attribute_underlying_type>(property_attributes.to_ulong());
+}
+
+}} // namespace JavaScriptCoreCPP { namespace detail {
 
 #endif // _JAVASCRIPTCORECPP_RAII_JSPROPERTYATTRIBUTE_HPP_

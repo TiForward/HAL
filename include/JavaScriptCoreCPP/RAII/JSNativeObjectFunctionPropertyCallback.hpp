@@ -65,7 +65,7 @@ class JSNativeObjectFunctionPropertyCallback final	{
 
 	  @throws std::invalid_argument exception under these preconditions:
 
-	  1. If property_name is empty or otherwise has a JavaScript syntax
+	  1. If function_name is empty or otherwise has a JavaScript syntax
 	  error.
 	  
 	  2. If the call_as_function_callback is not provided.
@@ -84,14 +84,32 @@ class JSNativeObjectFunctionPropertyCallback final	{
 		return attributes_;
 	}
 
+	std::size_t get_hash_value() const {
+		return hash_value_;
+	}
+	
 	~JSNativeObjectFunctionPropertyCallback() {
 	}
 	
 	// Copy constructor.
-	JSNativeObjectFunctionPropertyCallback(const JSNativeObjectFunctionPropertyCallback& rhs);
+	JSNativeObjectFunctionPropertyCallback(const JSNativeObjectFunctionPropertyCallback& rhs)
+			: function_name_(rhs.function_name_)
+			, function_name_for_js_static_function_(rhs.function_name_for_js_static_function_)
+			, call_as_function_callback_(rhs.call_as_function_callback_)
+			, attributes_(rhs.attributes_)
+			, js_property_attributes_(detail::ToJSPropertyAttribute(attributes_))
+			, hash_value_(detail::hash_val(function_name_, js_property_attributes_)) {
+	}
 	
 	// Move constructor.
-	JSNativeObjectFunctionPropertyCallback(JSNativeObjectFunctionPropertyCallback&& rhs);
+	JSNativeObjectFunctionPropertyCallback(JSNativeObjectFunctionPropertyCallback&& rhs)
+			: function_name_(rhs.function_name_)
+			, function_name_for_js_static_function_(rhs.function_name_for_js_static_function_)
+			, call_as_function_callback_(rhs.call_as_function_callback_)
+			, attributes_(rhs.attributes_)
+			, js_property_attributes_(detail::ToJSPropertyAttribute(attributes_))
+			, hash_value_(detail::hash_val(function_name_, js_property_attributes_)) {
+	}
 	
 	// Create a copy of another JSNativeObjectFunctionPropertyCallback by assignment. This is
 	// a unified assignment operator that fuses the copy assignment
@@ -113,9 +131,14 @@ class JSNativeObjectFunctionPropertyCallback final	{
 		swap(first.function_name_for_js_static_function_, second.function_name_for_js_static_function_);
 		swap(first.call_as_function_callback_           , second.call_as_function_callback_);
 		swap(first.attributes_                          , second.attributes_);
+		swap(first.js_property_attributes_              , second.js_property_attributes_);
+    swap(first.hash_val_                            , second.hash_val_);
 	}
 
  private:
+	
+	template<typename U>
+	friend class JSNativeObjectBuilder;
 	
 	template<typename U>
 	friend bool operator==(const JSNativeObjectFunctionPropertyCallback<U>& lhs, const JSNativeObjectFunctionPropertyCallback<U>& rhs);
@@ -127,6 +150,13 @@ class JSNativeObjectFunctionPropertyCallback final	{
 	std::string                             function_name_for_js_static_function_;
 	CallAsFunctionCallback<T>               call_as_function_callback_ { nullptr };
 	std::unordered_set<JSPropertyAttribute> attributes_;
+
+	// For interoperability with the JavaScriptCore C API.
+	JSPropertyAttributes                    js_property_attributes_;
+	
+	// Precomputed hash value for JSNativeObjectValuePropertyCallback
+	// since instances of this class template are immutable.
+	std::size_t                             hash_value_;
 };
 
 template<typename T>
@@ -134,7 +164,9 @@ JSNativeObjectFunctionPropertyCallback<T>::JSNativeObjectFunctionPropertyCallbac
 		: function_name_(function_name)
 		, function_name_for_js_static_function_(function_name)
 		, call_as_function_callback_(call_as_function_callback)
-		, attributes_(attributes) {
+		, attributes_(attributes)
+		, js_property_attributes_(detail::ToJSPropertyAttribute(attributes_))
+		, hash_value_(detail::hash_val(function_name_, js_property_attributes_)) {
 	
 	static const std::string log_prefix { "MDL: JSNativeObjectFunctionPropertyCallback: " };
 	
@@ -160,24 +192,6 @@ JSNativeObjectFunctionPropertyCallback<T>::JSNativeObjectFunctionPropertyCallbac
 		const auto bit_position = static_cast<property_attribute_underlying_type>(property_attribute);
 		property_attributes.set(bit_position);
 	}
-}
-
-// Copy constructor.
-template<typename T>
-JSNativeObjectFunctionPropertyCallback<T>::JSNativeObjectFunctionPropertyCallback(const JSNativeObjectFunctionPropertyCallback<T>& rhs)
-		: function_name_(rhs.function_name_)
-		, function_name_for_js_static_function_(rhs.function_name_for_js_static_function_)
-		, call_as_function_callback_(rhs.call_as_function_callback_)
-		, attributes_(rhs.attributes_) {
-}
-
-// Move constructor.
-template<typename T>
-JSNativeObjectFunctionPropertyCallback<T>::JSNativeObjectFunctionPropertyCallback(JSNativeObjectFunctionPropertyCallback<T>&& rhs)
-		: function_name_(rhs.function_name_)
-		, function_name_for_js_static_function_(rhs.function_name_for_js_static_function_)
-		, call_as_function_callback_(rhs.call_as_function_callback_)
-		, attributes_(rhs.attributes_) {
 }
 
 // Return true if the two JSNativeObjectFunctionPropertyCallbacks are equal.
@@ -241,15 +255,7 @@ struct hash<JSNativeObjectFunctionPropertyCallback<T>> {
 	using result_type   = std::size_t;
 
 	result_type operator()(const argument_type& callback) const {
-
-		using property_attribute_underlying_type = std::underlying_type<JSPropertyAttribute>::type;
-		std::bitset<4> property_attributes;
-		for (auto property_attribute : callback.get_attributes()) {
-			const auto bit_position = static_cast<property_attribute_underlying_type>(property_attribute);
-			property_attributes.set(bit_position);
-		}
-		
-		return hash_val(callback.get_function_name(), property_attributes.to_ulong());
+		return callback.get_hash_value();
 	}
 };
 

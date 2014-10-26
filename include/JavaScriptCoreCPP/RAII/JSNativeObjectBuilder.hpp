@@ -1072,11 +1072,16 @@ JSNativeObjectDefinition<T>::JSNativeObjectDefinition(const JSNativeObjectBuilde
 	js_class_definition_.className  = class_name_for_js_class_definition_.c_str();
 	
 	if (parent_ptr_) {
+		// TODO
 		js_class_definition_.parentClass = parent_ptr_ -> js_class_;
 	}
 	
-	// TODO
+	std::vector<JSStaticValue> js_static_values;
 	for (const auto& value_property_callback : value_property_callback_map_) {
+		JSStaticValue js_static_value;
+		js_static_value.getProperty = JSNativeObject<T>::JSStaticValueGetPropertyCallback;
+		js_static_value.setProperty = JSNativeObject<T>::JSStaticValueSetPropertyCallback;
+		js_static_value.attributes  = 0;
 	}
 	
 	if (initialize_callback_) {
