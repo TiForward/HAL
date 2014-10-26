@@ -25,7 +25,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
   JSContext::CreateBoolean member function.
 */
 #ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
-class JSBoolean final : public JSValue, public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSBoolean> {
+class JSBoolean final : public JSValue, public detail::JSPerformanceCounter<JSBoolean> {
 #else
 class JSBoolean final : public JSValue {
 #endif

@@ -43,12 +43,14 @@ enum class JSPropertyAttribute : ::JSPropertyAttributes {
 // in an unordered container.
 namespace std {
 
+using namespace JavaScriptCoreCPP::RAII;
+
 template<>
-struct hash<JavaScriptCoreCPP::RAII::JSPropertyAttribute> {
-	using argument_type = JavaScriptCoreCPP::RAII::JSPropertyAttribute;
+struct hash<JSPropertyAttribute> {
+	using argument_type = JSPropertyAttribute;
 	using result_type   = std::size_t;
 	
-	using property_attribute_underlying_type = std::underlying_type<JavaScriptCoreCPP::RAII::JSPropertyAttribute>::type;
+	using property_attribute_underlying_type = std::underlying_type<JSPropertyAttribute>::type;
 	const std::hash<property_attribute_underlying_type> hash_function = std::hash<property_attribute_underlying_type>();
 	
 	result_type operator()(const argument_type& property_attribute) const {
@@ -61,11 +63,13 @@ struct hash<JavaScriptCoreCPP::RAII::JSPropertyAttribute> {
 
 namespace JavaScriptCoreCPP { namespace detail {
 
+using namespace JavaScriptCoreCPP::RAII;
+
 // For hash functions for std::unordered_set<JSPropertyAttribute> and
 // interoperability with the JavaScriptCore C API.
 inline
-::JSPropertyAttributes ToJSPropertyAttribute(const std::unordered_set<RAII::JSPropertyAttribute>& attributes) {
-	using property_attribute_underlying_type = std::underlying_type<RAII::JSPropertyAttribute>::type;
+JSPropertyAttributes ToJSPropertyAttribute(const std::unordered_set<JSPropertyAttribute>& attributes) {
+	using property_attribute_underlying_type = std::underlying_type<JSPropertyAttribute>::type;
 	std::bitset<4> property_attributes;
 	for (auto property_attribute : attributes) {
 		const auto bit_position = static_cast<property_attribute_underlying_type>(property_attribute);

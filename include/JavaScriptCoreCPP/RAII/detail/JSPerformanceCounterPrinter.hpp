@@ -17,13 +17,12 @@
 
 namespace JavaScriptCoreCPP { namespace detail {
 
+using namespace JavaScriptCoreCPP::RAII;
+		
 class JSPerformanceCounterPrinter {
  public:
 
 	~JSPerformanceCounterPrinter() {
-		using namespace JavaScriptCoreCPP::RAII;
-		using namespace ::JavaScriptCoreCPP::detail;
-		
 		static const std::string log_prefix { "MDL: JSPerformanceCounterPrinter: " };
 		std::clog << log_prefix << std::endl;
 

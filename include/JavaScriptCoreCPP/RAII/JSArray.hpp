@@ -24,7 +24,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
   JSContext::CreateArray member function.
 */
 #ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
-class JSArray final : public JSObject, public ::JavaScriptCoreCPP::detail::JSPerformanceCounter<JSArray> {
+class JSArray final : public JSObject, public detail::JSPerformanceCounter<JSArray> {
 #else
 class JSArray final : public JSObject {
 #endif

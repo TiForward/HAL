@@ -37,12 +37,14 @@ enum class JSNativeObjectAttribute {
 // stored in an unordered container.
 namespace std {
 
+using namespace JavaScriptCoreCPP::RAII;
+
 template<>
-struct hash<JavaScriptCoreCPP::RAII::JSNativeObjectAttribute> {
-	using argument_type = JavaScriptCoreCPP::RAII::JSNativeObjectAttribute;
+struct hash<JSNativeObjectAttribute> {
+	using argument_type = JSNativeObjectAttribute;
 	using result_type   = std::size_t;
 
-	using property_attribute_underlying_type = std::underlying_type<JavaScriptCoreCPP::RAII::JSNativeObjectAttribute>::type;
+	using property_attribute_underlying_type = std::underlying_type<JSNativeObjectAttribute>::type;
 	const std::hash<property_attribute_underlying_type> property_attribute_hash = std::hash<property_attribute_underlying_type>();
 	
 	result_type operator()(const argument_type& property_attribute) const {

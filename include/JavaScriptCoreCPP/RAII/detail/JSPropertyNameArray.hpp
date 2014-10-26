@@ -19,6 +19,8 @@
 
 namespace JavaScriptCoreCPP { namespace detail {
 
+using namespace JavaScriptCoreCPP::RAII;
+
 /*!
   @class
   
@@ -44,7 +46,7 @@ private:
 	  @result A JSPropertyNameArray containing the names of the object's
 	  enumerable properties.
 	*/
-	JSPropertyNameArray(const RAII::JSObject& js_object) : js_property_name_array_ref_(JSObjectCopyPropertyNames(js_object, js_object)) {
+	JSPropertyNameArray(const JSObject& js_object) : js_property_name_array_ref_(JSObjectCopyPropertyNames(js_object, js_object)) {
 	}
   
 	/*!
@@ -70,12 +72,12 @@ private:
 	  
 	  @result A JSString containing the property name.
 	*/
-	RAII::JSString GetNameAtIndex(size_t index) const {
+	JSString GetNameAtIndex(size_t index) const {
 		return JSPropertyNameArrayGetNameAtIndex(js_property_name_array_ref_, index);
 	}
 	
-	operator std::vector<RAII::JSString>() const {
-		std::vector<RAII::JSString> property_names;
+	operator std::vector<JSString>() const {
+		std::vector<JSString> property_names;
 		for (size_t i = 0, count = GetCount(); i < count; ++i) {
 			property_names.emplace_back(GetNameAtIndex(i));
 		}

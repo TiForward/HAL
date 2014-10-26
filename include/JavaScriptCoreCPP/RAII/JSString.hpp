@@ -199,9 +199,11 @@ std::ostream& operator << (std::ostream& ostream, const JSString& js_string) {
 
 namespace std {
 
+using namespace JavaScriptCoreCPP::RAII;
+
 template<>
-struct hash<JavaScriptCoreCPP::RAII::JSString> {
-	using argument_type = JavaScriptCoreCPP::RAII::JSString;
+struct hash<JSString> {
+	using argument_type = JSString;
 	using result_type   = std::size_t;
 	const std::hash<std::string> string_hash = std::hash<std::string>();
 	
