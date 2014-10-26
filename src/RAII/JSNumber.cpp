@@ -31,7 +31,7 @@ JSNumber::operator double() const {
 }
 
 JSNumber::operator int32_t() const {
-	return ::JavaScriptCoreCPP::detail::to_int32_t(operator double());
+	return detail::to_int32_t(operator double());
 }
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {

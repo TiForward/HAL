@@ -97,7 +97,7 @@ JSValue::operator double() const {
 }
 
 JSValue::operator int32_t() const {
-	return ::JavaScriptCoreCPP::detail::to_int32_t(operator double());
+	return detail::to_int32_t(operator double());
 }
 
 JSValue::operator JSNumber() const {
