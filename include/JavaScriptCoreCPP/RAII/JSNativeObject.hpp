@@ -43,11 +43,11 @@ template<typename T>
 using JSNativeObject_shared_ptr = std::shared_ptr<JSNativeObject<T>>;
 
 template<typename T>
-class JSNativeObject {
+class JSNativeObject final {
 	
  public:
 	
-	virtual ~JSNativeObject() {
+	JSNativeObject() {
 	}
 
 	JSNativeObjectDefinition<T> get_js_native_object_definition() const {
@@ -67,6 +67,8 @@ class JSNativeObject {
 	JSNativeObjectDefinition<T>   js_native_object_definition_;
 	std::mutex                    js_native_object_mutex_;
 	
+	static JSNativeObject_shared_ptr<T> get_JSNativeObject_shared_ptr(const JSObject& js_object);
+
 	// For interoperability with the JavaScriptCore C API.
 	static std::unordered_map<std::intptr_t, JSNativeObject_shared_ptr<T>> native_ptr_to_js_native_object_ptr_map_;
 	static std::mutex                                                      native_ptr_to_js_native_object_ptr_map_mutex_;
@@ -98,16 +100,13 @@ std::unordered_map<std::intptr_t, JSNativeObject_shared_ptr<T>> JSNativeObject<T
 template<typename T>
 std::mutex JSNativeObject<T>::native_ptr_to_js_native_object_ptr_map_mutex_;
 
-// Support for JSStaticValue: getter
 template<typename T>
-JSValueRef JSNativeObject<T>::JSStaticValueGetPropertyCallback(JSContextRef js_context_ref, JSObjectRef js_object_ref, JSStringRef property_name_ref, JSValueRef* exception) {
-	static const std::string log_prefix { "MDL: JSStaticValueGetPropertyCallback:" };
+JSNativeObject_shared_ptr<T> JSNativeObject<T>::get_JSNativeObject_shared_ptr(const JSObject& js_object) {
+	static const std::string log_prefix { "MDL: get_JSNativeObject_shared_ptr:" };
 	
-	JSObject js_object(js_context_ref, js_object_ref);
-
 	const auto native_object_ptr = static_cast<T>(js_object.GetPrivate());
 	const auto key               = reinterpret_cast<std::intptr_t>(native_object_ptr);
-
+	
 #ifdef DEBUG_JSNATIVEOBJECT
 	const auto js_object_identifier = static_cast<std::string>(js_object);
 #endif
@@ -123,8 +122,8 @@ JSValueRef JSNativeObject<T>::JSStaticValueGetPropertyCallback(JSContextRef js_c
 #endif
 	
 	const auto native_object_ptr_map_position = native_ptr_to_js_native_object_ptr_map_.find(key);
-	const bool js_native_object_ptr_found = native_object_ptr_map_position != native_ptr_to_js_native_object_ptr_map_.end();
-
+	const bool js_native_object_ptr_found     = native_object_ptr_map_position != native_ptr_to_js_native_object_ptr_map_.end();
+	
 #ifdef DEBUG_JSNATIVEOBJECT
 	std::clog << log_prefix
 	          << " [DEBUG] "
@@ -135,19 +134,32 @@ JSValueRef JSNativeObject<T>::JSStaticValueGetPropertyCallback(JSContextRef js_c
 	          << "."
 	          << std::endl;
 #endif
-
-	// precondition
+	
+	// postcondition
 	assert(js_native_object_ptr_found);
+	
+	return native_object_ptr_map_position -> second;
+}
 
-	const auto js_native_object_ptr_ = native_object_ptr_map_position -> second;
+// Support for JSStaticValue: getter
+template<typename T>
+JSValueRef JSNativeObject<T>::JSStaticValueGetPropertyCallback(JSContextRef js_context_ref, JSObjectRef js_object_ref, JSStringRef property_name_ref, JSValueRef* exception) {
+	static const std::string log_prefix { "MDL: JSStaticValueGetPropertyCallback:" };
 
+	JSContext js_context(js_context_ref);
+	JSObject  js_object(js_context, js_object_ref);
+
+	const auto js_native_object_ptr = get_JSNativeObject_shared_ptr(js_object);
+	const auto native_object_ptr    = static_cast<T>(js_native_object_ptr.get());
+		
 	// Begin critical section.
-	std::lock_guard<std::mutex> js_native_object_lock(js_native_object_ptr_ -> js_native_object_mutex_);
+	std::lock_guard<std::mutex> js_native_object_lock(js_native_object_ptr -> js_native_object_mutex_);
 	
 	JSString property_name(property_name_ref);
 
 	const auto& js_static_value_map = js_native_object_ptr -> js_static_value_map_;
-	const auto position = js_static_value_map.find(property_name);
+	const auto callback_position    = js_static_value_map.find(property_name);
+	const bool callback_found       = callback_position != js_static_value_map.end();
 
 #ifdef DEBUG_JSNATIVEOBJECT
 	const auto js_native_object_identifier = js_native_object_ptr -> js_native_object_identifier_;
@@ -159,19 +171,18 @@ JSValueRef JSNativeObject<T>::JSStaticValueGetPropertyCallback(JSContextRef js_c
 	          << js_native_object_identifier
 	          << ", property_name = "
 	          << property_name
-	          << ", position != js_static_value_map.end() = "
+	          << ", callback found = "
 	          << std::boolalpha
-	          << (position != js_static_value_map.end)
+	          << callback_found
 	          << "."
 	          << std::endl;
 #endif
 
 	// precondition
-	assert(position != js_static_value_map.end());
+	assert(callback_found);
 	
-	const auto callback = position -> second;
-	auto native_object_ptr = js_native_object_ptr -> native_object_ptr_;
-	auto result = callback(*native_object_ptr, property_name);
+	const auto callback = callback_position -> second;
+	const auto result   = callback(*native_object_ptr, property_name);
 	
 #ifdef DEBUG_JSNATIVEOBJECT
 	std::clog << log_prefix
@@ -194,23 +205,25 @@ bool JSNativeObject<T>::JSStaticValueSetPropertyCallback(JSContextRef js_context
 	static const std::string log_prefix { "MDL: JSStaticValueSetPropertyCallback:" };
 
 	JSContext js_context(js_context_ref);
-	JSObject js_object(js_context, js_object_ref);
-	
-	auto js_native_object_ptr = static_cast<JSNativeObject<T>>(js_object.GetPrivate());
-	
+	JSObject  js_object(js_context, js_object_ref);
+
+	const auto js_native_object_ptr = get_JSNativeObject_shared_ptr(js_object);
+	const auto native_object_ptr    = static_cast<T>(js_native_object_ptr.get());
+
 	// Begin critical section.
-	std::lock_guard<std::mutex> js_static_value_map_lock(js_native_object_ptr -> js_static_value_map_mutex_);
+	std::lock_guard<std::mutex> js_native_object_lock(js_native_object_ptr -> js_native_object_mutex_);
 	
 	JSString property_name(property_name_ref);
 
 	const auto& js_static_value_map = js_native_object_ptr -> js_static_value_map_;
-	const auto position = js_static_value_map.find(property_name);
+	const auto callback_position    = js_static_value_map.find(property_name);
+	const bool callback_found       = callback_position != js_static_value_map.end();
 
 #ifdef DEBUG_JSNATIVEOBJECT
 	const auto js_native_object_identifier = js_native_object_ptr -> js_native_object_identifier_;
 #endif
 	
-	JSValue  js_value(js_context, js_value_ref);
+	JSValue js_value(js_context, js_value_ref);
 
 #ifdef DEBUG_JSNATIVEOBJECT
 	std::clog << log_prefix
@@ -220,19 +233,18 @@ bool JSNativeObject<T>::JSStaticValueSetPropertyCallback(JSContextRef js_context
 	          << property_name
 	          << ", js_value = "
 	          << js_value
-	          << ", position != js_static_value_map.end() = "
+	          << ", callback found = "
 	          << std::boolalpha
-	          << (position != js_static_value_map.end)
+	          << callback_found
 	          << "."
 	          << std::endl;
 #endif
 
 	// precondition
-	assert(position != js_static_value_map.end());
+	assert(callback_found);
 	
-	const auto callback = position -> second;
-	auto native_object_ptr = js_native_object_ptr -> native_object_ptr_;
-	auto result = callback(*native_object_ptr, property_name, js_value);
+	const auto callback = callback_position -> second;
+	const auto result   = callback(*native_object_ptr, property_name, js_value);
 	
 #ifdef DEBUG_JSNATIVEOBJECT
 	std::clog << log_prefix
@@ -240,10 +252,7 @@ bool JSNativeObject<T>::JSStaticValueSetPropertyCallback(JSContextRef js_context
 	          << js_native_object_identifier
 	          << ", property_name = "
 	          << property_name
-	          << ", js_value = "
-	          << js_value
 	          << ", result = "
-	          << std::boolalpha
 	          << result
 	          << "."
 	          << std::endl;
@@ -254,130 +263,84 @@ bool JSNativeObject<T>::JSStaticValueSetPropertyCallback(JSContextRef js_context
 
 // Support for JSStaticFunction
 template<typename T>
-JSValueRef JSNativeObject<T>::JSStaticFunctionCallAsFunctionCallback(JSContextRef js_context_ref, JSObjectRef function_ref, JSObjectRef this_object_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception) {
+JSValueRef JSNativeObject<T>::JSStaticFunctionCallAsFunctionCallback(JSContextRef js_context_ref, JSObjectRef js_function_ref, JSObjectRef this_object_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception) {
 	static const std::string log_prefix { "MDL: JSStaticFunctionCallAsFunctionCallback:" };
 	
 	JSContext js_context(js_context_ref);
-	JSObject  js_function(js_context, function_ref);
+	JSObject  js_function(js_context, js_function_ref);
 
-	auto js_native_object_ptr = static_cast<JSNativeObject<T>>(js_function.GetPrivate());
-	
+	const auto js_native_object_ptr = get_JSNativeObject_shared_ptr(js_function);
+	const auto native_object_ptr    = static_cast<T>(js_native_object_ptr.get());
+
 	// Begin critical section.
-	std::lock_guard<std::mutex> js_static_value_map_lock(js_native_object_ptr -> js_static_value_map_mutex_);
+	std::lock_guard<std::mutex> js_native_object_lock(js_native_object_ptr -> js_native_object_mutex_);
 	
-	JSString property_name(property_name_ref);
+	assert(js_function.IsFunction());
+	JSString function_name; // TODO
 
 	const auto& js_static_function_map = js_native_object_ptr -> js_static_function_map_;
-	const auto position = js_static_function_map.find(property_name);
+	const auto callback_position       = js_static_function_map.find(function_name);
+	const bool callback_found          = callback_position != js_static_function_map.end();
 
 #ifdef DEBUG_JSNATIVEOBJECT
 	const auto js_native_object_identifier = js_native_object_ptr -> js_native_object_identifier_;
 #endif
 	
+	JSObject this_object(js_context, this_object_ref);
+	std::vector<JSValue> arguments;
+	std::transform(arguments_array, arguments_array + argument_count, std::back_inserter(arguments), [&js_context](JSValueRef js_value_ref) { return JSValue(js_context, js_value_ref); });
+
 #ifdef DEBUG_JSNATIVEOBJECT
 	std::clog << log_prefix
 	          << "[DEBUG] "
 	          << js_native_object_identifier
-	          << ", position != js_static_value_map.end() = "
+	          << ", function_name = "
+	          << function_name
+	          << ", argument count = "
+	          << arguments.size()
+	          << ", this_object = "
+	          << static_cast<std::string>(this_object)
+	          << ", callback found = "
 	          << std::boolalpha
-	          << (position != js_static_function_map.end)
+	          << callback_found
+	          << "."
+	          << std::endl;
+#endif
+
+	// precondition
+	assert(callback_found);
+	const auto callback = callback_position -> second;
+	const auto result   = callback(*native_object_ptr, arguments, this_object);
+	
+#ifdef DEBUG_JSNATIVEOBJECT
+	std::clog << log_prefix
+	          << "[DEBUG] "
+	          << js_native_object_identifier
+	          << ", function_name = "
+	          << function_name
+	          << ", result = "
+	          << result
 	          << "."
 	          << std::endl;
 #endif
 	
-	// precondition
-	assert(position != js_static_function_map.end());
-	
-	std::vector<JSValue> arguments;
-	std::transform(arguments_array, arguments_array + argument_count, std::back_inserter(arguments), [&js_context](JSValueRef js_value_ref) { return JSValue(js_context, js_value_ref); });
-
-	auto native_object_ptr = js_native_object_ptr -> native_object_ptr_;
-	const auto js_native_object_function_property_callback = position -> second;
-
-	if (this_object_ref) {
-		JSObject js_this_object(js_context, this_object_ref);
-
-#ifdef DEBUG_JSNATIVEOBJECT
-		std::clog << log_prefix
-		          << "[DEBUG] "
-		          << js_native_object_identifier
-		          << " BEFORE: call function "
-		          << js_native_object_function_property_callback.get_function_name
-		          << " with "
-		          << arguments.size()
-		          << " arguments"
-		          << " (this_object = "
-		          << js_this_object
-		          << ")."
-		          << std::endl;
-#endif
-
-		const auto callback = js_native_object_function_property_callback.get_call_as_function_with_this_callback();
-		auto result = callback(*native_object_ptr, arguments, js_this_object);
-
-#ifdef DEBUG_JSNATIVEOBJECT
-		std::clog << log_prefix
-		          << "[DEBUG] "
-		          << js_native_object_identifier
-		          << " AFTER: called function "
-		          << js_native_object_function_property_callback.get_function_name
-		          << " with "
-		          << arguments.size()
-		          << " arguments"
-		          << ", result = "
-		          << result
-		          << " (this_object = "
-		          << js_this_object
-		          << ")."
-		          << std::endl;
-#endif
-		
-		return result;
-
-	} else {
-
-#ifdef DEBUG_JSNATIVEOBJECT
-		std::clog << log_prefix
-		          << "[DEBUG] "
-		          << js_native_object_identifier
-		          << " BEFORE: call function "
-		          << js_native_object_function_property_callback.get_function_name
-		          << " with "
-		          << arguments.size()
-		          << " arguments"
-		          << "."
-		          << std::endl;
-#endif
-
-		const auto callback = js_native_object_function_property_callback.get_call_as_function_callback();
-		auto result = callback(*native_object_ptr, arguments);
-
-#ifdef DEBUG_JSNATIVEOBJECT
-		std::clog << log_prefix
-		          << "[DEBUG] "
-		          << js_native_object_identifier
-		          << " AFTER: called function "
-		          << js_native_object_function_property_callback.get_function_name
-		          << " with "
-		          << arguments.size()
-		          << " arguments"
-		          << ", result = "
-		          << result
-		          << "."
-		          << std::endl;
-#endif
-
-		return result;
-	}
+	return result;
 }
 
 
 template<typename T>
 void JSNativeObject<T>::JSObjectInitializeCallback(JSContextRef js_context_ref, JSObjectRef js_object_ref) {
-	JSObject js_object(js_context_ref, js_object);
-	auto js_native_object_ptr = static_cast<JSNativeObject<T>>(js_object.GetPrivate());
-	auto callback             = js_native_object_ptr -> js_native_object_definition_.get_initialize_callback();
-	auto native_object_ptr    = js_native_object_ptr -> native_object_ptr_;
+	static const std::string log_prefix { "MDL: JSObjectInitializeCallback:" };
+	
+	JSContext js_context(js_context_ref);
+	JSObject  js_object(js_context, js_object_ref);
+	
+	const auto js_native_object_ptr = get_JSNativeObject_shared_ptr(js_object);
+	const auto native_object_ptr    = static_cast<T>(js_native_object_ptr.get());
+
+	// Begin critical section.
+	std::lock_guard<std::mutex> js_native_object_lock(js_native_object_ptr -> js_native_object_mutex_);
+	auto callback = js_native_object_ptr -> js_native_object_definition_.get_initialize_callback();
 	callback(*native_object_ptr);
 }
 

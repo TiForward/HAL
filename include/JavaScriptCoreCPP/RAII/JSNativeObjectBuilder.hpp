@@ -80,7 +80,7 @@ class JSNativeObjectBuilder final {
 	  
 	  @result The JSContext in which the JSNativeObject is created.
 	*/
-	JSContext JSContext() const {
+	JSContext jscontext() const {
 		return js_context_;
 	}
 	
@@ -92,7 +92,7 @@ class JSNativeObjectBuilder final {
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeObjectBuilder<T>& JSContext(const JSContext& js_context) {
+	JSNativeObjectBuilder<T>& js_context(const JSContext& js_context) {
 		js_context_ = js_context;
 		return *this;
 	}
@@ -104,7 +104,7 @@ class JSNativeObjectBuilder final {
 	  
 	  @result The JSNativeObject's name.
 	*/
-	JSString Name() const {
+	JSString name() const {
 		return name_;
 	}
 	
@@ -115,7 +115,7 @@ class JSNativeObjectBuilder final {
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeObjectBuilder<T>& Name(const JSString& name) {
+	JSNativeObjectBuilder<T>& name(const JSString& name) {
 		name_ = name;
 		return *this;
 	}
@@ -129,7 +129,7 @@ class JSNativeObjectBuilder final {
 	  @result The JSNativeObjectAttributes that describe the
 	  characteristics of the JSNativeObject.
 	*/
-	std::unordered_set<JSNativeObjectAttributes> JSNativeObjectAttributes() const {
+	std::unordered_set<JSNativeObjectAttribute> attributes() const {
 		return attributes_;
 	}
 
@@ -141,7 +141,7 @@ class JSNativeObjectBuilder final {
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeObjectBuilder<T>& JSNativeObjectAttributes(const std::unordered_set<JSNativeObjectAttributes>& attributes) {
+	JSNativeObjectBuilder<T>& attributes(const std::unordered_set<JSNativeObjectAttribute>& attributes) {
 		attributes_ = attributes;
 		return *this;
 	}
@@ -154,7 +154,7 @@ class JSNativeObjectBuilder final {
 	  
 	  @result The parent of the the JSNativeObject.
 	*/
-	std::shared_ptr<JSNativeObject<T>> Parent() const {
+	std::shared_ptr<JSNativeObject<T>> parent() const {
 		return parent_ptr_;
 	}
 
@@ -166,7 +166,7 @@ class JSNativeObjectBuilder final {
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeObjectBuilder<T>& Parent(const std::shared_ptr<JSNativeObject<T>>& parent_ptr) {
+	JSNativeObjectBuilder<T>& parent(const std::shared_ptr<JSNativeObject<T>>& parent_ptr) {
 		parent_ptr_ = parent_ptr;
 		return *this;
 	}
@@ -180,7 +180,7 @@ class JSNativeObjectBuilder final {
 	  @result The JSNativeObjectValuePropertyCallbacks that describe the
 	  JSNativeObject's value properties.
 	*/
-	std::unordered_map<std::string, JSNativeObjectValuePropertyCallback<T>> ValuePropertyCallbacks() const {
+	std::unordered_map<std::string, JSNativeObjectValuePropertyCallback<T>> value_property_callback_map() const {
 		return value_property_callback_map_;
 	}
 	
@@ -230,7 +230,7 @@ class JSNativeObjectBuilder final {
 	  @result The JSNativeObjectFunctionPropertyCallbacks that describe
 	  the JSNativeObject's function properties.
 	*/
-	std::unordered_map<std::stringJSNativeObjectFunctionPropertyCallback<T>> JSNativeObjectFunctionPropertyCallbacks() const {
+	std::unordered_map<std::string, JSNativeObjectFunctionPropertyCallback<T>> JSNativeObjectFunctionPropertyCallbacks() const {
 		return function_property_callback_map_;
 	}
 	
@@ -280,7 +280,7 @@ class JSNativeObjectBuilder final {
 	  @result The callback to invoke when a JavaScript object is first
 	  created.
 	*/
-	InitializeCallback<T> InitializeCallback() const {
+	InitializeCallback<T> initialize_callback() const {
 		return initialize_callback_;
 	}
 
@@ -315,7 +315,7 @@ class JSNativeObjectBuilder final {
   
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeObjectBuilder<T>& InitializeCallback(const InitializeCallback<T>& initialize_callback) {
+	JSNativeObjectBuilder<T>& initialize_callback(const InitializeCallback<T>& initialize_callback) {
 		initialize_callback_ = initialize_callback;
 		return *this;
 	}
@@ -329,7 +329,7 @@ class JSNativeObjectBuilder final {
 	  @result The callback to invoke when a JavaScript object is
 	  finalized (prepared for garbage collection).
 	*/
-	FinalizeCallback<T> FinalizeCallback() const {
+	FinalizeCallback<T> finalize_callback() const {
 		return finalize_callback_;
 	}
 
@@ -370,7 +370,7 @@ class JSNativeObjectBuilder final {
 
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeObjectBuilder<T>& FinalizeCallback(const FinalizeCallback<T>& finalize_callback) {
+	JSNativeObjectBuilder<T>& finalize_callback(const FinalizeCallback<T>& finalize_callback) {
 		finalize_callback_ = finalize_callback;
 		return *this;
 	}
@@ -384,7 +384,7 @@ class JSNativeObjectBuilder final {
 	  @result The callback to invoke when determining whether a
 	  JavaScript object has a property.
 	*/
-	HasPropertyCallback<T> HasPropertyCallback() const {
+	HasPropertyCallback<T> has_property_callback() const {
 		return has_property_callback_;
 	}
 
@@ -419,7 +419,7 @@ class JSNativeObjectBuilder final {
 
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeObjectBuilder<T>& HasPropertyCallback(const HasPropertyCallback<T>& has_property_callback) {
+	JSNativeObjectBuilder<T>& has_property_callback(const HasPropertyCallback<T>& has_property_callback) {
 		has_property_callback_ = has_property_callback;
 		return *this;
 	}
@@ -433,7 +433,7 @@ class JSNativeObjectBuilder final {
 	  @result The callback to invoke when getting a property's value
 	  from a JavaScript object.
 	*/
-	GetPropertyCallback<T> GetPropertyCallback() const {
+	GetPropertyCallback<T> get_property_names_callback() const {
 		return get_property_callback_;
 	}
 
@@ -461,7 +461,7 @@ class JSNativeObjectBuilder final {
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeObjectBuilder<T>& GetPropertyCallback(const GetPropertyCallback<T>& get_property_callback) {
+	JSNativeObjectBuilder<T>& get_property_callback(const GetPropertyCallback<T>& get_property_callback) {
 		get_property_callback_ = get_property_callback;
 		return *this;
 	}
@@ -475,7 +475,7 @@ class JSNativeObjectBuilder final {
 	  @result The callback to invoke when setting a property's value on
 	  a JavaScript object.
 	*/
-	SetPropertyCallback<T> SetPropertyCallback() const {
+	SetPropertyCallback<T> set_property_callback() const {
 		return set_property_callback_;
 	}
 
@@ -503,7 +503,7 @@ class JSNativeObjectBuilder final {
   
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeObjectBuilder<T>& SetPropertyCallback(const JSObject::SetPropertyCallback& set_property_callback) {
+	JSNativeObjectBuilder<T>& set_property_callback(const SetPropertyCallback<T>& set_property_callback) {
 		set_property_callback_ = set_property_callback;
 		return *this;
 	}
@@ -517,7 +517,7 @@ class JSNativeObjectBuilder final {
 	  @result The callback to invoke when deleting a property from a
 	  JavaScript object.
 	*/
-	DeletePropertyCallback<T> DeletePropertyCallback() const {
+	DeletePropertyCallback<T> delete_property_callback() const {
 		return delete_property_callback_;
 	}
 
@@ -545,7 +545,7 @@ class JSNativeObjectBuilder final {
 
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeObjectBuilder<T>& DeletePropertyCallback(const DeletePropertyCallback<T>& delete_property_callback) {
+	JSNativeObjectBuilder<T>& delete_property_callback(const DeletePropertyCallback<T>& delete_property_callback) {
 		delete_property_callback_ = delete_property_callback;
 		return *this;
 	}
@@ -559,7 +559,7 @@ class JSNativeObjectBuilder final {
 	  @result The callback to invoke when collecting the names of a
 	  JavaScript object's properties
 	*/
-	GetPropertyNamesCallback<T> GetPropertyNamesCallback() const {
+	GetPropertyNamesCallback<T> get_property_callback() const {
 		return get_property_names_callback_;
 	}
 
@@ -594,7 +594,7 @@ class JSNativeObjectBuilder final {
 
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeObjectBuilder<T>& GetPropertyNamesCallback(const GetPropertyNamesCallback<T>& get_property_names_callback) {
+	JSNativeObjectBuilder<T>& get_property_names_callback(const GetPropertyNamesCallback<T>& get_property_names_callback) {
 		get_property_names_callback_ = get_property_names_callback;
 		return *this;
 	}
@@ -608,7 +608,7 @@ class JSNativeObjectBuilder final {
 	  @result The callback to invoke when a JavaScript object is called
 	  as a function.
 	*/
-	CallAsFunctionCallback<T> CallAsFunctionCallback() const {
+	CallAsFunctionCallback<T> call_as_function_callback() const {
 		return call_as_function_callback_;
 	}
 
@@ -640,9 +640,9 @@ class JSNativeObjectBuilder final {
 	  the instance of Foo being called, and this_object would be set to
 	  the global object.
 
-  @result A reference to the builder for chaining.
+	  @result A reference to the builder for chaining.
 	*/
-	JSNativeObjectBuilder<T>& CallAsFunctionCallback(const CallAsFunctionCallback<T>& call_as_function_callback) {
+	JSNativeObjectBuilder<T>& call_as_function_callback(const CallAsFunctionCallback<T>& call_as_function_callback) {
 		call_as_function_callback_ = call_as_function_callback;
 		return *this;
 	}
@@ -658,7 +658,7 @@ class JSNativeObjectBuilder final {
 	  @result The callback to invoke when an object is used as a
 	  constructor in a 'new' expression.
 	*/
-	CallAsConstructorCallback<T> CallAsConstructorCallback() const {
+	CallAsConstructorCallback<T> call_as_constructor_callback() const {
 		return call_as_constructor_callback_;
 	}
 
@@ -691,7 +691,7 @@ class JSNativeObjectBuilder final {
 
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeObjectBuilder<T>& CallAsConstructorCallback(const CallAsConstructorCallback<T>& call_as_constructor_callback) {
+	JSNativeObjectBuilder<T>& call_as_constructor_callback(const CallAsConstructorCallback<T>& call_as_constructor_callback) {
 		call_as_constructor_callback_ = call_as_constructor_callback;
 		return *this;
 	}
@@ -707,7 +707,7 @@ class JSNativeObjectBuilder final {
 	  @result The callback to invoke when an object is used as the
 	  target of an 'instanceof' expression.
 	*/
-	HasInstanceCallback<T> HasInstanceCallback() const {
+	HasInstanceCallback<T> has_instance_callback() const {
 		return has_instance_callback_;
 	}
 
@@ -740,7 +740,7 @@ class JSNativeObjectBuilder final {
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeObjectBuilder<T>& HasInstanceCallback(const HasInstanceCallback<T>& has_instance_callback) {
+	JSNativeObjectBuilder<T>& has_instance_callback(const HasInstanceCallback<T>& has_instance_callback) {
 		has_instance_callback_ = has_instance_callback;
 		return *this;
 	}
@@ -754,7 +754,7 @@ class JSNativeObjectBuilder final {
 	  @result The callback to invoke when converting a JavaScript object
 	  to another JavaScript type.
 	*/
-	ConvertToTypeCallback<T> ConvertToTypeCallback() const {
+	ConvertToTypeCallback<T> convert_to_type_callback() const {
 		return convert_to_type_callback_;
 	}
 
@@ -785,7 +785,7 @@ class JSNativeObjectBuilder final {
 
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeObjectBuilder<T>& ConvertToTypeCallback(const ConvertToTypeCallback<T>& convert_to_type_callback) {
+	JSNativeObjectBuilder<T>& convert_to_type_callback(const ConvertToTypeCallback<T>& convert_to_type_callback) {
 		convert_to_type_callback_ = convert_to_type_callback;
 		return *this;
 	}
@@ -816,11 +816,11 @@ class JSNativeObjectBuilder final {
 	
 	// Optional parameters - initialized to default values
 	JSString                                                                   name_;
-	std::unordered_set<JSNativeObjectAttributes>                               attributes_;
-	std::shared_ptr<JSNativeObject>                                            parent_ptr_                          { nullptr };
+	std::unordered_set<JSNativeObjectAttribute>                                attributes_;
+	std::shared_ptr<JSNativeObject<T>>                                         parent_ptr_                          { nullptr };
 	std::unordered_map<std::string, JSNativeObjectValuePropertyCallback<T>>    value_property_callback_map_;
 	std::unordered_map<std::string, JSNativeObjectFunctionPropertyCallback<T>> function_property_callback_map_;
-	InitializeCallback                                                         initialize_callback_                 { nullptr };
+	InitializeCallback<T>                                                      initialize_callback_                 { nullptr };
 	FinalizeCallback<T>                                                        finalize_callback_                   { nullptr };
 	HasPropertyCallback<T>                                                     has_property_callback_               { nullptr };
 	GetPropertyCallback<T>                                                     get_property_callback_               { nullptr };
@@ -1054,10 +1054,36 @@ JSNativeObjectDefinition<T>::JSNativeObjectDefinition(const JSNativeObjectBuilde
 		, delete_property_callback_(builder.delete_property_callback_)
 		, get_property_names_callback_(builder.get_property_names_callback_)
 		, call_as_function_callback_(builder.call_as_function_callback_)
-		, call_as_function_with_this_callback_(builder.call_as_function_with_this_callback_)
 		, call_as_constructor_callback_(builder.call_as_constructor_callback_)
 		, has_instance_callback_(builder.has_instance_callback_)
 		, convert_to_type_callback_(builder.convert_to_type_callback_) {
+
+	// Use kJSClassAttributeNoAutomaticPrototype in combination with
+	// JSObjectSetPrototype to manage prototypes manually
+	
+	using native_object_attribute_underlying_type = std::underlying_type<JSNativeObjectAttribute>::type;
+	std::bitset<2> native_object_attributes;
+	for (auto native_object_attribute : attributes_) {
+		const auto bit_position = static_cast<native_object_attribute_underlying_type>(native_object_attribute);
+		native_object_attributes.set(bit_position);
+	}
+	
+	js_class_definition_.attributes = static_cast<native_object_attribute_underlying_type>(native_object_attributes.to_ulong());
+	js_class_definition_.className  = class_name_for_js_class_definition_.c_str();
+	
+	if (parent_ptr_) {
+		js_class_definition_.parentClass = parent_ptr_ -> js_class_;
+	}
+	
+	// TODO
+	for (const auto& value_property_callback : value_property_callback_map_) {
+	}
+	
+	if (initialize_callback_) {
+		js_class_definition_.initialize = JSNativeObject<T>::JSObjectInitializeCallback;
+	}
+	
+	js_class_ = JSClass(&js_class_definition_);
 }
 
 
@@ -1067,33 +1093,6 @@ template<typename T>
 JSNativeObject<T>::JSNativeObject(const JSNativeObjectBuilder<T>& builder)
 		: js_context_(builder.js_context_)
 		, js_native_object_definition_(builder.get_js_native_object_definition()) {
-
-	// Use kJSClassAttributeNoAutomaticPrototype in combination with
-	// JSObjectSetPrototype to manage prototypes manually
-	
-	using native_object_attribute_underlying_type = std::underlying_type<JSNativeObjectAttributes>::type;
-	std::bitset<2> native_object_attributes;
-	for (auto native_object_attribute : js_native_object_definition_.attributes_) {
-		const auto bit_position = static_cast<native_object_attribute_underlying_type>(native_object_attribute);
-		native_object_attributes.set(bit_position);
-	}
-
-	js_class_definition_.attributes = static_cast<native_object_attribute_underlying_type>(native_object_attributes.to_ulong());
-	js_class_definition_.className  = js_native_object_definition_.class_name_for_js_class_definition_.c_str();
-
-	if (js_native_object_definition_.parent_ptr_) {
-		js_class_definition_.parentClass = js_native_object_definition_.parent_ptr_ -> js_class_;
-	}
-	
-	// TODO
-	for (const auto& value_property_callback : js_native_object_definition_.value_property_callbacks_) {
-	}
-
-	if (js_native_object_definition_.initialize_callback_) {
-		js_class_definition_.initialize = JSObjectInitializeCallback;
-	}
-
-	js_class_ = JSClass(&js_class_definition_);
 }
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {

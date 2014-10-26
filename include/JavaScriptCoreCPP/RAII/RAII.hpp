@@ -29,6 +29,8 @@
 #include "JavaScriptCoreCPP/RAII/JSClass.hpp"
 #include "JavaScriptCoreCPP/RAII/JSPropertyNameAccumulator.hpp"
 
+#include "JavaScriptCoreCPP/RAII/JSNativeObject.hpp"
+#include "JavaScriptCoreCPP/RAII/JSNativeObjectBuilder.hpp"
 #include "JavaScriptCoreCPP/RAII/JSNativeObjectAttribute.hpp"
 #include "JavaScriptCoreCPP/RAII/JSNativeObjectCallbacks.hpp"
 #include "JavaScriptCoreCPP/RAII/JSNativeObjectFunctionPropertyCallback.hpp"

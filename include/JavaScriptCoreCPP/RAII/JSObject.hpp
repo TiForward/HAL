@@ -784,7 +784,7 @@ class JSObject : public JSValue {
 	JSObject(const JSContext& js_context, JSObjectRef js_object_ref);
 
 	// // For interoperability with the JavaScriptCore C API.
-	// JSObject(JSContextRef js_context_ref, JSObjectRef js_object_ref);
+	//explicit JSObject(JSContextRef js_context_ref, JSObjectRef js_object_ref);
 	
 	// For interoperability with the JavaScriptCore C API.
 	operator JSObjectRef() const {

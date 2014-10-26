@@ -37,17 +37,17 @@ JSObject::JSObject(const JSContext& js_context, JSObjectRef js_object_ref)
 
 // For interoperability with the JavaScriptCore C API.
 // JSObject::JSObject(JSContextRef js_context_ref, JSObjectRef js_object_ref)
-// 		: JSValue(js_context_ref, js_object_ref)
+// 		: JSValue(JSContext(js_context_ref), js_object_ref)
 // 		, js_object_ref_(js_object_ref) {
 
 // 	if (!js_object_ref_) {
-// 		static const std::string log_prefix { "MDL: JSObject(JSObjectRef js_object_ref, const JSContext& js_context): " };
+// 		static const std::string log_prefix { "MDL: JSObject::JSObject(JSContextRef js_context_ref, JSObjectRef js_object_ref): " };
 // 		const std::string message = "js_object_ref can not be nullptr.";
 // 		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
 // 		throw std::logic_error(message);
 // 	}
 	
-// 	JSValueProtect(*this, js_object_ref_);
+// 	JSValueProtect(js_context_, js_object_ref_);
 // }
 
 std::vector<JSString> JSObject::GetPropertyNames() const {

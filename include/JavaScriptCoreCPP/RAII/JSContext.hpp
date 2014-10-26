@@ -531,11 +531,11 @@ private:
   }
   
   // For interoperability with the JavaScriptCore C API.
-  // explicit JSContext(JSGlobalContextRef js_global_context_ref)
-	// 	  : js_context_ref_(js_global_context_ref) {
-	//   assert(js_context_ref_);
-	//   JSGlobalContextRetain(js_global_context_ref);
-  // }
+  explicit JSContext(JSContextRef js_context_ref)
+		  : js_context_group_(JSContextGetGroup(js_context_ref))
+		  , js_context_ref_(js_context_ref) {
+	  JSGlobalContextRetain(*this);
+  }
 		
 	// For interoperability with the JavaScriptCore C API.
 	operator JSContextRef() const {
@@ -546,11 +546,6 @@ private:
 	operator JSGlobalContextRef() const {
 		return JSContextGetGlobalContext(js_context_ref_);
 	}
-
-	// For interoperability with the JavaScriptCore C API.
-	// operator JSContextGroupRef() const {
-	// 	return JSContextGetGroup(js_context_ref_);
-	// }
 
 	friend class JSContextGroup;
 	friend class JSValue;

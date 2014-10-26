@@ -56,10 +56,10 @@ class JSNativeObjectDefinition final	{
 
 	JSString                                                                name_;
 	std::string                                                             class_name_for_js_class_definition_;
-	std::unordered_set<JSNativeObjectAttributes>                            attributes_;
+	std::unordered_set<JSNativeObjectAttribute>                             attributes_;
 	std::shared_ptr<JSNativeObject<T>>                                      parent_ptr_                          { nullptr };
-	std::unordered_map<std::string, JSNativeObjectValuePropertyCallback<T>> value_property_callbacks_;
-	std::unordered_set<JSNativeObjectFunctionPropertyCallback<T>>           function_property_callbacks_;
+	std::unordered_map<std::string, JSNativeObjectValuePropertyCallback<T>> value_property_callback_map_;
+	std::unordered_set<JSNativeObjectFunctionPropertyCallback<T>>           function_property_callback_map_;
 	InitializeCallback<T>                                                   initialize_callback_                 { nullptr };
 	FinalizeCallback<T>                                                     finalize_callback_                   { nullptr };
 	HasPropertyCallback<T>                                                  has_property_callback_               { nullptr };
