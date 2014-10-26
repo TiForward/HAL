@@ -52,10 +52,15 @@ using namespace JavaScriptCoreCPP::RAII;
   DeletePropertyCallback<NativeObject>         DeletePropertyCallback         = &NativeObject::DeleteProperty;
   GetPropertyNamesCallback<NativeObject>       GetPropertyNamesCallback       = &NativeObject::GetPropertyNames;
   CallAsFunctionCallback<NativeObject>         CallAsFunctionCallback         = &NativeObject::CallAsFunction;
-  CallAsFunctionWithThisCallback<NativeObject> CallAsFunctionWithThisCallback = &NativeObject::CallAsFunctionWithThis;
   CallAsConstructorCallback<NativeObject>      CallAsConstructorCallback      = &NativeObject::CallAsConstructor;
   HasInstanceCallback<NativeObject>            HasInstanceCallback            = &NativeObject::HasInstance;
   ConvertToTypeCallback<NativeObject>          ConvertToTypeCallback          = &NativeObject::ConvertToType;
+}
+
+- (void)testJSNativeObjectFunctionPropertyCallback {
+  JSNativeObjectFunctionPropertyCallback<NativeObject> FunctionPropertyCallback("Foo", &NativeObject::CallAsFunction);
+//  JSContext js_context = js_context_group.CreateContext();
+//  NativeObject native_object(js_context);
 }
 
 - (void)testJSNativeObject {

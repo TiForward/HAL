@@ -11,6 +11,9 @@
 
 namespace JavaScriptCoreCPP { namespace detail {
 
+template<typename T>
+struct hash;
+
 // These utility hash functions taken from "The C++ Standard Library:
 // A Tutorial and Reference (2nd Edition)" by Nicolai M. Josuttis,
 // pages 364-365.

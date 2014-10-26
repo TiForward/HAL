@@ -43,26 +43,21 @@ class JSNativeObjectFunctionPropertyCallback final	{
 	  For example, given this class definition:
 	  
 	  class Foo {
-	    JSValue CallAsFunction(const std::vector<JSValue>& arguments);
 	    JSValue CallAsFunction(const std::vector<JSValue>& arguments, const JSObject& this_object);
 	  };
 	  
-	  You would define the two callbacks like this:
+	  You would define the callback like this:
 	  
 	  CallAsFunctionCallback callback(&Foo::CallAsFunction);
-	  CallAsFunctionWithThisCallback callback(&Foo::CallAsFunction);
 	  
 	  @param function_name A JSString containing the function's name.
 	  
 	  @param call_as_function_callback The callback to invoke when
 	  calling the JavaScript object as a function.
 	  
-	  @param call_as_function_with_this_callback The callback to invoke
-	  when calling the JavaScript object as a function when it is a
-	  property of another JavaScript object.
-
-	  @param attributes A set of JSPropertyAttributes to give to the
-	  function property.
+	  @param attributes An optional set of JSPropertyAttributes to give
+	  to the function property. The default is
+	  JSPropertyAttribute::DontDelete.
 	  
 	  @result The callback to invoke when a JavaScript object is called
 	  as a function either directly or when it is a property of another
@@ -74,11 +69,8 @@ class JSNativeObjectFunctionPropertyCallback final	{
 	  error.
 	  
 	  2. If the call_as_function_callback is not provided.
-	                               
-	  3. If the call_as_function_with_this_callback is not provided.
 	*/
-	JSNativeObjectFunctionPropertyCallback(const JSString& function_name, CallAsFunctionCallback<T> call_as_function_callback, CallAsFunctionWithThisCallback<T> call_as_function_with_this_callback, const std::unordered_set<JSPropertyAttribute> attributes = std::unordered_set<JSPropertyAttribute>());
-	
+	JSNativeObjectFunctionPropertyCallback(const JSString& function_name, CallAsFunctionCallback<T> call_as_function_callback, const std::unordered_set<JSPropertyAttribute> attributes = {JSPropertyAttribute::DontDelete});
 
 	JSString get_function_name() const {
 		return function_name_;
@@ -88,10 +80,6 @@ class JSNativeObjectFunctionPropertyCallback final	{
 		return call_as_function_callback_;
 	}
 	
-	CallAsFunctionWithThisCallback<T> get_call_as_function_with_this_callback() const {
-		return call_as_function_with_this_callback_;
-	}
-
 	std::unordered_set<JSPropertyAttribute> get_attributes() const {
 		return attributes_;
 	}
@@ -124,7 +112,6 @@ class JSNativeObjectFunctionPropertyCallback final	{
 		swap(first.function_name_                       , second.function_name_);
 		swap(first.function_name_for_js_static_function_, second.function_name_for_js_static_function_);
 		swap(first.call_as_function_callback_           , second.call_as_function_callback_);
-		swap(first.call_as_function_with_this_callback_ , second.call_as_function_with_this_callback_);
 		swap(first.attributes_                          , second.attributes_);
 	}
 
@@ -136,22 +123,26 @@ class JSNativeObjectFunctionPropertyCallback final	{
 	template<typename U>
 	friend bool operator<(const JSNativeObjectFunctionPropertyCallback<U>& lhs, const JSNativeObjectFunctionPropertyCallback<U>& rhs);
 
-	template<typename U>
-	friend struct hash<JSNativeObjectFunctionPropertyCallback<U>>;
+	// template<typename T>
+  // using hash = detail::hash<JSNativeObjectFunctionPropertyCallback<T>>;
+
+	// template<typename U>
+  // friend detail::hash<JSNativeObjectFunctionPropertyCallback<U>>;
+
+	//friend detail::hash<JSNativeObjectFunctionPropertyCallback<T>>;
+	//friend JSNativeObjectFunctionPropertyCallbackHash<T>;
 
 	JSString                                function_name_;
 	std::string                             function_name_for_js_static_function_;
 	CallAsFunctionCallback<T>               call_as_function_callback_           { nullptr };
-	CallAsFunctionWithThisCallback<T>       call_as_function_with_this_callback_ { nullptr };
 	std::unordered_set<JSPropertyAttribute> attributes_;
 };
 
 template<typename T>
-JSNativeObjectFunctionPropertyCallback<T>::JSNativeObjectFunctionPropertyCallback(const JSString& function_name, CallAsFunctionCallback<T> call_as_function_callback, CallAsFunctionWithThisCallback<T> call_as_function_with_this_callback, const std::unordered_set<JSPropertyAttribute> attributes)
+JSNativeObjectFunctionPropertyCallback<T>::JSNativeObjectFunctionPropertyCallback(const JSString& function_name, CallAsFunctionCallback<T> call_as_function_callback, const std::unordered_set<JSPropertyAttribute> attributes)
 		: function_name_(function_name)
 		, function_name_for_js_static_function_(function_name)
 		, call_as_function_callback_(call_as_function_callback)
-		, call_as_function_with_this_callback_(call_as_function_with_this_callback)
 		, attributes_(attributes) {
 	
 	static const std::string log_prefix { "MDL: JSNativeObjectFunctionPropertyCallback: " };
@@ -164,9 +155,9 @@ JSNativeObjectFunctionPropertyCallback<T>::JSNativeObjectFunctionPropertyCallbac
 		throw std::invalid_argument(message);
 	}
 	
-	if (!call_as_function_callback || !call_as_function_with_this_callback) {
+	if (!call_as_function_callback) {
 		std::ostringstream os;
-		os << "Both call_as_function_callback and call_as_function_with_this_callback must be provided.";
+		os << "The call_as_function_callback must be provided.";
 		const std::string message = os.str();
 		std::clog << log_prefix << " [ERROR] " << message << std::endl;
 		throw std::invalid_argument(message);
@@ -186,7 +177,6 @@ JSNativeObjectFunctionPropertyCallback<T>::JSNativeObjectFunctionPropertyCallbac
 		: function_name_(rhs.function_name_)
 		, function_name_for_js_static_function_(rhs.function_name_for_js_static_function_)
 		, call_as_function_callback_(rhs.call_as_function_callback_)
-		, call_as_function_with_this_callback_(rhs.call_as_function_with_this_callback_)
 		, attributes_(rhs.attributes_) {
 }
 
@@ -196,7 +186,6 @@ JSNativeObjectFunctionPropertyCallback<T>::JSNativeObjectFunctionPropertyCallbac
 		: function_name_(rhs.function_name_)
 		, function_name_for_js_static_function_(rhs.function_name_for_js_static_function_)
 		, call_as_function_callback_(rhs.call_as_function_callback_)
-		, call_as_function_with_this_callback_(rhs.call_as_function_with_this_callback_)
 		, attributes_(rhs.attributes_) {
 }
 
@@ -215,14 +204,6 @@ bool operator==(const JSNativeObjectFunctionPropertyCallback<T>& lhs, const JSNa
 		return false;
 	}
 
-	if (lhs.call_as_function_with_this_callback_ && !rhs.call_as_function_with_this_callback_) {
-		return false;
-	}
-	
-	if (!lhs.call_as_function_with_this_callback_ && rhs.call_as_function_with_this_callback_) {
-		return false;
-	}
-	
 	return lhs.attributes_ == rhs.attributes_;
 }
 
@@ -257,6 +238,9 @@ bool operator>=(const JSNativeObjectFunctionPropertyCallback<T>& lhs, const JSNa
 	return ! (lhs < rhs);
 }
 
+template<typename T>
+struct hash;
+
 // Provide a hash function so that a
 // JSNativeObjectFunctionPropertyCallback can be stored in an
 // unordered container.
@@ -264,11 +248,36 @@ template<typename T>
 struct hash<JSNativeObjectFunctionPropertyCallback<T>> {
 	using argument_type = JSNativeObjectFunctionPropertyCallback<T>;
 	using result_type   = std::size_t;
+	const std::hash<std::string> string_hash = std::hash<std::string>();
 	
-	result_type operator()(const argument_type& property_attribute) const {
-		return std::hash(property_attribute.get_property_name());
+	result_type operator()(const argument_type& callback) const {
+		return string_hash(callback.get_property_name());
 	}
 };
+
+}} // namespace JavaScriptCoreCPP { namespace RAII {
+
+namespace JavaScriptCoreCPP { namespace detail {
+
+using namespace JavaScriptCoreCPP::RAII;
+
+template<typename T>
+struct hash<JSNativeObjectFunctionPropertyCallback<T>> {
+	using argument_type = JSNativeObjectFunctionPropertyCallback<T>;
+	using result_type   = std::size_t;
+	const std::hash<std::string> string_hash = std::hash<std::string>();
+	
+	result_type operator()(const argument_type& callback) const {
+		return string_hash(callback.get_property_name());
+	}
+};
+
+}} // namespace JavaScriptCoreCPP { namespace detail {
+
+namespace JavaScriptCoreCPP { namespace RAII {
+
+template<typename T>
+using JSNativeObjectFunctionPropertyCallbackHash = detail::hash<JSNativeObjectFunctionPropertyCallback<T>>;
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 

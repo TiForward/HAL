@@ -131,20 +131,7 @@ class NativeObject final {
 		          << std::endl;
 	}
 
-	JSValue CallAsFunction(const std::vector<JSValue>& arguments) {
-		static const std::string log_prefix { "MDL: NativeObject::CallAsFunction: " };
-
-		std::clog
-				<< log_prefix
-				<< "called with "
-				<< arguments.size()
-				<< " arguments."
-				<< std::endl;
-
-		return js_context_.CreateUndefined();
-	}
-
-	JSValue CallAsFunctionWithThis(const std::vector<JSValue>& arguments, const JSObject& this_object) {
+	JSValue CallAsFunction(const std::vector<JSValue>& arguments, const JSObject& this_object) {
 		static const std::string log_prefix { "MDL: NativeObject::CallAsFunction: " };
 
 		std::clog

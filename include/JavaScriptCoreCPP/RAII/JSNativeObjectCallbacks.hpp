@@ -290,8 +290,8 @@ using GetPropertyNamesCallback = std::function<void(const T&, const JSPropertyNa
 
   CallAsFunctionCallback callback(&Foo::CallAsFunction);
 */
-template<typename T>
-using CallAsFunctionCallback = std::function<JSValue(T&, const std::vector<JSValue>&)>;
+// template<typename T>
+// using CallAsFunctionCallback = std::function<JSValue(T&, const std::vector<JSValue>&)>;
 	
 /*! 
   @typedef CallAsFunctionWithThisCallback
@@ -331,8 +331,11 @@ using CallAsFunctionCallback = std::function<JSValue(T&, const std::vector<JSVal
   'myFunction' is the instance of Foo being called, and this_object
   would be set to 'myObject'.
 */
+// template<typename T>
+// using CallAsFunctionWithThisCallback = std::function<JSValue(T&, const std::vector<JSValue>&, const JSObject&)>;
+
 template<typename T>
-using CallAsFunctionWithThisCallback = std::function<JSValue(T&, const std::vector<JSValue>&, const JSObject&)>;
+using CallAsFunctionCallback = std::function<JSValue(T&, const std::vector<JSValue>&, const JSObject&)>;
 
 /*! 
   @typedef CallAsConstructorCallback
