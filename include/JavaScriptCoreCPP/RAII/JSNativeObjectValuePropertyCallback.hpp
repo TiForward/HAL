@@ -12,10 +12,72 @@
 
 #include "JavaScriptCoreCPP/RAII/JSNativeObjectCallbacks.hpp"
 #include "JavaScriptCoreCPP/RAII/JSPropertyAttribute.hpp"
+#include "JavaScriptCoreCPP/RAII/detail/HashUtilities.hpp"
 #include <functional>
 #include <sstream>
 
 namespace JavaScriptCoreCPP { namespace RAII {
+
+/*! 
+  @typedef GetNamedPropertyCallback
+
+  @abstract The callback to invoke when getting a property's value
+  from a JavaScript object.
+
+  @param object A const reference to the native object backing the
+  JavaScript object.
+
+  @result The property's value if object has the property, otherwise
+  JSUndefined.
+
+  @discussion If this function returns JSUndefined, the get request
+  forwards to the native object's JSNativeObjectPropertyCallback (if
+  any), then its parent class chain (which includes the default object
+  class), then its prototype chain.
+
+  For example, given this class definition:
+  
+  class Foo {
+    JSValue GetBar() const;
+  };
+
+  You would define the callback like this:
+
+  GetNamedPropertyCallback callback(&Foo::GetBar);
+*/
+template<typename T>
+using GetNamedPropertyCallback = std::function<JSValue(const T&)>;
+	
+/*! 
+  @typedef SetNamedPropertyCallback
+
+  @abstract The callback to invoke when setting a property's value on
+  a JavaScript object.
+
+  @param object A non-const reference to the native object backing the
+  JavaScript object.
+
+  @param value A JSValue to use as the property's value.
+
+  @result true if the property was set, otherwise false.
+
+  @discussion If this function returns false, the set request forwards
+  to the native object's JSNativeObjectPropertyCallback (if any), then
+  its parent JSNativeObject chain (which includes the default object
+  class), then its prototype chain.
+
+  For example, given this class definition:
+  
+  class Foo {
+    bool SetBar(const JSValue& value);
+  };
+
+  You would define the callback like this:
+
+  SetNamedPropertyCallback callback(&Foo::SetBar);
+*/
+template<typename T>
+using SetNamedPropertyCallback = std::function<bool(T&, const JSValue&)>;
 
 /*!
   @class
@@ -44,8 +106,9 @@ class JSNativeObjectValuePropertyCallback final	{
 	  property's value on a JavaScript object. This may be nullptr, in
 	  which case the ReadOnly attribute is automatically set.
 	  
-	  @param attributes A set of JSPropertyAttributes to give to the
-	  property.
+	  @param attributes An optional set of JSPropertyAttributes to give
+	  to the function property. The default is
+	  JSPropertyAttribute::DontDelete.
 	  
 	  @result An object which describes a JavaScript value property.
 	  
@@ -63,17 +126,17 @@ class JSNativeObjectValuePropertyCallback final	{
     4. If both get_property_callback and set_property_callback are
 	  missing.
 	*/
-	JSNativeObjectValuePropertyCallback(const JSString& property_name, GetPropertyCallback<T> get_property_callback, SetPropertyCallback<T> set_property_callback, const std::unordered_set<JSPropertyAttribute> attributes = std::unordered_set<JSPropertyAttribute>());
+	JSNativeObjectValuePropertyCallback(const JSString& property_name, GetNamedPropertyCallback<T> get_property_callback, SetNamedPropertyCallback<T> set_property_callback, const std::unordered_set<JSPropertyAttribute>& attributes = {JSPropertyAttribute::DontDelete});
 
 	JSString get_property_name() const {
 		return property_name_;
 	}
 	
-	GetPropertyCallback<T> get_get_property_callback() const {
+	GetNamedPropertyCallback<T> get_get_property_callback() const {
 		return get_property_callback_;
 	}
 
-	SetPropertyCallback<T> get_set_property_callback() const {
+	SetNamedPropertyCallback<T> get_set_property_callback() const {
 		return set_property_callback_;
 	}
 
@@ -121,18 +184,18 @@ private:
 
 	// Define a strict weak ordering for two
 	// JSNativeObjectValuePropertyCallbacks.
-	// template<typename U>
-	// friend bool operator<(const JSNativeObjectValuePropertyCallback<U>& lhs, const JSNativeObjectValuePropertyCallback<U>& rhs);
+	template<typename U>
+	friend bool operator<(const JSNativeObjectValuePropertyCallback<U>& lhs, const JSNativeObjectValuePropertyCallback<U>& rhs);
 
 	JSString                                property_name_;
 	std::string                             property_name_for_js_static_value_;
-	GetPropertyCallback<T>                  get_property_callback_ { nullptr };
-	SetPropertyCallback<T>                  set_property_callback_ { nullptr };
+	GetNamedPropertyCallback<T>             get_property_callback_ { nullptr };
+	SetNamedPropertyCallback<T>             set_property_callback_ { nullptr };
 	std::unordered_set<JSPropertyAttribute> attributes_;
 };
 
 template<typename T>
-JSNativeObjectValuePropertyCallback<T>::JSNativeObjectValuePropertyCallback(const JSString& property_name, GetPropertyCallback<T> get_property_callback, SetPropertyCallback<T> set_property_callback, const std::unordered_set<JSPropertyAttribute> attributes)
+JSNativeObjectValuePropertyCallback<T>::JSNativeObjectValuePropertyCallback(const JSString& property_name, GetNamedPropertyCallback<T> get_property_callback, SetNamedPropertyCallback<T> set_property_callback, const std::unordered_set<JSPropertyAttribute>& attributes)
 		: property_name_(property_name)
 		, property_name_for_js_static_value_(property_name)
 		, get_property_callback_(get_property_callback)
@@ -245,29 +308,60 @@ bool operator!=(const JSNativeObjectValuePropertyCallback<T>& lhs, const JSNativ
 
 // Define a strict weak ordering for two
 // JSNativeObjectValuePropertyCallbacks.
-// template<typename T>
-// bool operator<(const JSNativeObjectValuePropertyCallback<T>& lhs, const JSNativeObjectValuePropertyCallback<T>& rhs) {
-// 	if (lhs.property_name_for_js_static_value_ < rhs.property_name_for_js_static_value_) {
-// 		return true;
-// 	}
+template<typename T>
+bool operator<(const JSNativeObjectValuePropertyCallback<T>& lhs, const JSNativeObjectValuePropertyCallback<T>& rhs) {
+	if (lhs.property_name_for_js_static_value_ < rhs.property_name_for_js_static_value_) {
+		return true;
+	}
 	
-// 	return lhs.attributes_ < rhs.attributes_;
-// }
+	return lhs.attributes_ < rhs.attributes_;
+}
 
-// template<typename T>
-// bool operator>(const JSNativeObjectValuePropertyCallback<T>& lhs, const JSNativeObjectValuePropertyCallback<T>& rhs) {
-// 	return rhs < lhs;
-// }
+template<typename T>
+bool operator>(const JSNativeObjectValuePropertyCallback<T>& lhs, const JSNativeObjectValuePropertyCallback<T>& rhs) {
+	return rhs < lhs;
+}
 
-// template<typename T>
-// bool operator<=(const JSNativeObjectValuePropertyCallback<T>& lhs, const JSNativeObjectValuePropertyCallback<T>& rhs) {
-// 	return ! (lhs > rhs);
-// }
+template<typename T>
+bool operator<=(const JSNativeObjectValuePropertyCallback<T>& lhs, const JSNativeObjectValuePropertyCallback<T>& rhs) {
+	return ! (lhs > rhs);
+}
 
-// template<typename T>
-// bool operator>=(const JSNativeObjectValuePropertyCallback<T>& lhs, const JSNativeObjectValuePropertyCallback<T>& rhs) {
-// 	return ! (lhs < rhs);
-// }
+template<typename T>
+bool operator>=(const JSNativeObjectValuePropertyCallback<T>& lhs, const JSNativeObjectValuePropertyCallback<T>& rhs) {
+	return ! (lhs < rhs);
+}
+
+}} // namespace JavaScriptCoreCPP { namespace RAII {
+
+namespace JavaScriptCoreCPP { namespace detail {
+
+using namespace JavaScriptCoreCPP::RAII;
+
+template<typename T>
+struct hash<JSNativeObjectValuePropertyCallback<T>> {
+	using argument_type = JSNativeObjectValuePropertyCallback<T>;
+	using result_type   = std::size_t;
+
+	result_type operator()(const argument_type& callback) const {
+
+		using property_attribute_underlying_type = std::underlying_type<JSPropertyAttribute>::type;
+		std::bitset<4> property_attributes;
+		for (auto property_attribute : callback.get_attributes()) {
+			const auto bit_position = static_cast<property_attribute_underlying_type>(property_attribute);
+			property_attributes.set(bit_position);
+		}
+		
+		return hash_val(callback.get_property_name(), property_attributes.to_ulong());
+	}
+};
+
+}} // namespace JavaScriptCoreCPP { namespace detail {
+
+namespace JavaScriptCoreCPP { namespace RAII {
+
+template<typename T>
+using JSNativeObjectValuePropertyCallbackHash = detail::hash<JSNativeObjectValuePropertyCallback<T>>;
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 

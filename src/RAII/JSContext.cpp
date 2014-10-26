@@ -33,6 +33,10 @@ JSValue JSContext::CreateValueFromJSON(const JSString& js_string) const {
 	return JSValue(*this, js_string, true);
 }
 
+JSValue JSContext::CreateString() const {
+	return CreateString(JSString());
+}
+
 JSValue JSContext::CreateString(const JSString& js_string) const {
 	return JSValue(*this, js_string, false);
 }

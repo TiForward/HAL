@@ -61,7 +61,7 @@ using namespace JavaScriptCoreCPP::RAII;
 - (void)testJSNativeObjectFunctionPropertyCallback {
   using NativeObjectPropertyCallback     = JSNativeObjectFunctionPropertyCallback<NativeObject>;
   using NativeObjectPropertyCallbackHash = JSNativeObjectFunctionPropertyCallbackHash<NativeObject>;
-  using NativeObjectFunctionCallbackSet = std::unordered_set<NativeObjectPropertyCallback, NativeObjectPropertyCallbackHash>;
+  using NativeObjectFunctionCallbackSet  = std::unordered_set<NativeObjectPropertyCallback, NativeObjectPropertyCallbackHash>;
   
   NativeObjectFunctionCallbackSet function_callbacks;
 
@@ -77,6 +77,34 @@ using namespace JavaScriptCoreCPP::RAII;
   XCTAssertEqual(*insert_result.first, FooCallback);
   
   XCTAssertEqual(1, function_callbacks.size());
+}
+
+- (void)testJSNativeObjectValuePropertyCallback {
+  using NativeObjectPropertyCallback     = JSNativeObjectValuePropertyCallback<NativeObject>;
+  using NativeObjectPropertyCallbackHash = JSNativeObjectValuePropertyCallbackHash<NativeObject>;
+  using NativeObjectValueCallbackSet     = std::unordered_set<NativeObjectPropertyCallback, NativeObjectPropertyCallbackHash>;
+  
+  NativeObjectValueCallbackSet value_property_callbacks;
+
+  JSNativeObjectValuePropertyCallback<NativeObject> NamePropertyCallback("name", &NativeObject::GetName, &NativeObject::SetName);
+  JSNativeObjectValuePropertyCallback<NativeObject> NumberPropertyCallback("number", &NativeObject::GetNumber, &NativeObject::SetNumber);
+  JSNativeObjectValuePropertyCallback<NativeObject> PiPropertyCallback("pi", &NativeObject::GetPi, nullptr);
+  
+  XCTAssertEqual(0, value_property_callbacks.count(NamePropertyCallback));
+  XCTAssertEqual(0, value_property_callbacks.count(NumberPropertyCallback));
+  XCTAssertEqual(0, value_property_callbacks.count(PiPropertyCallback));
+  
+  const auto insert_name_result = value_property_callbacks.insert(NamePropertyCallback);
+  XCTAssertTrue(insert_name_result.second);
+  XCTAssertEqual(1, value_property_callbacks.count(NamePropertyCallback));
+  XCTAssertEqual(*insert_name_result.first, NamePropertyCallback);
+  XCTAssertEqual(1, value_property_callbacks.size());
+
+  const auto insert_pi_result = value_property_callbacks.insert(PiPropertyCallback);
+  XCTAssertTrue(insert_pi_result.second);
+  XCTAssertEqual(1, value_property_callbacks.count(PiPropertyCallback));
+  XCTAssertEqual(*insert_pi_result.first, PiPropertyCallback);
+  XCTAssertEqual(2, value_property_callbacks.size());
 }
 
 - (void)testJSNativeObject {

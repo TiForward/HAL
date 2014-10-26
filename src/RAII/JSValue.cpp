@@ -88,8 +88,9 @@ JSValue::operator double() const {
 		std::ostringstream os;
 		os << "JSValue could not be converted to a JSNumber: "<< JSValue(js_context_, exception);
 		const std::string message = os.str();
-		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
-		throw std::logic_error(message);
+		std::clog << log_prefix << " [WARN] " << message << std::endl;
+		//std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
+		//throw std::logic_error(message);
 	}
 	
 	return result;
@@ -112,8 +113,8 @@ JSValue::operator JSObject() const {
 		std::ostringstream os;
 		os << "JSValue could not be converted to a JSObject: "<< JSValue(js_context_, exception);
 		const std::string message = os.str();
-		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
-		throw std::logic_error(message);
+		std::clog << log_prefix << " [ERROR] " << message << std::endl;
+		throw std::runtime_error(message);
 	}
 	
 	assert(js_object_ref);

@@ -24,6 +24,11 @@ class JSPropertyNameArray;
 namespace JavaScriptCoreCPP { namespace RAII {
 
 class JSObject;
+class JSFunction;
+class JSArray;
+class JSDate;
+class JSError;
+class JSRegExp;
 
 /*!
   @class
@@ -84,9 +89,6 @@ public:
 	  @abstract Convert this JSValue to a JSString.
 	  
 	  @result A JSString with the result of conversion.
-	  
-	  @throws std::logic_error if this JSValue could not be converted to
-	  a JSString.
 	*/
 	operator JSString() const;
 	
@@ -96,9 +98,6 @@ public:
 	  @abstract Convert this JSValue to a std::string.
 	  
 	  @result A std::string with the result of conversion.
-	  
-	  @throws std::logic_error if this JSValue could not be converted to
-	  a std::string.
 	*/
 	operator std::string() const {
 		return operator JSString();
@@ -121,9 +120,6 @@ public:
 	  @abstract Convert this JSValue to a JSBoolean.
 	  
 	  @result A JSBoolean with the result of conversion.
-	  
-	  @throws std::logic_error if this JSValue could not be converted to
-	  a JSBoolean.
 	*/
 	operator JSBoolean() const;
 
@@ -171,9 +167,6 @@ public:
 	  @abstract Convert this JSValue to a JSNumber.
 	  
 	  @result A JSNumber with the result of conversion.
-	  
-	  @throws std::logic_error if this JSValue could not be converted to
-	  a JSNumber.
 	*/
 	operator JSNumber() const;
 
@@ -184,8 +177,8 @@ public:
 	  
 	  @result A JSObject with the result of conversion.
 	  
-	  @throws std::logic_error if this JSValue could not be converted to
-	  a JSObject.
+	  @throws std::runtime_error if this JSValue could not be converted
+	  to a JSObject.
 	*/
 	operator JSObject() const;
 
@@ -273,11 +266,11 @@ public:
     @result true if this JavaScript value's type is the object type,
     otherwise false.
   */
-  bool IsObject() const {
-	  return JSValueIsObject(js_context_, js_value_ref_);
-  }
+	bool IsObject() const {
+		return JSValueIsObject(js_context_, js_value_ref_);
+	}
 
-  /*!
+	/*!
     @method
     
     @abstract Determine whether this JavaScript value was constructed
@@ -353,15 +346,6 @@ public:
 		assert(js_value_ref_);
 		JSValueProtect(js_context_, js_value_ref_);
 	}
-
-	// // For interoperability with the JavaScriptCore C API.
-	// explicit JSValue(JSContextRef js_context_ref, JSValueRef js_value_ref)
-	// 		: js_context_(JSContextGetGlobalContext(js_context_ref))
-	// 		, js_value_ref_(js_value_ref)  {
-	// 	assert(js_context_ref);
-	// 	assert(js_value_ref_);
-	// 	JSValueProtect(js_context_, js_value_ref_);
-	// }
 
   // For interoperability with the JavaScriptCore C API.
 	operator JSContextRef() const {

@@ -70,7 +70,7 @@ class JSNativeObjectFunctionPropertyCallback final	{
 	  
 	  2. If the call_as_function_callback is not provided.
 	*/
-	JSNativeObjectFunctionPropertyCallback(const JSString& function_name, CallAsFunctionCallback<T> call_as_function_callback, const std::unordered_set<JSPropertyAttribute> attributes = {JSPropertyAttribute::DontDelete});
+	JSNativeObjectFunctionPropertyCallback(const JSString& function_name, CallAsFunctionCallback<T> call_as_function_callback, const std::unordered_set<JSPropertyAttribute>& attributes = {JSPropertyAttribute::DontDelete});
 
 	JSString get_function_name() const {
 		return function_name_;
@@ -123,23 +123,14 @@ class JSNativeObjectFunctionPropertyCallback final	{
 	template<typename U>
 	friend bool operator<(const JSNativeObjectFunctionPropertyCallback<U>& lhs, const JSNativeObjectFunctionPropertyCallback<U>& rhs);
 
-	// template<typename T>
-  // using hash = detail::hash<JSNativeObjectFunctionPropertyCallback<T>>;
-
-	// template<typename U>
-  // friend detail::hash<JSNativeObjectFunctionPropertyCallback<U>>;
-
-	//friend detail::hash<JSNativeObjectFunctionPropertyCallback<T>>;
-	//friend JSNativeObjectFunctionPropertyCallbackHash<T>;
-
 	JSString                                function_name_;
 	std::string                             function_name_for_js_static_function_;
-	CallAsFunctionCallback<T>               call_as_function_callback_           { nullptr };
+	CallAsFunctionCallback<T>               call_as_function_callback_ { nullptr };
 	std::unordered_set<JSPropertyAttribute> attributes_;
 };
 
 template<typename T>
-JSNativeObjectFunctionPropertyCallback<T>::JSNativeObjectFunctionPropertyCallback(const JSString& function_name, CallAsFunctionCallback<T> call_as_function_callback, const std::unordered_set<JSPropertyAttribute> attributes)
+JSNativeObjectFunctionPropertyCallback<T>::JSNativeObjectFunctionPropertyCallback(const JSString& function_name, CallAsFunctionCallback<T> call_as_function_callback, const std::unordered_set<JSPropertyAttribute>& attributes)
 		: function_name_(function_name)
 		, function_name_for_js_static_function_(function_name)
 		, call_as_function_callback_(call_as_function_callback)
@@ -237,23 +228,6 @@ template<typename T>
 bool operator>=(const JSNativeObjectFunctionPropertyCallback<T>& lhs, const JSNativeObjectFunctionPropertyCallback<T>& rhs) {
 	return ! (lhs < rhs);
 }
-
-template<typename T>
-struct hash;
-
-// Provide a hash function so that a
-// JSNativeObjectFunctionPropertyCallback can be stored in an
-// unordered container.
-template<typename T>
-struct hash<JSNativeObjectFunctionPropertyCallback<T>> {
-	using argument_type = JSNativeObjectFunctionPropertyCallback<T>;
-	using result_type   = std::size_t;
-	const std::hash<std::string> string_hash = std::hash<std::string>();
-	
-	result_type operator()(const argument_type& callback) const {
-		return string_hash(callback.get_property_name());
-	}
-};
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 

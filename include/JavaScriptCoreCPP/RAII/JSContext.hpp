@@ -75,6 +75,16 @@ class JSContext final	{
 	  valid JSON formatted string.
 	*/
 	JSValue CreateValueFromJSON(const JSString& js_string) const;
+	
+	/*!
+	  @method
+	  
+	  @abstract Create a JavaScript value of the string type with a
+	  length of zero.
+	  
+	  @result A JSValue of the string type with a length of zero.
+	*/
+	JSValue CreateString() const;
 
 	/*!
 	  @method
@@ -87,7 +97,7 @@ class JSContext final	{
 	  string.
 	*/
 	JSValue CreateString(const JSString& js_string) const;
-
+	
 	/*!
 	  @method
 	  
