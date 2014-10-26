@@ -275,48 +275,13 @@ using GetPropertyNamesCallback = std::function<void(const T&, const JSPropertyNa
   @param arguments A JSValue array of arguments to pass to the
   function.
 
-  @result A JSValue that is the function's return value.
-
-  @discussion If this callback does not exist, then calling your
-  object as a function will throw an exception.
-
-  For example, given this class definition:
-  
-  class Foo {
-    JSValue CallAsFunction(const std::vector<JSValue>& arguments);
-  };
-
-  You would define the callback like this:
-
-  CallAsFunctionCallback callback(&Foo::CallAsFunction);
-*/
-// template<typename T>
-// using CallAsFunctionCallback = std::function<JSValue(T&, const std::vector<JSValue>&)>;
-	
-/*! 
-  @typedef CallAsFunctionWithThisCallback
-
-  @abstract The callback to invoke when a JavaScript object is called
-  as a function when it is a property of another JavaScript object.
-
-  @param object A non-const reference to the native object backing the
-  JavaScript object.
-
-  @param arguments A JSValue array of arguments to pass to the
-  function.
-
   @param this_object The object to use as "this".
 
   @result A JSValue that is the function's return value.
 
   @discussion If this callback does not exist, then calling your
-  object as a function when it is a property of another JavaScript
-  object will throw an exception.
-  
-  If this callback does not exist, then calling your object as a
-  function when it is a property of another object will throw an
-  exception.
-  
+  object as a function will throw an exception.
+
   For example, given this class definition:
   
   class Foo {
@@ -326,14 +291,15 @@ using GetPropertyNamesCallback = std::function<void(const T&, const JSPropertyNa
   You would define the callback like this:
 
   CallAsFunctionWithThisCallback callback(&Foo::CallAsFunction);
-
+  
   In the JavaScript expression 'myObject.myFunction()', then
   'myFunction' is the instance of Foo being called, and this_object
   would be set to 'myObject'.
-*/
-// template<typename T>
-// using CallAsFunctionWithThisCallback = std::function<JSValue(T&, const std::vector<JSValue>&, const JSObject&)>;
 
+  In the JavaScript expression 'myFunction()', then 'myFunction' is
+  the instance of Foo being called, and this_object would be set to
+  the global object.
+*/
 template<typename T>
 using CallAsFunctionCallback = std::function<JSValue(T&, const std::vector<JSValue>&, const JSObject&)>;
 

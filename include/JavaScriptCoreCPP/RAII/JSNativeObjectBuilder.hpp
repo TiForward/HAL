@@ -311,7 +311,7 @@ class JSNativeObjectBuilder final {
 	  You would call the builer like this:
 
 	  JSNativeObjectBuilder<Foo> builder;
-	  builder.set_initialize_callback(&Foo::Initialize);
+	  builder.InitializeCallback(&Foo::Initialize);
   
 	  @result A reference to the builder for chaining.
 	*/
@@ -366,7 +366,7 @@ class JSNativeObjectBuilder final {
 	  You would call the builer like this:
 
 	  JSNativeObjectBuilder<Foo> builder;
-	  builder.set_finalize_callback(&Foo::Finalize);
+	  builder.FinalizeCallback(&Foo::Finalize);
 
 	  @result A reference to the builder for chaining.
 	*/
@@ -415,7 +415,7 @@ class JSNativeObjectBuilder final {
 	  You would call the builer like this:
 
 	  JSNativeObjectBuilder<Foo> builder;
-	  builder.set_has_property_callback(&Foo::HasProperty);
+	  builder.HasPropertyCallback(&Foo::HasProperty);
 
 	  @result A reference to the builder for chaining.
 	*/
@@ -457,7 +457,7 @@ class JSNativeObjectBuilder final {
 	  You would call the builer like this:
 
 	  JSNativeObjectBuilder<Foo> builder;
-	  builder.set_get_property_callback(&Foo::GetProperty);
+	  builder.GetPropertyCallback(&Foo::GetProperty);
 	  
 	  @result A reference to the builder for chaining.
 	*/
@@ -499,7 +499,7 @@ class JSNativeObjectBuilder final {
 	  You would call the builer like this:
 
 	  JSNativeObjectBuilder<Foo> builder;
-	  builder.set_set_property_callback(&Foo::SetProperty);
+	  builder.SetPropertyCallback(&Foo::SetProperty);
   
 	  @result A reference to the builder for chaining.
 	*/
@@ -541,7 +541,7 @@ class JSNativeObjectBuilder final {
 	  You would call the builer like this:
 
 	  JSNativeObjectBuilder<Foo> builder;
-	  builder.set_delete_property_callback(&Foo::DeleteProperty);
+	  builder.DeletePropertyCallback(&Foo::DeleteProperty);
 
 	  @result A reference to the builder for chaining.
 	*/
@@ -586,7 +586,7 @@ class JSNativeObjectBuilder final {
 	  You would call the builer like this:
 
 	  JSNativeObjectBuilder<Foo> builder;
-	  builder.set_get_property_names_callback(&Foo::GetPropertyNames);
+	  builder.GetPropertyNamesCallback(&Foo::GetPropertyNames);
 	  
 	  Property name accumulators are used by JavaScript for...in loops.
 	  Use JSPropertyNameAccumulator::AddName to add property names to
@@ -624,72 +624,29 @@ class JSNativeObjectBuilder final {
 	  For example, given this class definition:
 	  
 	  class Foo {
-	    JSValue CallAsFunction(const std::vector<JSValue>& arguments);
+	  JSValue CallAsFunction(const std::vector<JSValue>& arguments, const JSObject& this_object);
 	  };
-	  
+
 	  You would call the builer like this:
 	  
 	  JSNativeObjectBuilder<Foo> builder;
-	  builder.set_call_as_function_callback(&Foo::CallAsFunction);
+	  builder.CallAsFunctionCallback(&Foo::CallAsFunction);
 	  
-	  @result A reference to the builder for chaining.
+	  In the JavaScript expression 'myObject.myFunction()', then
+	  'myFunction' is the instance of Foo being called, and this_object
+	  would be set to 'myObject'.
+	  
+	  In the JavaScript expression 'myFunction()', then 'myFunction' is
+	  the instance of Foo being called, and this_object would be set to
+	  the global object.
+
+  @result A reference to the builder for chaining.
 	*/
 	JSNativeObjectBuilder<T>& CallAsFunctionCallback(const CallAsFunctionCallback<T>& call_as_function_callback) {
 		call_as_function_callback_ = call_as_function_callback;
 		return *this;
 	}
 
-	/*!
-	  @method
-	  
-	  @abstract Return the callback to invoke when a JavaScript object
-	  is called as a function when it is a property of another
-	  JavaScript object.
-  
-	  @result The callback to invoke when a JavaScript object is called
-	  as a function when it is a property of another JavaScript object.
-	*/
-	CallAsFunctionWithThisCallback<T> CallAsFunctionWithThisCallback() const {
-		return call_as_function_with_this_callback_;
-	}
-
-	/*!
-	  @method
-
-	  @abstract Set the callback to invoke when a JavaScript object is
-	  called as a function when it is a property of another JavaScript
-	  object.
-
-	  @discussion If this callback does not exist, then calling your
-	  object as a function when it is a property of another JavaScript
-	  object will throw an exception.
-	  
-	  If this callback does not exist, then calling your object as a
-	  function when it is a property of another object will throw an
-	  exception.
-
-	  For example, given this class definition:
-	  
-	  class Foo {
-	    JSValue CallAsFunction(const std::vector<JSValue>& arguments, const JSObject& this_object);
-	  };
-	  
-	  You would call the builer like this:
-	  
-	  JSNativeObjectBuilder<Foo> builder;
-	  builder.set_call_as_function_with_this_callback(&Foo::CallAsFunction);
-	  
-	  In the JavaScript expression 'myObject.myFunction()', then
-	  'myFunction' is the instance of Foo being called, and this_object
-	  would be set to 'myObject'.
-
-	  @result A reference to the builder for chaining.
-	*/
-	JSNativeObjectBuilder<T>& CallAsFunctionWithThisCallback(const CallAsFunctionWithThisCallback<T>& call_as_function_with_this_callback) {
-		call_as_function_with_this_callback_ = call_as_function_with_this_callback;
-		return *this;
-	}
-	
 	/*!
 	  @method
 	  
@@ -726,7 +683,7 @@ class JSNativeObjectBuilder final {
 	  You would call the builer like this:
 	  
 	  JSNativeObjectBuilder<Foo> builder;
-	  builder.set_call_as_constructor_callback(&Foo::CallAsConstructor);
+	  builder.CallAsConstructorCallback(&Foo::CallAsConstructor);
 
 	  If your callback were invoked by the JavaScript expression
 	  'new myConstructor()', then 'myConstructor' is the instance of Foo
@@ -774,7 +731,7 @@ class JSNativeObjectBuilder final {
 	  You would call the builer like this:
 	  
 	  JSNativeObjectBuilder<Foo> builder;
-	  builder.set_has_property_callback(&Foo::HasInstance);
+	  builder.HasInstanceCallback(&Foo::HasInstance);
 
 	  If your callback were invoked by the JavaScript expression
 	  'someValue instanceof myObject', then 'myObject' is the instanceof
@@ -824,7 +781,7 @@ class JSNativeObjectBuilder final {
 	  You would call the builer like this:
 	  
 	  JSNativeObjectBuilder<Foo> builder;
-	  builder.set_convert_to_type_callback(&Foo::ConvertToType);
+	  builder.ConvertToTypeCallback(&Foo::ConvertToType);
 
 	  @result A reference to the builder for chaining.
 	*/
@@ -871,7 +828,6 @@ class JSNativeObjectBuilder final {
 	DeletePropertyCallback<T>                                                  delete_property_callback_            { nullptr };
 	GetPropertyNamesCallback<T>                                                get_property_names_callback_         { nullptr };
 	CallAsFunctionCallback<T>                                                  call_as_function_callback_           { nullptr };
-	CallAsFunctionWithThisCallback<T>                                          call_as_function_with_this_callback_ { nullptr };
 	CallAsConstructorCallback<T>                                               call_as_constructor_callback_        { nullptr };
 	HasInstanceCallback<T>                                                     has_instance_callback_               { nullptr };
 	ConvertToTypeCallback<T>                                                   convert_to_type_callback_            { nullptr };

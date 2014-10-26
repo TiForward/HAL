@@ -68,7 +68,6 @@ class JSNativeObjectDefinition final	{
 	DeletePropertyCallback<T>                                               delete_property_callback_            { nullptr };
 	GetPropertyNamesCallback<T>                                             get_property_names_callback_         { nullptr };
 	CallAsFunctionCallback<T>                                               call_as_function_callback_           { nullptr };
-	CallAsFunctionWithThisCallback<T>                                       call_as_function_with_this_callback_ { nullptr };
 	CallAsConstructorCallback<T>                                            call_as_constructor_callback_        { nullptr };
 	HasInstanceCallback<T>                                                  has_instance_callback_               { nullptr };
 	ConvertToTypeCallback<T>                                                convert_to_type_callback_            { nullptr };
