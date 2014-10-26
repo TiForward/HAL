@@ -265,10 +265,17 @@ template<typename T>
 struct hash<JSNativeObjectFunctionPropertyCallback<T>> {
 	using argument_type = JSNativeObjectFunctionPropertyCallback<T>;
 	using result_type   = std::size_t;
-	const std::hash<std::string> string_hash = std::hash<std::string>();
-	
+
 	result_type operator()(const argument_type& callback) const {
-		return string_hash(callback.get_property_name());
+
+		using property_attribute_underlying_type = std::underlying_type<JSPropertyAttribute>::type;
+		std::bitset<4> property_attributes;
+		for (auto property_attribute : callback.get_attributes()) {
+			const auto bit_position = static_cast<property_attribute_underlying_type>(property_attribute);
+			property_attributes.set(bit_position);
+		}
+		
+		return hash_val(callback.get_function_name(), property_attributes.to_ulong());
 	}
 };
 

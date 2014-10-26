@@ -51,16 +51,32 @@ using namespace JavaScriptCoreCPP::RAII;
   SetPropertyCallback<NativeObject>            SetPropertyCallback            = &NativeObject::SetProperty;
   DeletePropertyCallback<NativeObject>         DeletePropertyCallback         = &NativeObject::DeleteProperty;
   GetPropertyNamesCallback<NativeObject>       GetPropertyNamesCallback       = &NativeObject::GetPropertyNames;
-  CallAsFunctionCallback<NativeObject>         CallAsFunctionCallback         = &NativeObject::CallAsFunction;
-  CallAsConstructorCallback<NativeObject>      CallAsConstructorCallback      = &NativeObject::CallAsConstructor;
+  CallAsFunctionCallback<NativeObject>         FooCallback                    = &NativeObject::FooFunction;
+  CallAsFunctionCallback<NativeObject>         BarCallback                    = &NativeObject::BarFunction;
+  CallAsConstructorCallback<NativeObject>      CallAsConstructorCallback      = &NativeObject::Constructor;
   HasInstanceCallback<NativeObject>            HasInstanceCallback            = &NativeObject::HasInstance;
   ConvertToTypeCallback<NativeObject>          ConvertToTypeCallback          = &NativeObject::ConvertToType;
 }
 
 - (void)testJSNativeObjectFunctionPropertyCallback {
-  JSNativeObjectFunctionPropertyCallback<NativeObject> FunctionPropertyCallback("Foo", &NativeObject::CallAsFunction);
-//  JSContext js_context = js_context_group.CreateContext();
-//  NativeObject native_object(js_context);
+  using NativeObjectPropertyCallback     = JSNativeObjectFunctionPropertyCallback<NativeObject>;
+  using NativeObjectPropertyCallbackHash = JSNativeObjectFunctionPropertyCallbackHash<NativeObject>;
+  using NativeObjectFunctionCallbackSet = std::unordered_set<NativeObjectPropertyCallback, NativeObjectPropertyCallbackHash>;
+  
+  NativeObjectFunctionCallbackSet function_callbacks;
+
+  JSNativeObjectFunctionPropertyCallback<NativeObject> FooCallback("Foo", &NativeObject::FooFunction);
+  JSNativeObjectFunctionPropertyCallback<NativeObject> BarCallback("Bar", &NativeObject::BarFunction);
+  
+  XCTAssertEqual(0, function_callbacks.count(FooCallback));
+  XCTAssertEqual(0, function_callbacks.count(BarCallback));
+  
+  const auto insert_result = function_callbacks.insert(FooCallback);
+  XCTAssertTrue(insert_result.second);
+  XCTAssertEqual(1, function_callbacks.count(FooCallback));
+  XCTAssertEqual(*insert_result.first, FooCallback);
+  
+  XCTAssertEqual(1, function_callbacks.size());
 }
 
 - (void)testJSNativeObject {

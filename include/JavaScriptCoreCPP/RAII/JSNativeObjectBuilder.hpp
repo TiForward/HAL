@@ -624,13 +624,13 @@ class JSNativeObjectBuilder final {
 	  For example, given this class definition:
 	  
 	  class Foo {
-	  JSValue CallAsFunction(const std::vector<JSValue>& arguments, const JSObject& this_object);
+	  JSValue Bar(const std::vector<JSValue>& arguments, const JSObject& this_object);
 	  };
 
 	  You would call the builer like this:
 	  
 	  JSNativeObjectBuilder<Foo> builder;
-	  builder.CallAsFunctionCallback(&Foo::CallAsFunction);
+	  builder.CallAsFunctionCallback(&Foo::Bar);
 	  
 	  In the JavaScript expression 'myObject.myFunction()', then
 	  'myFunction' is the instance of Foo being called, and this_object
@@ -677,13 +677,13 @@ class JSNativeObjectBuilder final {
 	  For example, given this class definition:
 	  
 	  class Foo {
-	    JSObject CallAsConstructor(const std::vector<JSValue>& arguments);
+	    JSObject Constructor(const std::vector<JSValue>& arguments);
 	  };
 	  
 	  You would call the builer like this:
 	  
 	  JSNativeObjectBuilder<Foo> builder;
-	  builder.CallAsConstructorCallback(&Foo::CallAsConstructor);
+	  builder.CallAsConstructorCallback(&Foo::Constructor);
 
 	  If your callback were invoked by the JavaScript expression
 	  'new myConstructor()', then 'myConstructor' is the instance of Foo
@@ -1068,9 +1068,6 @@ JSNativeObject<T>::JSNativeObject(const JSNativeObjectBuilder<T>& builder)
 		: js_context_(builder.js_context_)
 		, js_native_object_definition_(builder.get_js_native_object_definition()) {
 
-	
-
-	
 	// Use kJSClassAttributeNoAutomaticPrototype in combination with
 	// JSObjectSetPrototype to manage prototypes manually
 	

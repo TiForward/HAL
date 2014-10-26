@@ -131,8 +131,8 @@ class NativeObject final {
 		          << std::endl;
 	}
 
-	JSValue CallAsFunction(const std::vector<JSValue>& arguments, const JSObject& this_object) {
-		static const std::string log_prefix { "MDL: NativeObject::CallAsFunction: " };
+	JSValue FooFunction(const std::vector<JSValue>& arguments, const JSObject& this_object) {
+		static const std::string log_prefix { "MDL: NativeObject::FooFunction: " };
 
 		std::clog
 				<< log_prefix
@@ -145,8 +145,22 @@ class NativeObject final {
 		return js_context_.CreateUndefined();
 	}
 
-	JSObject CallAsConstructor(const std::vector<JSValue>& arguments) {
-		static const std::string log_prefix { "MDL: NativeObject::CallAsConstructor: " };
+	JSValue BarFunction(const std::vector<JSValue>& arguments, const JSObject& this_object) {
+		static const std::string log_prefix { "MDL: NativeObject::BarFunction: " };
+
+		std::clog
+				<< log_prefix
+				<< "called with "
+				<< arguments.size()
+				<< " arguments with this_object = "
+				<< this_object
+				<< std::endl;
+
+		return js_context_.CreateUndefined();
+	}
+
+	JSObject Constructor(const std::vector<JSValue>& arguments) {
+		static const std::string log_prefix { "MDL: NativeObject::Constructor: " };
 
 		std::clog
 				<< log_prefix

@@ -285,12 +285,12 @@ using GetPropertyNamesCallback = std::function<void(const T&, const JSPropertyNa
   For example, given this class definition:
   
   class Foo {
-    JSValue CallAsFunction(const std::vector<JSValue>& arguments, const JSObject& this_object);
+    JSValue Bar(const std::vector<JSValue>& arguments, const JSObject& this_object);
   };
 
   You would define the callback like this:
 
-  CallAsFunctionWithThisCallback callback(&Foo::CallAsFunction);
+  CallAsFunctionWithThisCallback callback(&Foo::Bar);
   
   In the JavaScript expression 'myObject.myFunction()', then
   'myFunction' is the instance of Foo being called, and this_object
@@ -325,12 +325,12 @@ using CallAsFunctionCallback = std::function<JSValue(T&, const std::vector<JSVal
   For example, given this class definition:
   
   class Foo {
-    JSObject CallAsConstructor(const std::vector<JSValue>& arguments);
+    JSObject Constructor(const std::vector<JSValue>& arguments);
   };
   
   You would define the callback like this:
 
-  CallAsConstructorCallback callback(&Foo::CallAsConstructor);
+  CallAsConstructorCallback callback(&Foo::Constructor);
 	  
   If your callback were invoked by the JavaScript expression
   'new myConstructor()', then 'myConstructor' is the instance of Foo
