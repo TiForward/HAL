@@ -117,6 +117,14 @@ class JSString final	{
 		return JSStringGetLength(js_string_ref_);
 	}
 	
+	const std::size_t size() const {
+		return length();
+	}
+	
+	const bool empty() const {
+		return length() == 0;
+	}
+	
 	operator std::string() const {
 		static std::wstring_convert<std::codecvt_utf8_utf16<char16_t>,char16_t> converter;
 		return std::string(converter.to_bytes(static_cast<std::u16string>(*this)));

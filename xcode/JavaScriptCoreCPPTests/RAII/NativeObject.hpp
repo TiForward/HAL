@@ -10,6 +10,7 @@
 
 #include "JavaScriptCoreCPP/RAII/RAII.hpp"
 #include <iostream>
+#include <sstream>
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
@@ -34,21 +35,46 @@ class NativeObject final {
 		std::clog << log_prefix << std::endl;
 	}
 
-	bool HasProperty(const JSString& property_name) const {
-		static const std::string log_prefix { "MDL: NativeObject::HasProperty: " };
-		const bool has_property = properties_.count(property_name) > 1;
+	JSObject Constructor(const std::vector<JSValue>& arguments) {
+		static const std::string log_prefix { "MDL: NativeObject::Constructor: " };
+
+		std::clog << log_prefix << "called with " << arguments.size() << "." << std::endl;
 		
-		std::clog << log_prefix
-		          << property_name
-		          << " = "
-		          << std::boolalpha
-		          << has_property
-		          << "."
-		          << std::endl;
-		
-		return has_property;
+		return js_context_.CreateObject();
 	}
 
+	bool HasInstance(const JSValue& possible_instance) const {
+		static const std::string log_prefix { "MDL: NativeObject::HasInstance: " };
+
+		std::clog << log_prefix << possible_instance;
+		
+		bool has_instance = false;
+		std::string message;
+		try {
+			dynamic_cast<const NativeObject&>(possible_instance);
+			has_instance = true;
+		} catch (const std::bad_cast& exception) {
+			// Expected exception if possible_instance is not of our class
+			// type.
+		} catch (const std::exception& exception) {
+			// Unexpected exception.
+			message = exception.what();
+		} catch (...) {
+			// Unexpected and unknown exception.
+			message = "Unknown exception";
+		}
+		
+		std::clog << std::boolalpha << has_instance;
+		
+		if (!message.empty()) {
+			std::clog << ", (caught exception: " << message << ")";
+		}
+		
+		std::clog << "." << std::endl;
+		
+		return has_instance;
+	}
+	
 	JSValue GetProperty(const JSString& property_name) const {
 		static const std::string log_prefix { "MDL: NativeObject::GetProperty: " };
 		const auto position = properties_.find(property_name);
@@ -130,6 +156,34 @@ class NativeObject final {
 		std::clog << log_prefix << " accumulated " << properties_.size() << " property names." << std::endl;
 	}
 
+	bool HasProperty(const JSString& property_name) const {
+		static const std::string log_prefix { "MDL: NativeObject::HasProperty: " };
+		const bool has_property = properties_.count(property_name) > 1;
+		
+		std::clog << log_prefix
+		          << property_name
+		          << " = "
+		          << std::boolalpha
+		          << has_property
+		          << "."
+		          << std::endl;
+		
+		return has_property;
+	}
+
+	JSValue CallAsFunction(const std::vector<JSValue>& arguments, const JSObject& this_object) {
+		static const std::string log_prefix { "MDL: NativeObject::CallAsFunction: " };
+		
+		std::clog
+				<< log_prefix
+				<< "called with "
+				<< arguments.size()
+				<< " arguments with this_object = "
+				<< this_object
+				<< std::endl;
+		
+		return js_context_.CreateUndefined();
+	}
 
 	JSValue GetName() const {
 		static const std::string log_prefix { "MDL: NativeObject::GetName: " };
@@ -163,7 +217,7 @@ class NativeObject final {
 		return pi_;
 	}
 
-	JSValue FooFunction(const std::vector<JSValue>& arguments, const JSObject& this_object) {
+	JSValue Hello(const std::vector<JSValue>& arguments, const JSObject& this_object) {
 		static const std::string log_prefix { "MDL: NativeObject::FooFunction: " };
 
 		std::clog
@@ -175,10 +229,19 @@ class NativeObject final {
 				<< "."
 				<< std::endl;
 
-		return js_context_.CreateUndefined();
+		std::ostringstream os;
+		os << "Hello";
+		
+		if (!name_.empty()) {
+			os << ", " << name_;
+		}
+
+		os << ". Your number is " << number_ << ".";
+
+		return js_context_.CreateString(os.str());
 	}
 
-	JSValue BarFunction(const std::vector<JSValue>& arguments, const JSObject& this_object) {
+	JSValue Goodbye(const std::vector<JSValue>& arguments, const JSObject& this_object) {
 		static const std::string log_prefix { "MDL: NativeObject::BarFunction: " };
 
 		std::clog
@@ -189,49 +252,18 @@ class NativeObject final {
 				<< this_object
 				<< std::endl;
 
-		return js_context_.CreateUndefined();
-	}
-
-	JSObject Constructor(const std::vector<JSValue>& arguments) {
-		static const std::string log_prefix { "MDL: NativeObject::Constructor: " };
-
-		std::clog << log_prefix << "called with " << arguments.size() << "." << std::endl;
+		std::ostringstream os;
+		os << "Goodbye";
 		
-		return js_context_.CreateObject();
-	}
-
-	bool HasInstance(const JSValue& possible_instance) const {
-		static const std::string log_prefix { "MDL: NativeObject::HasInstance: " };
-
-		std::clog << log_prefix << possible_instance;
-		
-		bool has_instance = false;
-		std::string message;
-		try {
-			dynamic_cast<const NativeObject&>(possible_instance);
-			has_instance = true;
-		} catch (const std::bad_cast& exception) {
-			// Expected exception if possible_instance is not of our class
-			// type.
-		} catch (const std::exception& exception) {
-			// Unexpected exception.
-			message = exception.what();
-		} catch (...) {
-			// Unexpected and unknown exception.
-			message = "Unknown exception";
+		if (!name_.empty()) {
+			os << ", " << name_;
 		}
+
+		os << ". Your number was " << number_ << ".";
 		
-		std::clog << std::boolalpha << has_instance;
-		
-		if (!message.empty()) {
-			std::clog << ", (caught exception: " << message << ")";
-		}
-		
-		std::clog << "." << std::endl;
-		
-		return has_instance;
+		return js_context_.CreateString(os.str());
 	}
-	
+
 	JSValue ConvertToType(const JSValue::Type& js_value_type) const {
 		static const std::string log_prefix { "MDL: NativeObject::ConvertToType: " };
 

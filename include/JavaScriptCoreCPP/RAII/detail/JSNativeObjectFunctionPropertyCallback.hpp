@@ -57,9 +57,8 @@ class JSNativeObjectFunctionPropertyCallback final	{
 	  @param call_as_function_callback The callback to invoke when
 	  calling the JavaScript object as a function.
 	  
-	  @param attributes An optional set of JSPropertyAttributes to give
-	  to the function property. The default is
-	  JSPropertyAttribute::DontDelete.
+	  @param attributes The set of JSPropertyAttributes to give to the
+	  function property.
 	  
 	  @result The callback to invoke when a JavaScript object is called
 	  as a function either directly or when it is a property of another
@@ -72,7 +71,7 @@ class JSNativeObjectFunctionPropertyCallback final	{
 	  
 	  2. If the call_as_function_callback is not provided.
 	*/
-	JSNativeObjectFunctionPropertyCallback(const JSString& function_name, CallAsFunctionCallback<T> call_as_function_callback, const std::unordered_set<JSPropertyAttribute>& attributes = {JSPropertyAttribute::DontDelete});
+	JSNativeObjectFunctionPropertyCallback(const JSString& function_name, CallAsFunctionCallback<T> call_as_function_callback, const std::unordered_set<JSPropertyAttribute>& attributes);
 
 	JSString get_function_name() const {
 		return function_name_;

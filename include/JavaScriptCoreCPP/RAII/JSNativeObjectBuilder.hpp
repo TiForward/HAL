@@ -176,76 +176,6 @@ class JSNativeObjectBuilder final {
 
 	/*!
 	  @method
-	  
-	  @abstract Add callbacks to invoke when getting and setting
-	  property value on a JavaScript object.
-	  
-	  @param property_name A JSString containing the property's name.
-	  
-	  @param get_property_callback The callback to invoke when getting a
-	  property's value from a JavaScript object.
-	  
-	  @param set_property_callback The callback to invoke when setting a
-	  property's value on a JavaScript object. This may be nullptr, in
-	  which case the ReadOnly attribute is automatically set.
-	  
-	  @param attributes An optional set of JSPropertyAttributes to give
-	  to the function property. The default is
-	  JSPropertyAttribute::DontDelete.
-	  
-	  @result An object which describes a JavaScript value property.
-	  
-	  @throws std::invalid_argument exception under these preconditions:
-
-	  1. If property_name is empty or otherwise has a JavaScript syntax
-	  error.
-	  
-	  2. If the ReadOnly attribute is set and the get_property_callback
-    is not provided.
-	                               
-    3. If the ReadOnly attribute is set and the set_property_callback
-    is provided.
-
-    4. If both get_property_callback and set_property_callback are
-	  missing.
-
-	  @result A reference to the builder for chaining.
-	*/
-	JSNativeObjectBuilder<T>& AddValuePropertyCallback(const JSString& property_name, GetNamedPropertyCallback<T> get_property_callback, SetNamedPropertyCallback<T> set_property_callback, const std::unordered_set<JSPropertyAttribute>& attributes = {JSPropertyAttribute::DontDelete}) {
-		return AddValuePropertyCallback(JSNativeObjectValuePropertyCallback<T>(property_name, get_property_callback, set_property_callback, attributes));
-	}
-	
-	/*!
-	  @method
-
-	  @abstract Remove all JSNativeObjectValuePropertyCallbacks.
-	  
-	  @result A reference to the builder for chaining.
-	*/
-	JSNativeObjectBuilder<T>& RemoveAllValuePropertyCallbacks();
-
-	/*!
-	  @method
-
-	  @abstract Add a JSNativeObjectFunctionPropertyCallback.
-	  
-	  @result A reference to the builder for chaining.
-	*/
-	JSNativeObjectBuilder<T>& AddFunctionPropertyCallback(const JSString& function_name, CallAsFunctionCallback<T> call_as_function_callback, const std::unordered_set<JSPropertyAttribute>& attributes = {JSPropertyAttribute::DontDelete}) {
-		return AddFunctionPropertyCallback(JSNativeObjectFunctionPropertyCallback<T>(function_name, call_as_function_callback, attributes));
-	}
-	
-	/*!
-	  @method
-
-	  @abstract Remove all JSNativeObjectFunctionPropertyCallbacks.
-	  
-	  @result A reference to the builder for chaining.
-	*/
-	JSNativeObjectBuilder<T>& RemoveAllFunctionPropertyCallbacks();
-
-	/*!
-	  @method
 
 	  @abstract Return the callback to invoke when a JavaScript object
 	  is first created.
@@ -350,52 +280,171 @@ class JSNativeObjectBuilder final {
 
 	/*!
 	  @method
-
-	  @abstract Return the callback to invoke when determining whether a
-	  JavaScript object has a property.
+	  
+	  @abstract Return the callback to invoke when a JavaScript object
+	  is used as a constructor in a 'new' expression. If you provide
+	  this callback then you must also provide the HasInstanceCallback
+	  as well.
   
-	  @result The callback to invoke when determining whether a
-	  JavaScript object has a property.
+	  @result The callback to invoke when an object is used as a
+	  constructor in a 'new' expression.
 	*/
-	HasPropertyCallback<T> has_property_callback() const {
-		return has_property_callback_;
+	CallAsConstructorCallback<T> call_as_constructor_callback() const {
+		return call_as_constructor_callback_;
 	}
 
 	/*!
 	  @method
 
-	  @abstract Set the callback to invoke when determining whether a
-	  JavaScript object has a property. If this callback is missing then
-	  the object will delegate to GetPropertyCallback.
-  
-	  @discussion The HasPropertyCallback enables optimization in cases
-	  where only a property's existence needs to be known, not its
-	  value, and computing its value is expensive. If the
-	  HasPropertyCallback doesn't exist, then the GetPropertyCallback
-	  will be used instead.
+	  @abstract Set the callback to invoke when a JavaScript object is
+	  used as a constructor in a 'new' expression. If you provide this
+	  callback then you must also provide the HasInstanceCallback as
+	  well.
 
-	  If this function returns false, the hasProperty request forwards
-	  to the native object's JSNativeObjectPropertyCallback (if any),
-	  then its parent JSNativeObject chain (which includes the default
-	  object class), then its prototype chain.
-
+	  @discussion If this callback doest not exist, then using your
+	  object as a constructor in a 'new' expression will throw an
+	  exception.
+	  
 	  For example, given this class definition:
-
+	  
 	  class Foo {
-	    bool HasProperty(const JSString& property_name) const;
+	    JSObject Constructor(const std::vector<JSValue>& arguments);
 	  };
-
+	  
 	  You would call the builer like this:
-
+	  
 	  JSNativeObjectBuilder<Foo> builder;
-	  builder.HasPropertyCallback(&Foo::HasProperty);
+	  builder.CallAsConstructorCallback(&Foo::Constructor);
+
+	  If your callback were invoked by the JavaScript expression
+	  'new myConstructor()', then 'myConstructor' is the instance of Foo
+	  being called.
 
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeObjectBuilder<T>& has_property_callback(const HasPropertyCallback<T>& has_property_callback) {
-		has_property_callback_ = has_property_callback;
+	JSNativeObjectBuilder<T>& call_as_constructor_callback(const CallAsConstructorCallback<T>& call_as_constructor_callback) {
+		call_as_constructor_callback_ = call_as_constructor_callback;
 		return *this;
 	}
+	
+	/*!
+	  @method
+	  
+	  @abstract Return the callback to invoke when a JavaScript object
+	  is used as the target of an 'instanceof' expression. If you
+	  provide this callback then you must also provide the
+	  CallAsConstructorCallback as well.
+
+	  @result The callback to invoke when an object is used as the
+	  target of an 'instanceof' expression.
+	*/
+	HasInstanceCallback<T> has_instance_callback() const {
+		return has_instance_callback_;
+	}
+
+	/*!
+	  @method
+
+	  @abstract Set the callback to invoke when a JavaScript object is
+	  used as the target of an 'instanceof' expression. If you provide
+	  this callback then you must also provide the
+	  CallAsConstructorCallback as well.
+
+	  @discussion If this callback does not exist, then 'instanceof'
+	  expressions that target your object will return false.
+
+	  For example, given this class definition:
+	  
+	  class Foo {
+	    bool HasInstance(const JSValue& possible_instance) const;
+	  };
+
+	  You would call the builer like this:
+	  
+	  JSNativeObjectBuilder<Foo> builder;
+	  builder.HasInstanceCallback(&Foo::HasInstance);
+
+	  If your callback were invoked by the JavaScript expression
+	  'someValue instanceof myObject', then 'myObject' is the instanceof
+	  of Foo being called and 'someValue' is the possible_instance
+	  parameter.
+	  
+	  @result A reference to the builder for chaining.
+	*/
+	JSNativeObjectBuilder<T>& has_instance_callback(const HasInstanceCallback<T>& has_instance_callback) {
+		has_instance_callback_ = has_instance_callback;
+		return *this;
+	}
+	
+	/*!
+	  @method
+	  
+	  @abstract Add callbacks to invoke when getting and setting
+	  property value on a JavaScript object.
+	  
+	  @param property_name A JSString containing the property's name.
+	  
+	  @param get_property_callback The callback to invoke when getting a
+	  property's value from a JavaScript object.
+	  
+	  @param set_property_callback The callback to invoke when setting a
+	  property's value on a JavaScript object. This may be nullptr, in
+	  which case the ReadOnly attribute is automatically set.
+	  
+	  @param attributes An optional set of JSPropertyAttributes to give
+	  to the function property. The default is
+	  JSPropertyAttribute::DontDelete.
+	  
+	  @result An object which describes a JavaScript value property.
+	  
+	  @throws std::invalid_argument exception under these preconditions:
+
+	  1. If property_name is empty or otherwise has a JavaScript syntax
+	  error.
+	  
+	  2. If the ReadOnly attribute is set and the get_property_callback
+    is not provided.
+	                               
+    3. If the ReadOnly attribute is set and the set_property_callback
+    is provided.
+
+    4. If both get_property_callback and set_property_callback are
+	  missing.
+
+	  @result A reference to the builder for chaining.
+	*/
+	JSNativeObjectBuilder<T>& AddValuePropertyCallback(const JSString& property_name, GetNamedPropertyCallback<T> get_property_callback, SetNamedPropertyCallback<T> set_property_callback = nullptr, const std::unordered_set<JSPropertyAttribute>& attributes = {JSPropertyAttribute::DontDelete}) {
+		return AddValuePropertyCallback(JSNativeObjectValuePropertyCallback<T>(property_name, get_property_callback, set_property_callback, attributes));
+	}
+	
+	/*!
+	  @method
+
+	  @abstract Remove all JSNativeObjectValuePropertyCallbacks.
+	  
+	  @result A reference to the builder for chaining.
+	*/
+	JSNativeObjectBuilder<T>& RemoveAllValuePropertyCallbacks();
+
+	/*!
+	  @method
+
+	  @abstract Add a JSNativeObjectFunctionPropertyCallback.
+	  
+	  @result A reference to the builder for chaining.
+	*/
+	JSNativeObjectBuilder<T>& AddFunctionPropertyCallback(const JSString& function_name, CallAsFunctionCallback<T> call_as_function_callback, const std::unordered_set<JSPropertyAttribute>& attributes = {JSPropertyAttribute::DontDelete}) {
+		return AddFunctionPropertyCallback(JSNativeObjectFunctionPropertyCallback<T>(function_name, call_as_function_callback, attributes));
+	}
+	
+	/*!
+	  @method
+
+	  @abstract Remove all JSNativeObjectFunctionPropertyCallbacks.
+	  
+	  @result A reference to the builder for chaining.
+	*/
+	JSNativeObjectBuilder<T>& RemoveAllFunctionPropertyCallbacks();
 
 	/*!
 	  @method
@@ -406,7 +455,7 @@ class JSNativeObjectBuilder final {
 	  @result The callback to invoke when getting a property's value
 	  from a JavaScript object.
 	*/
-	GetPropertyCallback<T> get_property_names_callback() const {
+	GetPropertyNamesCallback<T> get_property_callback() const {
 		return get_property_callback_;
 	}
 
@@ -532,7 +581,7 @@ class JSNativeObjectBuilder final {
 	  @result The callback to invoke when collecting the names of a
 	  JavaScript object's properties
 	*/
-	GetPropertyNamesCallback<T> get_property_callback() const {
+	GetPropertyCallback<T> get_property_names_callback() const {
 		return get_property_names_callback_;
 	}
 
@@ -569,6 +618,55 @@ class JSNativeObjectBuilder final {
 	*/
 	JSNativeObjectBuilder<T>& get_property_names_callback(const GetPropertyNamesCallback<T>& get_property_names_callback) {
 		get_property_names_callback_ = get_property_names_callback;
+		return *this;
+	}
+
+	/*!
+	  @method
+
+	  @abstract Return the callback to invoke when determining whether a
+	  JavaScript object has a property.
+  
+	  @result The callback to invoke when determining whether a
+	  JavaScript object has a property.
+	*/
+	HasPropertyCallback<T> has_property_callback() const {
+		return has_property_callback_;
+	}
+
+	/*!
+	  @method
+
+	  @abstract Set the callback to invoke when determining whether a
+	  JavaScript object has a property. If this callback is missing then
+	  the object will delegate to GetPropertyCallback.
+  
+	  @discussion The HasPropertyCallback enables optimization in cases
+	  where only a property's existence needs to be known, not its
+	  value, and computing its value is expensive. If the
+	  HasPropertyCallback doesn't exist, then the GetPropertyCallback
+	  will be used instead.
+
+	  If this function returns false, the hasProperty request forwards
+	  to the native object's JSNativeObjectPropertyCallback (if any),
+	  then its parent JSNativeObject chain (which includes the default
+	  object class), then its prototype chain.
+
+	  For example, given this class definition:
+
+	  class Foo {
+	    bool HasProperty(const JSString& property_name) const;
+	  };
+
+	  You would call the builer like this:
+
+	  JSNativeObjectBuilder<Foo> builder;
+	  builder.HasPropertyCallback(&Foo::HasProperty);
+
+	  @result A reference to the builder for chaining.
+	*/
+	JSNativeObjectBuilder<T>& has_property_callback(const HasPropertyCallback<T>& has_property_callback) {
+		has_property_callback_ = has_property_callback;
 		return *this;
 	}
 
@@ -620,104 +718,6 @@ class JSNativeObjectBuilder final {
 		return *this;
 	}
 
-	/*!
-	  @method
-	  
-	  @abstract Return the callback to invoke when a JavaScript object
-	  is used as a constructor in a 'new' expression. If you provide
-	  this callback then you must also provide the HasInstanceCallback
-	  as well.
-  
-	  @result The callback to invoke when an object is used as a
-	  constructor in a 'new' expression.
-	*/
-	CallAsConstructorCallback<T> call_as_constructor_callback() const {
-		return call_as_constructor_callback_;
-	}
-
-	/*!
-	  @method
-
-	  @abstract Set the callback to invoke when a JavaScript object is
-	  used as a constructor in a 'new' expression. If you provide this
-	  callback then you must also provide the HasInstanceCallback as
-	  well.
-
-	  @discussion If this callback doest not exist, then using your
-	  object as a constructor in a 'new' expression will throw an
-	  exception.
-	  
-	  For example, given this class definition:
-	  
-	  class Foo {
-	    JSObject Constructor(const std::vector<JSValue>& arguments);
-	  };
-	  
-	  You would call the builer like this:
-	  
-	  JSNativeObjectBuilder<Foo> builder;
-	  builder.CallAsConstructorCallback(&Foo::Constructor);
-
-	  If your callback were invoked by the JavaScript expression
-	  'new myConstructor()', then 'myConstructor' is the instance of Foo
-	  being called.
-
-	  @result A reference to the builder for chaining.
-	*/
-	JSNativeObjectBuilder<T>& call_as_constructor_callback(const CallAsConstructorCallback<T>& call_as_constructor_callback) {
-		call_as_constructor_callback_ = call_as_constructor_callback;
-		return *this;
-	}
-	
-	/*!
-	  @method
-	  
-	  @abstract Return the callback to invoke when a JavaScript object
-	  is used as the target of an 'instanceof' expression. If you
-	  provide this callback then you must also provide the
-	  CallAsConstructorCallback as well.
-
-	  @result The callback to invoke when an object is used as the
-	  target of an 'instanceof' expression.
-	*/
-	HasInstanceCallback<T> has_instance_callback() const {
-		return has_instance_callback_;
-	}
-
-	/*!
-	  @method
-
-	  @abstract Set the callback to invoke when a JavaScript object is
-	  used as the target of an 'instanceof' expression. If you provide
-	  this callback then you must also provide the
-	  CallAsConstructorCallback as well.
-
-	  @discussion If this callback does not exist, then 'instanceof'
-	  expressions that target your object will return false.
-
-	  For example, given this class definition:
-	  
-	  class Foo {
-	    bool HasInstance(const JSValue& possible_instance) const;
-	  };
-
-	  You would call the builer like this:
-	  
-	  JSNativeObjectBuilder<Foo> builder;
-	  builder.HasInstanceCallback(&Foo::HasInstance);
-
-	  If your callback were invoked by the JavaScript expression
-	  'someValue instanceof myObject', then 'myObject' is the instanceof
-	  of Foo being called and 'someValue' is the possible_instance
-	  parameter.
-	  
-	  @result A reference to the builder for chaining.
-	*/
-	JSNativeObjectBuilder<T>& has_instance_callback(const HasInstanceCallback<T>& has_instance_callback) {
-		has_instance_callback_ = has_instance_callback;
-		return *this;
-	}
-	
 	/*!
 	  @method
 
@@ -820,7 +820,7 @@ JSNativeObjectBuilder<T>& JSNativeObjectBuilder<T>::AddValuePropertyCallback(con
 #if JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTBUILDER_DEBUG
 		std::clog << log_prefix
 		          << " [DEBUG] "
-		          << "remove previous property"
+		          << "remove previous property "
 		          << property_name
 		          << ", removed = "
 		          << std::boolalpha
@@ -839,7 +839,7 @@ JSNativeObjectBuilder<T>& JSNativeObjectBuilder<T>::AddValuePropertyCallback(con
 #if JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTBUILDER_DEBUG
 	std::clog << log_prefix
 	          << " [DEBUG] "
-	          << "insert property"
+	          << "insert property "
 	          << property_name
 	          << ", inserted = "
 	          << std::boolalpha
@@ -863,21 +863,21 @@ template<typename T>
 JSNativeObjectBuilder<T>& JSNativeObjectBuilder<T>::AddFunctionPropertyCallback(const JSNativeObjectFunctionPropertyCallback<T>& function_property_callback) {
 	static const std::string log_prefix { "MDL: JSNativeObjectBuilder::AddFunctionPropertyCallback:" };
 	
-	const auto property_name = function_property_callback.get_property_name();
-	const auto position      = function_property_callback_map_.find(property_name);
+	const auto function_name = function_property_callback.get_function_name();
+	const auto position      = function_property_callback_map_.find(function_name);
 	const bool found         = position != function_property_callback_map_.end();
 	
 	if (found) {
 		// A propery with this name is already in the map, so replace
 		// it.
-		const auto number_of_elements_removed = function_property_callback_map_.erase(property_name);
+		const auto number_of_elements_removed = function_property_callback_map_.erase(function_name);
 		const bool removed                    = (number_of_elements_removed == 1);
 		
 #if JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTBUILDER_DEBUG
 		std::clog << log_prefix
 		          << " [DEBUG] "
-		          << "remove previous property"
-		          << property_name
+		          << "remove previous function "
+		          << function_name
 		          << ", removed = "
 		          << std::boolalpha
 		          << removed
@@ -889,14 +889,14 @@ JSNativeObjectBuilder<T>& JSNativeObjectBuilder<T>::AddFunctionPropertyCallback(
 		assert(removed);
 	}
 	
-	const auto insert_result = function_property_callback_map_.emplace(property_name, function_property_callback);
-	const bool inserted      = (insert_result -> second);
+	const auto insert_result = function_property_callback_map_.emplace(function_name, function_property_callback);
+	const bool inserted      = insert_result.second;
 	
 #if JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTBUILDER_DEBUG
 	std::clog << log_prefix
 	          << " [DEBUG] "
-	          << "insert property"
-	          << property_name
+	          << "insert function "
+	          << function_name
 	          << ", inserted = "
 	          << std::boolalpha
 	          << inserted

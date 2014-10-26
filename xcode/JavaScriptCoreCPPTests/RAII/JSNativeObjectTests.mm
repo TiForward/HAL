@@ -42,53 +42,65 @@ using namespace JavaScriptCoreCPP::RAII;
   XCTAssertEqual(1, attributes.size());
 }
 
-- (void)testInitializeCallback {
+- (void)testObjectCallbacks {
   InitializeCallback<NativeObject>        InitializeCallback        = &NativeObject::Initialize;
   FinalizeCallback<NativeObject>          FinalizeCallback          = &NativeObject::Finalize;
-  HasPropertyCallback<NativeObject>       HasPropertyCallback       = &NativeObject::HasProperty;
+
+  CallAsConstructorCallback<NativeObject> CallAsConstructorCallback = &NativeObject::Constructor;
+  HasInstanceCallback<NativeObject>       HasInstanceCallback       = &NativeObject::HasInstance;
+
   GetPropertyCallback<NativeObject>       GetPropertyCallback       = &NativeObject::GetProperty;
   SetPropertyCallback<NativeObject>       SetPropertyCallback       = &NativeObject::SetProperty;
   DeletePropertyCallback<NativeObject>    DeletePropertyCallback    = &NativeObject::DeleteProperty;
   GetPropertyNamesCallback<NativeObject>  GetPropertyNamesCallback  = &NativeObject::GetPropertyNames;
-  CallAsFunctionCallback<NativeObject>    FooCallback               = &NativeObject::FooFunction;
-  CallAsFunctionCallback<NativeObject>    BarCallback               = &NativeObject::BarFunction;
-  CallAsConstructorCallback<NativeObject> CallAsConstructorCallback = &NativeObject::Constructor;
-  HasInstanceCallback<NativeObject>       HasInstanceCallback       = &NativeObject::HasInstance;
+  HasPropertyCallback<NativeObject>       HasPropertyCallback       = &NativeObject::HasProperty;
   ConvertToTypeCallback<NativeObject>     ConvertToTypeCallback     = &NativeObject::ConvertToType;
+
+  CallAsFunctionCallback<NativeObject>    Helloallback               = &NativeObject::Hello;
+  CallAsFunctionCallback<NativeObject>    GoodbyeCallback            = &NativeObject::Goodbye;
 }
 
-- (void)testJSNativeObjectFunctionPropertyCallback {
+- (void)testPropertyCallbacks {
   using NativeObjectPropertyCallback     = JSNativeObjectFunctionPropertyCallback<NativeObject>;
   using NativeObjectPropertyCallbackHash = JSNativeObjectFunctionPropertyCallbackHash<NativeObject>;
   using NativeObjectFunctionCallbackSet  = std::unordered_set<NativeObjectPropertyCallback, NativeObjectPropertyCallbackHash>;
   
   NativeObjectFunctionCallbackSet function_callbacks;
 
-  JSNativeObjectFunctionPropertyCallback<NativeObject> FooCallback("Foo", &NativeObject::FooFunction);
-  JSNativeObjectFunctionPropertyCallback<NativeObject> BarCallback("Bar", &NativeObject::BarFunction);
+  JSNativeObjectFunctionPropertyCallback<NativeObject>   HelloCallback("hello"  , &NativeObject::Hello  , {JSPropertyAttribute::DontDelete});
+  JSNativeObjectFunctionPropertyCallback<NativeObject> GoodbyeCallback("goodbye", &NativeObject::Goodbye, {JSPropertyAttribute::DontDelete});
   
-  XCTAssertEqual(0, function_callbacks.count(FooCallback));
-  XCTAssertEqual(0, function_callbacks.count(BarCallback));
+  XCTAssertEqual(0, function_callbacks.count(HelloCallback));
+  XCTAssertEqual(0, function_callbacks.count(GoodbyeCallback));
   
-  const auto insert_result = function_callbacks.insert(FooCallback);
+  const auto insert_result = function_callbacks.insert(HelloCallback);
   XCTAssertTrue(insert_result.second);
-  XCTAssertEqual(1, function_callbacks.count(FooCallback));
-  XCTAssertEqual(*insert_result.first, FooCallback);
+  XCTAssertEqual(1, function_callbacks.count(HelloCallback));
+  XCTAssertEqual(*insert_result.first, HelloCallback);
   
   XCTAssertEqual(1, function_callbacks.size());
 }
 
-- (void)testJSNativeObjectValuePropertyCallback {
+- (void)testValuePropertyCallback {
   using NativeObjectPropertyCallback     = JSNativeObjectValuePropertyCallback<NativeObject>;
   using NativeObjectPropertyCallbackHash = JSNativeObjectValuePropertyCallbackHash<NativeObject>;
   using NativeObjectValueCallbackSet     = std::unordered_set<NativeObjectPropertyCallback, NativeObjectPropertyCallbackHash>;
   
   NativeObjectValueCallbackSet value_property_callbacks;
 
-  JSNativeObjectValuePropertyCallback<NativeObject> NamePropertyCallback("name", &NativeObject::GetName, &NativeObject::SetName);
-  JSNativeObjectValuePropertyCallback<NativeObject> NumberPropertyCallback("number", &NativeObject::GetNumber, &NativeObject::SetNumber);
-  JSNativeObjectValuePropertyCallback<NativeObject> PiPropertyCallback("pi", &NativeObject::GetPi, nullptr);
+  JSNativeObjectValuePropertyCallback<NativeObject>   NamePropertyCallback("name"  , &NativeObject::GetName  , &NativeObject::SetName  , {JSPropertyAttribute::DontDelete});
+  JSNativeObjectValuePropertyCallback<NativeObject> NumberPropertyCallback("number", &NativeObject::GetNumber, &NativeObject::SetNumber, {JSPropertyAttribute::DontDelete});
+  JSNativeObjectValuePropertyCallback<NativeObject>     PiPropertyCallback("pi"    , &NativeObject::GetPi    , nullptr                 , {JSPropertyAttribute::DontDelete});
   
+  XCTAssertEqual(1, NamePropertyCallback.get_attributes().count(JSPropertyAttribute::DontDelete));
+  XCTAssertEqual(0, NamePropertyCallback.get_attributes().count(JSPropertyAttribute::ReadOnly));
+
+  XCTAssertEqual(1, NumberPropertyCallback.get_attributes().count(JSPropertyAttribute::DontDelete));
+  XCTAssertEqual(0, NumberPropertyCallback.get_attributes().count(JSPropertyAttribute::ReadOnly));
+
+  XCTAssertEqual(1, PiPropertyCallback.get_attributes().count(JSPropertyAttribute::DontDelete));
+  XCTAssertEqual(1, PiPropertyCallback.get_attributes().count(JSPropertyAttribute::ReadOnly));
+
   XCTAssertEqual(0, value_property_callbacks.count(NamePropertyCallback));
   XCTAssertEqual(0, value_property_callbacks.count(NumberPropertyCallback));
   XCTAssertEqual(0, value_property_callbacks.count(PiPropertyCallback));
@@ -111,7 +123,22 @@ using namespace JavaScriptCoreCPP::RAII;
   JSNativeObjectBuilder<NativeObject> builder(js_context);
   builder
       .name("MyObject")
-      .AddValuePropertyCallback("name", &NativeObject::GetName, &NativeObject::SetName);
+      .initialize_callback(&NativeObject::Initialize)
+      .finalize_callback(&NativeObject::Finalize)
+      .call_as_constructor_callback(&NativeObject::Constructor)
+      .has_instance_callback(&NativeObject::HasInstance)
+      .AddValuePropertyCallback("name", &NativeObject::GetName, &NativeObject::SetName)
+      .AddValuePropertyCallback("number", &NativeObject::GetNumber, &NativeObject::SetNumber)
+      .AddValuePropertyCallback("pi", &NativeObject::GetPi)
+      .AddFunctionPropertyCallback("hello", &NativeObject::Hello)
+      .AddFunctionPropertyCallback("goodbye", &NativeObject::Goodbye)
+      .get_property_callback(&NativeObject::GetProperty)
+      .set_property_callback(&NativeObject::SetProperty)
+      .delete_property_callback(&NativeObject::DeleteProperty)
+      .get_property_names_callback(&NativeObject::GetPropertyNames)
+      .has_property_callback(&NativeObject::HasProperty)
+      .call_as_function_callback(&NativeObject::CallAsFunction)
+      .convert_to_type_callback(&NativeObject::ConvertToType);
 }
 
 - (void)testJSNativeObject {

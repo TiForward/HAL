@@ -47,9 +47,8 @@ class JSNativeObjectValuePropertyCallback final	{
 	  property's value on a JavaScript object. This may be nullptr, in
 	  which case the ReadOnly attribute is automatically set.
 	  
-	  @param attributes An optional set of JSPropertyAttributes to give
-	  to the function property. The default is
-	  JSPropertyAttribute::DontDelete.
+	  @param attributes The set of JSPropertyAttributes to give to the
+	  value property.
 	  
 	  @result An object which describes a JavaScript value property.
 	  
@@ -67,7 +66,7 @@ class JSNativeObjectValuePropertyCallback final	{
     4. If both get_property_callback and set_property_callback are
 	  missing.
 	*/
-	JSNativeObjectValuePropertyCallback(const JSString& property_name, GetNamedPropertyCallback<T> get_property_callback, SetNamedPropertyCallback<T> set_property_callback, const std::unordered_set<JSPropertyAttribute>& attributes = {JSPropertyAttribute::DontDelete});
+	JSNativeObjectValuePropertyCallback(const JSString& property_name, GetNamedPropertyCallback<T> get_property_callback, SetNamedPropertyCallback<T> set_property_callback, const std::unordered_set<JSPropertyAttribute>& attributes);
 
 	JSString get_property_name() const {
 		return property_name_;
