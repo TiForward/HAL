@@ -30,13 +30,8 @@
 #include "JavaScriptCoreCPP/RAII/JSPropertyNameAccumulator.hpp"
 
 #include "JavaScriptCoreCPP/RAII/JSNativeObjectBuilder.hpp"
-
-// detail?
 #include "JavaScriptCoreCPP/RAII/JSNativeObject.hpp"
 #include "JavaScriptCoreCPP/RAII/JSNativeObjectAttribute.hpp"
-#include "JavaScriptCoreCPP/RAII/JSNativeObjectCallbacks.hpp"
-#include "JavaScriptCoreCPP/RAII/JSNativeObjectFunctionPropertyCallback.hpp"
-#include "JavaScriptCoreCPP/RAII/JSNativeObjectValuePropertyCallback.hpp"
 
 #ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
 #include "JavaScriptCoreCPP/RAII/detail/JSPerformanceCounter.hpp"

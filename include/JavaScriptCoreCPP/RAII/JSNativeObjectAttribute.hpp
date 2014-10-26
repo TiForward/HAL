@@ -11,7 +11,6 @@
 #define _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTATTRIBUTE_HPP_
 
 #include <functional>
-#include <unordered_set>
 #include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP { namespace RAII {
@@ -51,24 +50,5 @@ struct hash<JavaScriptCoreCPP::RAII::JSNativeObjectAttribute> {
 	}
 };
 }  // namespace std {
-
-
-namespace JavaScriptCoreCPP { namespace detail {
-
-// For hash functions for std::unordered_set<JSNativeObjectAttribute>
-// and interoperability with the JavaScriptCore C API.
-inline
-::JSClassAttributes ToJSClassAttributes(const std::unordered_set<RAII::JSNativeObjectAttribute>& attributes) {
-	using property_attribute_underlying_type = std::underlying_type<RAII::JSNativeObjectAttribute>::type;
-	std::bitset<2> class_attributes;
-	for (auto class_attribute : attributes) {
-		const auto bit_position = static_cast<property_attribute_underlying_type>(class_attribute);
-		class_attributes.set(bit_position);
-	}
-	
-	return static_cast<property_attribute_underlying_type>(class_attributes.to_ulong());
-}
-
-}} // namespace JavaScriptCoreCPP { namespace detail {
 
 #endif // _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTATTRIBUTE_HPP_

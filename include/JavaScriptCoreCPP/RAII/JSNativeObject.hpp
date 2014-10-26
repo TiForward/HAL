@@ -14,7 +14,7 @@
 #define DEBUG_JSNATIVEOBJECT
 #endif
 
-#include "JavaScriptCoreCPP/RAII/JSNativeObjectDefinition.hpp"
+#include "JavaScriptCoreCPP/RAII/detail/JSNativeObjectDefinition.hpp"
 #include "JavaScriptCoreCPP/RAII/JSClass.hpp"
 #include "JavaScriptCoreCPP/RAII/JSString.hpp"
 #include "JavaScriptCoreCPP/RAII/JSContext.hpp"
@@ -63,9 +63,9 @@ class JSNativeObject final {
 	template<typename U>
 	friend class JSNativeObjectBuilder;
 	
-	JSContext                     js_context_;
-	JSNativeObjectDefinition<T>   js_native_object_definition_;
-	std::mutex                    js_native_object_mutex_;
+	JSContext                           js_context_;
+	detail::JSNativeObjectDefinition<T> js_native_object_definition_;
+	std::mutex                          js_native_object_mutex_;
 	
 	static JSNativeObject_shared_ptr<T> get_JSNativeObject_shared_ptr(const JSObject& js_object);
 

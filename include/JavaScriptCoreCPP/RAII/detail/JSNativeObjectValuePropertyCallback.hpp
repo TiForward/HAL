@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTVALUEPROPERTYCALLBACK_HPP_
-#define _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTVALUEPROPERTYCALLBACK_HPP_
+#ifndef _JAVASCRIPTCORECPP_RAII_DETAIL_JSNATIVEOBJECTVALUEPROPERTYCALLBACK_HPP_
+#define _JAVASCRIPTCORECPP_RAII_DETAIL_JSNATIVEOBJECTVALUEPROPERTYCALLBACK_HPP_
 
 #include "JavaScriptCoreCPP/RAII/JSNativeObjectCallbacks.hpp"
 #include "JavaScriptCoreCPP/RAII/JSPropertyAttribute.hpp"
@@ -16,7 +16,9 @@
 #include <functional>
 #include <sstream>
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP { namespace detail {
+
+using namespace JavaScriptCoreCPP::RAII;
 
 /*!
   @class
@@ -97,8 +99,8 @@ class JSNativeObjectValuePropertyCallback final	{
 			, get_property_callback_(rhs.get_property_callback_)
 			, set_property_callback_(rhs.set_property_callback_)
 			, attributes_(rhs.attributes_)
-			, js_property_attributes_(detail::ToJSPropertyAttribute(attributes_))
-			, hash_value_(detail::hash_val(property_name_, js_property_attributes_)) {
+			, js_property_attributes_(ToJSPropertyAttribute(attributes_))
+			, hash_value_(hash_val(property_name_, js_property_attributes_)) {
 	}
 	
 	// Move constructor.
@@ -108,8 +110,8 @@ class JSNativeObjectValuePropertyCallback final	{
 			, get_property_callback_(rhs.get_property_callback_)
 			, set_property_callback_(rhs.set_property_callback_)
 			, attributes_(rhs.attributes_)
-			, js_property_attributes_(detail::ToJSPropertyAttribute(attributes_))
-			, hash_value_(detail::hash_val(property_name_, js_property_attributes_)) {
+			, js_property_attributes_(ToJSPropertyAttribute(attributes_))
+			, hash_value_(hash_val(property_name_, js_property_attributes_)) {
 	}
 	
 	// Create a copy of another JSNativeObjectValuePropertyCallback by assignment. This is a
@@ -169,8 +171,8 @@ JSNativeObjectValuePropertyCallback<T>::JSNativeObjectValuePropertyCallback(cons
 		, get_property_callback_(get_property_callback)
 		, set_property_callback_(set_property_callback)
 		, attributes_(attributes)
-		, js_property_attributes_(detail::ToJSPropertyAttribute(attributes_))
-		, hash_value_(detail::hash_val(property_name_, js_property_attributes_)) {
+		, js_property_attributes_(ToJSPropertyAttribute(attributes_))
+		, hash_value_(hash_val(property_name_, js_property_attributes_)) {
 	
 	static const std::string log_prefix { "MDL: JSNativeObjectValuePropertyCallback: " };
 	
@@ -275,31 +277,21 @@ bool operator>=(const JSNativeObjectValuePropertyCallback<T>& lhs, const JSNativ
 	return ! (lhs < rhs);
 }
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
-
-namespace JavaScriptCoreCPP { namespace detail {
-
-using namespace JavaScriptCoreCPP::RAII;
-
 template<typename T>
 struct hash<JSNativeObjectValuePropertyCallback<T>> {
 	using argument_type = JSNativeObjectValuePropertyCallback<T>;
 	using result_type   = std::size_t;
-
+	
 	result_type operator()(const argument_type& callback) const {
 		return callback.get_hash_value();
 	}
 };
 
-}} // namespace JavaScriptCoreCPP { namespace detail {
-
-namespace JavaScriptCoreCPP { namespace RAII {
-
 // Hash function for JSNativeObjectValuePropertyCallback so that they
 // can be stored in a std::unordered_set.
 template<typename T>
-using JSNativeObjectValuePropertyCallbackHash = detail::hash<JSNativeObjectValuePropertyCallback<T>>;
+using JSNativeObjectValuePropertyCallbackHash = hash<JSNativeObjectValuePropertyCallback<T>>;
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP { namespace detail {
 
-#endif // _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTVALUEPROPERTYCALLBACK_HPP_
+#endif // _JAVASCRIPTCORECPP_RAII_DETAIL_JSNATIVEOBJECTVALUEPROPERTYCALLBACK_HPP_

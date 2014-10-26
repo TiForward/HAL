@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTFUNCTIONPROPERTYCALLBACK_HPP_
-#define _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTFUNCTIONPROPERTYCALLBACK_HPP_
+#ifndef _JAVASCRIPTCORECPP_RAII_DETAIL_JSNATIVEOBJECTFUNCTIONPROPERTYCALLBACK_HPP_
+#define _JAVASCRIPTCORECPP_RAII_DETAIL_JSNATIVEOBJECTFUNCTIONPROPERTYCALLBACK_HPP_
 
 #include "JavaScriptCoreCPP/RAII/JSNativeObjectCallbacks.hpp"
 #include "JavaScriptCoreCPP/RAII/JSPropertyAttribute.hpp"
@@ -16,7 +16,9 @@
 #include <functional>
 #include <sstream>
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP { namespace detail {
+
+using namespace JavaScriptCoreCPP::RAII;
 
 /*!
   @class
@@ -97,8 +99,8 @@ class JSNativeObjectFunctionPropertyCallback final	{
 			, function_name_for_js_static_function_(rhs.function_name_for_js_static_function_)
 			, call_as_function_callback_(rhs.call_as_function_callback_)
 			, attributes_(rhs.attributes_)
-			, js_property_attributes_(detail::ToJSPropertyAttribute(attributes_))
-			, hash_value_(detail::hash_val(function_name_, js_property_attributes_)) {
+			, js_property_attributes_(ToJSPropertyAttribute(attributes_))
+			, hash_value_(hash_val(function_name_, js_property_attributes_)) {
 	}
 	
 	// Move constructor.
@@ -107,8 +109,8 @@ class JSNativeObjectFunctionPropertyCallback final	{
 			, function_name_for_js_static_function_(rhs.function_name_for_js_static_function_)
 			, call_as_function_callback_(rhs.call_as_function_callback_)
 			, attributes_(rhs.attributes_)
-			, js_property_attributes_(detail::ToJSPropertyAttribute(attributes_))
-			, hash_value_(detail::hash_val(function_name_, js_property_attributes_)) {
+			, js_property_attributes_(ToJSPropertyAttribute(attributes_))
+			, hash_value_(hash_val(function_name_, js_property_attributes_)) {
 	}
 	
 	// Create a copy of another JSNativeObjectFunctionPropertyCallback by assignment. This is
@@ -165,8 +167,8 @@ JSNativeObjectFunctionPropertyCallback<T>::JSNativeObjectFunctionPropertyCallbac
 		, function_name_for_js_static_function_(function_name)
 		, call_as_function_callback_(call_as_function_callback)
 		, attributes_(attributes)
-		, js_property_attributes_(detail::ToJSPropertyAttribute(attributes_))
-		, hash_value_(detail::hash_val(function_name_, js_property_attributes_)) {
+		, js_property_attributes_(ToJSPropertyAttribute(attributes_))
+		, hash_value_(hash_val(function_name_, js_property_attributes_)) {
 	
 	static const std::string log_prefix { "MDL: JSNativeObjectFunctionPropertyCallback: " };
 	
@@ -243,29 +245,19 @@ bool operator>=(const JSNativeObjectFunctionPropertyCallback<T>& lhs, const JSNa
 	return ! (lhs < rhs);
 }
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
-
-namespace JavaScriptCoreCPP { namespace detail {
-
-using namespace JavaScriptCoreCPP::RAII;
-
 template<typename T>
 struct hash<JSNativeObjectFunctionPropertyCallback<T>> {
 	using argument_type = JSNativeObjectFunctionPropertyCallback<T>;
 	using result_type   = std::size_t;
-
+	
 	result_type operator()(const argument_type& callback) const {
 		return callback.get_hash_value();
 	}
 };
 
+template<typename T>
+using JSNativeObjectFunctionPropertyCallbackHash = hash<JSNativeObjectFunctionPropertyCallback<T>>;
+
 }} // namespace JavaScriptCoreCPP { namespace detail {
 
-namespace JavaScriptCoreCPP { namespace RAII {
-
-template<typename T>
-using JSNativeObjectFunctionPropertyCallbackHash = detail::hash<JSNativeObjectFunctionPropertyCallback<T>>;
-
-}} // namespace JavaScriptCoreCPP { namespace RAII {
-
-#endif // _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTFUNCTIONPROPERTYCALLBACK_HPP_
+#endif // _JAVASCRIPTCORECPP_RAII_DETAIL_JSNATIVEOBJECTFUNCTIONPROPERTYCALLBACK_HPP_

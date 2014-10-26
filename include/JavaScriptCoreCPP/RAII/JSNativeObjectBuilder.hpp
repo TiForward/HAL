@@ -11,9 +11,9 @@
 #define _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTBUILDER_HPP_
 
 #include "JavaScriptCoreCPP/RAII/JSNativeObject.hpp"
-#include "JavaScriptCoreCPP/RAII/JSNativeObjectDefinition.hpp"
 #include "JavaScriptCoreCPP/RAII/JSContext.hpp"
 #include "JavaScriptCoreCPP/RAII/JSClass.hpp"
+#include "JavaScriptCoreCPP/RAII/detail/JSNativeObjectDefinition.hpp"
 #include "JavaScriptCoreCPP/RAII/detail/JSUtil.hpp"
 #include <unordered_set>
 #include <memory>
@@ -22,6 +22,8 @@
 #include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP { namespace RAII {
+
+using namespace JavaScriptCoreCPP::detail;
 
 /*!
   @class
@@ -174,19 +176,6 @@ class JSNativeObjectBuilder final {
 
 	/*!
 	  @method
-
-	  @abstract Return the JSNativeObjectValuePropertyCallbacks that
-	  describe the JSNativeObject's value properties.
-  
-	  @result The JSNativeObjectValuePropertyCallbacks that describe the
-	  JSNativeObject's value properties.
-	*/
-	std::unordered_map<std::string, JSNativeObjectValuePropertyCallback<T>> value_property_callback_map() const {
-		return value_property_callback_map_;
-	}
-
-	/*!
-	  @method
 	  
 	  @abstract Add callbacks to invoke when getting and setting
 	  property value on a JavaScript object.
@@ -229,25 +218,6 @@ class JSNativeObjectBuilder final {
 	/*!
 	  @method
 
-	  @abstract Remove a JSNativeObjectValuePropertyCallback.
-	  
-	  @result A reference to the builder for chaining.
-	*/
-	JSNativeObjectBuilder<T>& RemoveValuePropertyCallback(const JSNativeObjectValuePropertyCallback<T>& value_property_callback);
-
-	/*!
-	  @method
-
-	  @abstract Remove a JSNativeObjectValuePropertyCallback with the
-	  given property name.
-	  
-	  @result A reference to the builder for chaining.
-	*/
-	JSNativeObjectBuilder<T>& RemoveValuePropertyCallback(const std::string& property_name);
-
-	/*!
-	  @method
-
 	  @abstract Remove all JSNativeObjectValuePropertyCallbacks.
 	  
 	  @result A reference to the builder for chaining.
@@ -257,44 +227,14 @@ class JSNativeObjectBuilder final {
 	/*!
 	  @method
 
-	  @abstract Return the JSNativeObjectFunctionPropertyCallbacks that
-	  describe the JSNativeObject's function properties.
-
-	  @result The JSNativeObjectFunctionPropertyCallbacks that describe
-	  the JSNativeObject's function properties.
-	*/
-	std::unordered_map<std::string, JSNativeObjectFunctionPropertyCallback<T>> JSNativeObjectFunctionPropertyCallbacks() const {
-		return function_property_callback_map_;
-	}
-	
-	/*!
-	  @method
-
 	  @abstract Add a JSNativeObjectFunctionPropertyCallback.
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeObjectBuilder<T>& AddFunctionPropertyCallback(const JSNativeObjectFunctionPropertyCallback<T>& function_property_callback);
+	JSNativeObjectBuilder<T>& AddFunctionPropertyCallback(const JSString& function_name, CallAsFunctionCallback<T> call_as_function_callback, const std::unordered_set<JSPropertyAttribute>& attributes = {JSPropertyAttribute::DontDelete}) {
+		return AddFunctionPropertyCallback(JSNativeObjectFunctionPropertyCallback<T>(function_name, call_as_function_callback, attributes));
+	}
 	
-	/*!
-	  @method
-
-	  @abstract Remove a JSNativeObjectFunctionPropertyCallback.
-	  
-	  @result A reference to the builder for chaining.
-	*/
-	JSNativeObjectBuilder<T>& RemoveFunctionPropertyCallback(const JSNativeObjectFunctionPropertyCallback<T>& function_property_callback);
-
-	/*!
-	  @method
-
-	  @abstract Remove a JSNativeObjectFunctionPropertyCallback with the
-	  given property name.
-	  
-	  @result A reference to the builder for chaining.
-	*/
-	JSNativeObjectBuilder<T>& RemoveFunctionPropertyCallback(const std::string& property_name);
-
 	/*!
 	  @method
 
@@ -839,27 +779,28 @@ class JSNativeObjectBuilder final {
  private:
 
 	JSNativeObjectBuilder<T>& AddValuePropertyCallback(const JSNativeObjectValuePropertyCallback<T>& value_property_callback);
+	JSNativeObjectBuilder<T>& AddFunctionPropertyCallback(const JSNativeObjectFunctionPropertyCallback<T>& function_property_callback);
 
 	// Require parameters
 	JSContext js_context_;
 	
 	// Optional parameters - initialized to default values
-	JSString                                                                   name_;
-	std::unordered_set<JSNativeObjectAttribute>                                attributes_;
-	std::shared_ptr<JSNativeObject<T>>                                         parent_ptr_                          { nullptr };
-	std::unordered_map<std::string, JSNativeObjectValuePropertyCallback<T>>    value_property_callback_map_;
-	std::unordered_map<std::string, JSNativeObjectFunctionPropertyCallback<T>> function_property_callback_map_;
-	InitializeCallback<T>                                                      initialize_callback_                 { nullptr };
-	FinalizeCallback<T>                                                        finalize_callback_                   { nullptr };
-	HasPropertyCallback<T>                                                     has_property_callback_               { nullptr };
-	GetPropertyCallback<T>                                                     get_property_callback_               { nullptr };
-	SetPropertyCallback<T>                                                     set_property_callback_               { nullptr };
-	DeletePropertyCallback<T>                                                  delete_property_callback_            { nullptr };
-	GetPropertyNamesCallback<T>                                                get_property_names_callback_         { nullptr };
-	CallAsFunctionCallback<T>                                                  call_as_function_callback_           { nullptr };
-	CallAsConstructorCallback<T>                                               call_as_constructor_callback_        { nullptr };
-	HasInstanceCallback<T>                                                     has_instance_callback_               { nullptr };
-	ConvertToTypeCallback<T>                                                   convert_to_type_callback_            { nullptr };
+	JSString                                       name_;
+	std::unordered_set<JSNativeObjectAttribute>    attributes_;
+	std::shared_ptr<JSNativeObject<T>>             parent_ptr_                      { nullptr };
+	JSNativeObjectValuePropertyCallbackMap_t<T>    value_property_callback_map_;
+	JSNativeObjectFunctionPropertyCallbackMap_t<T> function_property_callback_map_;
+	InitializeCallback<T>                          initialize_callback_             { nullptr };
+	FinalizeCallback<T>                            finalize_callback_               { nullptr };
+	HasPropertyCallback<T>                         has_property_callback_           { nullptr };
+	GetPropertyCallback<T>                         get_property_callback_           { nullptr };
+	SetPropertyCallback<T>                         set_property_callback_           { nullptr };
+	DeletePropertyCallback<T>                      delete_property_callback_        { nullptr };
+	GetPropertyNamesCallback<T>                    get_property_names_callback_     { nullptr };
+	CallAsFunctionCallback<T>                      call_as_function_callback_       { nullptr };
+	CallAsConstructorCallback<T>                   call_as_constructor_callback_    { nullptr };
+	HasInstanceCallback<T>                         has_instance_callback_           { nullptr };
+	ConvertToTypeCallback<T>                       convert_to_type_callback_        { nullptr };
 };
 
 template<typename T>
@@ -908,51 +849,6 @@ JSNativeObjectBuilder<T>& JSNativeObjectBuilder<T>::AddValuePropertyCallback(con
 #endif
 	// postcondition: The callbak was added to the map.
 	assert(inserted);
-	
-	return *this;
-}
-
-template<typename T>
-JSNativeObjectBuilder<T>& JSNativeObjectBuilder<T>::RemoveValuePropertyCallback(const JSNativeObjectValuePropertyCallback<T>& value_property_callback) {
-	return RemoveValuePropertyCallback(value_property_callback.get_property_name());
-}
-
-template<typename T>
-JSNativeObjectBuilder<T>& JSNativeObjectBuilder<T>::RemoveValuePropertyCallback(const std::string& property_name) {
-	static const std::string log_prefix { "MDL: JSNativeObjectBuilder::RemoveValuePropertyCallback:" };
-	
-	const auto position = value_property_callback_map_.find(property_name);
-	const bool found = position != value_property_callback_map_.end();
-	
-	if (found) {
-		const auto number_of_elements_removed = value_property_callback_map_.erase(property_name);
-		const bool removed                    = (number_of_elements_removed == 1);
-		
-#if JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTBUILDER_DEBUG
-		std::clog << log_prefix
-		          << " [DEBUG] "
-		          << "remove property"
-		          << property_name
-		          << ", removed = "
-		          << std::boolalpha
-		          << removed
-		          << "."
-		          << std::endl;
-#endif
-		
-		// postcondition: the callback was removed from the map.
-		assert(removed);
-
-#if JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTBUILDER_DEBUG
-	} else {
-		std::clog << log_prefix
-		          << " [DEBUG] "
-		          << "property"
-		          << property_name
-		          << " already removed."
-		          << std::endl;
-#endif
-	}
 	
 	return *this;
 }
@@ -1014,59 +910,28 @@ JSNativeObjectBuilder<T>& JSNativeObjectBuilder<T>::AddFunctionPropertyCallback(
 }
 
 template<typename T>
-JSNativeObjectBuilder<T>& JSNativeObjectBuilder<T>::RemoveFunctionPropertyCallback(const JSNativeObjectFunctionPropertyCallback<T>& function_property_callback) {
-	return RemoveFunctionPropertyCallback(function_property_callback.get_property_name());
-}
-
-template<typename T>
-JSNativeObjectBuilder<T>& JSNativeObjectBuilder<T>::RemoveFunctionPropertyCallback(const std::string& property_name) {
-	static const std::string log_prefix { "MDL: JSNativeObjectBuilder::RemoveFunctionPropertyCallback:" };
-	
-	const auto position = function_property_callback_map_.find(property_name);
-	const bool found = position != function_property_callback_map_.end();
-	
-	if (found) {
-		const auto number_of_elements_removed = function_property_callback_map_.erase(property_name);
-		const bool removed                    = (number_of_elements_removed == 1);
-		
-#if JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTBUILDER_DEBUG
-		std::clog << log_prefix
-		          << " [DEBUG] "
-		          << "remove property"
-		          << property_name
-		          << ", removed = "
-		          << std::boolalpha
-		          << removed
-		          << "."
-		          << std::endl;
-#endif
-		
-		// postcondition: the callback was removed from the map.
-		assert(removed);
-
-#if JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTBUILDER_DEBUG
-	} else {
-		std::clog << log_prefix
-		          << " [DEBUG] "
-		          << "property"
-		          << property_name
-		          << " already removed."
-		          << std::endl;
-#endif
-	}
-	
-	return *this;
-}
-
-template<typename T>
 JSNativeObjectBuilder<T>& JSNativeObjectBuilder<T>::RemoveAllFunctionPropertyCallbacks() {
 	function_property_callback_map_.clear();
 	return *this;
 }
 
 
+/* JSNativeObject constructor */
+
+template<typename T>
+JSNativeObject<T>::JSNativeObject(const JSNativeObjectBuilder<T>& builder)
+		: js_context_(builder.js_context_)
+		, js_native_object_definition_(JSNativeObjectDefinition<T>(builder)) {
+}
+
+}} // namespace JavaScriptCoreCPP { namespace RAII {
+
+
+namespace JavaScriptCoreCPP { namespace detail {
+
 /* JSNativeObjectDefinition constructor */
 
+using namespace JavaScriptCoreCPP::RAII;
 template<typename T>
 JSNativeObjectDefinition<T>::JSNativeObjectDefinition(const JSNativeObjectBuilder<T>& builder)
 		: name_(builder.name_)
@@ -1093,7 +958,7 @@ JSNativeObjectDefinition<T>::JSNativeObjectDefinition(const JSNativeObjectBuilde
 	// JSObjectSetPrototype to manage prototypes manually
 
 	if (!attributes_.empty()) {
-		js_class_definition_.attributes = detail::ToJSClassAttributes(attributes_);
+		js_class_definition_.attributes = ToJSClassAttributes(attributes_);
 	}
 	
 	js_class_definition_.className  = class_name_for_js_class_definition_.c_str();
@@ -1103,7 +968,7 @@ JSNativeObjectDefinition<T>::JSNativeObjectDefinition(const JSNativeObjectBuilde
 	}
 
 	if (!value_property_callback_map_.empty()) {
-		js_static_values_ = detail::make_unique<std::vector<JSStaticValue>>();
+		js_static_values_ = make_unique<std::vector<JSStaticValue>>();
 		for (const auto& value_property_callback : value_property_callback_map_) {
 			JSStaticValue js_static_value;
 			js_static_value.name        = value_property_callback.property_name_for_js_static_value_;
@@ -1117,7 +982,7 @@ JSNativeObjectDefinition<T>::JSNativeObjectDefinition(const JSNativeObjectBuilde
 	}
 	
 	if (!function_property_callback_map_.empty()) {
-		js_static_functions_ = detail::make_unique<std::vector<JSStaticFunction>>();
+		js_static_functions_ = make_unique<std::vector<JSStaticFunction>>();
 		for (const auto& function_property_callback : function_property_callback_map_) {
 			JSStaticFunction js_static_function;
 			js_static_function.name           = function_property_callback.function_name_for_js_static_function_;
@@ -1144,15 +1009,6 @@ JSNativeObjectDefinition<T>::JSNativeObjectDefinition(const JSNativeObjectBuilde
 	js_class_ = JSClass(&js_class_definition_);
 }
 
-
-/* JSNativeObject constructor */
-
-template<typename T>
-JSNativeObject<T>::JSNativeObject(const JSNativeObjectBuilder<T>& builder)
-		: js_context_(builder.js_context_)
-		, js_native_object_definition_(JSNativeObjectDefinition<T>(builder)) {
-}
-
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP { namespace detail {
 
 #endif // _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTBUILDER_HPP_
