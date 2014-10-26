@@ -109,7 +109,9 @@ using namespace JavaScriptCoreCPP::RAII;
 - (void)testJSNativeObjectBuilder {
   JSContext js_context = js_context_group.CreateContext();
   JSNativeObjectBuilder<NativeObject> builder(js_context);
-  builder.name("MyObject");
+  builder
+      .name("MyObject")
+      .AddValuePropertyCallback("name", &NativeObject::GetName, &NativeObject::SetName);
 }
 
 - (void)testJSNativeObject {

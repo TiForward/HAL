@@ -184,15 +184,47 @@ class JSNativeObjectBuilder final {
 	std::unordered_map<std::string, JSNativeObjectValuePropertyCallback<T>> value_property_callback_map() const {
 		return value_property_callback_map_;
 	}
-	
+
 	/*!
 	  @method
-
-	  @abstract Add a JSNativeObjectValuePropertyCallback.
 	  
+	  @abstract Add callbacks to invoke when getting and setting
+	  property value on a JavaScript object.
+	  
+	  @param property_name A JSString containing the property's name.
+	  
+	  @param get_property_callback The callback to invoke when getting a
+	  property's value from a JavaScript object.
+	  
+	  @param set_property_callback The callback to invoke when setting a
+	  property's value on a JavaScript object. This may be nullptr, in
+	  which case the ReadOnly attribute is automatically set.
+	  
+	  @param attributes An optional set of JSPropertyAttributes to give
+	  to the function property. The default is
+	  JSPropertyAttribute::DontDelete.
+	  
+	  @result An object which describes a JavaScript value property.
+	  
+	  @throws std::invalid_argument exception under these preconditions:
+
+	  1. If property_name is empty or otherwise has a JavaScript syntax
+	  error.
+	  
+	  2. If the ReadOnly attribute is set and the get_property_callback
+    is not provided.
+	                               
+    3. If the ReadOnly attribute is set and the set_property_callback
+    is provided.
+
+    4. If both get_property_callback and set_property_callback are
+	  missing.
+
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeObjectBuilder<T>& AddValuePropertyCallback(const JSNativeObjectValuePropertyCallback<T>& value_property_callback);
+	JSNativeObjectBuilder<T>& AddValuePropertyCallback(const JSString& property_name, GetNamedPropertyCallback<T> get_property_callback, SetNamedPropertyCallback<T> set_property_callback, const std::unordered_set<JSPropertyAttribute>& attributes = {JSPropertyAttribute::DontDelete}) {
+		return AddValuePropertyCallback(JSNativeObjectValuePropertyCallback<T>(property_name, get_property_callback, set_property_callback, attributes));
+	}
 	
 	/*!
 	  @method
@@ -806,6 +838,8 @@ class JSNativeObjectBuilder final {
 	
  private:
 
+	JSNativeObjectBuilder<T>& AddValuePropertyCallback(const JSNativeObjectValuePropertyCallback<T>& value_property_callback);
+
 	// Require parameters
 	JSContext js_context_;
 	
@@ -859,7 +893,7 @@ JSNativeObjectBuilder<T>& JSNativeObjectBuilder<T>::AddValuePropertyCallback(con
 	}
 	
 	const auto insert_result = value_property_callback_map_.emplace(property_name, value_property_callback);
-	const bool inserted      = (insert_result -> second);
+	const bool inserted      = insert_result.second;
 	
 #if JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTBUILDER_DEBUG
 	std::clog << log_prefix

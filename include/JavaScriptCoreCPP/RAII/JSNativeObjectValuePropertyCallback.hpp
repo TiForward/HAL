@@ -18,67 +18,6 @@
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-/*! 
-  @typedef GetNamedPropertyCallback
-
-  @abstract The callback to invoke when getting a property's value
-  from a JavaScript object.
-
-  @param object A const reference to the native object backing the
-  JavaScript object.
-
-  @result The property's value if object has the property, otherwise
-  JSUndefined.
-
-  @discussion If this function returns JSUndefined, the get request
-  forwards to the native object's JSNativeObjectPropertyCallback (if
-  any), then its parent class chain (which includes the default object
-  class), then its prototype chain.
-
-  For example, given this class definition:
-  
-  class Foo {
-    JSValue GetBar() const;
-  };
-
-  You would define the callback like this:
-
-  GetNamedPropertyCallback callback(&Foo::GetBar);
-*/
-template<typename T>
-using GetNamedPropertyCallback = std::function<JSValue(const T&)>;
-	
-/*! 
-  @typedef SetNamedPropertyCallback
-
-  @abstract The callback to invoke when setting a property's value on
-  a JavaScript object.
-
-  @param object A non-const reference to the native object backing the
-  JavaScript object.
-
-  @param value A JSValue to use as the property's value.
-
-  @result true if the property was set, otherwise false.
-
-  @discussion If this function returns false, the set request forwards
-  to the native object's JSNativeObjectPropertyCallback (if any), then
-  its parent JSNativeObject chain (which includes the default object
-  class), then its prototype chain.
-
-  For example, given this class definition:
-  
-  class Foo {
-    bool SetBar(const JSValue& value);
-  };
-
-  You would define the callback like this:
-
-  SetNamedPropertyCallback callback(&Foo::SetBar);
-*/
-template<typename T>
-using SetNamedPropertyCallback = std::function<bool(T&, const JSValue&)>;
-
 /*!
   @class
   
