@@ -954,6 +954,9 @@ JSNativeObject<T>::JSNativeObject(const JSNativeObjectBuilder<T>& builder)
 
 	// Begin critical section.
 	std::lock_guard<std::mutex> js_native_object_lock(js_native_object_mutex_);
+	// new T()
+	// page 95
+	// Set lookup name for static functions.
 }
 
 
