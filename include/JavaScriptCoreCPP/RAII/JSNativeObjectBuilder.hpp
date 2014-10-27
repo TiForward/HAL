@@ -20,6 +20,8 @@
 #include <sstream>
 #include <JavaScriptCore/JavaScript.h>
 
+#define JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTBUILDER_DEBUG
+
 namespace JavaScriptCoreCPP { namespace RAII {
 
 using namespace JavaScriptCoreCPP::detail;
@@ -821,7 +823,7 @@ JSNativeObjectBuilder<T>& JSNativeObjectBuilder<T>::AddValuePropertyCallback(con
 		const auto number_of_elements_removed = value_property_callback_map_.erase(property_name);
 		const bool removed                    = (number_of_elements_removed == 1);
 		
-#if JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTBUILDER_DEBUG
+#ifdef JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTBUILDER_DEBUG
 		std::clog << log_prefix
 		          << " [DEBUG] "
 		          << "remove previous property "
@@ -840,7 +842,7 @@ JSNativeObjectBuilder<T>& JSNativeObjectBuilder<T>::AddValuePropertyCallback(con
 	const auto insert_result = value_property_callback_map_.emplace(property_name, value_property_callback);
 	const bool inserted      = insert_result.second;
 	
-#if JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTBUILDER_DEBUG
+#ifdef JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTBUILDER_DEBUG
 	std::clog << log_prefix
 	          << " [DEBUG] "
 	          << "insert property "
@@ -877,7 +879,7 @@ JSNativeObjectBuilder<T>& JSNativeObjectBuilder<T>::AddFunctionPropertyCallback(
 		const auto number_of_elements_removed = function_property_callback_map_.erase(function_name);
 		const bool removed                    = (number_of_elements_removed == 1);
 		
-#if JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTBUILDER_DEBUG
+#ifdef JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTBUILDER_DEBUG
 		std::clog << log_prefix
 		          << " [DEBUG] "
 		          << "remove previous function "
@@ -896,7 +898,7 @@ JSNativeObjectBuilder<T>& JSNativeObjectBuilder<T>::AddFunctionPropertyCallback(
 	const auto insert_result = function_property_callback_map_.emplace(function_name, function_property_callback);
 	const bool inserted      = insert_result.second;
 	
-#if JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTBUILDER_DEBUG
+#ifdef JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTBUILDER_DEBUG
 	std::clog << log_prefix
 	          << " [DEBUG] "
 	          << "insert function "

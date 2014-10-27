@@ -10,10 +10,6 @@
 #ifndef _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_HPP_
 #define _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_HPP_
 
-#ifndef DEBUG_JSNATIVEOBJECT
-#define DEBUG_JSNATIVEOBJECT
-#endif
-
 #include "JavaScriptCoreCPP/RAII/JSNativeObjectCallbacks.hpp"
 #include "JavaScriptCoreCPP/RAII/detail/JSNativeObjectFunctionPropertyCallback.hpp"
 #include "JavaScriptCoreCPP/RAII/detail/JSNativeObjectValuePropertyCallback.hpp"
@@ -37,6 +33,8 @@
 #include <cassert>
 
 #include <JavaScriptCore/JavaScript.h>
+
+#define JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_DEBUG
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
@@ -284,11 +282,11 @@ JSNativeObject_shared_ptr<T> JSNativeObject<T>::get_JSNativeObject_shared_ptr(co
 	const auto native_object_ptr = static_cast<T*>(js_object.GetPrivate());
 	const auto key               = reinterpret_cast<std::intptr_t>(native_object_ptr);
 	
-#ifdef DEBUG_JSNATIVEOBJECT
+#ifdef JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_DEBUG
 	const auto js_object_identifier = static_cast<std::string>(js_object);
 #endif
 	
-#ifdef DEBUG_JSNATIVEOBJECT
+#ifdef JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_DEBUG
 	std::clog << log_prefix
 	          << " [DEBUG] "
 	          << js_object_identifier
@@ -301,7 +299,7 @@ JSNativeObject_shared_ptr<T> JSNativeObject<T>::get_JSNativeObject_shared_ptr(co
 	const auto native_object_ptr_map_position = native_ptr_to_js_native_object_ptr_map_.find(key);
 	const bool js_native_object_ptr_found     = native_object_ptr_map_position != native_ptr_to_js_native_object_ptr_map_.end();
 	
-#ifdef DEBUG_JSNATIVEOBJECT
+#ifdef JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_DEBUG
 	std::clog << log_prefix
 	          << " [DEBUG] "
 	          << js_object_identifier
@@ -338,11 +336,11 @@ JSValueRef JSNativeObject<T>::JSStaticValueGetPropertyCallback(JSContextRef js_c
 	const auto callback_position            = value_property_callback_map.find(property_name);
 	const bool callback_found               = callback_position != value_property_callback_map.end();
 	
-#ifdef DEBUG_JSNATIVEOBJECT
+#ifdef JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_DEBUG
 	const auto js_native_object_identifier = js_native_object_ptr -> js_native_object_identifier_;
 #endif
 
-#ifdef DEBUG_JSNATIVEOBJECT
+#ifdef JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_DEBUG
 	std::clog << log_prefix
 	          << "[DEBUG] "
 	          << js_native_object_identifier
@@ -361,7 +359,7 @@ JSValueRef JSNativeObject<T>::JSStaticValueGetPropertyCallback(JSContextRef js_c
 	const auto callback = (callback_position -> second).get_get_property_callback();
 	const auto result   = callback(*native_object_ptr);
 	
-#ifdef DEBUG_JSNATIVEOBJECT
+#ifdef JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_DEBUG
 	std::clog << log_prefix
 	          << "[DEBUG] "
 	          << js_native_object_identifier
@@ -396,13 +394,13 @@ bool JSNativeObject<T>::JSStaticValueSetPropertyCallback(JSContextRef js_context
 	const auto callback_position            = value_property_callback_map.find(property_name);
 	const bool callback_found               = callback_position != value_property_callback_map.end();
 
-#ifdef DEBUG_JSNATIVEOBJECT
+#ifdef JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_DEBUG
 	const auto js_native_object_identifier = js_native_object_ptr -> js_native_object_identifier_;
 #endif
 	
 	JSValue js_value(js_context, js_value_ref);
 
-#ifdef DEBUG_JSNATIVEOBJECT
+#ifdef JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_DEBUG
 	std::clog << log_prefix
 	          << "[DEBUG] "
 	          << js_native_object_identifier
@@ -423,7 +421,7 @@ bool JSNativeObject<T>::JSStaticValueSetPropertyCallback(JSContextRef js_context
 	const auto callback = (callback_position -> second).get_set_property_callback();
 	const auto result   = callback(*native_object_ptr, js_value);
 	
-#ifdef DEBUG_JSNATIVEOBJECT
+#ifdef JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_DEBUG
 	std::clog << log_prefix
 	          << "[DEBUG] "
 	          << js_native_object_identifier
@@ -459,7 +457,7 @@ JSValueRef JSNativeObject<T>::JSStaticFunctionCallAsFunctionCallback(JSContextRe
 	const auto callback_position               = function_property_callback_map.find(function_name);
 	const bool callback_found                  = callback_position != function_property_callback_map.end();
 
-#ifdef DEBUG_JSNATIVEOBJECT
+#ifdef JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_DEBUG
 	const auto js_native_object_identifier = js_native_object_ptr -> js_native_object_identifier_;
 #endif
 	
@@ -467,7 +465,7 @@ JSValueRef JSNativeObject<T>::JSStaticFunctionCallAsFunctionCallback(JSContextRe
 	std::vector<JSValue> arguments;
 	std::transform(arguments_array, arguments_array + argument_count, std::back_inserter(arguments), [&js_context](JSValueRef js_value_ref) { return JSValue(js_context, js_value_ref); });
 
-#ifdef DEBUG_JSNATIVEOBJECT
+#ifdef JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_DEBUG
 	std::clog << log_prefix
 	          << "[DEBUG] "
 	          << js_native_object_identifier
@@ -489,7 +487,7 @@ JSValueRef JSNativeObject<T>::JSStaticFunctionCallAsFunctionCallback(JSContextRe
 	const auto callback = (callback_position -> second).get_call_as_function_callback();
 	const auto result   = callback(*native_object_ptr, arguments, this_object);
 	
-#ifdef DEBUG_JSNATIVEOBJECT
+#ifdef JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_DEBUG
 	std::clog << log_prefix
 	          << "[DEBUG] "
 	          << js_native_object_identifier
