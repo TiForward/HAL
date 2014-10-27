@@ -176,7 +176,7 @@ bool operator!=(const JSString& lhs, const JSString& rhs) {
 	return ! (lhs == rhs);
 }
 
-// Define a strict weak ordering for two JSNativeObjectDefinitions.
+// Define a strict weak ordering for two JSStrings.
 inline
 bool operator<(const JSString& lhs, const JSString& rhs) {
 	return static_cast<std::string>(lhs) < static_cast<std::string>(rhs);

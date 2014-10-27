@@ -16,10 +16,15 @@
 #include <functional>
 #include <sstream>
 
-namespace JavaScriptCoreCPP { namespace detail {
+namespace JavaScriptCoreCPP { namespace RAII {
 
 template<typename T>
-class JSNativeObjectDefinition;
+class JSNativeObject;
+
+}} // namespace JavaScriptCoreCPP { namespace RAII {
+
+
+namespace JavaScriptCoreCPP { namespace detail {
 
 using namespace JavaScriptCoreCPP::RAII;
 
@@ -142,7 +147,7 @@ class JSNativeObjectFunctionPropertyCallback final	{
  private:
 	
 	template<typename U>
-	friend class JSNativeObjectDefinition;
+	friend class JSNativeObject;
 	
 	template<typename U>
 	friend bool operator==(const JSNativeObjectFunctionPropertyCallback<U>& lhs, const JSNativeObjectFunctionPropertyCallback<U>& rhs);

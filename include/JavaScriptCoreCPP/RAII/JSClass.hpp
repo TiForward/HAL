@@ -14,14 +14,6 @@
 #include <utility>
 #include <JavaScriptCore/JavaScript.h>
 
-namespace JavaScriptCoreCPP { namespace detail {
-
-template<typename T>
-class JSNativeObjectDefinition;
-
-}} // namespace JavaScriptCoreCPP { namespace detail {
-
-
 namespace JavaScriptCoreCPP { namespace RAII {
 
 /*!
@@ -91,12 +83,6 @@ class JSClass final	{
 	
 	template<typename T>
 	friend class JSNativeObject;
-
-	template<typename T>
-	friend class JSNativeObjectBuilder;
-
-	template<typename T>
-	friend class detail::JSNativeObjectDefinition;
 
 	JSClassRef js_class_ref_ { nullptr };
 };

@@ -13,7 +13,6 @@
 #include "JavaScriptCoreCPP/RAII/JSNativeObject.hpp"
 #include "JavaScriptCoreCPP/RAII/JSContext.hpp"
 #include "JavaScriptCoreCPP/RAII/JSClass.hpp"
-#include "JavaScriptCoreCPP/RAII/detail/JSNativeObjectDefinition.hpp"
 #include "JavaScriptCoreCPP/RAII/detail/JSUtil.hpp"
 #include <unordered_set>
 #include <memory>
@@ -774,7 +773,9 @@ class JSNativeObjectBuilder final {
 	  @result A JSClass instance with all of the properties and
 	  callbacks specified in the builder.
 	*/
-	JSNativeObject<T> build() const;
+	JSNativeObject<T> build() const {
+		return JSNativeObject<T>(*this);
+	}
 	
  private:
 
@@ -782,7 +783,7 @@ class JSNativeObjectBuilder final {
 	JSNativeObjectBuilder<T>& AddFunctionPropertyCallback(const JSNativeObjectFunctionPropertyCallback<T>& function_property_callback);
 
 	template<typename U>
-	friend class detail::JSNativeObjectDefinition;
+	friend class detail::JSNativeObject;
 
 	// Require parameters
 	JSContext js_context_;
@@ -916,113 +917,6 @@ template<typename T>
 JSNativeObjectBuilder<T>& JSNativeObjectBuilder<T>::RemoveAllFunctionPropertyCallbacks() {
 	function_property_callback_map_.clear();
 	return *this;
-}
-
-}} // namespace JavaScriptCoreCPP { namespace RAII {
-
-
-namespace JavaScriptCoreCPP { namespace detail {
-
-/* JSNativeObjectDefinition constructor */
-
-using namespace JavaScriptCoreCPP::RAII;
-
-template<typename T>
-JSNativeObjectDefinition<T>::JSNativeObjectDefinition(const JSNativeObjectBuilder<T>& builder)
-		: name_(builder.name_)
-		, class_name_for_js_class_definition_(name_)
-		, attributes_(builder.attributes_)
-		, parent_(builder.parent_)
-		, value_property_callback_map_(builder.value_property_callback_map_)
-		, function_property_callback_map_(builder.function_property_callback_map_)
-		, initialize_callback_(builder.initialize_callback_)
-		, finalize_callback_(builder.finalize_callback_)
-		, has_property_callback_(builder.has_property_callback_)
-		, get_property_callback_(builder.get_property_callback_)
-    , set_property_callback_(builder.set_property_callback_)
-    , delete_property_callback_(builder.delete_property_callback_)
-		, get_property_names_callback_(builder.get_property_names_callback_)
-		, call_as_function_callback_(builder.call_as_function_callback_)
-		, call_as_constructor_callback_(builder.call_as_constructor_callback_)
-		, has_instance_callback_(builder.has_instance_callback_)
-		, convert_to_type_callback_(builder.convert_to_type_callback_)
-    , js_class_(&kJSClassDefinitionEmpty)
-    , js_class_definition_(kJSClassDefinitionEmpty)
-		, js_static_values_(CreateJSStaticValueVector())
-		, js_static_functions_(CreateJSStaticFunctionVector()) {
-
-	// Use kJSClassAttributeNoAutomaticPrototype in combination with
-	// JSObjectSetPrototype to manage prototypes manually.
-	
-	InitializeJSClassDefinition();
-	js_class_ = JSClass(&js_class_definition_);
-}
-
-template<typename T>
-std::vector<JSStaticValue> JSNativeObjectDefinition<T>::CreateJSStaticValueVector() {
-	std::vector<JSStaticValue> js_static_values;
-	if (!value_property_callback_map_.empty()) {
-		for (const auto& entry : value_property_callback_map_) {
-			const auto value_property_callback = entry.second;
-			JSStaticValue js_static_value;
-			js_static_value.name        = value_property_callback.property_name_for_js_static_value_.c_str();
-			js_static_value.getProperty = JSNativeObject<T>::JSStaticValueGetPropertyCallback;
-			js_static_value.setProperty = JSNativeObject<T>::JSStaticValueSetPropertyCallback;
-			js_static_value.attributes  = value_property_callback.js_property_attributes_;
-			js_static_values.push_back(js_static_value);
-		}
-		js_static_values.emplace_back(nullptr, nullptr, nullptr, 0);
-	}
-
-	return js_static_values;
-}
-
-template<typename T>
-std::vector<JSStaticFunction> JSNativeObjectDefinition<T>::CreateJSStaticFunctionVector() {
-	std::vector<JSStaticFunction> js_static_functions;
-	if (!function_property_callback_map_.empty()) {
-		for (const auto& entry : function_property_callback_map_) {
-			const auto function_property_callback = entry.second;
-			JSStaticFunction js_static_function;
-			js_static_function.name           = function_property_callback.function_name_for_js_static_function_.c_str();
-			js_static_function.callAsFunction = JSNativeObject<T>::JSStaticFunctionCallAsFunctionCallback;
-			js_static_function.attributes     = function_property_callback.js_property_attributes_;
-			js_static_functions.push_back(js_static_function);
-		}
-		js_static_functions.emplace_back(nullptr, nullptr, 0);
-	}
-
-	return js_static_functions;
-}
-
-template<typename T>
-void JSNativeObjectDefinition<T>::InitializeJSClassDefinition() {
-	!name_.empty()                           && (js_class_definition_.className         = class_name_for_js_class_definition_.c_str());
-	!attributes_.empty()                     && (js_class_definition_.attributes        = ToJSClassAttributes(attributes_));
-	parent_                                  && (js_class_definition_.parentClass       = js_class_);
-	!value_property_callback_map_.empty()    && (js_class_definition_.staticValues      = &js_static_values_[0]);
-	!function_property_callback_map_.empty() && (js_class_definition_.staticFunctions   = &js_static_functions_[0]);
-	initialize_callback_                     && (js_class_definition_.initialize        = JSNativeObject<T>::JSObjectInitializeCallback);
-	finalize_callback_                       && (js_class_definition_.finalize          = JSNativeObject<T>::JSObjectFinalizeCallback);
-	call_as_constructor_callback_            && (js_class_definition_.callAsConstructor = JSNativeObject<T>::JSObjectCallAsConstructorCallback);
-	has_instance_callback_                   && (js_class_definition_.hasInstance       = JSNativeObject<T>::JSObjectHasInstanceCallback);
-	has_property_callback_                   && (js_class_definition_.hasProperty       = JSNativeObject<T>::JSObjectHasPropertyCallback);
-	get_property_callback_                   && (js_class_definition_.getProperty       = JSNativeObject<T>::JSObjectGetPropertyCallback);
-	set_property_callback_                   && (js_class_definition_.setProperty       = JSNativeObject<T>::JSObjectSetPropertyCallback);
-	delete_property_callback_                && (js_class_definition_.deleteProperty    = JSNativeObject<T>::JSObjectDeletePropertyCallback);
-	get_property_names_callback_             && (js_class_definition_.getPropertyNames  = JSNativeObject<T>::JSObjectGetPropertyNamesCallback);
-	call_as_function_callback_               && (js_class_definition_.callAsFunction    = JSNativeObject<T>::JSObjectCallAsFunctionCallback);
-	convert_to_type_callback_                && (js_class_definition_.convertToType     = JSNativeObject<T>::JSObjectCallAsConstructorCallback);
-}
-
-}} // namespace JavaScriptCoreCPP { namespace detail {
-
-
-namespace JavaScriptCoreCPP { namespace RAII {
-
-template<typename T>
-JSNativeObject<T> JSNativeObjectBuilder<T>::build() const {
-	return JSNativeObject<T>(js_context_, JSNativeObjectDefinition<T>(*this));
 }
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
