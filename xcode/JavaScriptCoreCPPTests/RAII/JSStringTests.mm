@@ -73,11 +73,15 @@ JSString makeJSString() {
 - (void)testStdString {
   JSString string1 { "hello, JSString" };
   XCTAssertEqual("hello, JSString", static_cast<std::string>(string1));
-  XCTAssertEqual(std::string("hello, JSString"), string1);
+  
+  // No implicit conversions.
+  //XCTAssertEqual(std::string("hello, JSString"), string1);
   
   std::string string2 { "hello, std::string" };
   XCTAssertEqual("hello, std::string", static_cast<std::string>(JSString(string2)));
-  XCTAssertEqual(std::string("hello, std::string"), JSString(string2));
+
+  // No implicit conversions.
+  //XCTAssertEqual(std::string("hello, std::string"), JSString(string2));
 }
 
 // As of 2014.09.20 Travis CI only supports Xcode 5.1 which lacks support for

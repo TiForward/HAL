@@ -183,7 +183,7 @@ namespace UnitTestConstants {
   XCTAssertTrue(js_value.IsString());
   XCTAssertFalse(js_value.IsObject());
   
-  JSString js_string = js_value;
+  JSString js_string = static_cast<JSString>(js_value);
   XCTAssertEqual("hello, world", js_string);
   
 //  auto result_ptr  = context_ptr . evaluateScript("\"hello, JavaScript\"");

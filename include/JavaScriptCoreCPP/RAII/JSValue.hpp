@@ -90,7 +90,7 @@ public:
 	  
 	  @result A JSString with the result of conversion.
 	*/
-	operator JSString() const;
+	explicit operator JSString() const;
 	
 	/*!
 	  @method
@@ -99,7 +99,7 @@ public:
 	  
 	  @result A std::string with the result of conversion.
 	*/
-	operator std::string() const {
+	explicit operator std::string() const {
 		return operator JSString();
 	}
 

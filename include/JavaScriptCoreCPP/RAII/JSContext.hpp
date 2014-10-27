@@ -91,13 +91,15 @@ class JSContext final	{
 	  
 	  @abstract Create a JavaScript value of the string type.
 	  
-	  @param string The JSString to assign to the newly created JSValue.
+	  @param string The string to assign to the newly created JSValue.
 	  
 	  @result A JSValue of the string type that represents the value of
 	  string.
 	*/
 	JSValue CreateString(const JSString& js_string) const;
-	
+	JSValue CreateString(const char* string) const;
+	JSValue CreateString(const std::string& string) const;
+
 	/*!
 	  @method
 	  

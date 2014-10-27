@@ -177,7 +177,7 @@ JSValue JSObject::CallAsFunction(const std::vector<JSValue>& arguments, const JS
 	
 	if (exception) {
 		// assert(!js_value_ref);
-		const std::string message = JSValue(js_context_, exception);
+		const auto message = static_cast<std::string>(JSValue(js_context_, exception));
 		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
 		throw std::runtime_error(message);
 	}
@@ -210,7 +210,7 @@ JSObject JSObject::CallAsConstructor(const std::vector<JSValue>& arguments) cons
 	
 	if (exception) {
 		// assert(!js_object_ref);
-		const std::string message = JSValue(js_context_, exception);
+		const auto message = static_cast<std::string>(JSValue(js_context_, exception));
 		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
 		throw std::runtime_error(message);
 	}

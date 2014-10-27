@@ -56,6 +56,12 @@ class JSNativeObject;
 template<typename T>
 using JSNativeObject_shared_ptr = std::shared_ptr<JSNativeObject<T>>;
 
+/*!
+  @class
+
+  @abstract This class is the bridge between a custom JavaScript
+  object backed by a C++ class for some or all of its functionality.
+*/
 template<typename T>
 class JSNativeObject final {
 	
@@ -220,17 +226,17 @@ private:
 	JSClass                                        parent_;
 	JSNativeObjectValuePropertyCallbackMap_t<T>    value_property_callback_map_;
 	JSNativeObjectFunctionPropertyCallbackMap_t<T> function_property_callback_map_;
-	InitializeCallback<T>                          initialize_callback_                 { nullptr };
-	FinalizeCallback<T>                            finalize_callback_                   { nullptr };
-	HasPropertyCallback<T>                         has_property_callback_               { nullptr };
-	GetPropertyCallback<T>                         get_property_callback_               { nullptr };
-	SetPropertyCallback<T>                         set_property_callback_               { nullptr };
-	DeletePropertyCallback<T>                      delete_property_callback_            { nullptr };
-	GetPropertyNamesCallback<T>                    get_property_names_callback_         { nullptr };
-	CallAsFunctionCallback<T>                      call_as_function_callback_           { nullptr };
-	CallAsConstructorCallback<T>                   call_as_constructor_callback_        { nullptr };
-	HasInstanceCallback<T>                         has_instance_callback_               { nullptr };
-	ConvertToTypeCallback<T>                       convert_to_type_callback_            { nullptr };
+	InitializeCallback<T>                          initialize_callback_          { nullptr };
+	FinalizeCallback<T>                            finalize_callback_            { nullptr };
+	HasPropertyCallback<T>                         has_property_callback_        { nullptr };
+	GetPropertyCallback<T>                         get_property_callback_        { nullptr };
+	SetPropertyCallback<T>                         set_property_callback_        { nullptr };
+	DeletePropertyCallback<T>                      delete_property_callback_     { nullptr };
+	GetPropertyNamesCallback<T>                    get_property_names_callback_  { nullptr };
+	CallAsFunctionCallback<T>                      call_as_function_callback_    { nullptr };
+	CallAsConstructorCallback<T>                   call_as_constructor_callback_ { nullptr };
+	HasInstanceCallback<T>                         has_instance_callback_        { nullptr };
+	ConvertToTypeCallback<T>                       convert_to_type_callback_     { nullptr };
 	
 	JSClass                                        js_class_;
 	

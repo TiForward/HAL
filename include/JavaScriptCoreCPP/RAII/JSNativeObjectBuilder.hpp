@@ -20,7 +20,7 @@
 #include <sstream>
 #include <JavaScriptCore/JavaScript.h>
 
-#define JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTBUILDER_DEBUG
+//#define JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTBUILDER_DEBUG
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
@@ -31,17 +31,17 @@ using namespace JavaScriptCoreCPP::detail;
 
   @abstract This is a builder that creates JSNativeObject instances
   that represent a custom JavaScript object backed by a C++ class for
-  some of its functionality. All properties on this builder are
+  some or all of its functionality. All properties on this builder are
   optional, and all callbacks may be nullptr.
 
-  @discussion Adding JSNativeObjectFunctionPropertyCallback and
-  JSNativeObjectValuePropertyCallback instances to a
-  JSNativeObjectBuilder are the simplest and most efficient means for
-  vending custom properties since they autmatically service requests
-  like get_property_callback, set_property_callback, and
-  get_property_names_callback. The other property access callbacks are
-  required only to implement unusual properties, like array indexes,
-  whose names are not known at compile-time.
+  @discussion Using the AddValuePropertyCallback and
+  AddFunctionPropertyCallback methods are the simplest and most
+  efficient means for vending custom properties since they
+  autmatically service requests like get_property_callback,
+  set_property_callback, and get_property_names_callback. The other
+  property access callbacks are required only to implement unusual
+  properties, like array indexes, whose names are not known at
+  compile-time.
   
   Standard JavaScript practice calls for storing function objects in
   prototypes so that they can be shared. The instances of
@@ -951,6 +951,9 @@ JSNativeObject<T>::JSNativeObject(const JSNativeObjectBuilder<T>& builder)
 	InitializeJSStaticFunctionVector();
 	InitializeJSClassDefinition();
 	js_class_ = JSClass(&js_class_definition_);
+
+	// Begin critical section.
+	std::lock_guard<std::mutex> js_native_object_lock(js_native_object_mutex_);
 }
 
 

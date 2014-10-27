@@ -733,7 +733,7 @@ class JSObject : public JSValue {
 	}
 
 
-	virtual ~JSObject() {
+	~JSObject() {
 		JSValueUnprotect(js_context_, js_object_ref_);
 	}
 	

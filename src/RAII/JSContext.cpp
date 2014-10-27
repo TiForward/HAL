@@ -41,6 +41,14 @@ JSValue JSContext::CreateString(const JSString& js_string) const {
 	return JSValue(*this, js_string, false);
 }
 
+JSValue JSContext::CreateString(const char* string) const {
+	return CreateString(JSString(string));
+}
+
+JSValue JSContext::CreateString(const std::string& string) const {
+	return CreateString(JSString(string));
+}
+
 JSUndefined JSContext::CreateUndefined() const {
 	return JSUndefined(*this);
 }

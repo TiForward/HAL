@@ -118,6 +118,42 @@ using namespace JavaScriptCoreCPP::RAII;
   XCTAssertEqual(2, value_property_callbacks.size());
 }
 
+- (void)testGetFunctionName {
+  JSContext js_context = js_context_group.CreateContext();
+  
+  JSString body =
+  "var f = typeof fn == 'function';"
+  "var s = f && ((fn.name && ['', fn.name]) || fn.toString().match(/function ([^\(]+)/));"
+  "return (!f && 'not a function') || (s && s[1] || 'anonymous');"
+  ;
+  
+  JSFunction js_function = js_context.CreateFunction("GetFunctionName", {"fn"}, body);
+  XCTAssertTrue(js_function.IsFunction());
+  XCTAssertTrue(js_function.IsObject());
+  std::clog << "MDL: js_function(js_function) = " << js_function(js_function) << std::endl;
+  std::clog << "MDL: js_function(js_function) = " << js_function("function test(){}") << std::endl;
+  std::clog << "MDL: js_function(js_function) = " << static_cast<std::string>(js_function) << std::endl;
+  //XCTAssertEqual("GetFunctionName", static_cast<std::string>(js_function(js_function)));
+
+  JSFunction js_add_unction = js_context.CreateFunction("add", {"a", "b"}, "return a + b;");
+  auto two = js_context.CreateNumber(2);
+  std::clog << "MDL: js_add_function = " << js_add_unction({two, two}) << std::endl;
+
+  
+  JSString getFnName =
+  "function getFnName(fn) {"
+  "  var f = typeof fn == 'function';"
+  "  var s = f && ((fn.name && ['', fn.name]) || fn.toString().match(/function ([^\(]+)/));"
+  "  return (!f && 'not a function') || (s && s[1] || 'anonymous');"
+  "}"
+  "getFnName(function test(){});"
+  "getFnName(getFnName);"
+  ;
+  
+  JSValue js_value = js_context.JSEvaluateScript(getFnName);
+  std::clog << "MDL: js_value = " << js_value << std::endl;
+}
+
 - (void)testJSNativeObjectBuilder {
   JSContext js_context = js_context_group.CreateContext();
   JSNativeObjectBuilder<NativeObject> builder(js_context);

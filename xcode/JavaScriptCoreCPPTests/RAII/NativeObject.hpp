@@ -188,7 +188,7 @@ class NativeObject final {
 	JSValue GetName() const {
 		static const std::string log_prefix { "MDL: NativeObject::GetName: " };
 		std::clog << log_prefix << " name = " << name_ << "." << std::endl;
-		return js_context_.CreateString(name_);
+		return name_;
 	}
 
 	bool SetName(const JSValue& value) {
@@ -231,9 +231,10 @@ class NativeObject final {
 
 		std::ostringstream os;
 		os << "Hello";
-		
-		if (!name_.empty()) {
-			os << ", " << name_;
+
+		const auto name = static_cast<JSString>(name_);
+		if (!name.empty()) {
+			os << ", " << name;
 		}
 
 		os << ". Your number is " << number_ << ".";
@@ -255,8 +256,9 @@ class NativeObject final {
 		std::ostringstream os;
 		os << "Goodbye";
 		
-		if (!name_.empty()) {
-			os << ", " << name_;
+		const auto name = static_cast<JSString>(name_);
+		if (!name.empty()) {
+			os << ", " << name;
 		}
 
 		os << ". Your number was " << number_ << ".";
@@ -276,7 +278,7 @@ private:
 
 	JSContext                             js_context_;
 	std::unordered_map<JSString, JSValue> properties_;
-	JSString                              name_   = js_context_.CreateString();
+	JSValue                               name_   = js_context_.CreateString();
 	JSNumber                              number_ = js_context_.CreateNumber(42);
 	JSNumber                              pi_     = js_context_.CreateNumber(3.141592653589793);
 };

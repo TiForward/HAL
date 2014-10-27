@@ -22,7 +22,7 @@ class JSPropertyNameArray;
 namespace JavaScriptCoreCPP { namespace RAII {
 
 /*!
-  @class JSString
+  @class
   
   @discussion A JSString is an RAII wrapper around a JSStringRef, the
   JavaScriptCore C API representation of a JavaScript string.
@@ -78,7 +78,7 @@ class JSString final	{
 	  
 	  @result A JSString containing string.
 	*/
-	JSString(const std::string& string) : JSString(string.c_str()) {
+	explicit JSString(const std::string& string) : JSString(string.c_str()) {
 	}
 
 	~JSString() {
