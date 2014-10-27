@@ -84,6 +84,9 @@ class JSClass final	{
 	template<typename T>
 	friend class JSNativeObject;
 
+	template<typename T>
+	friend class JSNativeObjectBuilder;
+
 	JSClassRef js_class_ref_ { nullptr };
 };
 

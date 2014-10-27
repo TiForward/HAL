@@ -156,7 +156,7 @@ private:
   friend class JSFunction;
   
   template<typename T>
-	class JSNativeObject;
+	friend class JSNativeObject;
 
   // Return true if the two JSStrings are equal.
 	friend bool operator==(const JSString& lhs, const JSString& rhs);

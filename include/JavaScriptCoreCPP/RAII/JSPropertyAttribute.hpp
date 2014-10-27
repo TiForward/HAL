@@ -60,25 +60,4 @@ struct hash<JSPropertyAttribute> {
 
 }  // namespace std {
 
-
-namespace JavaScriptCoreCPP { namespace detail {
-
-using namespace JavaScriptCoreCPP::RAII;
-
-// For hash functions for std::unordered_set<JSPropertyAttribute> and
-// interoperability with the JavaScriptCore C API.
-inline
-JSPropertyAttributes ToJSPropertyAttribute(const std::unordered_set<JSPropertyAttribute>& attributes) {
-	using property_attribute_underlying_type = std::underlying_type<JSPropertyAttribute>::type;
-	std::bitset<4> property_attributes;
-	for (auto property_attribute : attributes) {
-		const auto bit_position = static_cast<property_attribute_underlying_type>(property_attribute);
-		property_attributes.set(bit_position);
-	}
-	
-	return static_cast<property_attribute_underlying_type>(property_attributes.to_ulong());
-}
-
-}} // namespace JavaScriptCoreCPP { namespace detail {
-
 #endif // _JAVASCRIPTCORECPP_RAII_JSPROPERTYATTRIBUTE_HPP_

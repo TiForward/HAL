@@ -7,9 +7,32 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JSUtil.hpp"
+#include "JavaScriptCoreCPP/RAII/detail/JSUtil.hpp"
+#include <bitset>
 
 namespace JavaScriptCoreCPP { namespace detail {
+
+JSPropertyAttributes ToJSPropertyAttributes(const std::unordered_set<JSPropertyAttribute>& attributes) {
+	using property_attribute_underlying_type = std::underlying_type<JSPropertyAttribute>::type;
+	std::bitset<4> property_attributes;
+	for (auto property_attribute : attributes) {
+		const auto bit_position = static_cast<property_attribute_underlying_type>(property_attribute);
+		property_attributes.set(bit_position);
+	}
+	
+	return static_cast<property_attribute_underlying_type>(property_attributes.to_ulong());
+}
+
+JSClassAttributes ToJSClassAttributes(const std::unordered_set<JSNativeObjectAttribute>& attributes) {
+	using property_attribute_underlying_type = std::underlying_type<JSNativeObjectAttribute>::type;
+	std::bitset<2> class_attributes;
+	for (auto class_attribute : attributes) {
+		const auto bit_position = static_cast<property_attribute_underlying_type>(class_attribute);
+		class_attributes.set(bit_position);
+	}
+	
+	return static_cast<property_attribute_underlying_type>(class_attributes.to_ulong());
+}
 
 // The bitwise_cast and to_int32_t code was copied from
 // WebKit/Source/WTF/wtf/StdLibExtras.h and came with these terms and

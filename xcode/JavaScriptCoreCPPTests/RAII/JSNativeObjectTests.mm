@@ -141,6 +141,8 @@ using namespace JavaScriptCoreCPP::RAII;
       .convert_to_type_callback(&NativeObject::ConvertToType);
 
   auto NativeObjectProxy = builder.build();
+  //std::vector<JSStaticValue> js_static_values;
+  //XCTAssertTrue(js_static_values.empty());
 }
 
 - (void)testJSNativeObject {

@@ -102,23 +102,19 @@ class JSNativeObjectValuePropertyCallback final	{
 	// Copy constructor.
 	JSNativeObjectValuePropertyCallback(const JSNativeObjectValuePropertyCallback& rhs)
 			: property_name_(rhs.property_name_)
-			, property_name_for_js_static_value_(rhs.property_name_for_js_static_value_)
 			, get_property_callback_(rhs.get_property_callback_)
 			, set_property_callback_(rhs.set_property_callback_)
 			, attributes_(rhs.attributes_)
-			, js_property_attributes_(ToJSPropertyAttribute(attributes_))
-			, hash_value_(hash_val(property_name_, js_property_attributes_)) {
+			, hash_value_(hash_val(property_name_, ToJSPropertyAttributes(attributes_))) {
 	}
 	
 	// Move constructor.
 	JSNativeObjectValuePropertyCallback(JSNativeObjectValuePropertyCallback&& rhs)
 			: property_name_(rhs.property_name_)
-			, property_name_for_js_static_value_(rhs.property_name_for_js_static_value_)
 			, get_property_callback_(rhs.get_property_callback_)
 			, set_property_callback_(rhs.set_property_callback_)
 			, attributes_(rhs.attributes_)
-			, js_property_attributes_(ToJSPropertyAttribute(attributes_))
-			, hash_value_(hash_val(property_name_, js_property_attributes_)) {
+			, hash_value_(hash_val(property_name_, ToJSPropertyAttributes(attributes_))) {
 	}
 	
 	// Create a copy of another JSNativeObjectValuePropertyCallback by assignment. This is a
@@ -137,19 +133,14 @@ class JSNativeObjectValuePropertyCallback final	{
 		
     // by swapping the members of two classes,
 		// the two classes are effectively swapped
-    swap(first.property_name_                    , second.property_name_);
-    swap(first.property_name_for_js_static_value_, second.property_name_for_js_static_value_);
-    swap(first.get_property_callback_            , second.get_property_callback_);
-    swap(first.set_property_callback_            , second.set_property_callback_);
-    swap(first.attributes_                       , second.attributes_);
-    swap(first.js_property_attributes_           , second.js_property_attributes_);
-    swap(first.hash_val_                         , second.hash_val_);
+    swap(first.property_name_        , second.property_name_);
+    swap(first.get_property_callback_, second.get_property_callback_);
+    swap(first.set_property_callback_, second.set_property_callback_);
+    swap(first.attributes_           , second.attributes_);
+    swap(first.hash_val_             , second.hash_val_);
 	}
 
 private:
-	
-	template<typename U>
-	friend class JSNativeObject;
 	
 	template<typename U>
 	friend bool operator==(const JSNativeObjectValuePropertyCallback<U>& lhs, const JSNativeObjectValuePropertyCallback<U>& rhs);
@@ -158,14 +149,10 @@ private:
 	friend bool operator<(const JSNativeObjectValuePropertyCallback<U>& lhs, const JSNativeObjectValuePropertyCallback<U>& rhs);
 
 	JSString                                property_name_;
-	std::string                             property_name_for_js_static_value_;
 	GetNamedPropertyCallback<T>             get_property_callback_ { nullptr };
 	SetNamedPropertyCallback<T>             set_property_callback_ { nullptr };
 	std::unordered_set<JSPropertyAttribute> attributes_;
 	                     
-	// For interoperability with the JavaScriptCore C API.
-	JSPropertyAttributes                    js_property_attributes_;
-
 	// Precomputed hash value for JSNativeObjectValuePropertyCallback
 	// since instances of this class template are immutable.
 	std::size_t                             hash_value_;
@@ -174,16 +161,14 @@ private:
 template<typename T>
 JSNativeObjectValuePropertyCallback<T>::JSNativeObjectValuePropertyCallback(const JSString& property_name, GetNamedPropertyCallback<T> get_property_callback, SetNamedPropertyCallback<T> set_property_callback, const std::unordered_set<JSPropertyAttribute>& attributes)
 		: property_name_(property_name)
-		, property_name_for_js_static_value_(property_name)
 		, get_property_callback_(get_property_callback)
 		, set_property_callback_(set_property_callback)
 		, attributes_(attributes)
-		, js_property_attributes_(ToJSPropertyAttribute(attributes_))
-		, hash_value_(hash_val(property_name_, js_property_attributes_)) {
+		, hash_value_(hash_val(property_name_, ToJSPropertyAttributes(attributes_))) {
 	
 	static const std::string log_prefix { "MDL: JSNativeObjectValuePropertyCallback: " };
 	
-	if (property_name_for_js_static_value_.empty()) {
+	if (property_name_.empty()) {
 		std::ostringstream os;
 		os << "The property_name is empty. A valid JavaScript property name must be provided.";
 		const std::string message = os.str();
@@ -262,7 +247,7 @@ bool operator!=(const JSNativeObjectValuePropertyCallback<T>& lhs, const JSNativ
 // JSNativeObjectValuePropertyCallbacks.
 template<typename T>
 bool operator<(const JSNativeObjectValuePropertyCallback<T>& lhs, const JSNativeObjectValuePropertyCallback<T>& rhs) {
-	if (lhs.property_name_for_js_static_value_ < rhs.property_name_for_js_static_value_) {
+	if (lhs.property_name_ < rhs.property_name_) {
 		return true;
 	}
 	

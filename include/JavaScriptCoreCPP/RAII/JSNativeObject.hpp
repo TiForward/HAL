@@ -17,6 +17,7 @@
 #include "JavaScriptCoreCPP/RAII/JSNativeObjectCallbacks.hpp"
 #include "JavaScriptCoreCPP/RAII/detail/JSNativeObjectFunctionPropertyCallback.hpp"
 #include "JavaScriptCoreCPP/RAII/detail/JSNativeObjectValuePropertyCallback.hpp"
+#include "JavaScriptCoreCPP/RAII/detail/JSUtil.hpp"
 
 #include "JavaScriptCoreCPP/RAII/JSClass.hpp"
 #include "JavaScriptCoreCPP/RAII/JSString.hpp"
@@ -39,21 +40,17 @@
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-// For hash functions for std::unordered_set<JSNativeObjectAttribute>
-// and interoperability with the JavaScriptCore C API.
-inline
-JSClassAttributes ToJSClassAttributes(const std::unordered_set<JSNativeObjectAttribute>& attributes) {
-	using property_attribute_underlying_type = std::underlying_type<JSNativeObjectAttribute>::type;
-	std::bitset<2> class_attributes;
-	for (auto class_attribute : attributes) {
-		const auto bit_position = static_cast<property_attribute_underlying_type>(class_attribute);
-		class_attributes.set(bit_position);
-	}
-	
-	return static_cast<property_attribute_underlying_type>(class_attributes.to_ulong());
-}
-
 using namespace JavaScriptCoreCPP::detail;
+
+template<typename T>
+using JSNativeObjectValuePropertyCallbackMap_t = std::unordered_map<std::string, JSNativeObjectValuePropertyCallback<T>>;
+
+template<typename T>
+using JSNativeObjectFunctionPropertyCallbackMap_t = std::unordered_map<std::string, JSNativeObjectFunctionPropertyCallback<T>>;
+
+
+template<typename T>
+class JSNativeObjectBuilder;
 
 template<typename T>
 class JSNativeObject;
@@ -66,33 +63,7 @@ class JSNativeObject final {
 	
  public:
 	
-	JSNativeObject(JSNativeObjectBuilder<T>& builder)
-			: js_context_(builder.js_context_)
-			: name_(builder.name_)
-			, class_name_for_js_class_definition_(name_)
-			, attributes_(builder.attributes_)
-			, parent_(builder.parent_)
-			, value_property_callback_map_(builder.value_property_callback_map_)
-			, function_property_callback_map_(builder.function_property_callback_map_)
-			, initialize_callback_(builder.initialize_callback_)
-			, finalize_callback_(builder.finalize_callback_)
-			, has_property_callback_(builder.has_property_callback_)
-			, get_property_callback_(builder.get_property_callback_)
-			, set_property_callback_(builder.set_property_callback_)
-			, delete_property_callback_(builder.delete_property_callback_)
-			, get_property_names_callback_(builder.get_property_names_callback_)
-			, call_as_function_callback_(builder.call_as_function_callback_)
-			, call_as_constructor_callback_(builder.call_as_constructor_callback_)
-			, has_instance_callback_(builder.has_instance_callback_)
-			, convert_to_type_callback_(builder.convert_to_type_callback_)
-			, js_class_(&kJSClassDefinitionEmpty)
-			, js_class_definition_(kJSClassDefinitionEmpty)
-			, js_static_values_(CreateJSStaticValueVector())
-			, js_static_functions_(CreateJSStaticFunctionVector()) {
-		
-		InitializeJSClassDefinition();
-		js_class_ = JSClass(&js_class_definition_);
-	}
+	JSNativeObject(const JSNativeObjectBuilder<T>& builder);
 	
 	~JSNativeObject() {
 	}
@@ -100,7 +71,7 @@ class JSNativeObject final {
 	// Copy constructor.
 	JSNativeObject(const JSNativeObject& rhs)
 			: js_context_(rhs.js_context_)
-			: name_(rhs.name_)
+			, name_(rhs.name_)
 			, class_name_for_js_class_definition_(rhs.class_name_for_js_class_definition_)
 			, attributes_(rhs.attributes_)
 			, parent_(rhs.parent_)
@@ -118,10 +89,10 @@ class JSNativeObject final {
 			, has_instance_callback_(rhs.has_instance_callback_)
 			, convert_to_type_callback_(rhs.convert_to_type_callback_)
 			, js_class_(rhs.js_class_)
-			, js_class_definition_(kJSClassDefinitionEmpty)
-			, js_static_values_(CreateJSStaticValueVector())
-			, js_static_functions_(CreateJSStaticFunctionVector()) {
+			, js_class_definition_(kJSClassDefinitionEmpty) {
 		
+		InitializeJSStaticValueVector();
+		InitializeJSStaticFunctionVector();
 		InitializeJSClassDefinition();
 		js_class_ = JSClass(&js_class_definition_);
 	}
@@ -129,7 +100,7 @@ class JSNativeObject final {
 	// Move constructor.
 	JSNativeObject(JSNativeObject&& rhs)
 			: js_context_(rhs.js_context_)
-			: name_(rhs.name_)
+			, name_(rhs.name_)
 			, class_name_for_js_class_definition_(rhs.class_name_for_js_class_definition_)
 			, attributes_(rhs.attributes_)
 			, parent_(rhs.parent_)
@@ -193,41 +164,37 @@ class JSNativeObject final {
 
 private:
 
-	std::vector<JSStaticValue> CreateJSStaticValueVector() {
-		std::vector<JSStaticValue> js_static_values;
+	void InitializeJSStaticValueVector() {
 		if (!value_property_callback_map_.empty()) {
 			for (const auto& entry : value_property_callback_map_) {
-				const auto value_property_callback = entry.second;
+				const auto& property_name           = entry.first;
+				const auto& value_property_callback = entry.second;
 				JSStaticValue js_static_value;
-				js_static_value.name        = value_property_callback.property_name_for_js_static_value_.c_str();
+				js_static_value.name        = property_name.c_str();
 				js_static_value.getProperty = JSNativeObject<T>::JSStaticValueGetPropertyCallback;
 				js_static_value.setProperty = JSNativeObject<T>::JSStaticValueSetPropertyCallback;
-				js_static_value.attributes  = value_property_callback.js_property_attributes_;
-				js_static_values.push_back(js_static_value);
+				js_static_value.attributes  = ToJSPropertyAttributes(value_property_callback.get_attributes());
+				js_static_values_.push_back(js_static_value);
 			}
-			js_static_values.emplace_back(nullptr, nullptr, nullptr, 0);
+			js_static_values_.push_back({nullptr, nullptr, nullptr, 0});
 		}
-		
-		return js_static_values;
 	}
 	
-	std::vector<JSStaticFunction> CreateJSStaticFunctionVector() {
-		std::vector<JSStaticFunction> js_static_functions;
+	void InitializeJSStaticFunctionVector() {
 		if (!function_property_callback_map_.empty()) {
 			for (const auto& entry : function_property_callback_map_) {
-				const auto function_property_callback = entry.second;
+				const auto& function_name              = entry.first;
+				const auto& function_property_callback = entry.second;
 				JSStaticFunction js_static_function;
-				js_static_function.name           = function_property_callback.function_name_for_js_static_function_.c_str();
+				js_static_function.name           = function_name.c_str();
 				js_static_function.callAsFunction = JSStaticFunctionCallAsFunctionCallback;
-				js_static_function.attributes     = function_property_callback.js_property_attributes_;
-				js_static_functions.push_back(js_static_function);
+				js_static_function.attributes     = ToJSPropertyAttributes(function_property_callback.get_attributes());
+				js_static_functions_.push_back(js_static_function);
 			}
-			js_static_functions.emplace_back(nullptr, nullptr, 0);
+			js_static_functions_.push_back({nullptr, nullptr, 0});
 		}
-		
-		return js_static_functions;
 	}
-
+	
 	void InitializeJSClassDefinition() {
 		!name_.empty()                           && (js_class_definition_.className         = class_name_for_js_class_definition_.c_str());
 		!attributes_.empty()                     && (js_class_definition_.attributes        = ToJSClassAttributes(attributes_));
@@ -244,18 +211,11 @@ private:
 		delete_property_callback_                && (js_class_definition_.deleteProperty    = JSObjectDeletePropertyCallback);
 		get_property_names_callback_             && (js_class_definition_.getPropertyNames  = JSObjectGetPropertyNamesCallback);
 		call_as_function_callback_               && (js_class_definition_.callAsFunction    = JSObjectCallAsFunctionCallback);
-		convert_to_type_callback_                && (js_class_definition_.convertToType     = JSObjectCallAsConstructorCallback);
+		convert_to_type_callback_                && (js_class_definition_.convertToType     = JSObjectConvertToTypeCallback);
 	}
 	
-	template<typename T>
-	using JSNativeObjectValuePropertyCallbackMap_t = std::unordered_map<std::string, detail:JSNativeObjectValuePropertyCallback<T>>;
-	
-	template<typename T>
-	using JSNativeObjectFunctionPropertyCallbackMap_t = std::unordered_map<std::string, detail:JSNativeObjectFunctionPropertyCallback<T>>;
-	
-std::mutex                                     js_native_object_mutex_;
-
 	JSContext                                      js_context_;
+
 	JSString                                       name_;
 	std::string                                    class_name_for_js_class_definition_;
 	std::unordered_set<JSNativeObjectAttribute>    attributes_;
@@ -277,10 +237,13 @@ std::mutex                                     js_native_object_mutex_;
 	JSClass                                        js_class_;
 	
 	// For interoperability with the JavaScriptCore C API.
-	JSClassDefinition                   js_class_definition_;
-	std::vector<JSStaticValue>          js_static_values_;
-	std::vector<JSStaticFunction>       js_static_functions_;
+	JSClassDefinition                              js_class_definition_;
+	std::vector<JSStaticValue>                     js_static_values_;
+	std::vector<JSStaticFunction>                  js_static_functions_;
 	
+	std::string                                    js_native_object_identifier_ { "TODO" }; // TODO
+	std::mutex                                     js_native_object_mutex_;
+
 	static JSNativeObject_shared_ptr<T> get_JSNativeObject_shared_ptr(const JSObject& js_object);
 
 	// For interoperability with the JavaScriptCore C API.
@@ -318,7 +281,7 @@ template<typename T>
 JSNativeObject_shared_ptr<T> JSNativeObject<T>::get_JSNativeObject_shared_ptr(const JSObject& js_object) {
 	static const std::string log_prefix { "MDL: get_JSNativeObject_shared_ptr:" };
 	
-	const auto native_object_ptr = static_cast<T>(js_object.GetPrivate());
+	const auto native_object_ptr = static_cast<T*>(js_object.GetPrivate());
 	const auto key               = reinterpret_cast<std::intptr_t>(native_object_ptr);
 	
 #ifdef DEBUG_JSNATIVEOBJECT
@@ -371,9 +334,9 @@ JSValueRef JSNativeObject<T>::JSStaticValueGetPropertyCallback(JSContextRef js_c
 	
 	JSString property_name(property_name_ref);
 
-	const auto& js_static_value_map = js_native_object_ptr -> js_static_value_map_;
-	const auto callback_position    = js_static_value_map.find(property_name);
-	const bool callback_found       = callback_position != js_static_value_map.end();
+	const auto& value_property_callback_map = js_native_object_ptr -> value_property_callback_map_;
+	const auto callback_position            = value_property_callback_map.find(property_name);
+	const bool callback_found               = callback_position != value_property_callback_map.end();
 	
 #ifdef DEBUG_JSNATIVEOBJECT
 	const auto js_native_object_identifier = js_native_object_ptr -> js_native_object_identifier_;
@@ -395,8 +358,8 @@ JSValueRef JSNativeObject<T>::JSStaticValueGetPropertyCallback(JSContextRef js_c
 	// precondition
 	assert(callback_found);
 	
-	const auto callback = callback_position -> second;
-	const auto result   = callback(*native_object_ptr, property_name);
+	const auto callback = (callback_position -> second).get_get_property_callback();
+	const auto result   = callback(*native_object_ptr);
 	
 #ifdef DEBUG_JSNATIVEOBJECT
 	std::clog << log_prefix
@@ -429,9 +392,9 @@ bool JSNativeObject<T>::JSStaticValueSetPropertyCallback(JSContextRef js_context
 	
 	JSString property_name(property_name_ref);
 
-	const auto& js_static_value_map = js_native_object_ptr -> js_static_value_map_;
-	const auto callback_position    = js_static_value_map.find(property_name);
-	const bool callback_found       = callback_position != js_static_value_map.end();
+	const auto& value_property_callback_map = js_native_object_ptr -> value_property_callback_map_;
+	const auto callback_position            = value_property_callback_map.find(property_name);
+	const bool callback_found               = callback_position != value_property_callback_map.end();
 
 #ifdef DEBUG_JSNATIVEOBJECT
 	const auto js_native_object_identifier = js_native_object_ptr -> js_native_object_identifier_;
@@ -457,8 +420,8 @@ bool JSNativeObject<T>::JSStaticValueSetPropertyCallback(JSContextRef js_context
 	// precondition
 	assert(callback_found);
 	
-	const auto callback = callback_position -> second;
-	const auto result   = callback(*native_object_ptr, property_name, js_value);
+	const auto callback = (callback_position -> second).get_set_property_callback();
+	const auto result   = callback(*native_object_ptr, js_value);
 	
 #ifdef DEBUG_JSNATIVEOBJECT
 	std::clog << log_prefix
@@ -492,9 +455,9 @@ JSValueRef JSNativeObject<T>::JSStaticFunctionCallAsFunctionCallback(JSContextRe
 	assert(js_function.IsFunction());
 	JSString function_name; // TODO
 
-	const auto& js_static_function_map = js_native_object_ptr -> js_static_function_map_;
-	const auto callback_position       = js_static_function_map.find(function_name);
-	const bool callback_found          = callback_position != js_static_function_map.end();
+	const auto& function_property_callback_map = js_native_object_ptr -> function_property_callback_map_;
+	const auto callback_position               = function_property_callback_map.find(function_name);
+	const bool callback_found                  = callback_position != function_property_callback_map.end();
 
 #ifdef DEBUG_JSNATIVEOBJECT
 	const auto js_native_object_identifier = js_native_object_ptr -> js_native_object_identifier_;
@@ -523,7 +486,7 @@ JSValueRef JSNativeObject<T>::JSStaticFunctionCallAsFunctionCallback(JSContextRe
 
 	// precondition
 	assert(callback_found);
-	const auto callback = callback_position -> second;
+	const auto callback = (callback_position -> second).get_call_as_function_callback();
 	const auto result   = callback(*native_object_ptr, arguments, this_object);
 	
 #ifdef DEBUG_JSNATIVEOBJECT
