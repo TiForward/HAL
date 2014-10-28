@@ -585,26 +585,47 @@ private:
 	// JSValue needs access to operator JSContextRef().
 	friend class JSValue;
 	
-  // friend class JSUndefined;
-  // friend class JSNull;
+	// The JSUndefined constructor needs access to operator
+	// JSContextRef().
+	friend class JSUndefined;
+	
+	// The JSNull constructor needs access to operator JSContextRef().
+	friend class JSNull;
 
 	// JSBoolean::operator bool() needs access to operator
 	// JSContextRef().
 	friend class JSBoolean;
 	
-  // friend class JSNumber;
+	// The JSNumber constructor needs access to operator JSContextRef().
+	friend class JSNumber;
 
-	// JSObject needs access to operator JSContextRef().
+	// The JSObject constructor needs access to operator JSContextRef().
 	friend class JSObject;
 	
-	// friend class JSArray;
-  // friend class JSDate;
-  // friend class JSError;
-  // friend class JSRegExp;
-  // friend class JSFunction;
+	// The JSArray constructor needs access to operator JSContextRef().
+	friend class JSArray;
 
-	// template<typename T>
-	// friend class JSNativeClass;
+	// The JSDate constructor needs access to operator JSContextRef().
+	friend class JSDate;
+
+	// The JSError constructor needs access to operator JSContextRef().
+	friend class JSError;
+
+	// The JSRegExp constructor needs access to operator JSContextRef().
+	friend class JSRegExp;
+
+	// The JSFunction constructor needs access to operator
+	// JSContextRef().
+	friend class JSFunction;
+
+	// The JSPropertyNameArray constructor needs access to operator
+	// JSContextRef().
+	friend class detail::JSPropertyNameArray;
+
+	// The JSNativeClass static functions need access to the JSContext
+	// constructor.
+	template<typename T>
+	friend class JSNativeClass;
 	
 	// template<typename T>
 	// friend class JSNativeObject;

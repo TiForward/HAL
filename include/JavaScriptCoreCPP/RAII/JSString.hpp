@@ -164,15 +164,32 @@ private:
     return js_string_ref__;
   }
 
-  // friend class JSContext;
-  // friend class JSValue;
-  // friend class JSObject;
-  // friend class detail::JSPropertyNameArray;
-  // friend class JSPropertyNameAccumulator;
-  // friend class JSFunction;
-  
-	// template<typename T>
-	// friend class JSNativeClass;
+  // JSContext::JSEvaluateScript and JSContext::JSCheckScriptSyntax
+  // need access to operator JSStringRef().
+  friend class JSContext;
+
+  // The JSValue constructor needs access to operator JSStringRef().
+  friend class JSValue;
+
+  // JSObject::HasProperty needs access to operator JSStringRef().
+  friend class JSObject;
+
+  // JSPropertyNameArray::GetNameAtIndex needs access to operator
+  // JSStringRef().
+  friend class detail::JSPropertyNameArray;
+
+  // JSPropertyNameAccumulator::AddName needs access to operator
+  // JSStringRef().
+  friend class JSPropertyNameAccumulator;
+
+  // The JSFunction constructor needs access to operator
+  // JSStringRef().
+  friend class JSFunction;
+
+  // The JSNativeClass static functions need access to the JSString
+  // constructor.
+  template<typename T>
+	friend class JSNativeClass;
 	
   // template<typename T>
 	// friend class JSNativeObject;

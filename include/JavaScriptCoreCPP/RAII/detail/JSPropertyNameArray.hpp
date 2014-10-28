@@ -46,7 +46,7 @@ private:
 	  @result A JSPropertyNameArray containing the names of the object's
 	  enumerable properties.
 	*/
-	JSPropertyNameArray(const JSObject& js_object) : js_property_name_array_ref_(JSObjectCopyPropertyNames(js_object, js_object)) {
+	JSPropertyNameArray(const JSObject& js_object) : js_property_name_array_ref__(JSObjectCopyPropertyNames(js_object.get_context(), js_object)) {
 	}
   
 	/*!
@@ -59,7 +59,7 @@ private:
 	  array.
 	*/
 	size_t GetCount() const {
-		return JSPropertyNameArrayGetCount(js_property_name_array_ref_);
+		return JSPropertyNameArrayGetCount(js_property_name_array_ref__);
 	}
 	
 	/*!
@@ -73,7 +73,7 @@ private:
 	  @result A JSString containing the property name.
 	*/
 	JSString GetNameAtIndex(size_t index) const {
-		return JSPropertyNameArrayGetNameAtIndex(js_property_name_array_ref_, index);
+		return JSPropertyNameArrayGetNameAtIndex(js_property_name_array_ref__, index);
 	}
 	
 	operator std::vector<JSString>() const {
@@ -86,17 +86,17 @@ private:
 	}
 
 	~JSPropertyNameArray() {
-	  JSPropertyNameArrayRelease(js_property_name_array_ref_);
+	  JSPropertyNameArrayRelease(js_property_name_array_ref__);
   }
 
 	// Copy constructor.
-	JSPropertyNameArray(const JSPropertyNameArray& rhs) : js_property_name_array_ref_(rhs.js_property_name_array_ref_) {
-		JSPropertyNameArrayRetain(js_property_name_array_ref_);
+	JSPropertyNameArray(const JSPropertyNameArray& rhs) : js_property_name_array_ref__(rhs.js_property_name_array_ref__) {
+		JSPropertyNameArrayRetain(js_property_name_array_ref__);
 	}
 	
   // Move constructor.
-  JSPropertyNameArray(JSPropertyNameArray&& rhs) : js_property_name_array_ref_(rhs.js_property_name_array_ref_) {
-	  JSPropertyNameArrayRetain(js_property_name_array_ref_);
+  JSPropertyNameArray(JSPropertyNameArray&& rhs) : js_property_name_array_ref__(rhs.js_property_name_array_ref__) {
+	  JSPropertyNameArrayRetain(js_property_name_array_ref__);
   }
   
   // Create a copy of another JSPropertyNameArray by assignment. This
@@ -114,19 +114,19 @@ private:
     
     // by swapping the members of two classes,
     // the two classes are effectively swapped
-    swap(first.js_property_name_array_ref_, second.js_property_name_array_ref_);
+    swap(first.js_property_name_array_ref__, second.js_property_name_array_ref__);
   }
   
   // For interoperability with the JavaScriptCore C API.
   operator JSPropertyNameArrayRef() const {
-	  return js_property_name_array_ref_;
+	  return js_property_name_array_ref__;
   }
 
 	// Prevent heap based objects.
 	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
 	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
 	
-	JSPropertyNameArrayRef js_property_name_array_ref_;
+	JSPropertyNameArrayRef js_property_name_array_ref__;
 };
 
 }} // namespace JavaScriptCoreCPP { namespace detail {

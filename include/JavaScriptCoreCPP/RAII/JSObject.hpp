@@ -444,18 +444,36 @@ class JSObject : public JSValue {
 	
 	// Only a JSContext can create a JSObject.
 	friend class JSContext;
-	
-	// friend class JSValue;
-	// friend class detail::JSPropertyNameArray;
-	// friend class JSArray;
-  // friend class JSDate;
-  // friend class JSError;
-  // friend class JSRegExp;
-	// friend class JSFunction;
 
-	// template<typename T>
-	// friend class JSNativeClass;
+	// JSValue::operator JSObject() needs access to operator
+	// JSObjectRef().
+	friend class JSValue;
 	
+	// The JSPropertyNameArray constructor needs access to operator
+	// JSObjectRef().
+	friend class detail::JSPropertyNameArray;
+
+
+	// JSArray needs access to js_object_ref__ to change its value.
+	friend class JSArray;
+	
+	// JSDate needs access to js_object_ref__ to change its value.
+	friend class JSDate;
+	
+	// JSError needs access to js_object_ref__ to change its value.
+	friend class JSError;
+
+	// JSRegExp needs access to js_object_ref__ to change its value.
+	friend class JSRegExp;
+
+	// JSDate needs access to js_object_ref__ to change its value.
+	friend class JSFunction;
+
+	// The JSNativeClass static functions need access to the JSObject
+	// constructor.
+	template<typename T>
+	friend class JSNativeClass;
+
 	// template<typename T>
 	// friend class JSNativeObject;
 

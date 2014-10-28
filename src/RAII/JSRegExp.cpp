@@ -34,8 +34,8 @@ JSRegExp::JSRegExp(const JSContext& js_context, const std::vector<JSValue>& argu
 		throw std::logic_error(message);
 	}
 	
-	JSValueUnprotect(js_context, js_object_ref_);
-	js_object_ref_ = js_object_ref;
+	JSValueUnprotect(js_context, js_object_ref__);
+	js_object_ref__ = js_object_ref;
 }
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {

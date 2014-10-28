@@ -35,8 +35,8 @@ JSFunction::JSFunction(const JSContext& js_context, const JSString& function_nam
 		throw std::invalid_argument(message);
 	}
 	
-	JSValueUnprotect(js_context, js_object_ref_);
-	js_object_ref_ = js_object_ref;
+	JSValueUnprotect(js_context, js_object_ref__);
+	js_object_ref__ = js_object_ref;
 }
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {

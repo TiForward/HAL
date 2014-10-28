@@ -360,7 +360,7 @@ public:
 	  
 	  // Values can only be copied between contexts within the same
 	  // context group.
-		if (js_context__.js_context__group_ != rhs.js_context__.js_context__group_) {
+		if (js_context__.get_context_group() != rhs.js_context__.get_context_group()) {
 		  static const std::string log_prefix { "MDL: JSValue& JSValue::operator=(JSValue rhs): " };
 		  const std::string message = "JSValues must belong to JSContexts within the same JSContextGroup to be shared and exchanged.";
 		  std::clog << log_prefix << " [ERROR] " << message << std::endl;
@@ -406,31 +406,51 @@ public:
 
 	// Only a JSContext can create a JSValue.
 	friend class JSContext;
-	
-  // friend class JSUndefined;
-  // friend class JSNull;
+
+	// JSUndefined needs access to the JSValue constructor.
+	friend class JSUndefined;
+
+	// JSNull needs access to the JSValue constructor.
+	friend class JSNull;
 
 	// JSBoolean needs access to operator JSValueRef().
 	friend class JSBoolean;
 
-	// JSNumber::operator double() needs access to js_value_ref__ to
-	// change its value and to the JSValue constructor for reporting
-	// error messages..
+	// JSNumber::operator double() needs access to operator JSValueRef()
+	// to change its value and to the JSValue constructor for reporting
+	// error messages.
 	friend class JSNumber;
 
-	// JSObject need access to the JSValue constructor for
+	// JSObject needs access to the JSValue constructor for
 	// GetPrototype(), SetPrototype() and for generating error messages.
 	friend class JSObject;
 	
 	// friend class detail::JSPropertyNameArray;
-  // friend class JSArray;
-  // friend class JSDate;
-  // friend class JSError;
-  // friend class JSRegExp;
-  // friend class JSFunction;
 
-	// template<typename T>
-	// friend class JSNativeClass;
+	// JSArray needs access to the JSValue constructor for generating
+	// error messages.
+	friend class JSArray;
+
+	// JSDate needs access to the JSValue constructor for generating
+	// error messages.
+	friend class JSDate;
+	
+	// JSError needs access to the JSValue constructor for generating
+	// error messages.
+	friend class JSError;
+	
+	// JSRegExp needs access to the JSValue constructor for generating
+	// error messages.
+	friend class JSRegExp;
+
+	// JSFunction needs access to the JSValue constructor for generating
+	// error messages.
+	friend class JSFunction;
+
+  // The JSNativeClass static functions need access to operator
+  // JSValueRef().
+	template<typename T>
+	friend class JSNativeClass;
 	
 	// template<typename T>
 	// friend class JSNativeObject;

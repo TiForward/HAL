@@ -932,8 +932,8 @@ JSNativeClass<T>::JSNativeClass(const JSNativeClassBuilder<T>& builder)
 	InitializeJSClassDefinition();
 
 	// Replace the private JSClassRef member in the base class.
-	JSClassRelease(js_class_ref_);
-	js_class_ref_ = JSClassCreate(&js_class_definition_);
+	JSClassRelease(js_class_ref__);
+	js_class_ref__ = JSClassCreate(&js_class_definition_);
 }
 
 

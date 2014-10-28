@@ -148,8 +148,8 @@ class JSNativeClass final : public JSClass {
 		InitializeJSClassDefinition();
 
 		// Replace the private JSClassRef member in the base class.
-		JSClassRelease(js_class_ref_);
-		js_class_ref_ = JSClassCreate(&js_class_definition_);
+		JSClassRelease(js_class_ref__);
+		js_class_ref__ = JSClassCreate(&js_class_definition_);
 	}
 	
 	// Move constructor.
@@ -568,7 +568,7 @@ void JSNativeClass<T>::JSObjectFinalizeCallback(JSObjectRef js_object_ref) {
 	
 	const auto native_object_ptr = static_cast<T*>(JSObjectGetPrivate(js_object_ref));
 	
-	JSContext js_context = native_object_ptr -> js_context_;
+	JSContext js_context = native_object_ptr -> get_context();
 	JSObject  js_object(js_context, js_object_ref);
 	
 	const auto js_native_class_ptr = get_JSNativeClass_shared_ptr(js_object);

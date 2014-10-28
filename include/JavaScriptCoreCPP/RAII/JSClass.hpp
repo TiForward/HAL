@@ -99,13 +99,20 @@ class JSClass	{
 	operator JSClassRef() const {
 		return js_class_ref__;
 	}
+
+	// The JSContext constructor needs access to operator JSClassRef().
+	friend class JSContext;
 	
-	// friend class JSContext;
-	// friend class JSValue;
-	// friend class JSObject;
+	// JSContext::IsObjectOfClass needs access to operator JSClassRef().
+	friend class JSValue;
 	
-	// template<typename T>
-	// friend class JSNativeClass;
+	// The JSObject constructor needs access to operator JSClassRef().
+	friend class JSObject;
+
+	// The JSNativeClass constructor access to js_class_ref__ to change
+	// its value.
+	template<typename T>
+	friend class JSNativeClass;
 
 	JSClassRef js_class_ref__{ nullptr };
 	JAVASCRIPTCORECPP_RAII_JSCLASS_MUTEX

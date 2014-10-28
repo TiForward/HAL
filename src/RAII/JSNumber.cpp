@@ -16,7 +16,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
 
 JSNumber::operator double() const {
 	JSValueRef exception { nullptr };
-	const double result = JSValueToNumber(get_context(), js_value_ref__, &exception);
+	const double result = JSValueToNumber(get_context(), *this, &exception);
 	if (exception) {
 		static const std::string log_prefix { "MDL: operator double() const: " };
 		std::ostringstream os;
