@@ -78,27 +78,15 @@ namespace UnitTestConstants {
   bar = js_object.GetProperty("bar");
   XCTAssertTrue(bar);
 
-  XCTAssertTrue(js_object.GetPropertyAtIndex(42).IsUndefined());
-  js_object.SetPropertyAtIndex(42, js_context.CreateNumber(UnitTestConstants::pi));
-  JSNumber pi = js_object.GetPropertyAtIndex(42);
+  XCTAssertTrue(js_object.GetProperty(42).IsUndefined());
+  js_object.SetProperty(42, js_context.CreateNumber(UnitTestConstants::pi));
+  JSNumber pi = js_object.GetProperty(42);
   XCTAssertEqualWithAccuracy(UnitTestConstants::pi, static_cast<double>(pi), std::numeric_limits<double>::epsilon());
 
-  const auto property_names = js_object.GetPropertyNames();
-  XCTAssertEqual(2, property_names.size());
-  for (const auto& property_name : property_names) {
-    std::clog << "MDL: property_name = " << property_name << std::endl;
-  }
-  
-  auto properties = js_object.GetProperties();
-  XCTAssertEqual(2, properties.size());
-  XCTAssertTrue(properties.at("42").IsNumber());
-  XCTAssertTrue(properties.at("bar").IsBoolean());
-  
-  
   XCTAssertFalse(js_object.IsFunction());
   
   try {
-    js_object.CallAsFunction();
+    js_object();
     XCTFail("js_object was called as a function but did not throw a std::runtime_error exception");
   } catch (const std::runtime_error& exception) {
     XCTAssert(YES, @"Caught expected std::runtime_error exception.");

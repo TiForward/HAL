@@ -30,10 +30,10 @@ class JSUndefined final : public JSValue {
 	
 private:
 	
-	// Only a JSContext can create a JSUndefined.
 	JSUndefined(const JSContext& js_context) : JSValue(js_context, JSValueMakeUndefined(js_context)) {
 	}
 
+	// Only a JSContext can create a JSUndefined.
 	friend JSContext;
 };
 

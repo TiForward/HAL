@@ -58,7 +58,7 @@ class JSBoolean final : public JSValue {
 	  @result The boolean result of conversion.
 	*/
 	operator bool() const {
-		return JSValueToBoolean(js_context_, js_value_ref_);
+		return JSValueToBoolean(get_context(), *this);
 	}
 
 	/*!
@@ -73,17 +73,17 @@ class JSBoolean final : public JSValue {
 	JSBoolean& operator=(bool boolean) {
 		const bool current_value = operator bool();
 		if (current_value != boolean) {
-			JSValue::operator=(JSBoolean(js_context_, boolean));
+			JSValue::operator=(JSBoolean(get_context(), boolean));
 		}
 		return *this;
 	}
 
  private:
 
-	// Only JSContext and JSValue can create a JSBoolean.
 	JSBoolean(const JSContext& js_context, bool boolean) : JSValue(js_context, JSValueMakeBoolean(js_context, boolean)) {
 	}
 	
+	// Only JSContext and JSValue can create a JSBoolean.
 	friend JSContext;
 	friend JSValue;
 };

@@ -47,7 +47,7 @@ class JSPropertyNameAccumulator	{
 	  @param property_name The property name to add.
 	*/
 	void AddName(const JSString& property_name) const {
-		JSPropertyNameAccumulatorAddName(js_property_name_accumulator_ref_, property_name);
+		JSPropertyNameAccumulatorAddName(js_property_name_accumulator_ref__, property_name);
 	}
 	
 private:
@@ -59,18 +59,18 @@ private:
 	JSPropertyNameAccumulator& operator=(JSPropertyNameAccumulator&& rhs) = delete;
 
 	// For interoperability with the JavaScriptCore C API.
-	JSPropertyNameAccumulator(const JSPropertyNameAccumulatorRef& js_property_name_accumulator_ref) : js_property_name_accumulator_ref_(js_property_name_accumulator_ref) {
-		assert(js_property_name_accumulator_ref_);
+	JSPropertyNameAccumulator(const JSPropertyNameAccumulatorRef& js_property_name_accumulator_ref) : js_property_name_accumulator_ref__(js_property_name_accumulator_ref) {
+		assert(js_property_name_accumulator_ref__);
 	}
 	
   // For interoperability with the JavaScriptCore C API.
 	operator JSPropertyNameAccumulatorRef() const {
-		return js_property_name_accumulator_ref_;
+		return js_property_name_accumulator_ref__;
 	}
 	
 	friend class JSObject;
 
-	JSPropertyNameAccumulatorRef js_property_name_accumulator_ref_;
+	JSPropertyNameAccumulatorRef js_property_name_accumulator_ref__;
 };
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {

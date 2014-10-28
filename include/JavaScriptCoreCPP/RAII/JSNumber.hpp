@@ -42,7 +42,7 @@ public:
     @result The JSNumber with a new value of the given number.
   */
 	JSNumber& operator=(double number) {
-		return operator=(JSNumber(js_context_, number));
+		return operator=(JSNumber(get_context(), number));
   }
 
 	/*!
@@ -55,7 +55,7 @@ public:
     @result The JSNumber with the new value of the given number.
   */
 	JSNumber& operator=(int32_t number) {
-		return operator=(JSNumber(js_context_, number));
+		return operator=(JSNumber(get_context(), number));
   }
 
 	/*!
@@ -68,7 +68,7 @@ public:
     @result The JSNumber with the new value of the given number.
   */
 	JSNumber& operator=(uint32_t number) {
-		return operator=(JSNumber(js_context_, number));
+		return operator=(JSNumber(get_context(), number));
   }
 
 	/*!
@@ -131,22 +131,19 @@ public:
 
  private:
 	
-	// Only JSContext and JSValue can create a JSNumber.
 	JSNumber(const JSContext& js_context) : JSNumber(js_context, 0) {
 	}
 	
-	// Only JSContext and JSValue can create a JSNumber.
 	JSNumber(const JSContext& js_context, double number) : JSValue(js_context, JSValueMakeNumber(js_context, number)) {
 	}
 	
-	// Only JSContext and JSValue can create a JSNumber.
 	JSNumber(const JSContext& js_context, int32_t number) : JSNumber(js_context, static_cast<double>(number)) {
 	}
 	
-	// Only JSContext and JSValue can create a JSNumber.
 	JSNumber(const JSContext& js_context, uint32_t number) : JSNumber(js_context, static_cast<double>(number)) {
 	}
 	
+	// Only JSContext and JSValue can create a JSNumber.
 	friend JSContext;
 	friend JSValue;
 };

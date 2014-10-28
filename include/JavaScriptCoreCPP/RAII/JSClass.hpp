@@ -38,12 +38,15 @@ namespace JavaScriptCoreCPP { namespace RAII {
   @class
 
   @discussion A JSClass is an RAII wrapper around a JSClassRef, the
-  JavaScriptCore C API representation of a JavaScript class. An
-  instance of JSClass can be passed to the JSObject constructor to
-  create JavaScript objects with both value and function properties
-  backed by an instance of a C++ class.
+  JavaScriptCore C API representation of a JavaScript class that
+  defines JavaScript objects implemented in C.
 
-  Only JSObject and JSNativeClassBuilder may create a JSClass.
+  An instance of JSClass may be passed to the JSContextGroup
+  constructor to create a custom global object for all contexts in
+  that group.
+
+  JavaScript objects based on a JSClass may be created by the
+  JSContext::CreateObject member function.
 */
 #ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
 class JSClass : public detail::JSPerformanceCounter<JSClass> {
@@ -53,18 +56,23 @@ class JSClass	{
 	
  public:
 
+	// For interoperability with the JavaScriptCore C API.
+	JSClass(const JSClassDefinition* definition = &kJSClassDefinitionEmpty)
+			: js_class_ref__(JSClassCreate(definition)) {
+	}
+	
 	virtual ~JSClass() {
-		JSClassRelease(js_class_ref_);
+		JSClassRelease(js_class_ref__);
 	}
 	
 	// Copy constructor.
-	JSClass(const JSClass& rhs) : js_class_ref_(rhs.js_class_ref_) {
-		JSClassRetain(js_class_ref_);
+	JSClass(const JSClass& rhs) : js_class_ref__(rhs.js_class_ref__) {
+		JSClassRetain(js_class_ref__);
 	}
 	
 	// Move constructor.
-	JSClass(JSClass&& rhs) : js_class_ref_(rhs.js_class_ref_) {
-		JSClassRetain(js_class_ref_);
+	JSClass(JSClass&& rhs) : js_class_ref__(rhs.js_class_ref__) {
+		JSClassRetain(js_class_ref__);
 	}
 	
 	// Create a copy of another JSClass by assignment. This is a unified
@@ -82,28 +90,24 @@ class JSClass	{
 		
 		// by swapping the members of two classes,
 		// the two classes are effectively swapped
-		swap(first.js_class_ref_, second.js_class_ref_);
+		swap(first.js_class_ref__, second.js_class_ref__);
 	}
 
  private:
 
 	// For interoperability with the JavaScriptCore C API.
-	JSClass(const JSClassDefinition* definition = &kJSClassDefinitionEmpty)
-			: js_class_ref_(JSClassCreate(definition)) {
-	}
-	
-	// For interoperability with the JavaScriptCore C API.
 	operator JSClassRef() const {
-		return js_class_ref_;
+		return js_class_ref__;
 	}
 	
-	friend class JSContext;
-	friend class JSObject;
+	// friend class JSContext;
+	// friend class JSValue;
+	// friend class JSObject;
 	
-	template<typename T>
-	friend class JSNativeClass;
+	// template<typename T>
+	// friend class JSNativeClass;
 
-	JSClassRef js_class_ref_ { nullptr };
+	JSClassRef js_class_ref__{ nullptr };
 	JAVASCRIPTCORECPP_RAII_JSCLASS_MUTEX
 };
 

@@ -126,7 +126,7 @@ JSValue JSContext::JSEvaluateScript(const JSString& script, const JSString& sour
 	const JSObjectRef this_object { nullptr };
 	const JSStringRef source_url_ref = (source_url.length() > 0) ? static_cast<JSStringRef>(source_url) : nullptr;
 	JSValueRef exception { nullptr };
-	js_value_ref = ::JSEvaluateScript(js_context_ref_, script, this_object, source_url_ref, starting_line_number, &exception);
+	js_value_ref = ::JSEvaluateScript(js_context_ref__, script, this_object, source_url_ref, starting_line_number, &exception);
 	
 	if (exception) {
 		// assert(!js_object_ref);
@@ -137,7 +137,7 @@ JSValue JSContext::JSEvaluateScript(const JSString& script, const JSString& sour
 	}
 
 	JSValue result(*this, js_value_ref);
-	JSValueUnprotect(js_context_ref_, js_value_ref);
+	JSValueUnprotect(js_context_ref__, js_value_ref);
 	return result;
 }
 
@@ -145,7 +145,7 @@ JSValue JSContext::JSEvaluateScript(const JSString& script, const JSObject& this
 	JSValueRef js_value_ref { nullptr };
 	const JSStringRef source_url_ref = (source_url.length() > 0) ? static_cast<JSStringRef>(source_url) : nullptr;
 	JSValueRef exception { nullptr };
-	js_value_ref = ::JSEvaluateScript(js_context_ref_, script, this_object, source_url_ref, starting_line_number, &exception);
+	js_value_ref = ::JSEvaluateScript(js_context_ref__, script, this_object, source_url_ref, starting_line_number, &exception);
 	
 	if (exception) {
 		// assert(!js_object_ref);
@@ -156,14 +156,14 @@ JSValue JSContext::JSEvaluateScript(const JSString& script, const JSObject& this
 	}
 
 	JSValue result(*this, js_value_ref);
-	JSValueUnprotect(js_context_ref_, js_value_ref);
+	JSValueUnprotect(js_context_ref__, js_value_ref);
 	return result;
 }
 
 bool JSContext::JSCheckScriptSyntax(const JSString& script, const JSString& source_url, int starting_line_number) {
 	const JSStringRef source_url_ref = (source_url.length() > 0) ? static_cast<JSStringRef>(source_url) : nullptr;
 	JSValueRef exception { nullptr };
-	bool result = ::JSCheckScriptSyntax(js_context_ref_, script, source_url_ref, starting_line_number, &exception);
+	bool result = ::JSCheckScriptSyntax(js_context_ref__, script, source_url_ref, starting_line_number, &exception);
 	
 	if (exception) {
 		// assert(!js_object_ref);
@@ -177,7 +177,7 @@ bool JSContext::JSCheckScriptSyntax(const JSString& script, const JSString& sour
 }
 
 JSObject JSContext::get_global_object() const {
-	return JSObject(*this, JSContextGetGlobalObject(js_context_ref_));
+	return JSObject(*this, JSContextGetGlobalObject(js_context_ref__));
 }
 
 #ifdef JAVASCRIPTCORECPP_RAII_JSCONTEXT_ENABLE_CONTEXT_ID

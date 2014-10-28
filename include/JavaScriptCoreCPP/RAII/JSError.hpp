@@ -30,13 +30,12 @@ class JSError final : public JSObject {
 	
  private:
 
-	// Only a JSContext can create a JSError.
 	JSError(const JSContext& js_context) : JSError(js_context, std::vector<JSValue>()) {
 	}
 	
-	// Only a JSContext can create a JSError.
 	JSError(const JSContext& js_context, const std::vector<JSValue>& arguments);
-
+	
+	// Only a JSContext can create a JSError.
 	friend JSContext;
 };
 

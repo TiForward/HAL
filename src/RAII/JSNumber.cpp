@@ -16,11 +16,11 @@ namespace JavaScriptCoreCPP { namespace RAII {
 
 JSNumber::operator double() const {
 	JSValueRef exception { nullptr };
-	const double result = JSValueToNumber(js_context_, js_value_ref_, &exception);
+	const double result = JSValueToNumber(get_context(), js_value_ref__, &exception);
 	if (exception) {
 		static const std::string log_prefix { "MDL: operator double() const: " };
 		std::ostringstream os;
-		os << "JSNumber could not be converted to a double: " << JSValue(js_context_, exception);
+		os << "JSNumber could not be converted to a double: " << JSValue(get_context(), exception);
 		const std::string message = os.str();
 		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
 		throw std::logic_error(message);

@@ -30,13 +30,12 @@ class JSDate final : public JSObject {
 	
  private:
 
-	// Only a JSContext can create a JSDate.
 	JSDate(const JSContext& js_context) : JSDate(js_context, std::vector<JSValue>()) {
 	}
 	
-	// Only a JSContext can create a JSDate.
 	JSDate(const JSContext& js_context, const std::vector<JSValue>& arguments);
 
+	// Only a JSContext can create a JSDate.
 	friend JSContext;
 };
 

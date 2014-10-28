@@ -66,7 +66,7 @@ class JSString final	{
 	  
 	  @result An empty JavaScript string with a length of zero.
 	*/
-	JSString() : js_string_ref_(JSStringCreateWithUTF8CString(nullptr)) {
+	JSString() : js_string_ref__(JSStringCreateWithUTF8CString(nullptr)) {
 	}
 	
 	/*!
@@ -80,7 +80,7 @@ class JSString final	{
 	  
 	  @result A JSString containing string.
 	*/
-	JSString(const char* string) : js_string_ref_(JSStringCreateWithUTF8CString(string)) {
+	JSString(const char* string) : js_string_ref__(JSStringCreateWithUTF8CString(string)) {
   }
 
 	/*!
@@ -98,17 +98,17 @@ class JSString final	{
 	}
 
 	~JSString() {
-		JSStringRelease(js_string_ref_);
+		JSStringRelease(js_string_ref__);
 	}
 
 	// Copy constructor.
-	JSString(const JSString& rhs) : js_string_ref_(rhs.js_string_ref_) {
-		JSStringRetain(js_string_ref_);
+	JSString(const JSString& rhs) : js_string_ref__(rhs.js_string_ref__) {
+		JSStringRetain(js_string_ref__);
 	}
 
 	// Move constructor.
-	JSString(JSString&& rhs) : js_string_ref_(rhs.js_string_ref_) {
-		JSStringRetain(js_string_ref_);
+	JSString(JSString&& rhs) : js_string_ref__(rhs.js_string_ref__) {
+		JSStringRetain(js_string_ref__);
 	}
 	
 	// Create a copy of another JSString by assignment. This is a
@@ -126,11 +126,11 @@ class JSString final	{
     
     // by swapping the members of two classes,
     // the two classes are effectively swapped
-    swap(first.js_string_ref_, second.js_string_ref_);
+    swap(first.js_string_ref__, second.js_string_ref__);
   }
 
 	const std::size_t length() const {
-		return JSStringGetLength(js_string_ref_);
+		return JSStringGetLength(js_string_ref__);
 	}
 	
 	const std::size_t size() const {
@@ -147,37 +147,40 @@ class JSString final	{
 	}
 
 	operator std::u16string() const {
-		const JSChar* string_ptr = JSStringGetCharactersPtr(js_string_ref_);
-		return std::u16string(string_ptr, string_ptr + JSStringGetLength(js_string_ref_));
+		const JSChar* string_ptr = JSStringGetCharactersPtr(js_string_ref__);
+		return std::u16string(string_ptr, string_ptr + JSStringGetLength(js_string_ref__));
 	}
 
 private:
 
   // For interoperability with the JavaScriptCore C API.
-  JSString(const JSStringRef& js_string_ref) : js_string_ref_(js_string_ref) {
-	  assert(js_string_ref_);
-    JSStringRetain(js_string_ref_);
+  JSString(const JSStringRef& js_string_ref) : js_string_ref__(js_string_ref) {
+	  assert(js_string_ref__);
+    JSStringRetain(js_string_ref__);
   }
   
   // For interoperability with the JavaScriptCore C API.
   operator JSStringRef() const {
-    return js_string_ref_;
+    return js_string_ref__;
   }
 
-  friend class JSContext;
-  friend class JSValue;
-  friend class JSObject;
-  friend class detail::JSPropertyNameArray;
-  friend class JSPropertyNameAccumulator;
-  friend class JSFunction;
+  // friend class JSContext;
+  // friend class JSValue;
+  // friend class JSObject;
+  // friend class detail::JSPropertyNameArray;
+  // friend class JSPropertyNameAccumulator;
+  // friend class JSFunction;
   
-  template<typename T>
-	friend class JSNativeObject;
+	// template<typename T>
+	// friend class JSNativeClass;
+	
+  // template<typename T>
+	// friend class JSNativeObject;
 
   // Return true if the two JSStrings are equal.
 	friend bool operator==(const JSString& lhs, const JSString& rhs);
 
-	JSStringRef js_string_ref_;
+	JSStringRef js_string_ref__;
 	JAVASCRIPTCORECPP_RAII_JSSTRING_MUTEX;
 };
 

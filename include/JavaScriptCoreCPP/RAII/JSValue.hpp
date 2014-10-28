@@ -127,7 +127,7 @@ public:
 	  @result The boolean result of conversion.
 	*/
 	explicit operator bool() const {
-		return JSValueToBoolean(js_context_, js_value_ref_);
+		return JSValueToBoolean(js_context__, js_value_ref__);
 	}
 	
 	/*!
@@ -218,7 +218,7 @@ public:
     type.
   */
   bool IsUndefined() const {
-	  return JSValueIsUndefined(js_context_, js_value_ref_);
+	  return JSValueIsUndefined(js_context__, js_value_ref__);
   }
 
   /*!
@@ -230,7 +230,7 @@ public:
     @result true if this JavaScript value's type is the null type.
   */
   bool IsNull() const {
-	  return JSValueIsNull(js_context_, js_value_ref_);
+	  return JSValueIsNull(js_context__, js_value_ref__);
   }
   
   /*!
@@ -242,7 +242,7 @@ public:
     @result true if this JavaScript value's type is the boolean type.
   */
   bool IsBoolean() const {
-	  return JSValueIsBoolean(js_context_, js_value_ref_);
+	  return JSValueIsBoolean(js_context__, js_value_ref__);
   }
 
   /*!
@@ -254,7 +254,7 @@ public:
     @result true if this JavaScript value's type is the number type.
   */
   bool IsNumber() const {
-	  return JSValueIsNumber(js_context_, js_value_ref_);
+	  return JSValueIsNumber(js_context__, js_value_ref__);
   }
 
   /*!
@@ -266,7 +266,7 @@ public:
     @result true if this JavaScript value's type is the string type.
   */
   bool IsString() const {
-	  return JSValueIsString(js_context_, js_value_ref_);
+	  return JSValueIsString(js_context__, js_value_ref__);
   }
 
   /*!
@@ -278,7 +278,7 @@ public:
     @result true if this JavaScript value's type is the object type.
   */
 	bool IsObject() const {
-		return JSValueIsObject(js_context_, js_value_ref_);
+		return JSValueIsObject(js_context__, js_value_ref__);
 	}
 	
 	/*!
@@ -292,8 +292,8 @@ public:
 	  @result true if this JavaScript value is an object with a given
 	  class in its class chain.
 	*/
-	virtual bool IsObjectOfClass(const JSClass& js_class) const final {
-		return JSValueIsObjectOfClass(js_context_, js_value_ref_, js_class);
+	bool IsObjectOfClass(const JSClass& js_class) const {
+		return JSValueIsObjectOfClass(js_context__, js_value_ref__, js_class);
 	}
 
 	/*!
@@ -310,24 +310,46 @@ public:
   */
 	bool IsInstanceOfConstructor(const JSObject& constructor) const;
 
-	bool IsEqualWithTypeCoercion(const JSValue& rhs) const;
+	/*!
+	  @method
+	  
+	  @abstract Determine whether this JavaScript value is equal to
+	  another JavaScript by usong the JavaScript == operator.
+	  
+	  @param js_value The JavaScript value to test.
+	  
+	  @result true this JavaScript value is equal to another JavaScript
+	  by usong the JavaScript == operator.
+	*/
+	bool IsEqualWithTypeCoercion(const JSValue& js_value) const;
+
+	/*!
+	  @method
+	  
+	  @abstract Return the execution context of this JavaScript value.
+	  
+	  @result The the execution context of this JavaScript value.
+	*/
+	JSContext get_context() const {
+		return js_context__;
+	}
 	
 	virtual ~JSValue() {
-	  JSValueUnprotect(js_context_, js_value_ref_);
+	  JSValueUnprotect(js_context__, js_value_ref__);
   }
 
 	// Copy constructor.
 	JSValue(const JSValue& rhs)
-			: js_context_(rhs.js_context_)
-			, js_value_ref_(rhs.js_value_ref_) {
-		JSValueProtect(js_context_, js_value_ref_);
+			: js_context__(rhs.js_context__)
+			, js_value_ref__(rhs.js_value_ref__) {
+		JSValueProtect(js_context__, js_value_ref__);
 	}
 	
 	// Move constructor.
 	JSValue(JSValue&& rhs)
-			: js_context_(rhs.js_context_)
-			, js_value_ref_(rhs.js_value_ref_) {
-		JSValueProtect(js_context_, js_value_ref_);
+			: js_context__(rhs.js_context__)
+			, js_value_ref__(rhs.js_value_ref__) {
+		JSValueProtect(js_context__, js_value_ref__);
   }
   
   // Create a copy of another JSValue by assignment. This is a unified
@@ -338,7 +360,7 @@ public:
 	  
 	  // Values can only be copied between contexts within the same
 	  // context group.
-		if (js_context_.js_context_group_ != rhs.js_context_.js_context_group_) {
+		if (js_context__.js_context__group_ != rhs.js_context__.js_context__group_) {
 		  static const std::string log_prefix { "MDL: JSValue& JSValue::operator=(JSValue rhs): " };
 		  const std::string message = "JSValues must belong to JSContexts within the same JSContextGroup to be shared and exchanged.";
 		  std::clog << log_prefix << " [ERROR] " << message << std::endl;
@@ -355,55 +377,69 @@ public:
     
     // by swapping the members of two classes,
     // the two classes are effectively swapped
-    swap(first.js_context_  , second.js_context_);
-    swap(first.js_value_ref_, second.js_value_ref_);
+    swap(first.js_context__  , second.js_context__);
+    swap(first.js_value_ref__, second.js_value_ref__);
   }
   
  private:
 
-	// Only a JSContext can create a JSValue.
 	JSValue(const JSContext& js_context, const JSString& js_string, bool parse_as_json = false);
 
 
 	// For interoperability with the JavaScriptCore C API.
 	explicit JSValue(const JSContext& js_context, JSValueRef js_value_ref)
-			: js_context_(js_context)
-			, js_value_ref_(js_value_ref)  {
-		assert(js_value_ref_);
-		JSValueProtect(js_context_, js_value_ref_);
+			: js_context__(js_context)
+			, js_value_ref__(js_value_ref)  {
+		assert(js_value_ref__);
+		JSValueProtect(js_context__, js_value_ref__);
 	}
 
   // For interoperability with the JavaScriptCore C API.
-	operator JSContextRef() const {
-	  return js_context_;
-  }
+	// operator JSContextRef() const {
+	//   return js_context__;
+  // }
 
 	// For interoperability with the JavaScriptCore C API.
-  operator JSValueRef() const {
-	  return js_value_ref_;
+	operator JSValueRef() const {
+	  return js_value_ref__;
   }
 
-  friend class JSContext;
-  friend class JSUndefined;
-  friend class JSNull;
-  friend class JSBoolean;
-  friend class JSNumber;
-  friend class JSObject;
-	friend class detail::JSPropertyNameArray;
-  friend class JSArray;
-  friend class JSDate;
-  friend class JSError;
-  friend class JSRegExp;
-  friend class JSFunction;
+	// Only a JSContext can create a JSValue.
+	friend class JSContext;
+	
+  // friend class JSUndefined;
+  // friend class JSNull;
 
-	template<typename T>
-	friend class JSNativeObject;
+	// JSBoolean needs access to operator JSValueRef().
+	friend class JSBoolean;
 
-	// Return true if the two JSValues are equal as compared by the JS === operator.
+	// JSNumber::operator double() needs access to js_value_ref__ to
+	// change its value and to the JSValue constructor for reporting
+	// error messages..
+	friend class JSNumber;
+
+	// JSObject need access to the JSValue constructor for
+	// GetPrototype(), SetPrototype() and for generating error messages.
+	friend class JSObject;
+	
+	// friend class detail::JSPropertyNameArray;
+  // friend class JSArray;
+  // friend class JSDate;
+  // friend class JSError;
+  // friend class JSRegExp;
+  // friend class JSFunction;
+
+	// template<typename T>
+	// friend class JSNativeClass;
+	
+	// template<typename T>
+	// friend class JSNativeObject;
+
+	// This function requires access to operator JSValueRef().
 	friend bool operator==(const JSValue& lhs, const JSValue& rhs);
 
-	JSContext  js_context_;
-	JSValueRef js_value_ref_ { nullptr };
+	JSContext  js_context__;
+	JSValueRef js_value_ref__ { nullptr };
 	JAVASCRIPTCORECPP_RAII_JSVALUE_MUTEX;
 };
 
@@ -416,7 +452,7 @@ public:
 */
 inline
 bool operator==(const JSValue& lhs, const JSValue& rhs) {
-	return JSValueIsStrictEqual(lhs, lhs, rhs);
+	return JSValueIsStrictEqual(lhs.get_context(), lhs, rhs);
 }
 
 // Return true if the two JSValues are not strict equal, as compared by the JS === operator.

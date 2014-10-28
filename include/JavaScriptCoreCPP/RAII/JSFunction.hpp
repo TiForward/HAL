@@ -33,9 +33,9 @@ class JSFunction final : public JSObject {
 	
  private:
 
-	// Only a JSContext can create a JSFunction.
 	JSFunction(const JSContext& js_context, const JSString& function_name, const std::vector<JSString>& parameter_names, const JSString& body, const JSString& source_url, int starting_line_number);
 
+	// Only a JSContext can create a JSFunction.
 	friend JSContext;
 };
 

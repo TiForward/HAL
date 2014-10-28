@@ -11,10 +11,8 @@
 #define _JAVASCRIPTCORECPP_RAII_JSCONTEXT_HPP_
 
 #include "JavaScriptCoreCPP/RAII/JSContextGroup.hpp"
-#include "JavaScriptCoreCPP/RAII/JSString.hpp"
 #include "JavaScriptCoreCPP/RAII/JSClass.hpp"
-#include "JavaScriptCoreCPP/RAII/JSNativeClass.hpp"
-#include "JavaScriptCoreCPP/RAII/JSNativeObject.hpp"
+#include "JavaScriptCoreCPP/RAII/JSString.hpp"
 #include <vector>
 #include <atomic>
 #include <cassert>
@@ -60,7 +58,8 @@ class JSFunction;
   the JavaScriptCore C API representation of a JavaScript execution
   context that holds the global object and other execution state.
 
-  JSContexts are created by JSContextGroup::CreateContext.
+  JSContexts are created by the JSContextGroup::CreateContext member
+  function.
 
   Scripts may execute concurrently with scripts executing in other
   contexts, and contexts within the same context group may share and
@@ -237,11 +236,20 @@ class JSContext final	{
 	*/
 	JSObject CreateObject(const JSClass& js_class, void* private_data = nullptr) const;
 
+	/*!
+	  @method
+	  
+	  @abstract Create a JavaScript object from a JSNativeClass backed
+	  by a C++ object for some or all of its functionality.
+	  
+	  @param js_native_class The JSNativeClass used to create this
+	  object.
+	  
+	  @result A JavaScript object from a JSNativeClass backed by a C++
+	  object for some or all of its functionality.
+	*/
 	template<typename T>
-	JSNativeObject<T> CreateObject(const JSNativeClass<T>& js_native_class) const {
-		return JSNativeClass<T>(js_context_, js_native_class);
-	}
-
+	JSNativeObject<T> CreateObject(const JSNativeClass<T>& js_native_class) const;
 	
 	/*!
 	  @method
@@ -466,7 +474,7 @@ class JSContext final	{
 	  group is released.
 	*/
 	void GarbageCollect() const {
-		JSGarbageCollect(js_context_ref_);
+		JSGarbageCollect(js_context_ref__);
 	}
 	
 	/*!
@@ -488,7 +496,7 @@ class JSContext final	{
 	  @result The context group of this JavaScript execution context.
 	*/
 	JSContextGroup get_context_group() const {
-		return js_context_group_;
+		return js_context_group__;
 	}
 
 #ifdef JAVASCRIPTCORECPP_RAII_JSCONTEXT_ENABLE_CONTEXT_ID
@@ -511,15 +519,15 @@ class JSContext final	{
 	
 	// Copy constructor.
 	JSContext(const JSContext& rhs)
-			: js_context_group_(rhs.js_context_group_)
-			, js_context_ref_(rhs.js_context_ref_) {
+			: js_context_group__(rhs.js_context_group__)
+			, js_context_ref__(rhs.js_context_ref__) {
 		JSGlobalContextRetain(*this);
 	}
 	
   // Move constructor.
 	JSContext(JSContext&& rhs)
-			: js_context_group_(rhs.js_context_group_)
-			, js_context_ref_(rhs.js_context_ref_) {
+			: js_context_group__(rhs.js_context_group__)
+			, js_context_ref__(rhs.js_context_ref__) {
 		JSGlobalContextRetain(*this);
 	}
 	
@@ -538,72 +546,88 @@ class JSContext final	{
     
     // by swapping the members of two classes,
     // the two classes are effectively swapped
-    swap(first.js_context_group_, second.js_context_group_);
-    swap(first.js_context_ref_  , second.js_context_ref_);
+    swap(first.js_context_group__, second.js_context_group__);
+    swap(first.js_context_ref__  , second.js_context_ref__);
   }
 
 private:
   
-  // Only a JSContextGroup can create a JSContext.
   explicit JSContext(const JSContextGroup& js_context_group)
-		  : js_context_group_(js_context_group)
-		  , js_context_ref_(JSGlobalContextCreateInGroup(js_context_group, nullptr)) {
+		  : js_context_group__(js_context_group)
+		  , js_context_ref__(JSGlobalContextCreateInGroup(js_context_group, nullptr)) {
   }
   
-  // Only a JSContextGroup can create a JSContext.
   explicit JSContext(const JSContextGroup& js_context_group, JSClass global_object_class)
-		  : js_context_group_(js_context_group)
-		  , js_context_ref_(JSGlobalContextCreateInGroup(js_context_group, global_object_class)) {
+		  : js_context_group__(js_context_group)
+		  , js_context_ref__(JSGlobalContextCreateInGroup(js_context_group, global_object_class)) {
   }
   
   // For interoperability with the JavaScriptCore C API.
   explicit JSContext(JSContextRef js_context_ref)
-		  : js_context_group_(JSContextGetGroup(js_context_ref))
-		  , js_context_ref_(js_context_ref) {
+		  : js_context_group__(JSContextGetGroup(js_context_ref))
+		  , js_context_ref__(js_context_ref) {
 	  JSGlobalContextRetain(*this);
   }
 		
 	// For interoperability with the JavaScriptCore C API.
-	operator JSContextRef() const {
-		return js_context_ref_;
+  operator JSContextRef() const {
+		return js_context_ref__;
 	}
 
 	// For interoperability with the JavaScriptCore C API.
 	operator JSGlobalContextRef() const {
-		return JSContextGetGlobalContext(js_context_ref_);
+		return JSContextGetGlobalContext(js_context_ref__);
 	}
 
+  // Only a JSContextGroup can create a JSContext.
 	friend class JSContextGroup;
-	friend class JSValue;
-  friend class JSUndefined;
-  friend class JSNull;
-  friend class JSBoolean;
-  friend class JSNumber;
-	friend class JSObject;
-	friend class JSArray;
-  friend class JSDate;
-  friend class JSError;
-  friend class JSRegExp;
-  friend class JSFunction;
 
-	template<typename T>
-	friend class JSNativeObject;
+	// JSValue needs access to operator JSContextRef().
+	friend class JSValue;
+	
+  // friend class JSUndefined;
+  // friend class JSNull;
+
+	// JSBoolean::operator bool() needs access to operator
+	// JSContextRef().
+	friend class JSBoolean;
+	
+  // friend class JSNumber;
+
+	// JSObject needs access to operator JSContextRef().
+	friend class JSObject;
+	
+	// friend class JSArray;
+  // friend class JSDate;
+  // friend class JSError;
+  // friend class JSRegExp;
+  // friend class JSFunction;
+
+	// template<typename T>
+	// friend class JSNativeClass;
+	
+	// template<typename T>
+	// friend class JSNativeObject;
 	
 	// Return true if the two JSContexts are equal.
   friend bool operator==(const JSContext& lhs, const JSContext& rhs);
 
+  // This function requires access to operator JSContextRef().
+  friend bool operator==(const JSValue& lhs, const JSValue& rhs);
+
+
   // Return true if the two JSValues are equal as compared by the JS == operator.
   friend bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs);
   
-  JSContextGroup js_context_group_;
-  JSContextRef   js_context_ref_ { nullptr };
+  JSContextGroup js_context_group__;
+  JSContextRef   js_context_ref__ { nullptr };
   JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX;
 };
 
 // Return true if the two JSContexts are equal.
 inline
 bool operator==(const JSContext& lhs, const JSContext& rhs) {
-	return (lhs.js_context_ref_ == rhs.js_context_ref_);
+	return (lhs.js_context_ref__ == rhs.js_context_ref__);
 }
   
 // Return true if the two JSContextGroups are not equal.

@@ -18,7 +18,7 @@
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-JSValue::JSValue(const JSContext& js_context, const JSString& js_string, bool parse_as_json) : js_context_(js_context) {
+JSValue::JSValue(const JSContext& js_context, const JSString& js_string, bool parse_as_json) : js_context__(js_context) {
 	if (parse_as_json) {
 		JSValueRef js_value_ref = JSValueMakeFromJSONString(js_context, js_string);
 		if (!js_value_ref) {
@@ -30,18 +30,18 @@ JSValue::JSValue(const JSContext& js_context, const JSString& js_string, bool pa
 			throw std::invalid_argument(message);
 		}
 	} else {
-		js_value_ref_ = JSValueMakeString(js_context_, js_string);
+		js_value_ref__ = JSValueMakeString(js_context__, js_string);
 	}
 }
 
 JSString JSValue::ToJSONString(unsigned indent) {
 	JSValueRef exception { nullptr };
-	JSStringRef js_string_ref = JSValueCreateJSONString(js_context_, js_value_ref_, indent, &exception);
+	JSStringRef js_string_ref = JSValueCreateJSONString(js_context__, js_value_ref__, indent, &exception);
 	if (exception) {
 		// assert(!js_string_ref);
 		static const std::string log_prefix { "MDL: JSValueCreateJSONString: " };
 		std::ostringstream os;
-		os << "JSValue could not be serialized to a JSON string: " << JSValue(js_context_, exception);
+		os << "JSValue could not be serialized to a JSON string: " << JSValue(js_context__, exception);
 		const std::string message = os.str();
 		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
 		throw std::logic_error(message);
@@ -58,11 +58,11 @@ JSString JSValue::ToJSONString(unsigned indent) {
 
 JSValue::operator JSString() const {
 	JSValueRef exception { nullptr };
-	JSStringRef js_string_ref = JSValueToStringCopy(js_context_, js_value_ref_, &exception);
+	JSStringRef js_string_ref = JSValueToStringCopy(js_context__, js_value_ref__, &exception);
 	if (exception) {
 		static const std::string log_prefix { "MDL: JSValue::operator JSString() const: " };
 		std::ostringstream os;
-		os << "JSValue could not be converted to a JSString: "<< JSValue(js_context_, exception);
+		os << "JSValue could not be converted to a JSString: "<< JSValue(js_context__, exception);
 		const std::string message = os.str();
 		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
 		throw std::logic_error(message);
@@ -76,17 +76,17 @@ JSValue::operator JSString() const {
 }
 
 JSValue::operator JSBoolean() const {
-	return JSBoolean(js_context_, operator bool());
+	return JSBoolean(js_context__, operator bool());
 }
 
 JSValue::operator double() const {
 	JSValueRef exception { nullptr };
-	const double result = JSValueToNumber(js_context_, js_value_ref_, &exception);
+	const double result = JSValueToNumber(js_context__, js_value_ref__, &exception);
 	
 	if (exception) {
 		static const std::string log_prefix { "MDL: JSValue::operator JSNumber(): " };
 		std::ostringstream os;
-		os << "JSValue could not be converted to a JSNumber: "<< JSValue(js_context_, exception);
+		os << "JSValue could not be converted to a JSNumber: "<< JSValue(js_context__, exception);
 		const std::string message = os.str();
 		std::clog << log_prefix << " [WARN] " << message << std::endl;
 		//std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
@@ -101,31 +101,31 @@ JSValue::operator int32_t() const {
 }
 
 JSValue::operator JSNumber() const {
-	return JSNumber(js_context_, operator double());
+	return JSNumber(js_context__, operator double());
 }
 
 JSValue::operator JSObject() const {
 	JSValueRef exception { nullptr };
-	JSObjectRef js_object_ref = JSValueToObject(js_context_, js_value_ref_, &exception);
+	JSObjectRef js_object_ref = JSValueToObject(js_context__, js_value_ref__, &exception);
 	
 	if (exception) {
 		static const std::string log_prefix { "MDL: JSValue::operator JSObject(): " };
 		std::ostringstream os;
-		os << "JSValue could not be converted to a JSObject: "<< JSValue(js_context_, exception);
+		os << "JSValue could not be converted to a JSObject: "<< JSValue(js_context__, exception);
 		const std::string message = os.str();
 		std::clog << log_prefix << " [ERROR] " << message << std::endl;
 		throw std::runtime_error(message);
 	}
 	
 	assert(js_object_ref);
-	JSObject js_object(js_context_, js_object_ref);
-	JSValueUnprotect(js_context_, js_object_ref);
+	JSObject js_object(js_context__, js_object_ref);
+	JSValueUnprotect(js_context__, js_object_ref);
 	
 	return js_object;
 }
 
 JSValue::Type JSValue::GetType() const {
-	const JSType js_type = JSValueGetType(js_context_, js_value_ref_);
+	const JSType js_type = JSValueGetType(js_context__, js_value_ref__);
 	switch (js_type) {
 		case kJSTypeUndefined:
 			return Type::Undefined;
@@ -161,11 +161,11 @@ JSValue::Type JSValue::GetType() const {
 
 bool JSValue::IsInstanceOfConstructor(const JSObject& constructor) const {
 	JSValueRef exception { nullptr };
-	const bool result = JSValueIsInstanceOfConstructor(js_context_, js_value_ref_, constructor, &exception);
+	const bool result = JSValueIsInstanceOfConstructor(js_context__, js_value_ref__, constructor, &exception);
 	if (exception) {
 		static const std::string log_prefix { "MDL: JSValue::IsInstanceOfConstructor:" };
 		std::ostringstream os;
-		os << "JSValue caught exception during JSValueIsInstanceOfConstructor: " << JSValue(js_context_, exception);
+		os << "JSValue caught exception during JSValueIsInstanceOfConstructor: " << JSValue(js_context__, exception);
 		const std::string message = os.str();
 		std::clog << log_prefix << " [DEBUG] " << message << std::endl;
 		assert(result == false);
@@ -176,11 +176,11 @@ bool JSValue::IsInstanceOfConstructor(const JSObject& constructor) const {
 
 bool JSValue::IsEqualWithTypeCoercion(const JSValue& rhs) const {
 	JSValueRef exception { nullptr };
-	const bool result = JSValueIsEqual(js_context_, js_value_ref_, rhs.js_value_ref_, &exception);
+	const bool result = JSValueIsEqual(js_context__, js_value_ref__, rhs.js_value_ref__, &exception);
 	if (exception) {
 		static const std::string log_prefix { "MDL: IsEqualWithTypeCoercion: " };
 		std::ostringstream os;
-		os << "caught exception: " << JSValue(js_context_, exception);
+		os << "caught exception: " << JSValue(js_context__, exception);
 		const std::string message = os.str();
 		std::clog << log_prefix << " [ERROR] " << message << std::endl; 
 	}

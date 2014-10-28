@@ -15,7 +15,6 @@
 #include <vector>
 #include <unordered_set>
 #include <algorithm>
-#include <limits>
 
 #ifdef JAVASCRIPTCORECPP_RAII_THREAD_SAFE
 #include <mutex>
@@ -69,7 +68,7 @@ class JSObject : public JSValue {
 	  @result true if this object can be called as a constructor.
 	*/
 	virtual bool IsConstructor() const {
-		return JSObjectIsConstructor(js_context_, js_object_ref_);
+		return JSObjectIsConstructor(get_context(), js_object_ref__);
 	}
 
 	/*!
@@ -112,7 +111,7 @@ class JSObject : public JSValue {
 		std::transform(arguments.begin(),
 		               arguments.end(),
 		               std::back_inserter(arguments_array),
-		               [this](const JSString& js_string) { return js_context_.CreateString(js_string); });
+		               [this](const JSString& js_string) { return get_context().CreateString(js_string); });
 		return CallAsConstructor(arguments_array);
 	}
 
@@ -125,7 +124,7 @@ class JSObject : public JSValue {
 	  @result true if this object can be called as a function.
 	*/
 	virtual bool IsFunction() const {
-		return JSObjectIsFunction(js_context_, js_object_ref_);
+		return JSObjectIsFunction(get_context(), js_object_ref__);
 	}
 	
 	/*!
@@ -172,9 +171,7 @@ class JSObject : public JSValue {
 	  @throws std::runtime_error if getting the property threw a
 	  JavaScript exception.
 	*/
-	virtual JSValue GetProperty(const JSString& property_name) const {
-		return js_context_.CreateUndefined();
-	}
+	virtual JSValue GetProperty(const JSString& property_name) const;
 
 	/*!
 	  @method
@@ -212,9 +209,7 @@ class JSObject : public JSValue {
 	  @throws std::runtime_error if setting the property threw a
 	  JavaScript exception.
 	*/
-	virtual bool SetProperty(const JSString& property_name, const JSValue& property_value, const std::unordered_set<JSPropertyAttribute> attributes = {}) {
-		return false;
-	}
+	virtual void SetProperty(const JSString& property_name, const JSValue& property_value, const std::unordered_set<JSPropertyAttribute>& attributes = {});
 
 	/*!
 	  @method
@@ -244,7 +239,7 @@ class JSObject : public JSValue {
 	  @result true if this JavaScript object has the property.
 	*/
 	virtual bool HasProperty(const JSString& property_name) const {
-		return JSObjectHasProperty(js_context_, js_object_ref_, property_name);
+		return JSObjectHasProperty(get_context(), js_object_ref__, property_name);
 	}
 
 	/*!
@@ -259,9 +254,7 @@ class JSObject : public JSValue {
 	  @throws std::runtime_error if deleting the property threw a
 	  JavaScript exception.
 	*/
-	virtual bool DeleteProperty(const JSString& property_name) const {
-		false;
-	}
+	virtual bool DeleteProperty(const JSString& property_name);
 
 	/*! 
 	  @method
@@ -272,12 +265,13 @@ class JSObject : public JSValue {
 	  
 	  @result The objects's converted value.
 	*/
-  virtual operator JSUndefined() const { js_context_.CreateUndefined();                                      }
-  virtual operator JSNull()      const { js_context_.CreateNull();                                           }
-  virtual operator JSBoolean()   const { js_context_.CreateBoolean(true);                                    }
-	virtual operator JSNumber()    const { js_context_.CreateNumber(std::numeric_limits<double>::quiet_NaN()); }
-  virtual operator JSString()    const { return static_cast<JSString>(*this);                                }
-  virtual operator JSObject()    const { return *this;                                                       }
+	virtual operator JSUndefined() const;
+	virtual operator JSNull()      const;
+	virtual operator JSBoolean()   const;
+	virtual operator JSNumber()    const;
+  virtual operator JSString()    const{
+	  return static_cast<JSString>(*this);
+  }
 
 	/*!
 	  @method
@@ -287,7 +281,7 @@ class JSObject : public JSValue {
 	  @result This JavaScript object's prototype.
 	*/
 	virtual JSValue GetPrototype() const {
-		return JSValue(js_context_, JSObjectGetPrototype(js_context_, js_object_ref_));
+		return JSValue(get_context(), JSObjectGetPrototype(get_context(), js_object_ref__));
 	}
 	
 	/*!
@@ -299,7 +293,7 @@ class JSObject : public JSValue {
 	  prototype.
 	*/
 	virtual void SetPrototype(const JSValue& js_value) {
-		JSObjectSetPrototype(js_context_, js_object_ref_, js_value);
+		JSObjectSetPrototype(get_context(), js_object_ref__, js_value);
 	}
 
 	/*!
@@ -311,7 +305,7 @@ class JSObject : public JSValue {
 	  has private data, otherwise nullptr.
 	*/
 	virtual void* GetPrivate() const {
-		return JSObjectGetPrivate(js_object_ref_);
+		return JSObjectGetPrivate(js_object_ref__);
 	}
 	
 	/*!
@@ -327,25 +321,25 @@ class JSObject : public JSValue {
 	  @result true if this object can store private data.
 	*/
 	virtual bool SetPrivate(void* data) {
-		return JSObjectSetPrivate(js_object_ref_, data);
+		return JSObjectSetPrivate(js_object_ref__, data);
 	}
 
 	virtual ~JSObject() {
-		JSValueUnprotect(js_context_, js_object_ref_);
+		JSValueUnprotect(get_context(), js_object_ref__);
 	}
 	
 	// Copy constructor.
 	JSObject(const JSObject& rhs)
 			: JSValue(rhs)
-			, js_object_ref_(rhs.js_object_ref_) {
-		JSValueProtect(js_context_, js_object_ref_);
+			, js_object_ref__(rhs.js_object_ref__) {
+		JSValueProtect(get_context(), js_object_ref__);
 	}
 	
 	// Move constructor.
 	JSObject(JSObject&& rhs)
 			: JSValue(rhs)
-			, js_object_ref_(rhs.js_object_ref_) {
-		JSValueProtect(js_context_, js_object_ref_);
+			, js_object_ref__(rhs.js_object_ref__) {
+		JSValueProtect(get_context(), js_object_ref__);
 	}
 	
 	// Create a copy of another JSObject by assignment. This is a unified
@@ -364,16 +358,14 @@ class JSObject : public JSValue {
 		
 		// by swapping the members of two classes,
 		// the two classes are effectively swapped
-		swap(first.js_object_ref_, second.js_object_ref_);
+		swap(first.js_object_ref__, second.js_object_ref__);
 	}
 
  protected:
 	
-	// Only a JSContext can create a JSObject.
 	JSObject(const JSContext& js_context) : JSObject(js_context, JSObjectMake(js_context, nullptr, nullptr)) {
 	}
 
-	// Only a JSContext can create a JSObject.
 	JSObject(const JSContext& js_context, const JSClass& js_class, void* private_data = nullptr);
 	
 	/*!
@@ -390,7 +382,7 @@ class JSObject : public JSValue {
 	  
 	  @result Return the function's return value.
 	*/
-	virtual JSValue CallAsFunction(const std::vector<JSValue>&  arguments, const JSObject& this_object) const;
+	virtual JSValue CallAsFunction(const std::vector<JSValue>&  arguments, const JSObject& this_object);
 
 	/*!
 	  @method
@@ -417,19 +409,19 @@ class JSObject : public JSValue {
 	
  private:
 
-	virtual JSValue CallAsFunction(                                                                   ) final { return CallAsFunction(std::vector<JSValue>()                                          ); }
-	virtual JSValue CallAsFunction(                                        const JSObject& this_object) final { return CallAsFunction(std::vector<JSValue>()         , this_object                    ); }
-	virtual JSValue CallAsFunction(const JSValue&               argument                              ) final { return CallAsFunction(std::vector<JSValue> {argument}                                 ); }
-	virtual JSValue CallAsFunction(const JSString&              argument                              ) final { return CallAsFunction(std::vector<JSString>{argument}                                 ); }
-	virtual JSValue CallAsFunction(const JSValue&               argument , const JSObject& this_object) final { return CallAsFunction(std::vector<JSValue> {argument}, this_object                    ); }
-	virtual JSValue CallAsFunction(const JSString&              argument , const JSObject& this_object) final { return CallAsFunction(std::vector<JSString>{argument}, this_object                    ); }
-	virtual JSValue CallAsFunction(const std::vector<JSValue>&  arguments                             ) final { return CallAsFunction(arguments                      , js_context_.get_global_object()); }
+	virtual JSValue CallAsFunction(                                                                   ) final { return CallAsFunction(std::vector<JSValue>()                                            ); }
+	virtual JSValue CallAsFunction(                                        const JSObject& this_object) final { return CallAsFunction(std::vector<JSValue>()         , this_object                      ); }
+	virtual JSValue CallAsFunction(const JSValue&               argument                              ) final { return CallAsFunction(std::vector<JSValue> {argument}                                   ); }
+	virtual JSValue CallAsFunction(const JSString&              argument                              ) final { return CallAsFunction(std::vector<JSString>{argument}                                   ); }
+	virtual JSValue CallAsFunction(const JSValue&               argument , const JSObject& this_object) final { return CallAsFunction(std::vector<JSValue> {argument}, this_object                      ); }
+	virtual JSValue CallAsFunction(const JSString&              argument , const JSObject& this_object) final { return CallAsFunction(std::vector<JSString>{argument}, this_object                      ); }
+	virtual JSValue CallAsFunction(const std::vector<JSValue>&  arguments                             ) final { return CallAsFunction(arguments                      , get_context().get_global_object()); }
 	virtual JSValue CallAsFunction(const std::vector<JSString>& arguments                             ) final {
 		std::vector<JSValue> arguments_array;
 		std::transform(arguments.begin(),
 		               arguments.end(),
 		               std::back_inserter(arguments_array),
-		               [this](const JSString& js_string) { return JSValue(js_context_.CreateString(js_string)); });
+		               [this](const JSString& js_string) { return JSValue(get_context().CreateString(js_string)); });
 		return CallAsFunction(arguments_array);
 	}
 
@@ -438,7 +430,7 @@ class JSObject : public JSValue {
 		std::transform(arguments.begin(),
 		               arguments.end(),
 		               std::back_inserter(arguments_array),
-		               [this](const JSString& js_string) { return js_context_.CreateString(js_string); });
+		               [this](const JSString& js_string) { return get_context().CreateString(js_string); });
 		return CallAsFunction(arguments_array, this_object);
 	}
 
@@ -447,22 +439,27 @@ class JSObject : public JSValue {
 
 	// For interoperability with the JavaScriptCore C API.
 	operator JSObjectRef() const {
-		return js_object_ref_;
+		return js_object_ref__;
 	}
 	
-  friend class JSContext;
-	friend class JSValue;
-	friend class detail::JSPropertyNameArray;
-  friend class JSArray;
-  friend class JSDate;
-  friend class JSError;
-  friend class JSRegExp;
-  friend class JSFunction;
+	// Only a JSContext can create a JSObject.
+	friend class JSContext;
+	
+	// friend class JSValue;
+	// friend class detail::JSPropertyNameArray;
+	// friend class JSArray;
+  // friend class JSDate;
+  // friend class JSError;
+  // friend class JSRegExp;
+	// friend class JSFunction;
 
-	template<typename T>
-	friend class JSNativeObject;
+	// template<typename T>
+	// friend class JSNativeClass;
+	
+	// template<typename T>
+	// friend class JSNativeObject;
 
-	JSObjectRef js_object_ref_ { nullptr };
+	JSObjectRef js_object_ref__{ nullptr };
 	JAVASCRIPTCORECPP_RAII_JSOBJECT_MUTEX;
 };
 

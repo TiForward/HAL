@@ -30,10 +30,10 @@ class JSNull final : public JSValue {
 	
 private:
 	
-	// Only a JSContext can create a JSNull.
 	JSNull(const JSContext& js_context) : JSValue(js_context, JSValueMakeNull(js_context)) {
 	}
 
+	// Only a JSContext can create a JSNull.
 	friend JSContext;
 };
 

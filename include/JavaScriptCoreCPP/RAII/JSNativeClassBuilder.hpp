@@ -28,9 +28,9 @@ using namespace JavaScriptCoreCPP::detail;
   @class
 
   @abstract This is a builder that creates JSNativeClass instances
-  that represent a custom JavaScript object backed by a C++ class for
-  some or all of its functionality. All properties except "class_name"
-  on this builder are optional, and all callbacks may be nullptr.
+  that defines JavaScript objects implemented by a instances of a C++
+  class. All properties except "class_name" on this builder are
+  optional, and all callbacks may be nullptr.
 
   @discussion Using the AddValuePropertyCallback and
   AddFunctionPropertyCallback methods are the simplest and most

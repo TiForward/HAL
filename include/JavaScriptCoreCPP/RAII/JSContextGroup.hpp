@@ -36,6 +36,12 @@ namespace JavaScriptCoreCPP { namespace RAII {
 class JSContext;
 class JSClass;
 
+template<typename T>
+class JSNativeClass;
+
+template<typename T>
+class JSNativeObject;
+
 /*!
   @class
   
@@ -43,8 +49,19 @@ class JSClass;
   JSContextGroupRef, the JavaScriptCore C API representation of a
   group that associates JavaScript contexts with one another.
 
-  JSContexts within the same context group may share and exchange
-  JavaScript objects with one another.
+  Scripts may execute concurrently with scripts executing in other
+  contexts, and contexts within the same context group may share and
+  exchange their JavaScript objects with one another.
+  
+  When JavaScript objects within the same context group are used in
+  multiple threads, explicit synchronization is required.
+
+  JSContextGroups are the only way to create a JSContext which
+  represents a JavaScript execution context.
+
+  JSContextGroups may be created with either the default or custom
+  global objects. See the individual JSContextGroup constructors for
+  more details.
 */
 #ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
 class JSContextGroup final : public detail::JSPerformanceCounter<JSContextGroup> {
@@ -61,7 +78,7 @@ class JSContextGroup final	{
 	  this context group may share and exchange JavaScript objects with
 	  one another.
 	*/
-	JSContextGroup() : js_context_group_ref_(JSContextGroupCreate()) {
+	JSContextGroup() : js_context_group_ref__(JSContextGroupCreate()) {
 	}
 	
 	/*!
@@ -100,18 +117,38 @@ class JSContextGroup final	{
 	*/
 	JSContext CreateContext(const JSClass& global_object_class) const;
 
+	/*!
+	  @method
+	  
+	  @abstract Create a JavaScript execution context within this
+	  context group with a global object created from a custom
+	  JSNativeClass. Scripts may execute in this context concurrently
+	  with scripts executing in other contexts.
+
+	  @discussion All JSContexts within this context group may share and
+	  exchange JavaScript values with one another.
+	  
+	  When JavaScript objects from the same context group are used in
+	  multiple threads, explicit synchronization is required.
+
+	  @param global_object_class The JSNativeClass used to create the
+	  global object.
+	*/
+	template<typename T>
+	JSContext CreateContext(const JSNativeClass<T>& global_object_class) const;
+
 	~JSContextGroup() {
-		JSContextGroupRelease(js_context_group_ref_);
+		JSContextGroupRelease(js_context_group_ref__);
 	}
 	
 	// Copy constructor.
-	JSContextGroup(const JSContextGroup& rhs) : js_context_group_ref_(rhs.js_context_group_ref_) {
-		JSContextGroupRetain(js_context_group_ref_);
+	JSContextGroup(const JSContextGroup& rhs) : js_context_group_ref__(rhs.js_context_group_ref__) {
+		JSContextGroupRetain(js_context_group_ref__);
 	}
 	
   // Move constructor.
-  JSContextGroup(JSContextGroup&& rhs) : js_context_group_ref_(rhs.js_context_group_ref_) {
-	  JSContextGroupRetain(js_context_group_ref_);
+  JSContextGroup(JSContextGroup&& rhs) : js_context_group_ref__(rhs.js_context_group_ref__) {
+	  JSContextGroupRetain(js_context_group_ref__);
   }
   
   // Create a copy of another JSContextGroup by assignment. This is a
@@ -129,39 +166,40 @@ class JSContextGroup final	{
     
     // by swapping the members of two classes,
     // the two classes are effectively swapped
-    swap(first.js_context_group_ref_, second.js_context_group_ref_);
+    swap(first.js_context_group_ref__, second.js_context_group_ref__);
   }
 
  private:
 
   // For interoperability with the JavaScriptCore C API.
-  explicit JSContextGroup(JSContextGroupRef js_context_group_ref) : js_context_group_ref_(js_context_group_ref) {
-		assert(js_context_group_ref_);
-		JSContextGroupRetain(js_context_group_ref_);
+  explicit JSContextGroup(JSContextGroupRef js_context_group_ref) : js_context_group_ref__(js_context_group_ref) {
+		assert(js_context_group_ref__);
+		JSContextGroupRetain(js_context_group_ref__);
 	}
 
   // For interoperability with the JavaScriptCore C API.
-	operator JSContextGroupRef() const {
-		return js_context_group_ref_;
+  operator JSContextGroupRef() const {
+		return js_context_group_ref__;
 	}
 	
 	// Prevent heap based objects.
 	void* operator new(size_t)     = delete; // #1: To prevent allocation of scalar objects
 	void* operator new [] (size_t) = delete; // #2: To prevent allocation of array of objects
 
-  friend class JSContext;
-
   // Return true if the two JSContextGroups are equal.
   friend bool operator==(const JSContextGroup& lhs, const JSContextGroup& rhs);
 
-  JSContextGroupRef js_context_group_ref_ {nullptr};
+  // JSContext needs access to operator JSContextGroupRef().
+  friend class JSContext;
+
+  JSContextGroupRef js_context_group_ref__ {nullptr};
   JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_MUTEX;
 };
 
 // Return true if the two JSContextGroups are equal.
 inline
 bool operator==(const JSContextGroup& lhs, const JSContextGroup& rhs) {
-  return lhs.js_context_group_ref_ == rhs.js_context_group_ref_;
+  return lhs.js_context_group_ref__ == rhs.js_context_group_ref__;
 }
   
 // Return true if the two JSContextGroups are not equal.
