@@ -15,11 +15,33 @@
 namespace JavaScriptCoreCPP { namespace RAII {
 
 
-class NativeObject final {
+class NativeObject final : public JSNativeObject<NativeObject> {
 
  public:
 
-	NativeObject(const JSContext& js_context) : js_context_(js_context) {
+	NativeObject(const JSContext& js_context) : JSNativeObject<NativeObject>(js_context) {
+	}
+
+	void foo() {
+		JSNativeClassBuilder<NativeObject> builder("MyClass");
+		builder
+				.initialize_callback(&NativeObject::Initialize)
+				.finalize_callback(&NativeObject::Finalize)
+				// .call_as_constructor_callback(&NativeObject::Constructor)
+				// .has_instance_callback(&NativeObject::HasInstance)
+				.AddValuePropertyCallback("name", &NativeObject::GetName, &NativeObject::SetName)
+				.AddValuePropertyCallback("number", &NativeObject::GetNumber, &NativeObject::SetNumber)
+				.AddValuePropertyCallback("pi", &NativeObject::GetPi)
+				.AddFunctionPropertyCallback("hello", &NativeObject::Hello)
+				.AddFunctionPropertyCallback("goodbye", &NativeObject::Goodbye)
+				// .get_property_callback(&NativeObject::GetProperty)
+				// .set_property_callback(&NativeObject::SetProperty)
+				// .delete_property_callback(&NativeObject::DeleteProperty)
+				// .get_property_names_callback(&NativeObject::GetPropertyNames)
+				// .has_property_callback(&NativeObject::HasProperty)
+				// .call_as_function_callback(&NativeObject::CallAsFunction)
+				// .convert_to_type_callback(&NativeObject::ConvertToType);
+
 	}
 	
 	virtual ~NativeObject() {
@@ -40,7 +62,7 @@ class NativeObject final {
 
 		std::clog << log_prefix << "called with " << arguments.size() << "." << std::endl;
 		
-		return js_context_.CreateObject();
+		return get_context().CreateObject();
 	}
 
 	bool HasInstance(const JSValue& possible_instance) const {
@@ -79,7 +101,7 @@ class NativeObject final {
 		static const std::string log_prefix { "MDL: NativeObject::GetProperty: " };
 		const auto position = properties_.find(property_name);
 		const bool found  = position != properties_.end();
-		JSValue    result = found ? position -> second : js_context_.CreateUndefined();
+		JSValue    result = found ? position -> second : get_context().CreateUndefined();
 		
 		std::clog << log_prefix
 		          << property_name
@@ -182,7 +204,7 @@ class NativeObject final {
 				<< this_object
 				<< std::endl;
 		
-		return js_context_.CreateUndefined();
+		return get_context().CreateUndefined();
 	}
 
 	JSValue GetName() const {
@@ -239,7 +261,7 @@ class NativeObject final {
 
 		os << ". Your number is " << number_ << ".";
 
-		return js_context_.CreateString(os.str());
+		return get_context().CreateString(os.str());
 	}
 
 	JSValue Goodbye(const std::vector<JSValue>& arguments, const JSObject& this_object) {
@@ -263,7 +285,7 @@ class NativeObject final {
 
 		os << ". Your number was " << number_ << ".";
 		
-		return js_context_.CreateString(os.str());
+		return get_context().CreateString(os.str());
 	}
 
 	JSValue ConvertToType(const JSValue::Type& js_value_type) const {
@@ -271,16 +293,15 @@ class NativeObject final {
 
 		std::clog << log_prefix << "Don't know how to convert to type " << js_value_type << "." << std::endl;
 		
-		return js_context_.CreateUndefined();
+		return get_context().CreateUndefined();
 	}
 
 private:
 
-	JSContext                             js_context_;
 	std::unordered_map<JSString, JSValue> properties_;
-	JSValue                               name_   = js_context_.CreateString();
-	JSNumber                              number_ = js_context_.CreateNumber(42);
-	JSNumber                              pi_     = js_context_.CreateNumber(3.141592653589793);
+	JSValue                               name_   = get_context().CreateString();
+	JSNumber                              number_ = get_context().CreateNumber(42);
+	JSNumber                              pi_     = get_context().CreateNumber(3.141592653589793);
 };
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {

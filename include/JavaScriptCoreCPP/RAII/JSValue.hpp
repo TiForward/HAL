@@ -21,11 +21,11 @@
 #include <mutex>
 
 #ifndef JAVASCRIPTCORECPP_RAII_JSVALUE_MUTEX
-#define JAVASCRIPTCORECPP_RAII_JSVALUE_MUTEX std::mutex js_value_mutex_;
+#define JAVASCRIPTCORECPP_RAII_JSVALUE_MUTEX std::recursive_mutex js_value_mutex_;
 #endif
 
 #ifndef JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD
-#define JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD std::lock_guard<std::mutex> js_value_lock(js_value_mutex_);
+#define JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD std::lock_guard<std::recursive_mutex> js_value_lock(js_value_mutex_);
 #endif
 
 #else
@@ -127,6 +127,7 @@ public:
 	  @result The boolean result of conversion.
 	*/
 	explicit operator bool() const {
+		JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 		return JSValueToBoolean(js_context__, js_value_ref__);
 	}
 	
@@ -218,6 +219,7 @@ public:
     type.
   */
   bool IsUndefined() const {
+		JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	  return JSValueIsUndefined(js_context__, js_value_ref__);
   }
 
@@ -230,6 +232,7 @@ public:
     @result true if this JavaScript value's type is the null type.
   */
   bool IsNull() const {
+		JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	  return JSValueIsNull(js_context__, js_value_ref__);
   }
   
@@ -242,6 +245,7 @@ public:
     @result true if this JavaScript value's type is the boolean type.
   */
   bool IsBoolean() const {
+		JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	  return JSValueIsBoolean(js_context__, js_value_ref__);
   }
 
@@ -254,6 +258,7 @@ public:
     @result true if this JavaScript value's type is the number type.
   */
   bool IsNumber() const {
+		JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	  return JSValueIsNumber(js_context__, js_value_ref__);
   }
 
@@ -266,6 +271,7 @@ public:
     @result true if this JavaScript value's type is the string type.
   */
   bool IsString() const {
+		JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	  return JSValueIsString(js_context__, js_value_ref__);
   }
 
@@ -278,6 +284,7 @@ public:
     @result true if this JavaScript value's type is the object type.
   */
 	bool IsObject() const {
+		JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 		return JSValueIsObject(js_context__, js_value_ref__);
 	}
 	
@@ -293,6 +300,7 @@ public:
 	  class in its class chain.
 	*/
 	bool IsObjectOfClass(const JSClass& js_class) const {
+		JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 		return JSValueIsObjectOfClass(js_context__, js_value_ref__, js_class);
 	}
 
@@ -335,6 +343,7 @@ public:
 	}
 	
 	virtual ~JSValue() {
+		JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	  JSValueUnprotect(js_context__, js_value_ref__);
   }
 
@@ -342,6 +351,7 @@ public:
 	JSValue(const JSValue& rhs)
 			: js_context__(rhs.js_context__)
 			, js_value_ref__(rhs.js_value_ref__) {
+		JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 		JSValueProtect(js_context__, js_value_ref__);
 	}
 	
@@ -349,6 +359,7 @@ public:
 	JSValue(JSValue&& rhs)
 			: js_context__(rhs.js_context__)
 			, js_value_ref__(rhs.js_value_ref__) {
+		JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 		JSValueProtect(js_context__, js_value_ref__);
   }
   
@@ -357,7 +368,7 @@ public:
   // X& X::operator=(const X&), and the move assignment operator,
   // X& X::operator=(X&&);
 	JSValue& operator=(JSValue rhs) {
-	  
+		JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	  // Values can only be copied between contexts within the same
 	  // context group.
 		if (js_context__.get_context_group() != rhs.js_context__.get_context_group()) {
@@ -372,6 +383,7 @@ public:
   }
   
 	friend void swap(JSValue& first, JSValue& second) noexcept {
+		JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
     // enable ADL (not necessary in our case, but good practice)
     using std::swap;
     
@@ -390,6 +402,7 @@ public:
 	explicit JSValue(const JSContext& js_context, JSValueRef js_value_ref)
 			: js_context__(js_context)
 			, js_value_ref__(js_value_ref)  {
+		JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 		assert(js_value_ref__);
 		JSValueProtect(js_context__, js_value_ref__);
 	}
@@ -452,9 +465,6 @@ public:
 	template<typename T>
 	friend class JSNativeClass;
 	
-	// template<typename T>
-	// friend class JSNativeObject;
-
 	// This function requires access to operator JSValueRef().
 	friend bool operator==(const JSValue& lhs, const JSValue& rhs);
 

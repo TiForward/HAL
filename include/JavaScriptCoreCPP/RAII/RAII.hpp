@@ -32,6 +32,7 @@
 #include "JavaScriptCoreCPP/RAII/JSNativeClassBuilder.hpp"
 #include "JavaScriptCoreCPP/RAII/JSNativeClass.hpp"
 #include "JavaScriptCoreCPP/RAII/JSNativeClassAttribute.hpp"
+#include "JavaScriptCoreCPP/RAII/JSNativeObject.hpp"
 
 #ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
 #include "JavaScriptCoreCPP/RAII/detail/JSPerformanceCounter.hpp"

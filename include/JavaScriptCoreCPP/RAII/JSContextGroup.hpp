@@ -19,11 +19,11 @@
 #include <mutex>
 
 #ifndef JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_MUTEX
-#define JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_MUTEX std::mutex js_context_group_mutex_;
+#define JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_MUTEX std::recursive_mutex js_context_group_mutex_;
 #endif
 
 #ifndef JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_LOCK_GUARD
-#define JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_LOCK_GUARD std::lock_guard<std::mutex> js_context_group_lock(js_context_group_mutex_);
+#define JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_LOCK_GUARD std::lock_guard<std::recursive_mutex> js_context_group_lock(js_context_group_mutex_);
 #endif
 
 #else

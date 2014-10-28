@@ -19,7 +19,8 @@
 namespace JavaScriptCoreCPP { namespace RAII {
 
 JSValue::JSValue(const JSContext& js_context, const JSString& js_string, bool parse_as_json) : js_context__(js_context) {
-	if (parse_as_json) {
+	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
+		if (parse_as_json) {
 		JSValueRef js_value_ref = JSValueMakeFromJSONString(js_context, js_string);
 		if (!js_value_ref) {
 			static const std::string log_prefix { "MDL: JSONStringToJSValue: " };
@@ -35,6 +36,7 @@ JSValue::JSValue(const JSContext& js_context, const JSString& js_string, bool pa
 }
 
 JSString JSValue::ToJSONString(unsigned indent) {
+	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	JSValueRef exception { nullptr };
 	JSStringRef js_string_ref = JSValueCreateJSONString(js_context__, js_value_ref__, indent, &exception);
 	if (exception) {
@@ -57,6 +59,7 @@ JSString JSValue::ToJSONString(unsigned indent) {
 }
 
 JSValue::operator JSString() const {
+	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	JSValueRef exception { nullptr };
 	JSStringRef js_string_ref = JSValueToStringCopy(js_context__, js_value_ref__, &exception);
 	if (exception) {
@@ -76,10 +79,12 @@ JSValue::operator JSString() const {
 }
 
 JSValue::operator JSBoolean() const {
+	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	return JSBoolean(js_context__, operator bool());
 }
 
 JSValue::operator double() const {
+	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	JSValueRef exception { nullptr };
 	const double result = JSValueToNumber(js_context__, js_value_ref__, &exception);
 	
@@ -97,14 +102,17 @@ JSValue::operator double() const {
 }
 
 JSValue::operator int32_t() const {
+	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	return detail::to_int32_t(operator double());
 }
 
 JSValue::operator JSNumber() const {
+	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	return JSNumber(js_context__, operator double());
 }
 
 JSValue::operator JSObject() const {
+	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	JSValueRef exception { nullptr };
 	JSObjectRef js_object_ref = JSValueToObject(js_context__, js_value_ref__, &exception);
 	
@@ -125,6 +133,7 @@ JSValue::operator JSObject() const {
 }
 
 JSValue::Type JSValue::GetType() const {
+	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	const JSType js_type = JSValueGetType(js_context__, js_value_ref__);
 	switch (js_type) {
 		case kJSTypeUndefined:
@@ -160,6 +169,7 @@ JSValue::Type JSValue::GetType() const {
 }
 
 bool JSValue::IsInstanceOfConstructor(const JSObject& constructor) const {
+	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	JSValueRef exception { nullptr };
 	const bool result = JSValueIsInstanceOfConstructor(js_context__, js_value_ref__, constructor, &exception);
 	if (exception) {
@@ -175,6 +185,7 @@ bool JSValue::IsInstanceOfConstructor(const JSObject& constructor) const {
 }
 
 bool JSValue::IsEqualWithTypeCoercion(const JSValue& rhs) const {
+	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	JSValueRef exception { nullptr };
 	const bool result = JSValueIsEqual(js_context__, js_value_ref__, rhs.js_value_ref__, &exception);
 	if (exception) {
@@ -189,6 +200,7 @@ bool JSValue::IsEqualWithTypeCoercion(const JSValue& rhs) const {
 }
 
 std::string to_string(const JSValue::Type& js_value_type) {
+	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	switch (js_value_type) {
 		case JSValue::Type::Undefined:
 		return "Undefined";

@@ -135,27 +135,28 @@ using namespace JavaScriptCoreCPP::RAII;
 }
 
 - (void)testJSNativeClassBuilder {
-  JSContext js_context = js_context_group.CreateContext();
   JSNativeClassBuilder<NativeObject> builder("MyClass");
   builder
       .initialize_callback(&NativeObject::Initialize)
       .finalize_callback(&NativeObject::Finalize)
-      .call_as_constructor_callback(&NativeObject::Constructor)
-      .has_instance_callback(&NativeObject::HasInstance)
+      // .call_as_constructor_callback(&NativeObject::Constructor)
+      // .has_instance_callback(&NativeObject::HasInstance)
       .AddValuePropertyCallback("name", &NativeObject::GetName, &NativeObject::SetName)
       .AddValuePropertyCallback("number", &NativeObject::GetNumber, &NativeObject::SetNumber)
       .AddValuePropertyCallback("pi", &NativeObject::GetPi)
       .AddFunctionPropertyCallback("hello", &NativeObject::Hello)
       .AddFunctionPropertyCallback("goodbye", &NativeObject::Goodbye)
-      .get_property_callback(&NativeObject::GetProperty)
-      .set_property_callback(&NativeObject::SetProperty)
-      .delete_property_callback(&NativeObject::DeleteProperty)
-      .get_property_names_callback(&NativeObject::GetPropertyNames)
-      .has_property_callback(&NativeObject::HasProperty)
-      .call_as_function_callback(&NativeObject::CallAsFunction)
-      .convert_to_type_callback(&NativeObject::ConvertToType);
+      // .get_property_callback(&NativeObject::GetProperty)
+      // .set_property_callback(&NativeObject::SetProperty)
+      // .delete_property_callback(&NativeObject::DeleteProperty)
+      // .get_property_names_callback(&NativeObject::GetPropertyNames)
+      // .has_property_callback(&NativeObject::HasProperty)
+      // .call_as_function_callback(&NativeObject::CallAsFunction)
+      // .convert_to_type_callback(&NativeObject::ConvertToType);
 
   auto native_class = builder.build();
+  JSContext js_context = js_context_group.CreateObject(native_class);
+
   //std::vector<JSStaticValue> js_static_values;
   //XCTAssertTrue(js_static_values.empty());
 }

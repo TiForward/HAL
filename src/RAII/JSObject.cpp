@@ -79,7 +79,7 @@ JSValue JSObject::CallAsFunction(const std::vector<JSValue>&  arguments, const J
 	
 	if (!IsFunction()) {
 		const std::string message = "This object is not a function.";
-		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
+		std::clog << log_prefix << " [ERROR] " << message << std::endl;
 		throw std::runtime_error(message);
 	}
 	
