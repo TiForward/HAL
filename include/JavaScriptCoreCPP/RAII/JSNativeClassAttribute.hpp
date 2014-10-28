@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTATTRIBUTE_HPP_
-#define _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTATTRIBUTE_HPP_
+#ifndef _JAVASCRIPTCORECPP_RAII_JSNATIVECLASSATTRIBUTE_HPP_
+#define _JAVASCRIPTCORECPP_RAII_JSNATIVECLASSATTRIBUTE_HPP_
 
 #include <functional>
 #include <JavaScriptCore/JavaScript.h>
@@ -18,33 +18,33 @@ namespace JavaScriptCoreCPP { namespace RAII {
 /*!
   @enum
   
-  @constant None Specifies that a JSNativeObject has no special
+  @constant None Specifies that a JSNativeClass has no special
   attributes.
   
-  @constant NoAutomaticPrototype Specifies that a JSNativeObject
-  should not automatically generate a shared prototype for its
-  instance objects. Use NoAutomaticPrototype in combination with
+  @constant NoAutomaticPrototype Specifies that a JSNativeClass should
+  not automatically generate a shared prototype for its instance
+  objects. Use NoAutomaticPrototype in combination with
   JSObject::SetPrototype to manage prototypes manually.
 */
-enum class JSNativeObjectAttribute {
+enum class JSNativeClassAttribute {
 	None,
 	NoAutomaticPrototype
 };
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 
 
-// Provide a hash function so that a JSNativeObjectAttribute can be
+// Provide a hash function so that a JSNativeClassAttribute can be
 // stored in an unordered container.
 namespace std {
 
 using namespace JavaScriptCoreCPP::RAII;
 
 template<>
-struct hash<JSNativeObjectAttribute> {
-	using argument_type = JSNativeObjectAttribute;
+struct hash<JSNativeClassAttribute> {
+	using argument_type = JSNativeClassAttribute;
 	using result_type   = std::size_t;
 
-	using property_attribute_underlying_type = std::underlying_type<JSNativeObjectAttribute>::type;
+	using property_attribute_underlying_type = std::underlying_type<JSNativeClassAttribute>::type;
 	const std::hash<property_attribute_underlying_type> property_attribute_hash = std::hash<property_attribute_underlying_type>();
 	
 	result_type operator()(const argument_type& property_attribute) const {
@@ -53,4 +53,4 @@ struct hash<JSNativeObjectAttribute> {
 };
 }  // namespace std {
 
-#endif // _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTATTRIBUTE_HPP_
+#endif // _JAVASCRIPTCORECPP_RAII_JSNATIVECLASSATTRIBUTE_HPP_

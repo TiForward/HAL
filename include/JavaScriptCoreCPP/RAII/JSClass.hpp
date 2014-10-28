@@ -14,6 +14,24 @@
 #include <utility>
 #include <JavaScriptCore/JavaScript.h>
 
+
+#ifdef JAVASCRIPTCORECPP_RAII_THREAD_SAFE
+#include <mutex>
+
+#ifndef JAVASCRIPTCORECPP_RAII_JSCLASS_MUTEX
+#define JAVASCRIPTCORECPP_RAII_JSCLASS_MUTEX std::mutex js_class_mutex_;
+#endif
+
+#ifndef JAVASCRIPTCORECPP_RAII_JSCLASS_LOCK_GUARD
+#define JAVASCRIPTCORECPP_RAII_JSCLASS_LOCK_GUARD std::lock_guard<std::mutex> js_class_lock(js_class_mutex_);
+#endif
+
+#else
+#define JAVASCRIPTCORECPP_RAII_JSCLASS_MUTEX
+#define JAVASCRIPTCORECPP_RAII_JSCLASS_LOCK_GUARD
+#endif  // JAVASCRIPTCORECPP_RAII_THREAD_SAFE
+
+
 namespace JavaScriptCoreCPP { namespace RAII {
 
 /*!
@@ -25,17 +43,17 @@ namespace JavaScriptCoreCPP { namespace RAII {
   create JavaScript objects with both value and function properties
   backed by an instance of a C++ class.
 
-  Only JSObject and JSNativeObjectBuilder may create a JSClass.
+  Only JSObject and JSNativeClassBuilder may create a JSClass.
 */
 #ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
-class JSClass final : public detail::JSPerformanceCounter<JSClass> {
+class JSClass : public detail::JSPerformanceCounter<JSClass> {
 #else
-class JSClass final	{
+class JSClass	{
 #endif
 	
  public:
 
-	~JSClass() {
+	virtual ~JSClass() {
 		JSClassRelease(js_class_ref_);
 	}
 	
@@ -66,11 +84,12 @@ class JSClass final	{
 		// the two classes are effectively swapped
 		swap(first.js_class_ref_, second.js_class_ref_);
 	}
-	
+
  private:
 
 	// For interoperability with the JavaScriptCore C API.
-	JSClass(const JSClassDefinition* definition) : js_class_ref_(JSClassCreate(definition)) {
+	JSClass(const JSClassDefinition* definition = &kJSClassDefinitionEmpty)
+			: js_class_ref_(JSClassCreate(definition)) {
 	}
 	
 	// For interoperability with the JavaScriptCore C API.
@@ -82,12 +101,10 @@ class JSClass final	{
 	friend class JSObject;
 	
 	template<typename T>
-	friend class JSNativeObject;
-
-	template<typename T>
-	friend class JSNativeObjectBuilder;
+	friend class JSNativeClass;
 
 	JSClassRef js_class_ref_ { nullptr };
+	JAVASCRIPTCORECPP_RAII_JSCLASS_MUTEX
 };
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {

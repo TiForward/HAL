@@ -15,6 +15,22 @@
 #include <codecvt>
 #include <JavaScriptCore/JavaScript.h>
 
+#ifdef JAVASCRIPTCORECPP_RAII_THREAD_SAFE
+#include <mutex>
+
+#ifndef JAVASCRIPTCORECPP_RAII_JSSTRING_MUTEX
+#define JAVASCRIPTCORECPP_RAII_JSSTRING_MUTEX std::mutex js_string_mutex_;
+#endif
+
+#ifndef JAVASCRIPTCORECPP_RAII_JSSTRING_LOCK_GUARD
+#define JAVASCRIPTCORECPP_RAII_JSSTRING_LOCK_GUARD std::lock_guard<std::mutex> js_string_lock(js_string_mutex_);
+#endif
+
+#else
+#define JAVASCRIPTCORECPP_RAII_JSSTRING_MUTEX
+#define JAVASCRIPTCORECPP_RAII_JSSTRING_LOCK_GUARD
+#endif  // JAVASCRIPTCORECPP_RAII_THREAD_SAFE
+
 namespace JavaScriptCoreCPP { namespace detail {
 class JSPropertyNameArray;
 }}
@@ -162,6 +178,7 @@ private:
 	friend bool operator==(const JSString& lhs, const JSString& rhs);
 
 	JSStringRef js_string_ref_;
+	JAVASCRIPTCORECPP_RAII_JSSTRING_MUTEX;
 };
 
 // Return true if the two JSStrings are equal.

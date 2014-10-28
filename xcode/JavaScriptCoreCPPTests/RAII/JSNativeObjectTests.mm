@@ -30,14 +30,14 @@ using namespace JavaScriptCoreCPP::RAII;
 }
 
 - (void)testJSPropertyAttribute {
-  std::unordered_set<JSNativeObjectAttribute> attributes;
-  XCTAssertEqual(0, attributes.count(JSNativeObjectAttribute::None));
-  XCTAssertEqual(0, attributes.count(JSNativeObjectAttribute::NoAutomaticPrototype));
+  std::unordered_set<JSNativeClassAttribute> attributes;
+  XCTAssertEqual(0, attributes.count(JSNativeClassAttribute::None));
+  XCTAssertEqual(0, attributes.count(JSNativeClassAttribute::NoAutomaticPrototype));
   
-  const auto insert_result = attributes.insert(JSNativeObjectAttribute::NoAutomaticPrototype);
+  const auto insert_result = attributes.insert(JSNativeClassAttribute::NoAutomaticPrototype);
   XCTAssertTrue(insert_result.second);
-  XCTAssertEqual(1, attributes.count(JSNativeObjectAttribute::NoAutomaticPrototype));
-  XCTAssertEqual(*insert_result.first, JSNativeObjectAttribute::NoAutomaticPrototype);
+  XCTAssertEqual(1, attributes.count(JSNativeClassAttribute::NoAutomaticPrototype));
+  XCTAssertEqual(*insert_result.first, JSNativeClassAttribute::NoAutomaticPrototype);
   
   XCTAssertEqual(1, attributes.size());
 }
@@ -134,11 +134,10 @@ using namespace JavaScriptCoreCPP::RAII;
             << std::endl;
 }
 
-- (void)testJSNativeObjectBuilder {
+- (void)testJSNativeClassBuilder {
   JSContext js_context = js_context_group.CreateContext();
-  JSNativeObjectBuilder<NativeObject> builder(js_context);
+  JSNativeClassBuilder<NativeObject> builder("MyClass");
   builder
-      .name("MyObject")
       .initialize_callback(&NativeObject::Initialize)
       .finalize_callback(&NativeObject::Finalize)
       .call_as_constructor_callback(&NativeObject::Constructor)
@@ -156,7 +155,7 @@ using namespace JavaScriptCoreCPP::RAII;
       .call_as_function_callback(&NativeObject::CallAsFunction)
       .convert_to_type_callback(&NativeObject::ConvertToType);
 
-  auto NativeObjectProxy = builder.build();
+  auto native_class = builder.build();
   //std::vector<JSStaticValue> js_static_values;
   //XCTAssertTrue(js_static_values.empty());
 }

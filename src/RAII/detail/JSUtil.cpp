@@ -23,8 +23,8 @@ JSPropertyAttributes ToJSPropertyAttributes(const std::unordered_set<JSPropertyA
 	return static_cast<property_attribute_underlying_type>(property_attributes.to_ulong());
 }
 
-JSClassAttributes ToJSClassAttributes(const std::unordered_set<JSNativeObjectAttribute>& attributes) {
-	using property_attribute_underlying_type = std::underlying_type<JSNativeObjectAttribute>::type;
+JSClassAttributes ToJSClassAttributes(const std::unordered_set<JSNativeClassAttribute>& attributes) {
+	using property_attribute_underlying_type = std::underlying_type<JSNativeClassAttribute>::type;
 	std::bitset<2> class_attributes;
 	for (auto class_attribute : attributes) {
 		const auto bit_position = static_cast<property_attribute_underlying_type>(class_attribute);

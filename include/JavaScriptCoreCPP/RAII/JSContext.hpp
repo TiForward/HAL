@@ -11,11 +11,29 @@
 #define _JAVASCRIPTCORECPP_RAII_JSCONTEXT_HPP_
 
 #include "JavaScriptCoreCPP/RAII/JSContextGroup.hpp"
-#include "JavaScriptCoreCPP/RAII/JSClass.hpp"
 #include "JavaScriptCoreCPP/RAII/JSString.hpp"
+#include "JavaScriptCoreCPP/RAII/JSClass.hpp"
+#include "JavaScriptCoreCPP/RAII/JSNativeClass.hpp"
+#include "JavaScriptCoreCPP/RAII/JSNativeObject.hpp"
 #include <vector>
 #include <atomic>
 #include <cassert>
+
+#ifdef JAVASCRIPTCORECPP_RAII_THREAD_SAFE
+#include <mutex>
+
+#ifndef JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX
+#define JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX std::mutex js_context_mutex_;
+#endif
+
+#ifndef JAVASCRIPTCORECPP_RAII_JSCONTEXT_LOCK_GUARD
+#define JAVASCRIPTCORECPP_RAII_JSCONTEXT_LOCK_GUARD std::lock_guard<std::mutex> js_context_lock(js_context_mutex_);
+#endif
+
+#else
+#define JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX
+#define JAVASCRIPTCORECPP_RAII_JSCONTEXT_LOCK_GUARD
+#endif  // JAVASCRIPTCORECPP_RAII_THREAD_SAFE
 
 #ifdef DEBUG
 extern "C" JS_EXPORT void JSSynchronousGarbageCollectForDebugging(JSContextRef);
@@ -219,6 +237,12 @@ class JSContext final	{
 	*/
 	JSObject CreateObject(const JSClass& js_class, void* private_data = nullptr) const;
 
+	template<typename T>
+	JSNativeObject<T> CreateObject(const JSNativeClass<T>& js_native_class) const {
+		return JSNativeClass<T>(js_context_, js_native_class);
+	}
+
+	
 	/*!
 	  @method
 	  
@@ -573,6 +597,7 @@ private:
   
   JSContextGroup js_context_group_;
   JSContextRef   js_context_ref_ { nullptr };
+  JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX;
 };
 
 // Return true if the two JSContexts are equal.

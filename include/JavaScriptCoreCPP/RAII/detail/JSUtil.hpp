@@ -11,7 +11,7 @@
 #define _JAVASCRIPTCORECPP_RAII_JSUTIL_HPP_
 
 #include "JavaScriptCoreCPP/RAII/JSPropertyAttribute.hpp"
-#include "JavaScriptCoreCPP/RAII/JSNativeObjectAttribute.hpp"
+#include "JavaScriptCoreCPP/RAII/JSNativeClassAttribute.hpp"
 
 #include <cstdint>
 #include <memory>
@@ -31,9 +31,9 @@ std::unique_ptr<T> make_unique(Ts&&... params) {
 // interoperability with the JavaScriptCore C API.
 JSPropertyAttributes ToJSPropertyAttributes(const std::unordered_set<JSPropertyAttribute>& attributes);
 
-// For hash functions for std::unordered_set<JSNativeObjectAttribute>
+// For hash functions for std::unordered_set<JSNativeClassAttribute>
 // and interoperability with the JavaScriptCore C API.
-JSClassAttributes ToJSClassAttributes(const std::unordered_set<JSNativeObjectAttribute>& attributes);
+JSClassAttributes ToJSClassAttributes(const std::unordered_set<JSNativeClassAttribute>& attributes);
 
 // This in the ToInt32 operation as defined in section 9.5 of the
 // ECMA-262 spec. Note that this operation is identical to ToUInt32

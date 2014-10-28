@@ -15,6 +15,22 @@
 #include <cassert>
 #include <JavaScriptCore/JavaScript.h>
 
+#ifdef JAVASCRIPTCORECPP_RAII_THREAD_SAFE
+#include <mutex>
+
+#ifndef JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_MUTEX
+#define JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_MUTEX std::mutex js_context_group_mutex_;
+#endif
+
+#ifndef JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_LOCK_GUARD
+#define JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_LOCK_GUARD std::lock_guard<std::mutex> js_context_group_lock(js_context_group_mutex_);
+#endif
+
+#else
+#define JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_MUTEX
+#define JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_LOCK_GUARD
+#endif  // JAVASCRIPTCORECPP_RAII_THREAD_SAFE
+
 namespace JavaScriptCoreCPP { namespace RAII {
 
 class JSContext;
@@ -82,7 +98,7 @@ class JSContextGroup final	{
 	  @param global_object_class The JSClass used to create the global
 	  object.
 	*/
-	JSContext CreateContext(JSClass global_object_class) const;
+	JSContext CreateContext(const JSClass& global_object_class) const;
 
 	~JSContextGroup() {
 		JSContextGroupRelease(js_context_group_ref_);
@@ -139,6 +155,7 @@ class JSContextGroup final	{
   friend bool operator==(const JSContextGroup& lhs, const JSContextGroup& rhs);
 
   JSContextGroupRef js_context_group_ref_ {nullptr};
+  JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_MUTEX;
 };
 
 // Return true if the two JSContextGroups are equal.

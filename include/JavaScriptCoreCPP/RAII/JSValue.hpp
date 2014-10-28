@@ -17,6 +17,22 @@
 #include <sstream>
 #include <cassert>
 
+#ifdef JAVASCRIPTCORECPP_RAII_THREAD_SAFE
+#include <mutex>
+
+#ifndef JAVASCRIPTCORECPP_RAII_JSVALUE_MUTEX
+#define JAVASCRIPTCORECPP_RAII_JSVALUE_MUTEX std::mutex js_value_mutex_;
+#endif
+
+#ifndef JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD
+#define JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD std::lock_guard<std::mutex> js_value_lock(js_value_mutex_);
+#endif
+
+#else
+#define JAVASCRIPTCORECPP_RAII_JSVALUE_MUTEX
+#define JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD
+#endif  // JAVASCRIPTCORECPP_RAII_THREAD_SAFE
+
 namespace JavaScriptCoreCPP { namespace detail {
 class JSPropertyNameArray;
 }}
@@ -199,7 +215,7 @@ public:
     undefined type.
     
     @result true if this JavaScript value's type is the undefined
-    type, otherwise false.
+    type.
   */
   bool IsUndefined() const {
 	  return JSValueIsUndefined(js_context_, js_value_ref_);
@@ -211,8 +227,7 @@ public:
     @abstract Determine whether this JavaScript value's type is the
     null type.
     
-    @result true if this JavaScript value's type is the null type,
-    otherwise false.
+    @result true if this JavaScript value's type is the null type.
   */
   bool IsNull() const {
 	  return JSValueIsNull(js_context_, js_value_ref_);
@@ -224,8 +239,7 @@ public:
     @abstract Determine whether this JavaScript value's type is the
     boolean type.
     
-    @result true if this JavaScript value's type is the boolean type,
-    otherwise false.
+    @result true if this JavaScript value's type is the boolean type.
   */
   bool IsBoolean() const {
 	  return JSValueIsBoolean(js_context_, js_value_ref_);
@@ -237,8 +251,7 @@ public:
     @abstract Determine whether this JavaScript value's type is the
     number type.
     
-    @result true if this JavaScript value's type is the number type,
-    otherwise false.
+    @result true if this JavaScript value's type is the number type.
   */
   bool IsNumber() const {
 	  return JSValueIsNumber(js_context_, js_value_ref_);
@@ -250,8 +263,7 @@ public:
     @abstract Determine whether this JavaScript value's type is the
     string type.
     
-    @result true if this JavaScript value's type is the string type,
-    otherwise false.
+    @result true if this JavaScript value's type is the string type.
   */
   bool IsString() const {
 	  return JSValueIsString(js_context_, js_value_ref_);
@@ -263,25 +275,38 @@ public:
     @abstract Determine whether this JavaScript value's type is the
     object type.
     
-    @result true if this JavaScript value's type is the object type,
-    otherwise false.
+    @result true if this JavaScript value's type is the object type.
   */
 	bool IsObject() const {
 		return JSValueIsObject(js_context_, js_value_ref_);
+	}
+	
+	/*!
+	  @method
+	  
+	  @abstract Determine whether this JavaScript's value is an object
+	  with a given class in its class chain.
+	  
+	  @param jsClass The JSClass to test against.
+	  
+	  @result true if this JavaScript value is an object with a given
+	  class in its class chain.
+	*/
+	virtual bool IsObjectOfClass(const JSClass& js_class) const final {
+		return JSValueIsObjectOfClass(js_context_, js_value_ref_, js_class);
 	}
 
 	/*!
     @method
     
     @abstract Determine whether this JavaScript value was constructed
-    by the given constructor, as compared by the JS instanceof
-    operator.
+    by the given constructor, as compared by the JavaScript
+    'instanceof' operator.
     
     @param constructor The constructor to test against.
     
     @result true if this JavaScript value was constructed by the given
-    constructor, as compared by the JS instanceof operator, otherwise
-    false.
+    constructor as compared by the JavaScript 'instanceof' operator.
   */
 	bool IsInstanceOfConstructor(const JSObject& constructor) const;
 
@@ -334,12 +359,11 @@ public:
     swap(first.js_value_ref_, second.js_value_ref_);
   }
   
- protected:
+ private:
 
 	// Only a JSContext can create a JSValue.
 	JSValue(const JSContext& js_context, const JSString& js_string, bool parse_as_json = false);
 
- private:
 
 	// For interoperability with the JavaScriptCore C API.
 	explicit JSValue(const JSContext& js_context, JSValueRef js_value_ref)
@@ -380,6 +404,7 @@ public:
 
 	JSContext  js_context_;
 	JSValueRef js_value_ref_ { nullptr };
+	JAVASCRIPTCORECPP_RAII_JSVALUE_MUTEX;
 };
 
 /*!
