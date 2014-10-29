@@ -25,9 +25,12 @@
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
+JSObject::JSObject(const JSContext& js_context)
+		: JSObject(js_context, JSObjectMake(js_context, nullptr, nullptr)) {
+}
+
 JSObject::JSObject(const JSContext& js_context, const JSClass& js_class, void* private_data)
 		: JSObject(js_context, JSObjectMake(js_context, js_class, private_data)) {
-	js_class__ = js_class;
 }
 
 JSObject::JSObject(const JSContext& js_context, JSObjectRef js_object_ref)
@@ -42,7 +45,7 @@ JSObject::JSObject(const JSContext& js_context, JSObjectRef js_object_ref)
 		throw std::logic_error(message);
 	}
 	
-	JSValueProtect(get_context(), js_object_ref__);
+	JSValueProtect(js_context, js_object_ref__);
 }
 
 JSObject JSObject::CallAsConstructor(const std::vector<JSValue>&  arguments) {
@@ -73,7 +76,7 @@ JSObject JSObject::CallAsConstructor(const std::vector<JSValue>&  arguments) {
 
 	// postcondition
 	assert(js_object_ref);
-	return JSObject(get_context(), js_class__, js_object_ref);
+	return JSObject(get_context(), js_object_ref);
 }
 
 JSValue JSObject::CallAsFunction(const std::vector<JSValue>&  arguments, const JSObject& this_object) {

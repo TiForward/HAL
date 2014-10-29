@@ -29,18 +29,26 @@
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-explicit JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class)
+// explicit JSContext(const JSContextGroup& js_context_group)
+// 		: JSContext(js_context_group, JSClass()) {
+// }
+
+JSContext::JSContext(const JSContextGroup& js_context_group)
 		: js_context_group__(js_context_group)
-		, js_context_ref__(JSGlobalContextCreateInGroup(js_context_group, global_object_class)),
-		, js_global_object__(JSObject(*this, global_object_class)) {
+		, js_context_ref__(JSGlobalContextCreateInGroup(js_context_group, nullptr)) {
+	JSGlobalContextRetain(*this);
+}
+
+JSContext::JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class)
+		: js_context_group__(js_context_group)
+		, js_context_ref__(JSGlobalContextCreateInGroup(js_context_group, global_object_class)) {
 	JSGlobalContextRetain(*this);
 }
 
 // For interoperability with the JavaScriptCore C API.
-explicit JSContext(JSContextRef js_context_ref)
+JSContext::JSContext(JSContextRef js_context_ref)
 		: js_context_group__(JSContextGetGroup(js_context_ref))
-		, js_context_ref__(js_context_ref)
-		, js_global_object__(JSObject(*this, JSContextGetGlobalObject(js_context_ref__))) {
+		, js_context_ref__(js_context_ref) {
 	JSGlobalContextRetain(*this);
 }
 
@@ -191,6 +199,11 @@ bool JSContext::JSCheckScriptSyntax(const JSString& script, const JSString& sour
 
 	return result;
 }
+
+JSObject JSContext::get_global_object() const {
+	return JSObject(*this, JSContextGetGlobalObject(*this));
+}
+
 
 #ifdef JAVASCRIPTCORECPP_RAII_JSCONTEXT_ENABLE_CONTEXT_ID
 // Definition of class static memner;

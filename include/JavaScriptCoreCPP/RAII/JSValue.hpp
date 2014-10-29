@@ -358,7 +358,6 @@ public:
 	JSValue(JSValue&& rhs)
 			: js_context__(rhs.js_context__)
 			, js_value_ref__(rhs.js_value_ref__) {
-		JSValueProtect(js_context__, js_value_ref__);
   }
   
 #ifdef JAVASCRIPTCORECPP_RAII_MOVE_SEMANTICS_ENABLE

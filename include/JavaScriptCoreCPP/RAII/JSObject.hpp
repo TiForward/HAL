@@ -315,17 +315,14 @@ class JSObject : public JSValue {
 	// Copy constructor.
 	JSObject(const JSObject& rhs)
 			: JSValue(rhs)
-			, js_object_ref__(rhs.js_object_ref__)
-			, js_class__(rhs.js_class__) {
+			, js_object_ref__(rhs.js_object_ref__) {
 		JSValueProtect(get_context(), js_object_ref__);
 	}
 	
 	// Move constructor.
 	JSObject(JSObject&& rhs)
 			: JSValue(rhs)
-			, js_object_ref__(rhs.js_object_ref__)
-			, js_class__(rhs.js_class__) {
-		JSValueProtect(get_context(), js_object_ref__);
+			, js_object_ref__(rhs.js_object_ref__) {
 	}
 	
 #ifdef JAVASCRIPTCORECPP_RAII_MOVE_SEMANTICS_ENABLE
@@ -350,16 +347,14 @@ class JSObject : public JSValue {
 		// by swapping the members of two classes,
 		// the two classes are effectively swapped
 		swap(first.js_object_ref__, second.js_object_ref__);
-		swap(first.js_class__     , second.js_class__);
 	}
 
  protected:
 	
-	// JSObject(const JSContext& js_context) : JSObject(js_context, JSObjectMake(js_context, nullptr, nullptr)) {
-	// }
+	JSObject(const JSContext& js_context);
 
-	JSObject(const JSContext& js_context, const JSClass& js_class = JSClass(), void* private_data = nullptr);
-	
+	JSObject(const JSContext& js_context, const JSClass& js_class, void* private_data = nullptr);
+
 	/*!
 	  @method
 	  
@@ -466,11 +461,7 @@ class JSObject : public JSValue {
 	template<typename T>
 	friend class JSNativeClass;
 
-	// template<typename T>
-	// friend class JSNativeObject;
-
 	JSObjectRef js_object_ref__{ nullptr };
-	JSClass     js_class__;
 };
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {

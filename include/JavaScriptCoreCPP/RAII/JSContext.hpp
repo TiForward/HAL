@@ -33,7 +33,6 @@
 #undef  JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX
 #define JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX_TYPE JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX_NAME;
 
-
 #undef  JAVASCRIPTCORECPP_RAII_JSCONTEXT_LOCK_GUARD
 #define JAVASCRIPTCORECPP_RAII_JSCONTEXT_LOCK_GUARD std::lock_guard<JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX_TYPE> JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX_NAME_PREFIX##_lock(JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX_NAME);
 
@@ -498,9 +497,7 @@ class JSContext final	{
 	  
 	  @result The global object of this JavaScript execution context.
 	*/
-	JSObject get_global_object() const {
-		return global_object__;
-	}
+	JSObject get_global_object() const;
 	
 	/*!
 	  @method
@@ -535,17 +532,14 @@ class JSContext final	{
 	// Copy constructor.
 	JSContext(const JSContext& rhs)
 			: js_context_group__(rhs.js_context_group__)
-			, js_context_ref__(rhs.js_context_ref__)
-			, js_global_object__(rhs.js_global_object__) {
+			, js_context_ref__(rhs.js_context_ref__) {
 		JSGlobalContextRetain(*this);
 	}
 	
   // Move constructor.
 	JSContext(JSContext&& rhs)
 			: js_context_group__(rhs.js_context_group__)
-			, js_context_ref__(rhs.js_context_ref__)
-			, js_global_object__(rhs.js_global_object__) {
-		JSGlobalContextRetain(*this);
+			, js_context_ref__(rhs.js_context_ref__) {
 	}
 	
 #ifdef JAVASCRIPTCORECPP_RAII_MOVE_SEMANTICS_ENABLE
@@ -572,12 +566,15 @@ class JSContext final	{
     // the two classes are effectively swapped
     swap(first.js_context_group__, second.js_context_group__);
     swap(first.js_context_ref__  , second.js_context_ref__);
-    swap(first.js_global_object__, second.js_global_object__);
   }
 
 private:
   
-  explicit JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class = JSClass());
+  explicit JSContext(const JSContextGroup& js_context_group);
+  
+  explicit JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class);
+
+  //explicit JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class = {});
   
   // For interoperability with the JavaScriptCore C API.
   explicit JSContext(JSContextRef js_context_ref);
@@ -655,7 +652,6 @@ private:
   
   JSContextGroup js_context_group__;
   JSContextRef   js_context_ref__ { nullptr };
-  JSObject       js_global_object__;
   JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX;
 };
 
