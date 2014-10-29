@@ -146,15 +146,12 @@ using namespace JavaScriptCoreCPP::RAII;
       ;
   
   auto native_class = builder.build();
-  JSContext js_context = js_context_group.CreateContext(native_class);
-  
-  //std::vector<JSStaticValue> js_static_values;
-  //XCTAssertTrue(js_static_values.empty());
 }
 
 - (void)testJSNativeObject {
   JSContext js_context = js_context_group.CreateContext();
   NativeObject native_object(js_context);
+  //JSContext js_context = js_context_group.CreateContext(native_class);
 }
 
 // As of 2014.09.20 Travis CI only supports Xcode 5.1 which lacks support for

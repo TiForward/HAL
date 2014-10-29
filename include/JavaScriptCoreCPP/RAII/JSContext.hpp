@@ -498,7 +498,9 @@ class JSContext final	{
 	  
 	  @result The global object of this JavaScript execution context.
 	*/
-	JSObject get_global_object() const;
+	JSObject get_global_object() const {
+		return global_object__;
+	}
 	
 	/*!
 	  @method
@@ -533,14 +535,16 @@ class JSContext final	{
 	// Copy constructor.
 	JSContext(const JSContext& rhs)
 			: js_context_group__(rhs.js_context_group__)
-			, js_context_ref__(rhs.js_context_ref__) {
+			, js_context_ref__(rhs.js_context_ref__)
+			, js_global_object__(rhs.js_global_object__) {
 		JSGlobalContextRetain(*this);
 	}
 	
   // Move constructor.
 	JSContext(JSContext&& rhs)
 			: js_context_group__(rhs.js_context_group__)
-			, js_context_ref__(rhs.js_context_ref__) {
+			, js_context_ref__(rhs.js_context_ref__)
+			, js_global_object__(rhs.js_global_object__) {
 		JSGlobalContextRetain(*this);
 	}
 	
@@ -568,26 +572,15 @@ class JSContext final	{
     // the two classes are effectively swapped
     swap(first.js_context_group__, second.js_context_group__);
     swap(first.js_context_ref__  , second.js_context_ref__);
+    swap(first.js_global_object__, second.js_global_object__);
   }
 
 private:
   
-  explicit JSContext(const JSContextGroup& js_context_group)
-		  : js_context_group__(js_context_group)
-		  , js_context_ref__(JSGlobalContextCreateInGroup(js_context_group, nullptr)) {
-  }
-  
-  explicit JSContext(const JSContextGroup& js_context_group, JSClass global_object_class)
-		  : js_context_group__(js_context_group)
-		  , js_context_ref__(JSGlobalContextCreateInGroup(js_context_group, global_object_class)) {
-  }
+  explicit JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class = JSClass());
   
   // For interoperability with the JavaScriptCore C API.
-  explicit JSContext(JSContextRef js_context_ref)
-		  : js_context_group__(JSContextGetGroup(js_context_ref))
-		  , js_context_ref__(js_context_ref) {
-	  JSGlobalContextRetain(*this);
-  }
+  explicit JSContext(JSContextRef js_context_ref);
 		
 	// For interoperability with the JavaScriptCore C API.
   operator JSContextRef() const {
@@ -662,6 +655,7 @@ private:
   
   JSContextGroup js_context_group__;
   JSContextRef   js_context_ref__ { nullptr };
+  JSObject       js_global_object__;
   JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX;
 };
 
