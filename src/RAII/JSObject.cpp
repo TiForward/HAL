@@ -25,10 +25,6 @@
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-JSObject::JSObject(const JSContext& js_context)
-		: JSObject(js_context, JSObjectMake(js_context, nullptr, nullptr)) {
-}
-
 JSObject::JSObject(const JSContext& js_context, const JSClass& js_class, void* private_data)
 		: JSObject(js_context, JSObjectMake(js_context, js_class, private_data)) {
 }
@@ -54,8 +50,8 @@ JSObject JSObject::CallAsConstructor(const std::vector<JSValue>&  arguments) {
 	
 	if (!IsConstructor()) {
 		const std::string message = "This object is not a constructor.";
-		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
-		throw std::logic_error(message);
+		std::clog << log_prefix << " [ERROR] " << message << std::endl;
+		throw std::runtime_error(message);
 	}
 	
 	JSValueRef exception { nullptr };

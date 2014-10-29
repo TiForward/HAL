@@ -570,11 +570,7 @@ class JSContext final	{
 
 private:
   
-  explicit JSContext(const JSContextGroup& js_context_group);
-  
-  explicit JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class);
-
-  //explicit JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class = {});
+  explicit JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class = {});
   
   // For interoperability with the JavaScriptCore C API.
   explicit JSContext(JSContextRef js_context_ref);
@@ -637,8 +633,9 @@ private:
 	template<typename T>
 	friend class JSNativeClass;
 	
-	// template<typename T>
-	// friend class JSNativeObject;
+	// JSNativeClass need access to operator JSContextRef().
+	template<typename T>
+	friend class JSNativeObject;
 	
 	// Return true if the two JSContexts are equal.
   friend bool operator==(const JSContext& lhs, const JSContext& rhs);

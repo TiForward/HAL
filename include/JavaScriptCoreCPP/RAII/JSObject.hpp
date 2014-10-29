@@ -11,6 +11,7 @@
 #define _JAVASCRIPTCORECPP_RAII_JSOBJECT_HPP_
 
 #include "JavaScriptCoreCPP/RAII/JSValue.hpp"
+#include "JavaScriptCoreCPP/RAII/JSClass.hpp"
 #include "JavaScriptCoreCPP/RAII/JSPropertyAttribute.hpp"
 #include <vector>
 #include <unordered_set>
@@ -351,9 +352,7 @@ class JSObject : public JSValue {
 
  protected:
 	
-	JSObject(const JSContext& js_context);
-
-	JSObject(const JSContext& js_context, const JSClass& js_class, void* private_data = nullptr);
+	JSObject(const JSContext& js_context, const JSClass& js_class = {}, void* private_data = nullptr);
 
 	/*!
 	  @method
@@ -460,6 +459,10 @@ class JSObject : public JSValue {
 	// constructor.
 	template<typename T>
 	friend class JSNativeClass;
+
+	// JSNativeClass need access to the JSObject constructor.
+	template<typename T>
+	friend class JSNativeObject;
 
 	JSObjectRef js_object_ref__{ nullptr };
 };

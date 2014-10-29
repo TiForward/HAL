@@ -29,16 +29,6 @@
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-// explicit JSContext(const JSContextGroup& js_context_group)
-// 		: JSContext(js_context_group, JSClass()) {
-// }
-
-JSContext::JSContext(const JSContextGroup& js_context_group)
-		: js_context_group__(js_context_group)
-		, js_context_ref__(JSGlobalContextCreateInGroup(js_context_group, nullptr)) {
-	JSGlobalContextRetain(*this);
-}
-
 JSContext::JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class)
 		: js_context_group__(js_context_group)
 		, js_context_ref__(JSGlobalContextCreateInGroup(js_context_group, global_object_class)) {
