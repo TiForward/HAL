@@ -22,23 +22,6 @@
 #define JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_DEBUG
 
 
-#ifdef JAVASCRIPTCORECPP_RAII_THREAD_SAFE
-#include <mutex>
-
-#ifndef JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_MUTEX
-#define JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_MUTEX std::mutex js_native_object_mutex_;
-#endif
-
-#ifndef JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_LOCK_GUARD
-#define JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_LOCK_GUARD std::lock_guard<std::mutex> js_native_object_lock(js_native_object_mutex_);
-#endif
-
-#else
-#define JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_MUTEX
-#define JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_LOCK_GUARD
-#endif  // JAVASCRIPTCORECPP_RAII_THREAD_SAFE
-
-
 namespace JavaScriptCoreCPP { namespace RAII {
 
 using namespace JavaScriptCoreCPP::detail;
@@ -56,12 +39,9 @@ class JSNativeObject : public JSObject {
 
 	// This constructor is the one invoked by the T derived class.
 	JSNativeObject(const JSContext& js_context, const JSNativeClass<T>& js_native_class) : JSObject(js_context, js_native_class, this) {
-		// const auto key = reinterpret_cast<std::intptr_t>(JSObject::GetPrivate());
-		// js_native_class.AddNativeObject(key, js_native_class);
 	}
 	
-	virtual ~JSNativeObject() {
-	}
+	virtual ~JSNativeObject() = default;
 
 	// Copy constructor.
 	JSNativeObject(const JSNativeObject<T>& rhs) = default;
@@ -152,10 +132,6 @@ class JSNativeObject : public JSObject {
 	virtual bool SetPrivate(void* data) override final {
 		return false;
 	}
-	
-private:
-
-	JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_MUTEX;
 };
 
 template<typename T>

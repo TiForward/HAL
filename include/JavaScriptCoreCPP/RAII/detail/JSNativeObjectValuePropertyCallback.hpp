@@ -138,7 +138,7 @@ class JSNativeObjectValuePropertyCallback final	{
     swap(first.get_property_callback__, second.get_property_callback__);
     swap(first.set_property_callback__, second.set_property_callback__);
     swap(first.attributes__           , second.attributes__);
-    swap(first.hash_val_             , second.hash_val_);
+    swap(first.hash_value__           , second.hash_value__);
 	}
 
 private:

@@ -83,19 +83,19 @@ class JSNativeObjectFunctionPropertyCallback final	{
 	JSNativeObjectFunctionPropertyCallback(const JSString& function_name, CallAsFunctionCallback<T> call_as_function_callback, const std::unordered_set<JSPropertyAttribute>& attributes);
 
 	JSString get_function_name() const {
-		return function_name_;
+		return function_name__;
 	}
 	
 	CallAsFunctionCallback<T> get_call_as_function_callback() const {
-		return call_as_function_callback_;
+		return call_as_function_callback__;
 	}
 	
 	std::unordered_set<JSPropertyAttribute> get_attributes() const {
-		return attributes_;
+		return attributes__;
 	}
 
 	std::size_t get_hash_value() const {
-		return hash_value_;
+		return hash_value__;
 	}
 	
 	~JSNativeObjectFunctionPropertyCallback() {
@@ -103,18 +103,18 @@ class JSNativeObjectFunctionPropertyCallback final	{
 	
 	// Copy constructor.
 	JSNativeObjectFunctionPropertyCallback(const JSNativeObjectFunctionPropertyCallback& rhs)
-			: function_name_(rhs.function_name_)
-			, call_as_function_callback_(rhs.call_as_function_callback_)
-			, attributes_(rhs.attributes_)
-			, hash_value_(hash_val(function_name_, ToJSPropertyAttributes(attributes_))) {
+			: function_name__(rhs.function_name__)
+			, call_as_function_callback__(rhs.call_as_function_callback__)
+			, attributes__(rhs.attributes__)
+			, hash_value__(hash_val(function_name__, ToJSPropertyAttributes(attributes__))) {
 	}
 	
 	// Move constructor.
 	JSNativeObjectFunctionPropertyCallback(JSNativeObjectFunctionPropertyCallback&& rhs)
-			: function_name_(rhs.function_name_)
-			, call_as_function_callback_(rhs.call_as_function_callback_)
-			, attributes_(rhs.attributes_)
-			, hash_value_(hash_val(function_name_, ToJSPropertyAttributes(attributes_))) {
+			: function_name__(rhs.function_name__)
+			, call_as_function_callback__(rhs.call_as_function_callback__)
+			, attributes__(rhs.attributes__)
+			, hash_value__(hash_val(function_name__, ToJSPropertyAttributes(attributes__))) {
 	}
 	
 	// Create a copy of another JSNativeObjectFunctionPropertyCallback by assignment. This is
@@ -133,10 +133,10 @@ class JSNativeObjectFunctionPropertyCallback final	{
 		
 		// by swapping the members of two classes,
 		// the two classes are effectively swapped
-		swap(first.function_name_            , second.function_name_);
-		swap(first.call_as_function_callback_, second.call_as_function_callback_);
-		swap(first.attributes_               , second.attributes_);
-    swap(first.hash_val_                 , second.hash_val_);
+		swap(first.function_name__            , second.function_name__);
+		swap(first.call_as_function_callback__, second.call_as_function_callback__);
+		swap(first.attributes__               , second.attributes__);
+    swap(first.hash_value__               , second.hash_value__);
 	}
 
  private:
@@ -147,25 +147,25 @@ class JSNativeObjectFunctionPropertyCallback final	{
 	template<typename U>
 	friend bool operator<(const JSNativeObjectFunctionPropertyCallback<U>& lhs, const JSNativeObjectFunctionPropertyCallback<U>& rhs);
 
-	JSString                                function_name_;
-	CallAsFunctionCallback<T>               call_as_function_callback_ { nullptr };
-	std::unordered_set<JSPropertyAttribute> attributes_;
+	JSString                                function_name__;
+	CallAsFunctionCallback<T>               call_as_function_callback__ { nullptr };
+	std::unordered_set<JSPropertyAttribute> attributes__;
 
 	// Precomputed hash value for JSNativeObjectValuePropertyCallback
 	// since instances of this class template are immutable.
-	std::size_t                             hash_value_;
+	std::size_t                             hash_value__;
 };
 
 template<typename T>
 JSNativeObjectFunctionPropertyCallback<T>::JSNativeObjectFunctionPropertyCallback(const JSString& function_name, CallAsFunctionCallback<T> call_as_function_callback, const std::unordered_set<JSPropertyAttribute>& attributes)
-		: function_name_(function_name)
-		, call_as_function_callback_(call_as_function_callback)
-		, attributes_(attributes)
-		, hash_value_(hash_val(function_name_, ToJSPropertyAttributes(attributes_))) {
+		: function_name__(function_name)
+		, call_as_function_callback__(call_as_function_callback)
+		, attributes__(attributes)
+		, hash_value__(hash_val(function_name__, ToJSPropertyAttributes(attributes__))) {
 	
 	static const std::string log_prefix { "MDL: JSNativeObjectFunctionPropertyCallback: " };
 	
-	if (function_name_.empty()) {
+	if (function_name__.empty()) {
 		std::ostringstream os;
 		os << "The function_name is empty. A valid JavaScript property name must be provided.";
 		const std::string message = os.str();
@@ -185,19 +185,19 @@ JSNativeObjectFunctionPropertyCallback<T>::JSNativeObjectFunctionPropertyCallbac
 // Return true if the two JSNativeObjectFunctionPropertyCallbacks are equal.
 template<typename T>
 bool operator==(const JSNativeObjectFunctionPropertyCallback<T>& lhs, const JSNativeObjectFunctionPropertyCallback<T>& rhs) {
-	if (lhs.function_name_ != rhs.function_name_) {
+	if (lhs.function_name__ != rhs.function_name__) {
 		return false;
 	}
 
-	if (lhs.call_as_function_callback_ && !rhs.call_as_function_callback_) {
+	if (lhs.call_as_function_callback__ && !rhs.call_as_function_callback__) {
 		return false;
 	}
 	
-	if (!lhs.call_as_function_callback_ && rhs.call_as_function_callback_) {
+	if (!lhs.call_as_function_callback__ && rhs.call_as_function_callback__) {
 		return false;
 	}
 
-	return lhs.attributes_ == rhs.attributes_;
+	return lhs.attributes__ == rhs.attributes__;
 }
 
 // Return true if the two JSString are not equal.
@@ -209,11 +209,11 @@ bool operator!=(const JSNativeObjectFunctionPropertyCallback<T>& lhs, const JSNa
 // Define a strict weak ordering for two JSNativeObjectFunctionPropertyCallbacks.
 template<typename T>
 bool operator<(const JSNativeObjectFunctionPropertyCallback<T>& lhs, const JSNativeObjectFunctionPropertyCallback<T>& rhs) {
-	if (lhs.function_name_ < rhs.function_name_) {
+	if (lhs.function_name__ < rhs.function_name__) {
 		return true;
 	}
 	
-	return lhs.attributes_ < rhs.attributes_;
+	return lhs.attributes__ < rhs.attributes__;
 }
 
 template<typename T>

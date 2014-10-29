@@ -28,18 +28,16 @@ using namespace JavaScriptCoreCPP::detail;
   @class
 
   @abstract This is a builder that creates JSNativeClass instances
-  that defines JavaScript objects implemented by a instances of a C++
-  class. All properties except "class_name" on this builder are
+  that define JavaScript objects implemented by a instances of a C++
+  class. All properties except "ClassName" on this builder are
   optional, and all callbacks may be nullptr.
 
-  @discussion Using the AddValuePropertyCallback and
-  AddFunctionPropertyCallback methods are the simplest and most
-  efficient means for vending custom properties since they
-  autmatically service requests like get_property_callback,
-  set_property_callback, and get_property_names_callback. The other
-  property access callbacks are required only to implement unusual
-  properties, like array indexes, whose names are not known at
-  compile-time.
+  @discussion Using the AddValueProperty and AddFunctionProperty
+  methods are the simplest and most efficient means for vending custom
+  properties since they autmatically service requests like
+  GetProperty, SetProperty, and GetPropertyNames. The other property
+  access callbacks are required only to implement unusual properties,
+  like array indexes, whose names are not known at compile-time.
   
   Standard JavaScript practice calls for storing function objects in
   prototypes so that they can be shared. The instances of
@@ -53,9 +51,8 @@ using namespace JavaScriptCoreCPP::detail;
   the default object prototype and a copy of the properties.
   
   Setting any callback to nullptr specifies that the default object
-  callback should substitute, except in the case of
-  has_property_callback, where it specifies that
-  get_property_names_callback should substitute.
+  callback should substitute, except in the case of HasProperty, where
+  it specifies that GetProperty should substitute.
 */
 template<typename T>
 class JSNativeClassBuilder final {
@@ -70,7 +67,7 @@ class JSNativeClassBuilder final {
 	*/
 	JSNativeClassBuilder(const JSString& class_name)
 			: class_name_(class_name)
-			, parent_(&kJSClassDefinitionEmpty) {
+			, parent_class_(&kJSClassDefinitionEmpty) {
 	}
 	
 	/*!
@@ -97,7 +94,7 @@ class JSNativeClassBuilder final {
 	  
 	  @result The JSNativeClass's name.
 	*/
-	JSString class_name() const {
+	JSString ClassName() const {
 		return class_name_;
 	}
 	
@@ -108,7 +105,7 @@ class JSNativeClassBuilder final {
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeClassBuilder<T>& class_name(const JSString& class_name) {
+	JSNativeClassBuilder<T>& ClassName(const JSString& class_name) {
 		class_name_ = class_name;
 		return *this;
 	}
@@ -122,8 +119,8 @@ class JSNativeClassBuilder final {
 	  @result The JSNativeClassAttributes that describe the
 	  characteristics of the JSNativeClass.
 	*/
-	std::unordered_set<JSNativeClassAttribute> attributes() const {
-		return attributes_;
+	std::unordered_set<JSNativeClassAttribute> ClassAttributes() const {
+		return class_attributes_;
 	}
 
 	/*!
@@ -134,8 +131,8 @@ class JSNativeClassBuilder final {
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeClassBuilder<T>& attributes(const std::unordered_set<JSNativeClassAttribute>& attributes) {
-		attributes_ = attributes;
+	JSNativeClassBuilder<T>& ClassAttributes(const std::unordered_set<JSNativeClassAttribute>& class_attributes) {
+		class_attributes_ = class_attributes;
 		return *this;
 	}
 	
@@ -147,8 +144,8 @@ class JSNativeClassBuilder final {
 	  
 	  @result The parent of the the JSNativeClass.
 	*/
-	JSClass parent() const {
-		return parent_;
+	JSClass ParentClass() const {
+		return parent_class_;
 	}
 
 	/*!
@@ -159,8 +156,8 @@ class JSNativeClassBuilder final {
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeClassBuilder<T>& parent(const JSClass& parent) {
-		parent_ = parent;
+	JSNativeClassBuilder<T>& ParentClass(const JSClass& parent_class) {
+		parent_class_ = parent_class;
 		return *this;
 	}
 
@@ -173,7 +170,7 @@ class JSNativeClassBuilder final {
 	  @result The callback to invoke when a JavaScript object is first
 	  created.
 	*/
-	InitializeCallback<T> initialize_callback() const {
+	InitializeCallback<T> Initialize() const {
 		return initialize_callback_;
 	}
 
@@ -194,12 +191,12 @@ class JSNativeClassBuilder final {
 
 	  You would call the builer like this:
 
-	  JSNativeClassBuilder<Foo> builder;
-	  builder.InitializeCallback(&Foo::Initialize);
+	  JSNativeClassBuilder<Foo> builder("Foo");
+	  builder.Initialize(&Foo::Initialize);
   
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeClassBuilder<T>& initialize_callback(const InitializeCallback<T>& initialize_callback) {
+	JSNativeClassBuilder<T>& Initialize(const InitializeCallback<T>& initialize_callback) {
 		initialize_callback_ = initialize_callback;
 		return *this;
 	}
@@ -213,7 +210,7 @@ class JSNativeClassBuilder final {
 	  @result The callback to invoke when a JavaScript object is
 	  finalized (prepared for garbage collection).
 	*/
-	FinalizeCallback<T> finalize_callback() const {
+	FinalizeCallback<T> Finalize() const {
 		return finalize_callback_;
 	}
 
@@ -245,15 +242,147 @@ class JSNativeClassBuilder final {
 
 	  You would call the builer like this:
 
-	  JSNativeClassBuilder<Foo> builder;
-	  builder.FinalizeCallback(&Foo::Finalize);
+	  JSNativeClassBuilder<Foo> builder("Foo");
+	  builder.Finalize(&Foo::Finalize);
 
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeClassBuilder<T>& finalize_callback(const FinalizeCallback<T>& finalize_callback) {
+	JSNativeClassBuilder<T>& Finalize(const FinalizeCallback<T>& finalize_callback) {
 		finalize_callback_ = finalize_callback;
 		return *this;
 	}
+
+	/*!
+	  @method
+	  
+	  @abstract Add callbacks to invoke when getting and/or setting a
+	  property value on a JavaScript object. The property will always
+	  have the JSPropertyAttribute::DontDelete property attribute. If a
+	  setter callback is not provided then the property will also have
+	  the JSPropertyAttribute::ReadOnly property attribute. By default
+	  the property is enumerable unless you specify otherwise.
+	  
+	  @discussion For example, given this class definition:
+	  
+	  class Foo {
+	    JSValue GetName() const;
+	    bool SetName(const JSValue& value);
+	  };
+
+	  You would call the builer like this:
+	  
+	  JSNativeClassBuilder<Foo> builder("Foo");
+	  builder.AddValueProperty("name", &Foo::GetName, &Foo::SetName);
+
+	  If you wanted the property ReadOnly, then you would call the
+	  builder like this:
+
+	  builder.AddValueProperty("name", &Foo::GetName);
+
+	  @param property_name A JSString containing the property's name.
+	  
+	  @param get_property_callback The callback to invoke when getting a
+	  property's value from a JavaScript object.
+	  
+	  @param set_property_callback The callback to invoke when setting a
+	  property's value on a JavaScript object. This may be nullptr, in
+	  which case the ReadOnly attribute for this property is
+	  automatically set. If this callback returns false, then this
+	  indicates that the value was not set.
+	  
+	  @param enumerable An optional property attribute that specifies
+	  whether the property is enumerable. The default value is true,
+	  which means the property is enumerable.
+
+	  @result An object which describes a JavaScript value property.
+	  
+	  @throws std::invalid_argument exception under these preconditions:
+
+	  1. If property_name is empty or otherwise has a JavaScript syntax
+	  error.
+	  
+    4. If both get_property_callback and set_property_callback are
+	  missing.
+
+	  @result A reference to the builder for chaining.
+	*/
+	JSNativeClassBuilder<T>& AddValueProperty(const JSString& property_name, GetNamedPropertyCallback<T> get_property_callback, SetNamedPropertyCallback<T> set_property_callback = nullptr, bool enumerable = true) {
+		std::unordered_set<JSPropertyAttribute> attributes { JSPropertyAttribute::DontDelete };
+		static_cast<void>(!enumerable && attributes.insert(JSPropertyAttribute::DontEnum).second);
+		static_cast<void>(!set_property_callback && attributes.insert(JSPropertyAttribute::ReadOnly).second);
+		return AddValuePropertyCallback(JSNativeObjectValuePropertyCallback<T>(property_name, get_property_callback, set_property_callback, attributes));
+	}
+	
+	/*!
+	  @method
+
+	  @abstract Remove all callbacks added by the
+	  AddValuePropertyCallback method.
+	  
+	  @result A reference to the builder for chaining.
+	*/
+	JSNativeClassBuilder<T>& RemoveAllValueProperties() {
+		value_property_callback_map_.clear();
+		return *this;
+	}
+
+	/*!
+	  @method
+
+	  @abstract Add a function property to a JavaScript object that is
+	  invoked when called as a function on that JavaScript object. The
+	  property will always have the JSPropertyAttribute::DontDelete and
+	  JSPropertyAttribute::ReadOnly property attributes. By default the
+	  property is enumerable unless you specify otherwise.
+
+	  @discussion For example, given this class definition:
+	  
+	  class Foo {
+	    JSValue SayHello(const std::vector<JSValue>& arguments, const JSObject& this_object);
+	  };
+
+	  You would call the builer like this:
+	  
+	  JSNativeClassBuilder<Foo> builder("Foo");
+	  builder.AddFunctionProperty("sayHello", &Foo::SayHello);
+
+	  @param function_name A JSString containing the function's name.
+	  
+	  @param call_as_function_callback The callback to invoke when
+	  calling the JavaScript object as a function.
+	  
+	  @param enumerable An optional property attribute that specifies
+	  whether the property is enumerable. The default value is true,
+	  which means the property is enumerable.
+	  
+	  @throws std::invalid_argument exception under these preconditions:
+
+	  1. If function_name is empty or otherwise has a JavaScript syntax
+	  error.
+	  
+	  2. If the call_as_function_callback is not provided.
+
+	  @result A reference to the builder for chaining.
+	*/
+	JSNativeClassBuilder<T>& AddFunctionProperty(const JSString& function_name, CallAsFunctionCallback<T> call_as_function_callback, bool enumerable = true) {
+		std::unordered_set<JSPropertyAttribute> attributes { JSPropertyAttribute::DontDelete, JSPropertyAttribute::ReadOnly };
+		static_cast<void>(!enumerable && attributes.insert(JSPropertyAttribute::DontEnum).second);
+		return AddFunctionPropertyCallback(JSNativeObjectFunctionPropertyCallback<T>(function_name, call_as_function_callback, attributes));
+	}
+	
+	/*!
+	  @method
+
+	  @abstract Remove all callbacks added by the
+	  AddFunctionPropertyCallback method..
+	  
+	  @result A reference to the builder for chaining.
+	*/
+	JSNativeClassBuilder<T>& RemoveAllFunctionProperties() {
+		function_property_callback_map_.clear();
+		return *this;
+	}
+
 
 	/*!
 	  @method
@@ -266,7 +395,7 @@ class JSNativeClassBuilder final {
 	  @result The callback to invoke when an object is used as a
 	  constructor in a 'new' expression.
 	*/
-	CallAsConstructorCallback<T> call_as_constructor_callback() const {
+	CallAsConstructorCallback<T> Constructor() const {
 		return call_as_constructor_callback_;
 	}
 
@@ -290,8 +419,8 @@ class JSNativeClassBuilder final {
 	  
 	  You would call the builer like this:
 	  
-	  JSNativeClassBuilder<Foo> builder;
-	  builder.CallAsConstructorCallback(&Foo::Constructor);
+	  JSNativeClassBuilder<Foo> builder("Foo");
+	  builder.ConstructorCallback(&Foo::Constructor);
 
 	  If your callback were invoked by the JavaScript expression
 	  'new myConstructor()', then 'myConstructor' is the instance of Foo
@@ -299,7 +428,7 @@ class JSNativeClassBuilder final {
 
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeClassBuilder<T>& call_as_constructor_callback(const CallAsConstructorCallback<T>& call_as_constructor_callback) {
+	JSNativeClassBuilder<T>& Constructor(const CallAsConstructorCallback<T>& call_as_constructor_callback) {
 		call_as_constructor_callback_ = call_as_constructor_callback;
 		return *this;
 	}
@@ -315,7 +444,7 @@ class JSNativeClassBuilder final {
 	  @result The callback to invoke when an object is used as the
 	  target of an 'instanceof' expression.
 	*/
-	HasInstanceCallback<T> has_instance_callback() const {
+	HasInstanceCallback<T> HasInstance() const {
 		return has_instance_callback_;
 	}
 
@@ -338,8 +467,8 @@ class JSNativeClassBuilder final {
 
 	  You would call the builer like this:
 	  
-	  JSNativeClassBuilder<Foo> builder;
-	  builder.HasInstanceCallback(&Foo::HasInstance);
+	  JSNativeClassBuilder<Foo> builder("Foo");
+	  builder.HasInstance(&Foo::HasInstance);
 
 	  If your callback were invoked by the JavaScript expression
 	  'someValue instanceof myObject', then 'myObject' is the instanceof
@@ -348,66 +477,11 @@ class JSNativeClassBuilder final {
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeClassBuilder<T>& has_instance_callback(const HasInstanceCallback<T>& has_instance_callback) {
+	JSNativeClassBuilder<T>& HasInstance(const HasInstanceCallback<T>& has_instance_callback) {
 		has_instance_callback_ = has_instance_callback;
 		return *this;
 	}
 	
-	/*!
-	  @method
-	  
-	  @abstract Add callbacks to invoke when getting and/or setting a
-	  property value on a JavaScript object.
-	  
-	  @param property_name A JSString containing the property's name.
-	  
-	  @param get_property_callback The callback to invoke when getting a
-	  property's value from a JavaScript object.
-	  
-	  @param set_property_callback The callback to invoke when setting a
-	  property's value on a JavaScript object. This may be nullptr, in
-	  which case the ReadOnly attribute for this property is
-	  automatically set. If this callback returns false, then this
-	  indicates that the value was not set. This could happen if the
-	  property's "DontDelete" attribute is set, or any other reason you
-	  choose for rejecting this specific value.
-	  
-	  @param attributes An optional set of JSPropertyAttributes to give
-	  to the function property. The default is
-	  JSPropertyAttribute::DontDelete.
-	  
-	  @result An object which describes a JavaScript value property.
-	  
-	  @throws std::invalid_argument exception under these preconditions:
-
-	  1. If property_name is empty or otherwise has a JavaScript syntax
-	  error.
-	  
-	  2. If the ReadOnly attribute is set and the get_property_callback
-    is not provided.
-	                               
-    3. If the ReadOnly attribute is set and the set_property_callback
-    is provided.
-
-    4. If both get_property_callback and set_property_callback are
-	  missing.
-
-	  @result A reference to the builder for chaining.
-	*/
-	JSNativeClassBuilder<T>& AddValuePropertyCallback(const JSString& property_name, GetNamedPropertyCallback<T> get_property_callback, SetNamedPropertyCallback<T> set_property_callback = nullptr, const std::unordered_set<JSPropertyAttribute>& attributes = {JSPropertyAttribute::DontDelete}) {
-		return AddValuePropertyCallback(JSNativeObjectValuePropertyCallback<T>(property_name, get_property_callback, set_property_callback, attributes));
-	}
-	
-	/*!
-	  @method
-
-	  @abstract Remove all callbacks added by the
-	  AddValuePropertyCallback method.
-	  
-	  @result A reference to the builder for chaining.
-	*/
-	JSNativeClassBuilder<T>& RemoveAllValuePropertyCallbacks();
-
 	/*!
 	  @method
 
@@ -417,7 +491,7 @@ class JSNativeClassBuilder final {
 	  @result The callback to invoke when getting a property's value
 	  from a JavaScript object.
 	*/
-	GetPropertyCallback<T> get_property_callback() const {
+	GetPropertyCallback<T> GetProperty() const {
 		return get_property_callback_;
 	}
 
@@ -441,12 +515,12 @@ class JSNativeClassBuilder final {
 
 	  You would call the builer like this:
 
-	  JSNativeClassBuilder<Foo> builder;
-	  builder.GetPropertyCallback(&Foo::GetProperty);
+	  JSNativeClassBuilder<Foo> builder("Foo");
+	  builder.GetProperty(&Foo::GetProperty);
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeClassBuilder<T>& get_property_callback(const GetPropertyCallback<T>& get_property_callback) {
+	JSNativeClassBuilder<T>& GetProperty(const GetPropertyCallback<T>& get_property_callback) {
 		get_property_callback_ = get_property_callback;
 		return *this;
 	}
@@ -460,7 +534,7 @@ class JSNativeClassBuilder final {
 	  @result The callback to invoke when setting a property's value on
 	  a JavaScript object.
 	*/
-	SetPropertyCallback<T> set_property_callback() const {
+	SetPropertyCallback<T> SetProperty() const {
 		return set_property_callback_;
 	}
 
@@ -484,12 +558,12 @@ class JSNativeClassBuilder final {
 
 	  You would call the builer like this:
 
-	  JSNativeClassBuilder<Foo> builder;
-	  builder.SetPropertyCallback(&Foo::SetProperty);
+	  JSNativeClassBuilder<Foo> builder("Foo");
+	  builder.SetProperty(&Foo::SetProperty);
   
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeClassBuilder<T>& set_property_callback(const SetPropertyCallback<T>& set_property_callback) {
+	JSNativeClassBuilder<T>& SetProperty(const SetPropertyCallback<T>& set_property_callback) {
 		set_property_callback_ = set_property_callback;
 		return *this;
 	}
@@ -503,7 +577,7 @@ class JSNativeClassBuilder final {
 	  @result The callback to invoke when deleting a property from a
 	  JavaScript object.
 	*/
-	DeletePropertyCallback<T> delete_property_callback() const {
+	DeletePropertyCallback<T> DeleteProperty() const {
 		return delete_property_callback_;
 	}
 
@@ -527,12 +601,12 @@ class JSNativeClassBuilder final {
 
 	  You would call the builer like this:
 
-	  JSNativeClassBuilder<Foo> builder;
-	  builder.DeletePropertyCallback(&Foo::DeleteProperty);
+	  JSNativeClassBuilder<Foo> builder("Foo");
+	  builder.DeleteProperty(&Foo::DeleteProperty);
 
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeClassBuilder<T>& delete_property_callback(const DeletePropertyCallback<T>& delete_property_callback) {
+	JSNativeClassBuilder<T>& DeleteProperty(const DeletePropertyCallback<T>& delete_property_callback) {
 		delete_property_callback_ = delete_property_callback;
 		return *this;
 	}
@@ -546,7 +620,7 @@ class JSNativeClassBuilder final {
 	  @result The callback to invoke when collecting the names of a
 	  JavaScript object's properties
 	*/
-	GetPropertyNamesCallback<T> get_property_names_callback() const {
+	GetPropertyNamesCallback<T> GetPropertyNames() const {
 		return get_property_names_callback_;
 	}
 
@@ -572,8 +646,8 @@ class JSNativeClassBuilder final {
 
 	  You would call the builer like this:
 
-	  JSNativeClassBuilder<Foo> builder;
-	  builder.GetPropertyNamesCallback(&Foo::GetPropertyNames);
+	  JSNativeClassBuilder<Foo> builder("Foo");
+	  builder.GetPropertyNames(&Foo::GetPropertyNames);
 	  
 	  Property name accumulators are used by JavaScript for...in loops.
 	  Use JSPropertyNameAccumulator::AddName to add property names to
@@ -581,7 +655,7 @@ class JSNativeClassBuilder final {
 
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeClassBuilder<T>& get_property_names_callback(const GetPropertyNamesCallback<T>& get_property_names_callback) {
+	JSNativeClassBuilder<T>& GetPropertyNames(const GetPropertyNamesCallback<T>& get_property_names_callback) {
 		get_property_names_callback_ = get_property_names_callback;
 		return *this;
 	}
@@ -595,7 +669,7 @@ class JSNativeClassBuilder final {
 	  @result The callback to invoke when determining whether a
 	  JavaScript object has a property.
 	*/
-	HasPropertyCallback<T> has_property_callback() const {
+	HasPropertyCallback<T> HasProperty() const {
 		return has_property_callback_;
 	}
 
@@ -625,52 +699,15 @@ class JSNativeClassBuilder final {
 
 	  You would call the builer like this:
 
-	  JSNativeClassBuilder<Foo> builder;
-	  builder.HasPropertyCallback(&Foo::HasProperty);
+	  JSNativeClassBuilder<Foo> builder("Foo");
+	  builder.HasProperty(&Foo::HasProperty);
 
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeClassBuilder<T>& has_property_callback(const HasPropertyCallback<T>& has_property_callback) {
+	JSNativeClassBuilder<T>& HasProperty(const HasPropertyCallback<T>& has_property_callback) {
 		has_property_callback_ = has_property_callback;
 		return *this;
 	}
-
-	/*!
-	  @method
-
-	  @abstract Add a function property to a JavaScript object that is
-	  invoked when called as a function on that JavaScript object.
-
-	  @param function_name A JSString containing the function's name.
-	  
-	  @param call_as_function_callback The callback to invoke when
-	  calling the JavaScript object as a function.
-	  
-	  @param attributes The set of JSPropertyAttributes to give to the
-	  function property.
-	  
-	  @throws std::invalid_argument exception under these preconditions:
-
-	  1. If function_name is empty or otherwise has a JavaScript syntax
-	  error.
-	  
-	  2. If the call_as_function_callback is not provided.
-
-	  @result A reference to the builder for chaining.
-	*/
-	JSNativeClassBuilder<T>& AddFunctionPropertyCallback(const JSString& function_name, CallAsFunctionCallback<T> call_as_function_callback, const std::unordered_set<JSPropertyAttribute>& attributes = {JSPropertyAttribute::DontDelete}) {
-		return AddFunctionPropertyCallback(JSNativeObjectFunctionPropertyCallback<T>(function_name, call_as_function_callback, attributes));
-	}
-	
-	/*!
-	  @method
-
-	  @abstract Remove all callbacks added by the
-	  AddFunctionPropertyCallback method..
-	  
-	  @result A reference to the builder for chaining.
-	*/
-	JSNativeClassBuilder<T>& RemoveAllFunctionPropertyCallbacks();
 
 	/*!
 	  @method
@@ -681,7 +718,7 @@ class JSNativeClassBuilder final {
 	  @result The callback to invoke when a JavaScript object is called
 	  as a function.
 	*/
-	CallAsFunctionCallback<T> call_as_function_callback() const {
+	CallAsFunctionCallback<T> Function() const {
 		return call_as_function_callback_;
 	}
 
@@ -697,13 +734,13 @@ class JSNativeClassBuilder final {
 	  For example, given this class definition:
 	  
 	  class Foo {
-	    JSValue Bar(const std::vector<JSValue>& arguments, const JSObject& this_object);
+	    JSValue DoSomething(const std::vector<JSValue>& arguments, const JSObject& this_object);
 	  };
 
 	  You would call the builer like this:
 	  
-	  JSNativeClassBuilder<Foo> builder;
-	  builder.CallAsFunctionCallback(&Foo::Bar);
+	  JSNativeClassBuilder<Foo> builder("Foo");
+	  builder.Function(&Foo::DoSomething);
 	  
 	  In the JavaScript expression 'myObject.myFunction()', then
 	  'myFunction' is the instance of Foo being called, and this_object
@@ -715,7 +752,7 @@ class JSNativeClassBuilder final {
 
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeClassBuilder<T>& call_as_function_callback(const CallAsFunctionCallback<T>& call_as_function_callback) {
+	JSNativeClassBuilder<T>& Function(const CallAsFunctionCallback<T>& call_as_function_callback) {
 		call_as_function_callback_ = call_as_function_callback;
 		return *this;
 	}
@@ -729,7 +766,7 @@ class JSNativeClassBuilder final {
 	  @result The callback to invoke when converting a JavaScript object
 	  to another JavaScript type.
 	*/
-	ConvertToTypeCallback<T> convert_to_type_callback() const {
+	ConvertToTypeCallback<T> ConvertToType() const {
 		return convert_to_type_callback_;
 	}
 
@@ -754,12 +791,12 @@ class JSNativeClassBuilder final {
 
 	  You would call the builer like this:
 	  
-	  JSNativeClassBuilder<Foo> builder;
-	  builder.ConvertToTypeCallback(&Foo::ConvertToType);
+	  JSNativeClassBuilder<Foo> builder("Foo");
+	  builder.ConvertToType(&Foo::ConvertToType);
 
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeClassBuilder<T>& convert_to_type_callback(const ConvertToTypeCallback<T>& convert_to_type_callback) {
+	JSNativeClassBuilder<T>& ConvertToType(const ConvertToTypeCallback<T>& convert_to_type_callback) {
 		convert_to_type_callback_ = convert_to_type_callback;
 		return *this;
 	}
@@ -787,8 +824,8 @@ class JSNativeClassBuilder final {
 
 	// Optional parameters - initialized to default values
 	JSString                                       class_name_;
-	std::unordered_set<JSNativeClassAttribute>     attributes_;
-	JSClass                                        parent_;
+	std::unordered_set<JSNativeClassAttribute>     class_attributes_;
+	JSClass                                        parent_class_;
 	JSNativeObjectValuePropertyCallbackMap_t<T>    value_property_callback_map_;
 	JSNativeObjectFunctionPropertyCallbackMap_t<T> function_property_callback_map_;
 	InitializeCallback<T>                          initialize_callback_             { nullptr };
@@ -807,8 +844,8 @@ class JSNativeClassBuilder final {
 template<typename T>
 JSNativeClassBuilder<T>::JSNativeClassBuilder(const JSNativeClass<T>& js_native_class)
 		: class_name_(js_native_class.class_name_)
-		, attributes_(js_native_class.attributes_)
-		, parent_(js_native_class.parent_)
+		, class_attributes_(js_native_class.class_attributes_)
+		, parent_class_(js_native_class.parent_class_)
 		, value_property_callback_map_(js_native_class.value_property_callback_map_)
 		, function_property_callback_map_(js_native_class.function_property_callback_map_)
 		, initialize_callback_(js_native_class.initialize_callback_)
@@ -876,12 +913,6 @@ JSNativeClassBuilder<T>& JSNativeClassBuilder<T>::AddValuePropertyCallback(const
 }
 
 template<typename T>
-JSNativeClassBuilder<T>& JSNativeClassBuilder<T>::RemoveAllValuePropertyCallbacks() {
-	value_property_callback_map_.clear();
-	return *this;
-}
-
-template<typename T>
 JSNativeClassBuilder<T>& JSNativeClassBuilder<T>::AddFunctionPropertyCallback(const JSNativeObjectFunctionPropertyCallback<T>& function_property_callback) {
 	static const std::string log_prefix { "MDL: JSNativeClassBuilder::AddFunctionPropertyCallback:" };
 	
@@ -931,47 +962,51 @@ JSNativeClassBuilder<T>& JSNativeClassBuilder<T>::AddFunctionPropertyCallback(co
 	return *this;
 }
 
-template<typename T>
-JSNativeClassBuilder<T>& JSNativeClassBuilder<T>::RemoveAllFunctionPropertyCallbacks() {
-	function_property_callback_map_.clear();
-	return *this;
-}
-
 
 /* JSNativeClass constructor */
 
 template<typename T>
-JSNativeClass<T>::JSNativeClass(const JSNativeClassBuilder<T>& builder)
-		: JSClass()
-		, class_name_(builder.class_name_)
-		, class_name_for_js_class_definition_(class_name_)
-		, attributes_(builder.attributes_)
-		, parent_(builder.parent_)
-		, value_property_callback_map_(builder.value_property_callback_map_)
-		, function_property_callback_map_(builder.function_property_callback_map_)
-		, initialize_callback_(builder.initialize_callback_)
-		, finalize_callback_(builder.finalize_callback_)
-		, has_property_callback_(builder.has_property_callback_)
-	  , get_property_callback_(builder.get_property_callback_)
-    , set_property_callback_(builder.set_property_callback_)
-    , delete_property_callback_(builder.delete_property_callback_)
-    , get_property_names_callback_(builder.get_property_names_callback_)
-    , call_as_function_callback_(builder.call_as_function_callback_)
-		, call_as_constructor_callback_(builder.call_as_constructor_callback_)
-		, has_instance_callback_(builder.has_instance_callback_)
-		, convert_to_type_callback_(builder.convert_to_type_callback_)
-	  , js_class_definition_(kJSClassDefinitionEmpty) {
+JSNativeClass<T>::JSNativeClass(const JSString& class_name)
+		: JSNativeClass(JSNativeClassBuilder<T>(class_name)) {
+}
 
-	JAVASCRIPTCORECPP_RAII_JSCLASS_LOCK_GUARD;
+template<typename T>
+JSNativeClass<T>::JSNativeClass(const JSNativeClassBuilder<T>& builder) {
+	JAVASCRIPTCORECPP_RAII_JSNATIVECLASS_STATIC_LOCK_GUARD;
+	
+	value_property_callback_map_.clear();
+	function_property_callback_map_.clear();
+	
+	js_static_values_.clear();
+	js_static_functions_.clear();
+	
+	class_name_                         = builder.class_name_;
+	class_name_for_js_class_definition_ = class_name_;
+	class_attributes_                   = builder.class_attributes_;
+	parent_class_                       = builder.parent_class_;
+	value_property_callback_map_        = builder.value_property_callback_map_;
+	function_property_callback_map_     = builder.function_property_callback_map_;
+	initialize_callback_                = builder.initialize_callback_;
+	finalize_callback_                  = builder.finalize_callback_;
+	has_property_callback_              = builder.has_property_callback_;
+	get_property_callback_              = builder.get_property_callback_;
+	set_property_callback_              = builder.set_property_callback_;
+	delete_property_callback_           = builder.delete_property_callback_;
+	get_property_names_callback_        = builder.get_property_names_callback_;
+	call_as_function_callback_          = builder.call_as_function_callback_;
+	call_as_constructor_callback_       = builder.call_as_constructor_callback_;
+	has_instance_callback_              = builder.has_instance_callback_;
+	convert_to_type_callback_           = builder.convert_to_type_callback_;
+	js_class_definition_                = kJSClassDefinitionEmpty;
+
 	InitializeJSStaticValueVector();
 	InitializeJSStaticFunctionVector();
 	InitializeJSClassDefinition();
-
+	
 	// Replace the private JSClassRef member in the base class.
 	JSClassRelease(js_class_ref__);
 	js_class_ref__ = JSClassCreate(&js_class_definition_);
 }
-
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 

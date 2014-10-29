@@ -137,14 +137,14 @@ private:
 		std::call_once(of, [] {
 				JSNativeClassBuilder<NativeObject> builder(js_native_class);
 				js_native_class = builder
-						.initialize_callback(&NativeObject::Initialize)
-						.finalize_callback(&NativeObject::Finalize)
-						// .call_as_constructor_callback(&NativeObject::Constructor)
-						.AddValuePropertyCallback("name", &NativeObject::GetName, &NativeObject::SetName)
-						.AddValuePropertyCallback("number", &NativeObject::GetNumber, &NativeObject::SetNumber)
-						.AddValuePropertyCallback("pi", &NativeObject::GetPi)
-						.AddFunctionPropertyCallback("hello", &NativeObject::Hello)
-						.AddFunctionPropertyCallback("goodbye", &NativeObject::Goodbye)
+						.Initialize(&NativeObject::Initialize)
+						.Finalize(&NativeObject::Finalize)
+						// .Constructor(&NativeObject::Constructor)
+						.AddValueProperty("name", &NativeObject::GetName, &NativeObject::SetName)
+						.AddValueProperty("number", &NativeObject::GetNumber, &NativeObject::SetNumber)
+						.AddValueProperty("pi", &NativeObject::GetPi)
+						.AddFunctionProperty("hello", &NativeObject::Hello)
+						.AddFunctionProperty("goodbye", &NativeObject::Goodbye)
 						.build();
 			});
 		

@@ -127,27 +127,27 @@ using namespace JavaScriptCoreCPP::RAII;
 - (void)testJSNativeClassBuilder {
   JSNativeClassBuilder<NativeObject> builder("MyClass");
   builder
-      .initialize_callback(&NativeObject::Initialize)
-      .finalize_callback(&NativeObject::Finalize)
-      // .call_as_constructor_callback(&NativeObject::Constructor)
-      // .has_instance_callback(&NativeObject::HasInstance)
-      .AddValuePropertyCallback("name", &NativeObject::GetName, &NativeObject::SetName)
-      .AddValuePropertyCallback("number", &NativeObject::GetNumber, &NativeObject::SetNumber)
-      .AddValuePropertyCallback("pi", &NativeObject::GetPi)
-      .AddFunctionPropertyCallback("hello", &NativeObject::Hello)
-      .AddFunctionPropertyCallback("goodbye", &NativeObject::Goodbye)
-      // .get_property_callback(&NativeObject::GetProperty)
-      // .set_property_callback(&NativeObject::SetProperty)
-      // .delete_property_callback(&NativeObject::DeleteProperty)
-      // .get_property_names_callback(&NativeObject::GetPropertyNames)
-      // .has_property_callback(&NativeObject::HasProperty)
-      // .call_as_function_callback(&NativeObject::CallAsFunction)
-      // .convert_to_type_callback(&NativeObject::ConvertToType);
+      .Initialize(&NativeObject::Initialize)
+      .Finalize(&NativeObject::Finalize)
+      // .Constructor(&NativeObject::Constructor)
+      // .HasInstance(&NativeObject::HasInstance)
+      .AddValueProperty("name", &NativeObject::GetName, &NativeObject::SetName)
+      .AddValueProperty("number", &NativeObject::GetNumber, &NativeObject::SetNumber)
+      .AddValueProperty("pi", &NativeObject::GetPi)
+      .AddFunctionProperty("hello", &NativeObject::Hello)
+      .AddFunctionProperty("goodbye", &NativeObject::Goodbye)
+      // .GetProperty(&NativeObject::GetProperty)
+      // .SetProperty(&NativeObject::SetProperty)
+      // .DeleteProperty(&NativeObject::DeleteProperty)
+      // .GetPropertyNames(&NativeObject::GetPropertyNames)
+      // .HasProperty(&NativeObject::HasProperty)
+      // .Function(&NativeObject::CallAsFunction)
+      // .ConvertType(&NativeObject::ConvertToType);
       ;
-
+  
   auto native_class = builder.build();
   JSContext js_context = js_context_group.CreateContext(native_class);
-
+  
   //std::vector<JSStaticValue> js_static_values;
   //XCTAssertTrue(js_static_values.empty());
 }
