@@ -399,7 +399,7 @@ class JSContextMethods {
 	  @throws std::runtime_error exception if the evaluated script threw
 	  an exception.
 	*/
-	virtual JSValue JSEvaluateScript(const JSString& script, const JSString& source_url = JSString(), int starting_line_number = 1) = 0;
+	virtual JSValue JSEvaluateScript(const JSString& script, const JSString& source_url = JSString(), int starting_line_number = 1) const = 0;
 	
 	/*!
 	  @method
@@ -426,7 +426,7 @@ class JSContextMethods {
 	  an exception.
 	  
 	*/
-	virtual JSValue JSEvaluateScript(const JSString& script, const JSObject& this_object, const JSString& source_url = JSString(), int starting_line_number = 1) = 0;
+	virtual JSValue JSEvaluateScript(const JSString& script, const JSObject& this_object, const JSString& source_url = JSString(), int starting_line_number = 1) const = 0;
 	
 	
 	/*!
@@ -450,7 +450,7 @@ class JSContextMethods {
 	  @result true if the script is syntactically correct, otherwise
 	  false.
 	*/
-	virtual bool JSCheckScriptSyntax(const JSString& script, const JSString& source_url = JSString(), int starting_line_number = 1) = 0;
+	virtual bool JSCheckScriptSyntax(const JSString& script, const JSString& source_url = JSString(), int starting_line_number = 1) const = 0;
 	
 	/*!
 	  @method

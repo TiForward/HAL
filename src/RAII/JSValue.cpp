@@ -8,9 +8,23 @@
  */
 
 #include "JavaScriptCoreCPP/RAII/JSValue.hpp"
+
+#include "JavaScriptCoreCPP/RAII/JSUndefined.hpp"
+#include "JavaScriptCoreCPP/RAII/JSNull.hpp"
 #include "JavaScriptCoreCPP/RAII/JSBoolean.hpp"
 #include "JavaScriptCoreCPP/RAII/JSNumber.hpp"
+
 #include "JavaScriptCoreCPP/RAII/JSObject.hpp"
+#include "JavaScriptCoreCPP/RAII/JSArray.hpp"
+#include "JavaScriptCoreCPP/RAII/JSDate.hpp"
+#include "JavaScriptCoreCPP/RAII/JSError.hpp"
+#include "JavaScriptCoreCPP/RAII/JSFunction.hpp"
+#include "JavaScriptCoreCPP/RAII/JSRegExp.hpp"
+
+// #include "JavaScriptCoreCPP/RAII/JSBoolean.hpp"
+// #include "JavaScriptCoreCPP/RAII/JSNumber.hpp"
+// #include "JavaScriptCoreCPP/RAII/JSObject.hpp"
+
 #include "JSUtil.hpp"
 #include <stdexcept>
 #include <sstream>
@@ -232,6 +246,118 @@ std::string to_string(const JSValue::Type& js_value_type) {
 			std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl; 
 			throw std::logic_error(message);
 	}
+}
+
+JSObject JSValue::get_global_object() const {
+	return js_context__.get_global_object();
+}
+
+JSContextGroup JSValue::get_context_group() const {
+	return js_context__.get_context_group();
+}
+
+JSValue JSValue::CreateValueFromJSON(const JSString& js_string) const {
+	return js_context__.CreateValueFromJSON(js_string);
+}
+	
+JSValue JSValue::CreateString() const {
+	return js_context__.CreateString();
+}
+	
+JSValue JSValue::CreateString(const JSString& js_string) const {
+	return js_context__.CreateString(js_string);
+}
+	
+JSValue JSValue::CreateString(const char* string) const {
+	return js_context__.CreateString(string);
+}
+	
+JSValue JSValue::CreateString(const std::string& string) const {
+	return js_context__.CreateString(string);
+}
+
+JSUndefined JSValue::CreateUndefined() const {
+	return js_context__.CreateUndefined();
+}
+	
+JSNull JSValue::CreateNull() const {
+	return js_context__.CreateNull();
+}
+	
+JSBoolean JSValue::CreateBoolean(bool boolean) const {
+	return js_context__.CreateBoolean(boolean);
+}
+	
+JSNumber JSValue::CreateNumber() const {
+	return js_context__.CreateNumber();
+}
+	
+JSNumber JSValue::CreateNumber(double number) const {
+	return js_context__.CreateNumber(number);
+}
+	
+JSNumber JSValue::CreateNumber(int32_t number) const {
+	return js_context__.CreateNumber(number);
+}
+	
+JSNumber JSValue::CreateNumber(uint32_t number) const {
+	return js_context__.CreateNumber(number);
+}
+	
+JSObject JSValue::CreateObject() const{
+	return js_context__.CreateObject();
+}
+	
+JSObject JSValue::CreateObject(const JSClass& js_class, void* private_data) const {
+	return js_context__.CreateObject(js_class, private_data);
+}
+	
+JSArray JSValue::CreateArray() const {
+	return js_context__.CreateArray();
+}
+	
+JSArray JSValue::CreateArray(const std::vector<JSValue>& arguments) const {
+	return js_context__.CreateArray(arguments);
+}
+	
+JSDate JSValue::CreateDate() const {
+	return js_context__.CreateDate();
+}
+	
+JSDate JSValue::CreateDate(const std::vector<JSValue>& arguments) const {
+	return js_context__.CreateDate(arguments);
+}
+	
+JSError JSValue::CreateError() const {
+	return js_context__.CreateError();
+}
+	
+JSError JSValue::CreateError(const std::vector<JSValue>& arguments) const {
+	return js_context__.CreateError(arguments);
+}
+	
+JSRegExp JSValue::CreateRegExp() const {
+	return js_context__.CreateRegExp();
+}
+	
+JSRegExp JSValue::CreateRegExp(const std::vector<JSValue>& arguments) const {
+	return js_context__.CreateRegExp(arguments);
+}
+	
+JSFunction JSValue::CreateFunction(const JSString& function_name, const std::vector<JSString>& parameter_names, const JSString& body, const JSString& source_url, int starting_line_number) const {
+	return js_context__.CreateFunction(function_name, parameter_names, body, source_url, starting_line_number);
+}
+
+JSValue JSValue::JSEvaluateScript(const JSString& script, const JSString& source_url, int starting_line_number) const {
+	return js_context__.JSEvaluateScript(script, source_url, starting_line_number);
+}
+
+JSValue JSValue::JSEvaluateScript(const JSString& script, const JSObject& this_object, const JSString& source_url, int starting_line_number) const {
+	return js_context__.JSEvaluateScript(script, this_object, source_url, starting_line_number);
+}
+
+bool JSValue::JSCheckScriptSyntax(const JSString& script, const JSString& source_url, int starting_line_number) const {
+	return js_context__.JSCheckScriptSyntax(script, source_url, starting_line_number);
 }
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {

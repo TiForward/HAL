@@ -116,9 +116,9 @@ class JSContext final	: public JSContextMethods {
 	virtual JSRegExp    CreateRegExp() const override final;
 	virtual JSRegExp    CreateRegExp(const std::vector<JSValue>& arguments) const override final;
 	virtual JSFunction  CreateFunction(const JSString& function_name, const std::vector<JSString>& parameter_names, const JSString& body, const JSString& source_url = JSString(), int starting_line_number = 1) const override final;
-	virtual JSValue     JSEvaluateScript(const JSString& script, const JSString& source_url = JSString(), int starting_line_number = 1) override final;
-	virtual JSValue     JSEvaluateScript(const JSString& script, const JSObject& this_object, const JSString& source_url = JSString(), int starting_line_number = 1) override final;
-	virtual bool        JSCheckScriptSyntax(const JSString& script, const JSString& source_url = JSString(), int starting_line_number = 1) override final;
+	virtual JSValue     JSEvaluateScript(const JSString& script, const JSString& source_url = JSString(), int starting_line_number = 1) const override final;
+	virtual JSValue     JSEvaluateScript(const JSString& script, const JSObject& this_object, const JSString& source_url = JSString(), int starting_line_number = 1) const override final;
+	virtual bool        JSCheckScriptSyntax(const JSString& script, const JSString& source_url = JSString(), int starting_line_number = 1) const override final;
 
 	virtual void GarbageCollect() const  override final {
 		JSGarbageCollect(js_context_ref__);

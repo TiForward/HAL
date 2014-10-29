@@ -134,7 +134,7 @@ JSFunction JSContext::CreateFunction(const JSString& function_name, const std::v
 	return JSFunction(*this, function_name, parameter_names, body, source_url, starting_line_number);
 }
 
-JSValue JSContext::JSEvaluateScript(const JSString& script, const JSString& source_url, int starting_line_number) {
+JSValue JSContext::JSEvaluateScript(const JSString& script, const JSString& source_url, int starting_line_number) const {
 	JAVASCRIPTCORECPP_RAII_JSCONTEXT_LOCK_GUARD;
 	JSValueRef js_value_ref { nullptr };
 	const JSObjectRef this_object { nullptr };
@@ -154,7 +154,7 @@ JSValue JSContext::JSEvaluateScript(const JSString& script, const JSString& sour
 	return result;
 }
 
-JSValue JSContext::JSEvaluateScript(const JSString& script, const JSObject& this_object, const JSString& source_url, int starting_line_number) {
+JSValue JSContext::JSEvaluateScript(const JSString& script, const JSObject& this_object, const JSString& source_url, int starting_line_number) const {
 	JAVASCRIPTCORECPP_RAII_JSCONTEXT_LOCK_GUARD;
 	JSValueRef js_value_ref { nullptr };
 	const JSStringRef source_url_ref = (source_url.length() > 0) ? static_cast<JSStringRef>(source_url) : nullptr;
@@ -173,7 +173,7 @@ JSValue JSContext::JSEvaluateScript(const JSString& script, const JSObject& this
 	return result;
 }
 
-bool JSContext::JSCheckScriptSyntax(const JSString& script, const JSString& source_url, int starting_line_number) {
+bool JSContext::JSCheckScriptSyntax(const JSString& script, const JSString& source_url, int starting_line_number) const {
 	JAVASCRIPTCORECPP_RAII_JSCONTEXT_LOCK_GUARD;
 	const JSStringRef source_url_ref = (source_url.length() > 0) ? static_cast<JSStringRef>(source_url) : nullptr;
 	JSValueRef exception { nullptr };
