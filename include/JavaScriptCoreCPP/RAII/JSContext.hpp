@@ -246,8 +246,8 @@ class JSContext final	{
 	/*!
 	  @method
 	  
-	  @abstract Create a JavaScript object from a JSNativeClass backed
-	  by a C++ object for some or all of its functionality.
+	  @abstract Create a JavaScript object defined by a JSNativeClass
+	  that is implemented by a C++ object.
 	  
 	  @param js_native_class The JSNativeClass used to create this
 	  object.
@@ -255,11 +255,11 @@ class JSContext final	{
 	  @param T_constructor_arguments The constructor arguments to use
 	  when creating the type T.
 	  
-	  @result A JavaScript object from a JSNativeClass backed by a C++
-	  object for some or all of its functionality.
+	  @result A JavaScript object defined by a JSNativeClass that is
+	  implemented by a C++ object.
 	*/
-	template<typename T, typename... Us>
-	JSNativeObject<T> CreateObject(const JSNativeClass<T>& js_native_class, Us&&... T_constructor_arguments) const;
+	// template<typename T, typename... Us>
+	// T CreateObject(const JSNativeClass<T>& js_native_class, Us&&... T_constructor_arguments) const;
 	
 	/*!
 	  @method

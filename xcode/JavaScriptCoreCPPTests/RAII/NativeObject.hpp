@@ -19,31 +19,9 @@ class NativeObject final : public JSNativeObject<NativeObject> {
 
  public:
 
-	NativeObject(const JSContext& js_context) : JSNativeObject<NativeObject>(js_context) {
+	NativeObject(const JSContext& js_context) : JSNativeObject<NativeObject>(js_context, JSExport()) {
 	}
 
-	void foo() {
-		JSNativeClassBuilder<NativeObject> builder("MyClass");
-		builder
-				.initialize_callback(&NativeObject::Initialize)
-				.finalize_callback(&NativeObject::Finalize)
-				// .call_as_constructor_callback(&NativeObject::Constructor)
-				// .has_instance_callback(&NativeObject::HasInstance)
-				.AddValuePropertyCallback("name", &NativeObject::GetName, &NativeObject::SetName)
-				.AddValuePropertyCallback("number", &NativeObject::GetNumber, &NativeObject::SetNumber)
-				.AddValuePropertyCallback("pi", &NativeObject::GetPi)
-				.AddFunctionPropertyCallback("hello", &NativeObject::Hello)
-				.AddFunctionPropertyCallback("goodbye", &NativeObject::Goodbye)
-				// .get_property_callback(&NativeObject::GetProperty)
-				// .set_property_callback(&NativeObject::SetProperty)
-				// .delete_property_callback(&NativeObject::DeleteProperty)
-				// .get_property_names_callback(&NativeObject::GetPropertyNames)
-				// .has_property_callback(&NativeObject::HasProperty)
-				// .call_as_function_callback(&NativeObject::CallAsFunction)
-				// .convert_to_type_callback(&NativeObject::ConvertToType);
-
-	}
-	
 	virtual ~NativeObject() {
 	}
 	
@@ -63,148 +41,6 @@ class NativeObject final : public JSNativeObject<NativeObject> {
 		std::clog << log_prefix << "called with " << arguments.size() << "." << std::endl;
 		
 		return get_context().CreateObject();
-	}
-
-	bool HasInstance(const JSValue& possible_instance) const {
-		static const std::string log_prefix { "MDL: NativeObject::HasInstance: " };
-
-		std::clog << log_prefix << possible_instance;
-		
-		bool has_instance = false;
-		std::string message;
-		try {
-			dynamic_cast<const NativeObject&>(possible_instance);
-			has_instance = true;
-		} catch (const std::bad_cast& exception) {
-			// Expected exception if possible_instance is not of our class
-			// type.
-		} catch (const std::exception& exception) {
-			// Unexpected exception.
-			message = exception.what();
-		} catch (...) {
-			// Unexpected and unknown exception.
-			message = "Unknown exception";
-		}
-		
-		std::clog << std::boolalpha << has_instance;
-		
-		if (!message.empty()) {
-			std::clog << ", (caught exception: " << message << ")";
-		}
-		
-		std::clog << "." << std::endl;
-		
-		return has_instance;
-	}
-	
-	JSValue GetProperty(const JSString& property_name) const {
-		static const std::string log_prefix { "MDL: NativeObject::GetProperty: " };
-		const auto position = properties_.find(property_name);
-		const bool found  = position != properties_.end();
-		JSValue    result = found ? position -> second : get_context().CreateUndefined();
-		
-		std::clog << log_prefix
-		          << property_name
-		          << " = "
-		          << result;
-
-		if (!found) {
-			// The property did not exist.
-			std::clog << ", property does not exist";
-		}
-		
-		std::clog << "." << std::endl;
-		
-		return result;
-	}
-
-	bool SetProperty(const JSString& property_name, const JSValue& value) {
-		static const std::string log_prefix { "MDL: NativeObject::SetProperty: " };
-		const auto previous_position = properties_.find(property_name);
-		const bool found = previous_position != properties_.end();
-		if (found) {
-			// The property already exists, so remove the old value.
-			properties_.erase(previous_position);
-		}
-		
-		const auto insert_result = properties_.insert(std::make_pair(property_name, value));
-		
-		std::clog << log_prefix
-		          << property_name
-		          << " = "
-		          << value
-		          << ", inserted = "
-		          << std::boolalpha
-		          << insert_result . second;
-		
-		if (found) {
-			// The property already existed, so log this fact.
-			std::clog << ", previous value was " << previous_position -> second;
-		}
-		
-		std::clog << "." << std::endl;
-		
-		return false;
-	}
-
-	bool DeleteProperty(const JSString& property_name) {
-		static const std::string log_prefix { "MDL: NativeObject::DeleteProperty: " };
-		
-		const auto previous_position = properties_.find(property_name);
-		if (previous_position != properties_.end()) {
-			// The property already exists, so remove the old value.
-			properties_.erase(previous_position);
-		}
-
-		std::clog << log_prefix << property_name;
-		
-		if (previous_position != properties_.end()) {
-			// The property already existed, so log this fact.
-			std::clog << ", previous value was " << previous_position -> second;
-		}
-		
-		std::clog << "." << std::endl;
-		
-		return previous_position != properties_.end();
-	}
-
-	void GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const {
-		static const std::string log_prefix { "MDL: NativeObject::GetPropertyNames: " };
-
-		for (const auto& property : properties_) {
-			accumulator.AddName(property.first);
-		}
-
-		std::clog << log_prefix << " accumulated " << properties_.size() << " property names." << std::endl;
-	}
-
-	bool HasProperty(const JSString& property_name) const {
-		static const std::string log_prefix { "MDL: NativeObject::HasProperty: " };
-		const bool has_property = properties_.count(property_name) > 1;
-		
-		std::clog << log_prefix
-		          << property_name
-		          << " = "
-		          << std::boolalpha
-		          << has_property
-		          << "."
-		          << std::endl;
-		
-		return has_property;
-	}
-
-	JSValue CallAsFunction(const std::vector<JSValue>& arguments, const JSObject& this_object) {
-		static const std::string log_prefix { "MDL: NativeObject::CallAsFunction: " };
-		
-		std::clog
-				<< log_prefix
-				<< "called with "
-				<< arguments.size()
-				<< " arguments with this_object = "
-				<< this_object
-				<< std::endl;
-		
-		return get_context().CreateUndefined();
 	}
 
 	JSValue GetName() const {
@@ -288,22 +124,35 @@ class NativeObject final : public JSNativeObject<NativeObject> {
 		return get_context().CreateString(os.str());
 	}
 
-	JSValue ConvertToType(const JSValue::Type& js_value_type) const {
-		static const std::string log_prefix { "MDL: NativeObject::ConvertToType: " };
-
-		std::clog << log_prefix << "Don't know how to convert to type " << js_value_type << "." << std::endl;
-		
-		return get_context().CreateUndefined();
-	}
-
 private:
 
 	std::unordered_map<JSString, JSValue> properties_;
 	JSValue                               name_   = get_context().CreateString();
 	JSNumber                              number_ = get_context().CreateNumber(42);
 	JSNumber                              pi_     = get_context().CreateNumber(3.141592653589793);
-};
 
+	static JSNativeClass<NativeObject> JSExport() {
+		static JSNativeClass<NativeObject> js_native_class("MyClass");
+		static std::once_flag of;
+		std::call_once(of, [] {
+				JSNativeClassBuilder<NativeObject> builder(js_native_class);
+				js_native_class = builder
+						.initialize_callback(&NativeObject::Initialize)
+						.finalize_callback(&NativeObject::Finalize)
+						// .call_as_constructor_callback(&NativeObject::Constructor)
+						.AddValuePropertyCallback("name", &NativeObject::GetName, &NativeObject::SetName)
+						.AddValuePropertyCallback("number", &NativeObject::GetNumber, &NativeObject::SetNumber)
+						.AddValuePropertyCallback("pi", &NativeObject::GetPi)
+						.AddFunctionPropertyCallback("hello", &NativeObject::Hello)
+						.AddFunctionPropertyCallback("goodbye", &NativeObject::Goodbye)
+						.build();
+			});
+		
+		return js_native_class;
+	}
+	
+};
+	
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 
 #endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_XCODE_JAVASCRIPTCORECPPTESTS_RAII_DERIVEDJSOBJECT_HPP_

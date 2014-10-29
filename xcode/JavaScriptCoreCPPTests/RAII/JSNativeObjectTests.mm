@@ -45,19 +45,9 @@ using namespace JavaScriptCoreCPP::RAII;
 - (void)testObjectCallbacks {
   InitializeCallback<NativeObject>        InitializeCallback        = &NativeObject::Initialize;
   FinalizeCallback<NativeObject>          FinalizeCallback          = &NativeObject::Finalize;
-
   CallAsConstructorCallback<NativeObject> CallAsConstructorCallback = &NativeObject::Constructor;
-  HasInstanceCallback<NativeObject>       HasInstanceCallback       = &NativeObject::HasInstance;
-
-  GetPropertyCallback<NativeObject>       GetPropertyCallback       = &NativeObject::GetProperty;
-  SetPropertyCallback<NativeObject>       SetPropertyCallback       = &NativeObject::SetProperty;
-  DeletePropertyCallback<NativeObject>    DeletePropertyCallback    = &NativeObject::DeleteProperty;
-  GetPropertyNamesCallback<NativeObject>  GetPropertyNamesCallback  = &NativeObject::GetPropertyNames;
-  HasPropertyCallback<NativeObject>       HasPropertyCallback       = &NativeObject::HasProperty;
-  ConvertToTypeCallback<NativeObject>     ConvertToTypeCallback     = &NativeObject::ConvertToType;
-
-  CallAsFunctionCallback<NativeObject>    Helloallback               = &NativeObject::Hello;
-  CallAsFunctionCallback<NativeObject>    GoodbyeCallback            = &NativeObject::Goodbye;
+  CallAsFunctionCallback<NativeObject>    Helloallback              = &NativeObject::Hello;
+  CallAsFunctionCallback<NativeObject>    GoodbyeCallback           = &NativeObject::Goodbye;
 }
 
 - (void)testPropertyCallbacks {
@@ -153,9 +143,10 @@ using namespace JavaScriptCoreCPP::RAII;
       // .has_property_callback(&NativeObject::HasProperty)
       // .call_as_function_callback(&NativeObject::CallAsFunction)
       // .convert_to_type_callback(&NativeObject::ConvertToType);
+      ;
 
   auto native_class = builder.build();
-  JSContext js_context = js_context_group.CreateObject(native_class);
+  JSContext js_context = js_context_group.CreateContext(native_class);
 
   //std::vector<JSStaticValue> js_static_values;
   //XCTAssertTrue(js_static_values.empty());

@@ -11,7 +11,6 @@
 #define _JAVASCRIPTCORECPP_RAII_JSPROPERTYATTRIBUTE_HPP_
 
 #include <functional>
-#include <unordered_set>
 #include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP { namespace RAII {
@@ -29,7 +28,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
   @constant DontDelete Specifies that the delete operation should fail
   on a property.
 */
-enum class JSPropertyAttribute : ::JSPropertyAttributes {
+enum class JSPropertyAttribute : JSPropertyAttributes {
 	None,
 	ReadOnly,
 	DontEnum,
@@ -51,10 +50,9 @@ struct hash<JSPropertyAttribute> {
 	using result_type   = std::size_t;
 	
 	using property_attribute_underlying_type = std::underlying_type<JSPropertyAttribute>::type;
-	const std::hash<property_attribute_underlying_type> hash_function = std::hash<property_attribute_underlying_type>();
 	
 	result_type operator()(const argument_type& property_attribute) const {
-		return hash_function(static_cast<property_attribute_underlying_type>(property_attribute));
+		return std::hash<property_attribute_underlying_type>()(static_cast<property_attribute_underlying_type>(property_attribute));
 	}
 };
 

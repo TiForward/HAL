@@ -55,26 +55,41 @@ class JSNativeObject : public JSObject {
  protected:
 
 	// This constructor is the one invoked by the T derived class.
-	JSNativeObject(const JSContext& js_context) : JSObject(js_context) {
+	JSNativeObject(const JSContext& js_context, const JSNativeClass<T>& js_native_class) : JSObject(js_context, js_native_class, this) {
+		// const auto key = reinterpret_cast<std::intptr_t>(JSObject::GetPrivate());
+		// js_native_class.AddNativeObject(key, js_native_class);
 	}
+	
+	virtual ~JSNativeObject() {
+	}
+
+	// Copy constructor.
+	JSNativeObject(const JSNativeObject<T>& rhs) = default;
+	
+	// Move constructor.
+	JSNativeObject(JSNativeObject<T>&& rhs) = default;
+
+	// Copy assignment operators.
+	JSNativeObject& operator=(const JSNativeObject<T>&) = default;
+	JSNativeObject& operator=(JSNativeObject<T>&&) = default;
 	
 	virtual bool IsConstructor() const override final {
 		return JSObject::IsConstructor();
 	}
 
 	virtual bool HasInstance(const JSValue& possible_instance) const override final {
-		return JSObject::HasInstance();
+		return JSObject::HasInstance(possible_instance);
 	}
 
 	virtual JSObject CallAsConstructor(const std::vector<JSValue>& arguments) override final {
-		return JSObject::HasInstance(arguments);
+		return JSObject::CallAsConstructor(arguments);
 	}
 
 	virtual bool IsFunction() const override final {
 		return JSObject::IsFunction();
 	}
 
-	virtual JSValue CallAsFunction(const std::vector<JSValue>& arguments, const JSObject& this_object) const override final {
+	virtual JSValue CallAsFunction(const std::vector<JSValue>& arguments, const JSObject& this_object) override final {
 		return JSObject::CallAsFunction(arguments, this_object);
 	}
 	
@@ -86,11 +101,11 @@ class JSNativeObject : public JSObject {
 		return JSObject::GetProperty(property_index);
 	}
 	
-	virtual bool SetProperty(const JSString& property_name, const JSValue& property_value, const std::unordered_set<JSPropertyAttribute> attributes) override final {
+	virtual void SetProperty(const JSString& property_name, const JSValue& property_value, const std::unordered_set<JSPropertyAttribute>& attributes = {}) override final {
 		return JSObject::SetProperty(property_name, property_value, attributes);
 	}
 	
-	virtual bool SetProperty(unsigned property_index, const JSValue& property_value) override final {
+	virtual void SetProperty(unsigned property_index, const JSValue& property_value) override final {
 		return JSObject::SetProperty(property_index, property_value);
 	}
 	
@@ -98,7 +113,7 @@ class JSNativeObject : public JSObject {
 		return JSObject::HasProperty(property_name);
 	}
 	
-	virtual bool DeleteProperty(const JSString& property_name) const override final {
+	virtual bool DeleteProperty(const JSString& property_name) override final {
 		return JSObject::DeleteProperty(property_name);
 	}
 	
@@ -126,74 +141,20 @@ class JSNativeObject : public JSObject {
 		return JSObject::GetPrototype();
 	}
 	
-	virtual JSValue SetPrototype(const JSValue& js_value) const override final {
-		return JSObject::SetPrototype(js_value);
+	virtual void SetPrototype(const JSValue& js_value) override final {
+		JSObject::SetPrototype(js_value);
 	}
 
 	virtual void* GetPrivate() const override final {
 		return nullptr;
 	}
 	
-	virtual bool SetPrivate(void* data) const override final {
+	virtual bool SetPrivate(void* data) override final {
 		return false;
 	}
 	
-	virtual ~JSNativeObject() {
-	}
-
-	// Copy constructor.
-	JSNativeObject(const JSNativeObject<T>& rhs)
-			: JSObject(rhs.get_context(), rhs.js_native_class__)
-			, js_native_class__(rhs.js_native_class__) {
-	}
-	
-	// Move constructor.
-	JSNativeObject(JSNativeObject<T>&& rhs)
-			: JSObject(rhs.get_context(), rhs.js_native_class__)
-			, js_native_class__(rhs.js_native_class__) {
-	}
-  
-#ifdef JAVASCRIPTCORECPP_RAII_MOVE_SEMANTICS_ENABLE
-  JSNativeObject& JSNativeObject::operator=(const JSNativeObject&) = default;
-  JSNativeObject& JSNativeObject::operator=(JSNativeObject&&) = default;
-#endif
-
-	// Create a copy of another JSNativeObject by assignment. This is a unified
-	// assignment operator that fuses the copy assignment operator,
-  // X& X::operator=(const X&), and the move assignment operator,
-  // X& X::operator=(X&&);
-	JSNativeObject& operator=(JSNativeObject<T> rhs) {
-		JSObject::operator=(rhs);
-    swap(*this, rhs);
-    return *this;
-  }
-  
-	friend void swap(JSNativeObject<T>& first, JSNativeObject<T>& second) noexcept {
-    // enable ADL (not necessary in our case, but good practice)
-    using std::swap;
-    
-    // By swapping the members of two classes, the two classes are
-    // effectively swapped.
-    swap(first.js_native_class__, second.js_native_class__);
-}
-
 private:
 
-	void Initialize(const JSNativeClass<T>& js_native_class, const T* native_object_ptr) {
-		js_native_class__          = js_native_class;
-		native_object_shared_ptr__ = native_object_shared_ptr;
-
-		JSObjectRef js_object_ref = JSObjectMake(get_context(), js_native_class, native_object_ptr);
-
-		// Replace the JSObjectRef in our base class.
-		JSValueUnprotect(get_context(), js_object_ref__);
-		js_object_ref__ = js_object_ref;
-	}
-
-	// Only a JSContext can call Initialize.
-	friend class JSContext;
-	
-	JSNativeClass<T>   js_native_class__;
 	JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_MUTEX;
 };
 
@@ -202,12 +163,10 @@ JSContext JSContextGroup::CreateContext(const JSNativeClass<T>& global_object_cl
 	return JSContext(*this, global_object_class);
 }
 
-template<typename T, typename... Us>
-JSNativeObject<T> JSContext::CreateObject(const JSNativeClass<T>& js_native_class, Us&&... T_constructor_arguments) const {
-	auto js_native_object = JSNativeClass<T>(*this);
-	js_native_object.Initialize(js_native_class, new T(std::forward<Us>(T_constructor_arguments)...));
-	return js_native_object;
-}
+// template<typename T, typename... Us>
+// T JSContext::CreateObject(const JSNativeClass<T>& js_native_class, Us&&... T_constructor_arguments) const {
+// 	return T(*this, std::forward<Us>(T_constructor_arguments)...));
+// }
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 

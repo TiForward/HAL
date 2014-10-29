@@ -26,10 +26,11 @@ namespace JavaScriptCoreCPP { namespace RAII {
   objects. Use NoAutomaticPrototype in combination with
   JSObject::SetPrototype to manage prototypes manually.
 */
-enum class JSNativeClassAttribute {
+enum class JSNativeClassAttribute : JSClassAttributes {
 	None,
 	NoAutomaticPrototype
 };
+
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 
 
@@ -44,13 +45,13 @@ struct hash<JSNativeClassAttribute> {
 	using argument_type = JSNativeClassAttribute;
 	using result_type   = std::size_t;
 
-	using property_attribute_underlying_type = std::underlying_type<JSNativeClassAttribute>::type;
-	const std::hash<property_attribute_underlying_type> property_attribute_hash = std::hash<property_attribute_underlying_type>();
+	using class_attribute_underlying_type = std::underlying_type<JSNativeClassAttribute>::type;
 	
-	result_type operator()(const argument_type& property_attribute) const {
-		return property_attribute_hash(static_cast<property_attribute_underlying_type>(property_attribute));
+	result_type operator()(const argument_type& class_attribute) const {
+		return std::hash<class_attribute_underlying_type>()(static_cast<class_attribute_underlying_type>(class_attribute));
 	}
 };
+
 }  // namespace std {
 
 #endif // _JAVASCRIPTCORECPP_RAII_JSNATIVECLASSATTRIBUTE_HPP_

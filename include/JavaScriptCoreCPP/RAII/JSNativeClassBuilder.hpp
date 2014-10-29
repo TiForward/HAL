@@ -62,11 +62,25 @@ class JSNativeClassBuilder final {
 
  public:
 	
+	/*!
+	  @method
+	  
+	  @abstract Create a builder with the given class with all callbacks
+	  initialized to nullptr.
+	*/
 	JSNativeClassBuilder(const JSString& class_name)
 			: class_name_(class_name)
 			, parent_(&kJSClassDefinitionEmpty) {
 	}
 	
+	/*!
+	  @method
+	  
+	  @abstract Create a builder that is initialized from an existing
+	  JSNativeClass.
+	*/
+	JSNativeClassBuilder(const JSNativeClass<T>& js_native_class);
+
 	JSNativeClassBuilder() = delete;;
 	~JSNativeClassBuilder() = default;
 	
@@ -791,6 +805,27 @@ class JSNativeClassBuilder final {
 };
 
 template<typename T>
+JSNativeClassBuilder<T>::JSNativeClassBuilder(const JSNativeClass<T>& js_native_class)
+		: class_name_(js_native_class.class_name_)
+		, attributes_(js_native_class.attributes_)
+		, parent_(js_native_class.parent_)
+		, value_property_callback_map_(js_native_class.value_property_callback_map_)
+		, function_property_callback_map_(js_native_class.function_property_callback_map_)
+		, initialize_callback_(js_native_class.initialize_callback_)
+		, finalize_callback_(js_native_class.finalize_callback_)
+		, has_property_callback_(js_native_class.has_property_callback_)
+	  , get_property_callback_(js_native_class.get_property_callback_)
+    , set_property_callback_(js_native_class.set_property_callback_)
+    , delete_property_callback_(js_native_class.delete_property_callback_)
+    , get_property_names_callback_(js_native_class.get_property_names_callback_)
+    , call_as_function_callback_(js_native_class.call_as_function_callback_)
+		, call_as_constructor_callback_(js_native_class.call_as_constructor_callback_)
+		, has_instance_callback_(js_native_class.has_instance_callback_)
+		, convert_to_type_callback_(js_native_class.convert_to_type_callback_) {
+}
+
+
+template<typename T>
 JSNativeClassBuilder<T>& JSNativeClassBuilder<T>::AddValuePropertyCallback(const JSNativeObjectValuePropertyCallback<T>& value_property_callback) {
 	static const std::string log_prefix { "MDL: JSNativeClassBuilder::AddValuePropertyCallback:" };
 	
@@ -927,6 +962,7 @@ JSNativeClass<T>::JSNativeClass(const JSNativeClassBuilder<T>& builder)
 		, convert_to_type_callback_(builder.convert_to_type_callback_)
 	  , js_class_definition_(kJSClassDefinitionEmpty) {
 
+	JAVASCRIPTCORECPP_RAII_JSCLASS_LOCK_GUARD;
 	InitializeJSStaticValueVector();
 	InitializeJSStaticFunctionVector();
 	InitializeJSClassDefinition();
