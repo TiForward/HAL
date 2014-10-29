@@ -16,22 +16,6 @@
 #include <unordered_set>
 #include <algorithm>
 
-#ifdef JAVASCRIPTCORECPP_RAII_THREAD_SAFE
-#include <mutex>
-
-#ifndef JAVASCRIPTCORECPP_RAII_JSOBJECT_MUTEX
-#define JAVASCRIPTCORECPP_RAII_JSOBJECT_MUTEX std::mutex js_object_mutex_;
-#endif
-
-#ifndef JAVASCRIPTCORECPP_RAII_JSOBJECT_LOCK_GUARD
-#define JAVASCRIPTCORECPP_RAII_JSOBJECT_LOCK_GUARD std::lock_guard<std::mutex> js_object_lock(js_object_mutex_);
-#endif
-
-#else
-#define JAVASCRIPTCORECPP_RAII_JSOBJECT_MUTEX
-#define JAVASCRIPTCORECPP_RAII_JSOBJECT_LOCK_GUARD
-#endif  // JAVASCRIPTCORECPP_RAII_THREAD_SAFE
-
 namespace JavaScriptCoreCPP { namespace detail {
 class JSPropertyNameArray;
 }}
@@ -342,6 +326,11 @@ class JSObject : public JSValue {
 		JSValueProtect(get_context(), js_object_ref__);
 	}
 	
+#ifdef JAVASCRIPTCORECPP_RAII_MOVE_SEMANTICS_ENABLE
+  JSObject& JSObject::operator=(const JSObject&) = default;
+  JSObject& JSObject::operator=(JSObject&&) = default;
+#endif
+
 	// Create a copy of another JSObject by assignment. This is a unified
 	// assignment operator that fuses the copy assignment operator,
 	// X& X::operator=(const X&), and the move assignment operator,
@@ -478,7 +467,6 @@ class JSObject : public JSValue {
 	// friend class JSNativeObject;
 
 	JSObjectRef js_object_ref__{ nullptr };
-	JAVASCRIPTCORECPP_RAII_JSOBJECT_MUTEX;
 };
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {

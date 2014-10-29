@@ -79,7 +79,6 @@ JSValue::operator JSString() const {
 }
 
 JSValue::operator JSBoolean() const {
-	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	return JSBoolean(js_context__, operator bool());
 }
 
@@ -102,12 +101,10 @@ JSValue::operator double() const {
 }
 
 JSValue::operator int32_t() const {
-	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	return detail::to_int32_t(operator double());
 }
 
 JSValue::operator JSNumber() const {
-	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	return JSNumber(js_context__, operator double());
 }
 
@@ -133,7 +130,6 @@ JSValue::operator JSObject() const {
 }
 
 JSValue::Type JSValue::GetType() const {
-	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	const JSType js_type = JSValueGetType(js_context__, js_value_ref__);
 	switch (js_type) {
 		case kJSTypeUndefined:
@@ -200,7 +196,6 @@ bool JSValue::IsEqualWithTypeCoercion(const JSValue& rhs) const {
 }
 
 std::string to_string(const JSValue::Type& js_value_type) {
-	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	switch (js_value_type) {
 		case JSValue::Type::Undefined:
 		return "Undefined";

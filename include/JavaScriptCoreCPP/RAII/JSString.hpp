@@ -15,21 +15,28 @@
 #include <codecvt>
 #include <JavaScriptCore/JavaScript.h>
 
+
 #ifdef JAVASCRIPTCORECPP_RAII_THREAD_SAFE
 #include <mutex>
 
-#ifndef JAVASCRIPTCORECPP_RAII_JSSTRING_MUTEX
-#define JAVASCRIPTCORECPP_RAII_JSSTRING_MUTEX std::mutex js_string_mutex_;
-#endif
+#unndef JAVASCRIPTCORECPP_RAII_JSSTRING_MUTEX_TYPE
+#define JAVASCRIPTCORECPP_RAII_JSSTRING_MUTEX_TYPE std::recursive_mutex
 
-#ifndef JAVASCRIPTCORECPP_RAII_JSSTRING_LOCK_GUARD
-#define JAVASCRIPTCORECPP_RAII_JSSTRING_LOCK_GUARD std::lock_guard<std::mutex> js_string_lock(js_string_mutex_);
-#endif
+#unndef JAVASCRIPTCORECPP_RAII_JSSTRING_MUTEX_NAME 
+#define JAVASCRIPTCORECPP_RAII_JSSTRING_MUTEX_NAME js_string
+
+#undef  JAVASCRIPTCORECPP_RAII_JSSTRING_MUTEX
+#define JAVASCRIPTCORECPP_RAII_JSSTRING_MUTEX JAVASCRIPTCORECPP_RAII_JSSTRING_MUTEX_TYPE JAVASCRIPTCORECPP_RAII_JSSTRING_MUTEX_NAME##_mutex_;
+
+
+#undef  JAVASCRIPTCORECPP_RAII_JSSTRING_LOCK_GUARD
+#define JAVASCRIPTCORECPP_RAII_JSSTRING_LOCK_GUARD std::lock_guard<JAVASCRIPTCORECPP_RAII_JSSTRING_MUTEX_TYPE> JAVASCRIPTCORECPP_RAII_JSSTRING_MUTEX_NAME##_lock(JAVASCRIPTCORECPP_RAII_JSSTRING_MUTEX);
 
 #else
 #define JAVASCRIPTCORECPP_RAII_JSSTRING_MUTEX
 #define JAVASCRIPTCORECPP_RAII_JSSTRING_LOCK_GUARD
 #endif  // JAVASCRIPTCORECPP_RAII_THREAD_SAFE
+
 
 namespace JavaScriptCoreCPP { namespace detail {
 class JSPropertyNameArray;
@@ -111,7 +118,12 @@ class JSString final	{
 		JSStringRetain(js_string_ref__);
 	}
 	
-	// Create a copy of another JSString by assignment. This is a
+#ifdef JAVASCRIPTCORECPP_RAII_MOVE_SEMANTICS_ENABLE
+  JSString& JSString::operator=(const JSString&) = default;
+  JSString& JSString::operator=(JSString&&) = default;
+#endif
+
+  // Create a copy of another JSString by assignment. This is a
   // unified assignment operator that fuses the copy assignment
   // operator, X& X::operator=(const X&), and the move assignment
   // operator, X& X::operator=(X&&);

@@ -45,6 +45,7 @@ JSObject::JSObject(const JSContext& js_context, JSObjectRef js_object_ref)
 }
 
 JSObject JSObject::CallAsConstructor(const std::vector<JSValue>&  arguments) {
+	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	static const std::string log_prefix { "MDL: JSObject::CallAsConstructor: " };
 	
 	if (!IsConstructor()) {
@@ -75,6 +76,7 @@ JSObject JSObject::CallAsConstructor(const std::vector<JSValue>&  arguments) {
 }
 
 JSValue JSObject::CallAsFunction(const std::vector<JSValue>&  arguments, const JSObject& this_object) {
+	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	static const std::string log_prefix { "MDL: JSObject::CallAsFunction: " };
 	
 	if (!IsFunction()) {
@@ -104,6 +106,7 @@ JSValue JSObject::CallAsFunction(const std::vector<JSValue>&  arguments, const J
 }
 
 JSValue JSObject::GetProperty(const JSString& property_name) const {
+	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	static const std::string log_prefix { "MDL: JSObject::GetProperty: " };
 	
 	JSValueRef exception { nullptr };
@@ -128,6 +131,7 @@ JSValue JSObject::GetProperty(const JSString& property_name) const {
 }
 
 JSValue JSObject::GetProperty(unsigned property_index) const {
+	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	static const std::string log_prefix { "MDL: JSObject::GetProperty: " };
 	
 	JSValueRef exception { nullptr };
@@ -152,6 +156,7 @@ JSValue JSObject::GetProperty(unsigned property_index) const {
 }
 
 void JSObject::SetProperty(const JSString& property_name, const JSValue& property_value, const std::unordered_set<JSPropertyAttribute>& attributes) {
+	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	static const std::string log_prefix { "MDL: JSObject::SetProperty: " };
 	
 	JSValueRef exception { nullptr };
@@ -172,6 +177,7 @@ void JSObject::SetProperty(const JSString& property_name, const JSValue& propert
 }
 
 void JSObject::SetProperty(unsigned property_index, const JSValue& property_value) {
+	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	static const std::string log_prefix { "MDL: JSObject::SetPropertyAtIndex: " };
 	
 	JSValueRef exception { nullptr };
@@ -192,6 +198,7 @@ void JSObject::SetProperty(unsigned property_index, const JSValue& property_valu
 }
 
 bool JSObject::DeleteProperty(const JSString& property_name) {
+	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	static const std::string log_prefix { "MDL: JSObject::DeleteProperty: " };
 	
 	JSValueRef exception { nullptr };

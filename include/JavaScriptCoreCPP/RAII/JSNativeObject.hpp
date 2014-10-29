@@ -153,7 +153,12 @@ class JSNativeObject : public JSObject {
 			, js_native_class__(rhs.js_native_class__) {
 	}
   
-  // Create a copy of another JSNativeObject by assignment. This is a unified
+#ifdef JAVASCRIPTCORECPP_RAII_MOVE_SEMANTICS_ENABLE
+  JSNativeObject& JSNativeObject::operator=(const JSNativeObject&) = default;
+  JSNativeObject& JSNativeObject::operator=(JSNativeObject&&) = default;
+#endif
+
+	// Create a copy of another JSNativeObject by assignment. This is a unified
 	// assignment operator that fuses the copy assignment operator,
   // X& X::operator=(const X&), and the move assignment operator,
   // X& X::operator=(X&&);

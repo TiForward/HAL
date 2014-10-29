@@ -15,21 +15,28 @@
 #include <cassert>
 #include <JavaScriptCore/JavaScript.h>
 
+
 #ifdef JAVASCRIPTCORECPP_RAII_THREAD_SAFE
 #include <mutex>
 
-#ifndef JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_MUTEX
-#define JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_MUTEX std::recursive_mutex js_context_group_mutex_;
-#endif
+#unndef JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_MUTEX_TYPE
+#define JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_MUTEX_TYPE std::recursive_mutex
 
-#ifndef JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_LOCK_GUARD
-#define JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_LOCK_GUARD std::lock_guard<std::recursive_mutex> js_context_group_lock(js_context_group_mutex_);
-#endif
+#unndef JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_MUTEX_NAME 
+#define JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_MUTEX_NAME js_context_group
+
+#undef  JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_MUTEX
+#define JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_MUTEX JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_MUTEX_TYPE JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_MUTEX_NAME##_mutex_;
+
+
+#undef  JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_LOCK_GUARD
+#define JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_LOCK_GUARD std::lock_guard<JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_MUTEX_TYPE> JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_MUTEX_NAME##_lock(JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_MUTEX);
 
 #else
 #define JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_MUTEX
 #define JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_LOCK_GUARD
 #endif  // JAVASCRIPTCORECPP_RAII_THREAD_SAFE
+
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
@@ -150,17 +157,25 @@ class JSContextGroup final	{
   JSContextGroup(JSContextGroup&& rhs) : js_context_group_ref__(rhs.js_context_group_ref__) {
 	  JSContextGroupRetain(js_context_group_ref__);
   }
+
+
+#ifdef JAVASCRIPTCORECPP_RAII_MOVE_SEMANTICS_ENABLE
+  JSContextGroup& JSContextGroup::operator=(const JSContextGroup&) = default;
+  JSContextGroup& JSContextGroup::operator=(JSContextGroup&&) = default;
+#endif
   
   // Create a copy of another JSContextGroup by assignment. This is a
   // unified assignment operator that fuses the copy assignment
   // operator, X& X::operator=(const X&), and the move assignment
   // operator, X& X::operator=(X&&);
   JSContextGroup& operator=(JSContextGroup rhs) {
-    swap(*this, rhs);
+	  JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_LOCK_GUARD;
+		swap(*this, rhs);
     return *this;
   }
   
   friend void swap(JSContextGroup& first, JSContextGroup& second) noexcept {
+	  JAVASCRIPTCORECPP_RAII_JSCONTEXTGROUP_LOCK_GUARD;
     // enable ADL (not necessary in our case, but good practice)
     using std::swap;
     

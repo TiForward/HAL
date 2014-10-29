@@ -18,13 +18,18 @@
 #ifdef JAVASCRIPTCORECPP_RAII_THREAD_SAFE
 #include <mutex>
 
-#ifndef JAVASCRIPTCORECPP_RAII_JSCLASS_MUTEX
-#define JAVASCRIPTCORECPP_RAII_JSCLASS_MUTEX std::mutex js_class_mutex_;
-#endif
+#unndef JAVASCRIPTCORECPP_RAII_JSCLASS_MUTEX_TYPE
+#define JAVASCRIPTCORECPP_RAII_JSCLASS_MUTEX_TYPE std::recursive_mutex
 
-#ifndef JAVASCRIPTCORECPP_RAII_JSCLASS_LOCK_GUARD
-#define JAVASCRIPTCORECPP_RAII_JSCLASS_LOCK_GUARD std::lock_guard<std::mutex> js_class_lock(js_class_mutex_);
-#endif
+#unndef JAVASCRIPTCORECPP_RAII_JSCLASS_MUTEX_NAME 
+#define JAVASCRIPTCORECPP_RAII_JSCLASS_MUTEX_NAME js_class
+
+#undef  JAVASCRIPTCORECPP_RAII_JSCLASS_MUTEX
+#define JAVASCRIPTCORECPP_RAII_JSCLASS_MUTEX JAVASCRIPTCORECPP_RAII_JSCLASS_MUTEX_TYPE JAVASCRIPTCORECPP_RAII_JSCLASS_MUTEX_NAME##_mutex_;
+
+
+#undef  JAVASCRIPTCORECPP_RAII_JSCLASS_LOCK_GUARD
+#define JAVASCRIPTCORECPP_RAII_JSCLASS_LOCK_GUARD std::lock_guard<JAVASCRIPTCORECPP_RAII_JSCLASS_MUTEX_TYPE> JAVASCRIPTCORECPP_RAII_JSCLASS_MUTEX_NAME##_lock(JAVASCRIPTCORECPP_RAII_JSCLASS_MUTEX);
 
 #else
 #define JAVASCRIPTCORECPP_RAII_JSCLASS_MUTEX
@@ -75,6 +80,11 @@ class JSClass	{
 		JSClassRetain(js_class_ref__);
 	}
 	
+#ifdef JAVASCRIPTCORECPP_RAII_MOVE_SEMANTICS_ENABLE
+  JSClass& JSClass::operator=(const JSClass&) = default;
+  JSClass& JSClass::operator=(JSClass&&) = default;
+#endif
+
 	// Create a copy of another JSClass by assignment. This is a unified
 	// assignment operator that fuses the copy assignment operator,
 	// X& X::operator=(const X&), and the move assignment operator,
@@ -115,7 +125,7 @@ class JSClass	{
 	friend class JSNativeClass;
 
 	JSClassRef js_class_ref__{ nullptr };
-	JAVASCRIPTCORECPP_RAII_JSCLASS_MUTEX
+	JAVASCRIPTCORECPP_RAII_JSCLASS_MUTEX;
 };
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {

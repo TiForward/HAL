@@ -17,21 +17,28 @@
 #include <sstream>
 #include <cassert>
 
+
 #ifdef JAVASCRIPTCORECPP_RAII_THREAD_SAFE
 #include <mutex>
 
-#ifndef JAVASCRIPTCORECPP_RAII_JSVALUE_MUTEX
-#define JAVASCRIPTCORECPP_RAII_JSVALUE_MUTEX std::recursive_mutex js_value_mutex_;
-#endif
+#unndef JAVASCRIPTCORECPP_RAII_JSVALUE_MUTEX_TYPE
+#define JAVASCRIPTCORECPP_RAII_JSVALUE_MUTEX_TYPE std::recursive_mutex
 
-#ifndef JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD
-#define JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD std::lock_guard<std::recursive_mutex> js_value_lock(js_value_mutex_);
-#endif
+#unndef JAVASCRIPTCORECPP_RAII_JSVALUE_MUTEX_NAME 
+#define JAVASCRIPTCORECPP_RAII_JSVALUE_MUTEX_NAME js_value
+
+#undef  JAVASCRIPTCORECPP_RAII_JSVALUE_MUTEX
+#define JAVASCRIPTCORECPP_RAII_JSVALUE_MUTEX JAVASCRIPTCORECPP_RAII_JSVALUE_MUTEX_TYPE JAVASCRIPTCORECPP_RAII_JSVALUE_MUTEX_NAME##_mutex_;
+
+
+#undef  JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD
+#define JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD std::lock_guard<JAVASCRIPTCORECPP_RAII_JSVALUE_MUTEX_TYPE> JAVASCRIPTCORECPP_RAII_JSVALUE_MUTEX_NAME##_lock(JAVASCRIPTCORECPP_RAII_JSVALUE_MUTEX);
 
 #else
 #define JAVASCRIPTCORECPP_RAII_JSVALUE_MUTEX
 #define JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD
 #endif  // JAVASCRIPTCORECPP_RAII_THREAD_SAFE
+
 
 namespace JavaScriptCoreCPP { namespace detail {
 class JSPropertyNameArray;
@@ -127,7 +134,6 @@ public:
 	  @result The boolean result of conversion.
 	*/
 	explicit operator bool() const {
-		JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 		return JSValueToBoolean(js_context__, js_value_ref__);
 	}
 	
@@ -219,7 +225,6 @@ public:
     type.
   */
   bool IsUndefined() const {
-		JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	  return JSValueIsUndefined(js_context__, js_value_ref__);
   }
 
@@ -232,7 +237,6 @@ public:
     @result true if this JavaScript value's type is the null type.
   */
   bool IsNull() const {
-		JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	  return JSValueIsNull(js_context__, js_value_ref__);
   }
   
@@ -245,7 +249,6 @@ public:
     @result true if this JavaScript value's type is the boolean type.
   */
   bool IsBoolean() const {
-		JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	  return JSValueIsBoolean(js_context__, js_value_ref__);
   }
 
@@ -258,7 +261,6 @@ public:
     @result true if this JavaScript value's type is the number type.
   */
   bool IsNumber() const {
-		JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	  return JSValueIsNumber(js_context__, js_value_ref__);
   }
 
@@ -271,7 +273,6 @@ public:
     @result true if this JavaScript value's type is the string type.
   */
   bool IsString() const {
-		JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	  return JSValueIsString(js_context__, js_value_ref__);
   }
 
@@ -284,7 +285,6 @@ public:
     @result true if this JavaScript value's type is the object type.
   */
 	bool IsObject() const {
-		JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 		return JSValueIsObject(js_context__, js_value_ref__);
 	}
 	
@@ -300,7 +300,6 @@ public:
 	  class in its class chain.
 	*/
 	bool IsObjectOfClass(const JSClass& js_class) const {
-		JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 		return JSValueIsObjectOfClass(js_context__, js_value_ref__, js_class);
 	}
 
@@ -343,7 +342,6 @@ public:
 	}
 	
 	virtual ~JSValue() {
-		JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 	  JSValueUnprotect(js_context__, js_value_ref__);
   }
 
@@ -351,7 +349,6 @@ public:
 	JSValue(const JSValue& rhs)
 			: js_context__(rhs.js_context__)
 			, js_value_ref__(rhs.js_value_ref__) {
-		JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 		JSValueProtect(js_context__, js_value_ref__);
 	}
 	
@@ -359,11 +356,15 @@ public:
 	JSValue(JSValue&& rhs)
 			: js_context__(rhs.js_context__)
 			, js_value_ref__(rhs.js_value_ref__) {
-		JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 		JSValueProtect(js_context__, js_value_ref__);
   }
   
-  // Create a copy of another JSValue by assignment. This is a unified
+#ifdef JAVASCRIPTCORECPP_RAII_MOVE_SEMANTICS_ENABLE
+  JSValue& JSValue::operator=(const JSValue&) = default;
+  JSValue& JSValue::operator=(JSValue&&) = default;
+#endif
+
+	// Create a copy of another JSValue by assignment. This is a unified
 	// assignment operator that fuses the copy assignment operator,
   // X& X::operator=(const X&), and the move assignment operator,
   // X& X::operator=(X&&);
@@ -397,12 +398,10 @@ public:
 
 	JSValue(const JSContext& js_context, const JSString& js_string, bool parse_as_json = false);
 
-
 	// For interoperability with the JavaScriptCore C API.
 	explicit JSValue(const JSContext& js_context, JSValueRef js_value_ref)
 			: js_context__(js_context)
 			, js_value_ref__(js_value_ref)  {
-		JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
 		assert(js_value_ref__);
 		JSValueProtect(js_context__, js_value_ref__);
 	}

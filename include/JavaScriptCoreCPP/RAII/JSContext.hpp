@@ -17,21 +17,28 @@
 #include <atomic>
 #include <cassert>
 
+
 #ifdef JAVASCRIPTCORECPP_RAII_THREAD_SAFE
 #include <mutex>
 
-#ifndef JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX
-#define JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX std::mutex js_context_mutex_;
-#endif
+#unndef JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX_TYPE
+#define JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX_TYPE std::recursive_mutex
 
-#ifndef JAVASCRIPTCORECPP_RAII_JSCONTEXT_LOCK_GUARD
-#define JAVASCRIPTCORECPP_RAII_JSCONTEXT_LOCK_GUARD std::lock_guard<std::mutex> js_context_lock(js_context_mutex_);
-#endif
+#unndef JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX_NAME 
+#define JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX_NAME js_context
+
+#undef  JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX
+#define JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX_TYPE JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX_NAME##_mutex_;
+
+
+#undef  JAVASCRIPTCORECPP_RAII_JSCONTEXT_LOCK_GUARD
+#define JAVASCRIPTCORECPP_RAII_JSCONTEXT_LOCK_GUARD std::lock_guard<JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX_TYPE> JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX_NAME##_lock(JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX);
 
 #else
 #define JAVASCRIPTCORECPP_RAII_JSCONTEXT_MUTEX
 #define JAVASCRIPTCORECPP_RAII_JSCONTEXT_LOCK_GUARD
 #endif  // JAVASCRIPTCORECPP_RAII_THREAD_SAFE
+
 
 #ifdef DEBUG
 extern "C" JS_EXPORT void JSSynchronousGarbageCollectForDebugging(JSContextRef);
@@ -534,16 +541,23 @@ class JSContext final	{
 		JSGlobalContextRetain(*this);
 	}
 	
+#ifdef JAVASCRIPTCORECPP_RAII_MOVE_SEMANTICS_ENABLE
+  JSContext& JSContext::operator=(const JSContext&) = default;
+  JSContext& JSContext::operator=(JSContext&&) = default;
+#endif
+
   // Create a copy of another JSContext by assignment. This is a
   // unified assignment operator that fuses the copy assignment
   // operator, X& X::operator=(const X&), and the move assignment
   // operator, X& X::operator=(X&&);
   JSContext& operator=(JSContext rhs) {
-    swap(*this, rhs);
+	  JAVASCRIPTCORECPP_RAII_JSCONTEXT_LOCK_GUARD;
+	  swap(*this, rhs);
     return *this;
   }
   
   friend void swap(JSContext& first, JSContext& second) noexcept {
+	  JAVASCRIPTCORECPP_RAII_JSCONTEXT_LOCK_GUARD;
     // enable ADL (not necessary in our case, but good practice)
     using std::swap;
     
