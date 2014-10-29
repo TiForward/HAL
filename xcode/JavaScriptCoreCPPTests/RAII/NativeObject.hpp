@@ -19,74 +19,46 @@ class NativeObject final : public JSNativeObject<NativeObject> {
 
  public:
 
-	NativeObject(const JSContext& js_context) : JSNativeObject<NativeObject>(js_context, JSExport()) {
+	NativeObject(const JSContext& js_context)
+			: JSNativeObject<NativeObject>(js_context, JSExport()) {
 	}
 
 	virtual ~NativeObject() {
 	}
 	
 	virtual void Initialize() {
-		static const std::string log_prefix { "MDL: NativeObject::Initialize: " };
-		std::clog << log_prefix << std::endl;
 	}
 	
 	void Finalize() {
-		static const std::string log_prefix { "MDL: NativeObject::Finalize: " };
-		std::clog << log_prefix << std::endl;
 	}
 
 	JSObject Constructor(const std::vector<JSValue>& arguments) {
-		static const std::string log_prefix { "MDL: NativeObject::Constructor: " };
-
-		std::clog << log_prefix << "called with " << arguments.size() << "." << std::endl;
-		
 		return get_context().CreateObject();
 	}
 
 	JSValue GetName() const {
-		static const std::string log_prefix { "MDL: NativeObject::GetName: " };
-		std::clog << log_prefix << " name = " << name_ << "." << std::endl;
 		return name_;
 	}
 
 	bool SetName(const JSValue& value) {
-		static const std::string log_prefix { "MDL: NativeObject::SetName: " };
 		name_ = value;
-		std::clog << log_prefix << " name = " << name_ << "." << std::endl;
 		return true;
 	}
 
 	JSValue GetNumber() const {
-		static const std::string log_prefix { "MDL: NativeObject::GetNumber: " };
-		std::clog << log_prefix << " number = " << number_ << "." << std::endl;
 		return number_;
 	}
 
 	bool SetNumber(const JSValue& value) {
-		static const std::string log_prefix { "MDL: NativeObject::SetNumber: " };
 		number_ = value;
-		std::clog << log_prefix << " number = " << number_ << "." << std::endl;
 		return true;
 	}
 
 	JSValue GetPi() const {
-		static const std::string log_prefix { "MDL: NativeObject::GetPi: " };
-		std::clog << log_prefix << " pi = " << number_ << "." << std::endl;
 		return pi_;
 	}
 
 	JSValue Hello(const std::vector<JSValue>& arguments, const JSObject& this_object) {
-		static const std::string log_prefix { "MDL: NativeObject::FooFunction: " };
-
-		std::clog
-				<< log_prefix
-				<< "called with "
-				<< arguments.size()
-				<< " arguments with this_object = "
-				<< this_object
-				<< "."
-				<< std::endl;
-
 		std::ostringstream os;
 		os << "Hello";
 
@@ -101,16 +73,6 @@ class NativeObject final : public JSNativeObject<NativeObject> {
 	}
 
 	JSValue Goodbye(const std::vector<JSValue>& arguments, const JSObject& this_object) {
-		static const std::string log_prefix { "MDL: NativeObject::BarFunction: " };
-
-		std::clog
-				<< log_prefix
-				<< "called with "
-				<< arguments.size()
-				<< " arguments with this_object = "
-				<< this_object
-				<< std::endl;
-
 		std::ostringstream os;
 		os << "Goodbye";
 		
@@ -126,10 +88,9 @@ class NativeObject final : public JSNativeObject<NativeObject> {
 
 private:
 
-	std::unordered_map<JSString, JSValue> properties_;
-	JSValue                               name_   = get_context().CreateString();
-	JSNumber                              number_ = get_context().CreateNumber(42);
-	JSNumber                              pi_     = get_context().CreateNumber(3.141592653589793);
+	JSValue  name_   = get_context().CreateString();
+	JSNumber number_ = get_context().CreateNumber(42);
+	JSNumber pi_     = get_context().CreateNumber(3.141592653589793);
 
 	static JSNativeClass<NativeObject> JSExport() {
 		static JSNativeClass<NativeObject> js_native_class("MyClass");
