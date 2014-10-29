@@ -120,16 +120,6 @@ class JSContext final	: public JSContextMethods {
 	virtual JSValue     JSEvaluateScript(const JSString& script, const JSObject& this_object, const JSString& source_url = JSString(), int starting_line_number = 1) const override final;
 	virtual bool        JSCheckScriptSyntax(const JSString& script, const JSString& source_url = JSString(), int starting_line_number = 1) const override final;
 
-	virtual void GarbageCollect() const  override final {
-		JSGarbageCollect(js_context_ref__);
-	}
-	
-#ifdef DEBUG
-	virtual void SynchronousGarbageCollectForDebugging() const {
-		JSSynchronousGarbageCollectForDebugging(js_context_ref__);
-	}
-#endif
-
 	/*!
 	  @method
 	  
@@ -145,9 +135,19 @@ class JSContext final	: public JSContextMethods {
 	  @result A JavaScript object defined by a JSNativeClass that is
 	  implemented by a C++ object.
 	*/
-	// template<typename T, typename... Us>
-	// T CreateObject(const JSNativeClass<T>& js_native_class, Us&&... T_constructor_arguments) const;
+	template<typename T, typename... Us>
+	T CreateObject(const JSNativeClass<T>& js_native_class, Us&&... T_constructor_arguments) const;
 	
+
+	virtual void GarbageCollect() const  override final {
+		JSGarbageCollect(js_context_ref__);
+	}
+	
+#ifdef DEBUG
+	virtual void SynchronousGarbageCollectForDebugging() const {
+		JSSynchronousGarbageCollectForDebugging(js_context_ref__);
+	}
+#endif
 
 #ifdef JAVASCRIPTCORECPP_RAII_JSCONTEXT_ENABLE_CONTEXT_ID
 	/*!

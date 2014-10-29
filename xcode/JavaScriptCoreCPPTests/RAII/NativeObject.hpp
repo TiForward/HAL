@@ -23,10 +23,14 @@ class NativeObject final : public JSNativeObject<NativeObject> {
 			: JSNativeObject<NativeObject>(js_context, JSExport()) {
 	}
 
+	void Test() {
+		AttachToContext();
+	}
+
 	virtual ~NativeObject() {
 	}
 	
-	virtual void Initialize() {
+	void Initialize() {
 	}
 	
 	void Finalize() {

@@ -151,6 +151,9 @@ using namespace JavaScriptCoreCPP::RAII;
 - (void)testJSNativeObject {
   JSContext js_context = js_context_group.CreateContext();
   NativeObject native_object(js_context);
+  native_object.Test();
+  native_object.Test();
+  native_object.Test();
   //JSContext js_context = js_context_group.CreateContext(native_class);
 }
 
