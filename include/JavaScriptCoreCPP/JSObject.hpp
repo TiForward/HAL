@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_RAII_JSOBJECT_HPP_
-#define _JAVASCRIPTCORECPP_RAII_JSOBJECT_HPP_
+#ifndef _JAVASCRIPTCORECPP_JSOBJECT_HPP_
+#define _JAVASCRIPTCORECPP_JSOBJECT_HPP_
 
 #include "JavaScriptCoreCPP/JSValue.hpp"
 #include "JavaScriptCoreCPP/JSClass.hpp"
@@ -36,7 +36,7 @@ class JSClass;
   The only way to create a JSObject is by using the
   JSContext::CreateObject member functions.
 */
-#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
+#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 class JSObject : public JSValue, public detail::JSPerformanceCounter<JSObject> {
 #else
 class JSObject : public JSValue {
@@ -326,7 +326,7 @@ class JSObject : public JSValue {
 			, js_object_ref__(rhs.js_object_ref__) {
 	}
 	
-#ifdef JAVASCRIPTCORECPP_RAII_MOVE_SEMANTICS_ENABLE
+#ifdef JAVASCRIPTCORECPP_MOVE_SEMANTICS_ENABLE
   JSObject& JSObject::operator=(const JSObject&) = default;
   JSObject& JSObject::operator=(JSObject&&) = default;
 #endif
@@ -469,4 +469,4 @@ class JSObject : public JSValue {
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 
-#endif // _JAVASCRIPTCORECPP_RAII_JSOBJECT_HPP_
+#endif // _JAVASCRIPTCORECPP_JSOBJECT_HPP_

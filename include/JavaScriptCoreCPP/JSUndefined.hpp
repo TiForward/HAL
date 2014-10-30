@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_RAII_JSUNDEFINED_HPP_
-#define _JAVASCRIPTCORECPP_RAII_JSUNDEFINED_HPP_
+#ifndef _JAVASCRIPTCORECPP_JSUNDEFINED_HPP_
+#define _JAVASCRIPTCORECPP_JSUNDEFINED_HPP_
 
 #include "JavaScriptCoreCPP/JSValue.hpp"
 
@@ -22,7 +22,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
   The only way to create a JSUndefined is by using the
   JSContext::CreateUndefined member function.
 */
-#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
+#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 class JSUndefined final : public JSValue, public detail::JSPerformanceCounter<JSUndefined> {
 #else
 class JSUndefined final : public JSValue {
@@ -39,4 +39,4 @@ private:
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 
-#endif // _JAVASCRIPTCORECPP_RAII_JSUNDEFINED_HPP_
+#endif // _JAVASCRIPTCORECPP_JSUNDEFINED_HPP_

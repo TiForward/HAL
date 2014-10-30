@@ -33,7 +33,7 @@
 namespace JavaScriptCoreCPP { namespace RAII {
 
 JSValue::JSValue(const JSContext& js_context, const JSString& js_string, bool parse_as_json) : js_context__(js_context) {
-	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
 		if (parse_as_json) {
 		JSValueRef js_value_ref = JSValueMakeFromJSONString(js_context, js_string);
 		if (!js_value_ref) {
@@ -50,7 +50,7 @@ JSValue::JSValue(const JSContext& js_context, const JSString& js_string, bool pa
 }
 
 JSString JSValue::ToJSONString(unsigned indent) {
-	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
 	JSValueRef exception { nullptr };
 	JSStringRef js_string_ref = JSValueCreateJSONString(js_context__, js_value_ref__, indent, &exception);
 	if (exception) {
@@ -73,7 +73,7 @@ JSString JSValue::ToJSONString(unsigned indent) {
 }
 
 JSValue::operator JSString() const {
-	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
 	JSValueRef exception { nullptr };
 	JSStringRef js_string_ref = JSValueToStringCopy(js_context__, js_value_ref__, &exception);
 	if (exception) {
@@ -97,7 +97,7 @@ JSValue::operator JSBoolean() const {
 }
 
 JSValue::operator double() const {
-	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
 	JSValueRef exception { nullptr };
 	const double result = JSValueToNumber(js_context__, js_value_ref__, &exception);
 	
@@ -123,7 +123,7 @@ JSValue::operator JSNumber() const {
 }
 
 JSValue::operator JSObject() const {
-	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
 	JSValueRef exception { nullptr };
 	JSObjectRef js_object_ref = JSValueToObject(js_context__, js_value_ref__, &exception);
 	
@@ -179,7 +179,7 @@ JSValue::Type JSValue::GetType() const {
 }
 
 bool JSValue::IsInstanceOfConstructor(const JSObject& constructor) const {
-	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
 	JSValueRef exception { nullptr };
 	const bool result = JSValueIsInstanceOfConstructor(js_context__, js_value_ref__, constructor, &exception);
 	if (exception) {
@@ -195,7 +195,7 @@ bool JSValue::IsInstanceOfConstructor(const JSObject& constructor) const {
 }
 
 bool JSValue::IsEqualWithTypeCoercion(const JSValue& rhs) const {
-	JAVASCRIPTCORECPP_RAII_JSVALUE_LOCK_GUARD;
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
 	JSValueRef exception { nullptr };
 	const bool result = JSValueIsEqual(js_context__, js_value_ref__, rhs.js_value_ref__, &exception);
 	if (exception) {

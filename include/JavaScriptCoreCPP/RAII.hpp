@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_RAII_RAII_HPP_
-#define _JAVASCRIPTCORECPP_RAII_RAII_HPP_
+#ifndef _JAVASCRIPTCORECPP_RAII_HPP_
+#define _JAVASCRIPTCORECPP_RAII_HPP_
 
 #include "JavaScriptCoreCPP/JSContextGroup.hpp"
 #include "JavaScriptCoreCPP/JSContext.hpp"
@@ -36,10 +36,10 @@
 #include "JavaScriptCoreCPP/JSNativeClassAttribute.hpp"
 #include "JavaScriptCoreCPP/JSNativeObject.hpp"
 
-#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
+#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 #include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 #include "JavaScriptCoreCPP/detail/JSPerformanceCounterPrinter.hpp"
 #endif
 
-#endif // _JAVASCRIPTCORECPP_RAII_RAII_HPP_
+#endif // _JAVASCRIPTCORECPP_RAII_HPP_
 

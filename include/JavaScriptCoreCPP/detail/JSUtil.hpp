@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_RAII_JSUTIL_HPP_
-#define _JAVASCRIPTCORECPP_RAII_JSUTIL_HPP_
+#ifndef _JAVASCRIPTCORECPP_JSUTIL_HPP_
+#define _JAVASCRIPTCORECPP_JSUTIL_HPP_
 
 #include "JavaScriptCoreCPP/JSPropertyAttribute.hpp"
 #include "JavaScriptCoreCPP/JSNativeClassAttribute.hpp"
@@ -47,4 +47,4 @@ int32_t to_int32_t(double number);
 
 }} // namespace JavaScriptCoreCPP { namespace detail {
 
-#endif // _JAVASCRIPTCORECPP_RAII_JSUTIL_HPP_
+#endif // _JAVASCRIPTCORECPP_JSUTIL_HPP_

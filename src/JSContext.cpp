@@ -135,7 +135,7 @@ JSFunction JSContext::CreateFunction(const JSString& function_name, const std::v
 }
 
 JSValue JSContext::JSEvaluateScript(const JSString& script, const JSString& source_url, int starting_line_number) const {
-	JAVASCRIPTCORECPP_RAII_JSCONTEXT_LOCK_GUARD;
+	JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
 	JSValueRef js_value_ref { nullptr };
 	const JSObjectRef this_object { nullptr };
 	const JSStringRef source_url_ref = (source_url.length() > 0) ? static_cast<JSStringRef>(source_url) : nullptr;
@@ -155,7 +155,7 @@ JSValue JSContext::JSEvaluateScript(const JSString& script, const JSString& sour
 }
 
 JSValue JSContext::JSEvaluateScript(const JSString& script, const JSObject& this_object, const JSString& source_url, int starting_line_number) const {
-	JAVASCRIPTCORECPP_RAII_JSCONTEXT_LOCK_GUARD;
+	JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
 	JSValueRef js_value_ref { nullptr };
 	const JSStringRef source_url_ref = (source_url.length() > 0) ? static_cast<JSStringRef>(source_url) : nullptr;
 	JSValueRef exception { nullptr };
@@ -174,7 +174,7 @@ JSValue JSContext::JSEvaluateScript(const JSString& script, const JSObject& this
 }
 
 bool JSContext::JSCheckScriptSyntax(const JSString& script, const JSString& source_url, int starting_line_number) const {
-	JAVASCRIPTCORECPP_RAII_JSCONTEXT_LOCK_GUARD;
+	JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
 	const JSStringRef source_url_ref = (source_url.length() > 0) ? static_cast<JSStringRef>(source_url) : nullptr;
 	JSValueRef exception { nullptr };
 	bool result = ::JSCheckScriptSyntax(js_context_ref__, script, source_url_ref, starting_line_number, &exception);
@@ -195,7 +195,7 @@ JSObject JSContext::get_global_object() const {
 }
 
 
-#ifdef JAVASCRIPTCORECPP_RAII_JSCONTEXT_ENABLE_CONTEXT_ID
+#ifdef JAVASCRIPTCORECPP_JSCONTEXT_ENABLE_CONTEXT_ID
 // Definition of class static memner;
 std::atomic<long> JSContext::js_context_id_counter_;
 #endif

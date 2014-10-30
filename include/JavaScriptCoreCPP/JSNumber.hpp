@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_RAII_JSNUMBER_HPP_
-#define _JAVASCRIPTCORECPP_RAII_JSNUMBER_HPP_
+#ifndef _JAVASCRIPTCORECPP_JSNUMBER_HPP_
+#define _JAVASCRIPTCORECPP_JSNUMBER_HPP_
 
 #include "JavaScriptCoreCPP/JSValue.hpp"
 #include <cstdint>
@@ -24,7 +24,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
   The only way to create a JSNumber is by using the
   JSContext::CreateNumber member function.
 */
-#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
+#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 class JSNumber final : public JSValue, public detail::JSPerformanceCounter<JSNumber> {
 #else
 class JSNumber final : public JSValue {
@@ -150,4 +150,4 @@ public:
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 
-#endif // _JAVASCRIPTCORECPP_RAII_JSNUMBER_HPP_
+#endif // _JAVASCRIPTCORECPP_JSNUMBER_HPP_

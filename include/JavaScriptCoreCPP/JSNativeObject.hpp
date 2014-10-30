@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_HPP_
-#define _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_HPP_
+#ifndef _JAVASCRIPTCORECPP_JSNATIVEOBJECT_HPP_
+#define _JAVASCRIPTCORECPP_JSNATIVEOBJECT_HPP_
 
 //#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 
@@ -19,7 +19,7 @@
 #include <JavaScriptCore/JavaScript.h>
 
 
-#define JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_DEBUG
+#define JAVASCRIPTCORECPP_JSNATIVEOBJECT_DEBUG
 
 
 namespace JavaScriptCoreCPP { namespace RAII {
@@ -33,7 +33,7 @@ using namespace JavaScriptCoreCPP::detail;
   object backed by a C++ class for some or all of its functionality.
 */
 template<typename T>
-#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
+#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 class JSNativeObject : public JSObject, public detail::JSPerformanceCounter<JSNativeObject> {
 #else
 class JSNativeObject : public JSObject {
@@ -56,7 +56,7 @@ class JSNativeObject : public JSObject {
 			, js_native_class__(rhs.js_native_class__) {
 	}
 	
-#ifdef JAVASCRIPTCORECPP_RAII_MOVE_SEMANTICS_ENABLE
+#ifdef JAVASCRIPTCORECPP_MOVE_SEMANTICS_ENABLE
 	JSNativeObject& JSNativeObject::operator=(const JSNativeObject&) = default;
 	JSNativeObject& JSNativeObject::operator=(JSNativeObject&&) = default;
 #endif
@@ -223,4 +223,4 @@ T JSContext::CreateObject(Us&&... constructor_arguments) const {
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 
-#endif // _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_HPP_
+#endif // _JAVASCRIPTCORECPP_JSNATIVEOBJECT_HPP_

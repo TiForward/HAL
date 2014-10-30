@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_RAII_JSDATE_HPP_
-#define _JAVASCRIPTCORECPP_RAII_JSDATE_HPP_
+#ifndef _JAVASCRIPTCORECPP_JSDATE_HPP_
+#define _JAVASCRIPTCORECPP_JSDATE_HPP_
 
 #include "JavaScriptCoreCPP/JSObject.hpp"
 
@@ -22,7 +22,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
   The only way to create a JSDate is by using the
   JSContext::CreateDate member function.
 */
-#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
+#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 class JSDate final : public JSObject, public detail::JSPerformanceCounter<JSDate> {
 #else
 class JSDate final : public JSObject {
@@ -41,4 +41,4 @@ class JSDate final : public JSObject {
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 
-#endif // _JAVASCRIPTCORECPP_RAII_JSDATE_HPP_
+#endif // _JAVASCRIPTCORECPP_JSDATE_HPP_

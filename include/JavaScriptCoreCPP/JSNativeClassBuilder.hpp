@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_RAII_JSNATIVECLASSBUILDER_HPP_
-#define _JAVASCRIPTCORECPP_RAII_JSNATIVECLASSBUILDER_HPP_
+#ifndef _JAVASCRIPTCORECPP_JSNATIVECLASSBUILDER_HPP_
+#define _JAVASCRIPTCORECPP_JSNATIVECLASSBUILDER_HPP_
 
 #include "JavaScriptCoreCPP/JSNativeClass.hpp"
 #include "JavaScriptCoreCPP/detail/JSUtil.hpp"
@@ -18,7 +18,7 @@
 #include <sstream>
 #include <JavaScriptCore/JavaScript.h>
 
-//#define JAVASCRIPTCORECPP_RAII_JSNATIVECLASSBUILDER_DEBUG
+//#define JAVASCRIPTCORECPP_JSNATIVECLASSBUILDER_DEBUG
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
@@ -876,7 +876,7 @@ JSNativeClassBuilder<T>& JSNativeClassBuilder<T>::AddValuePropertyCallback(const
 		const auto number_of_elements_removed = value_property_callback_map_.erase(property_name);
 		const bool removed                    = (number_of_elements_removed == 1);
 		
-#ifdef JAVASCRIPTCORECPP_RAII_JSNATIVECLASSBUILDER_DEBUG
+#ifdef JAVASCRIPTCORECPP_JSNATIVECLASSBUILDER_DEBUG
 		std::clog << log_prefix
 		          << " [DEBUG] "
 		          << "remove previous property "
@@ -895,7 +895,7 @@ JSNativeClassBuilder<T>& JSNativeClassBuilder<T>::AddValuePropertyCallback(const
 	const auto insert_result = value_property_callback_map_.emplace(property_name, value_property_callback);
 	const bool inserted      = insert_result.second;
 	
-#ifdef JAVASCRIPTCORECPP_RAII_JSNATIVECLASSBUILDER_DEBUG
+#ifdef JAVASCRIPTCORECPP_JSNATIVECLASSBUILDER_DEBUG
 	std::clog << log_prefix
 	          << " [DEBUG] "
 	          << "insert property "
@@ -926,7 +926,7 @@ JSNativeClassBuilder<T>& JSNativeClassBuilder<T>::AddFunctionPropertyCallback(co
 		const auto number_of_elements_removed = function_property_callback_map_.erase(function_name);
 		const bool removed                    = (number_of_elements_removed == 1);
 		
-#ifdef JAVASCRIPTCORECPP_RAII_JSNATIVECLASSBUILDER_DEBUG
+#ifdef JAVASCRIPTCORECPP_JSNATIVECLASSBUILDER_DEBUG
 		std::clog << log_prefix
 		          << " [DEBUG] "
 		          << "remove previous function "
@@ -945,7 +945,7 @@ JSNativeClassBuilder<T>& JSNativeClassBuilder<T>::AddFunctionPropertyCallback(co
 	const auto insert_result = function_property_callback_map_.emplace(function_name, function_property_callback);
 	const bool inserted      = insert_result.second;
 	
-#ifdef JAVASCRIPTCORECPP_RAII_JSNATIVECLASSBUILDER_DEBUG
+#ifdef JAVASCRIPTCORECPP_JSNATIVECLASSBUILDER_DEBUG
 	std::clog << log_prefix
 	          << " [DEBUG] "
 	          << "insert function "
@@ -972,7 +972,7 @@ JSNativeClass<T>::JSNativeClass(const JSString& class_name)
 
 template<typename T>
 JSNativeClass<T>::JSNativeClass(const JSNativeClassBuilder<T>& builder) {
-	JAVASCRIPTCORECPP_RAII_JSNATIVECLASS_STATIC_LOCK_GUARD;
+	JAVASCRIPTCORECPP_JSNATIVECLASS_STATIC_LOCK_GUARD;
 	
 	value_property_callback_map_.clear();
 	function_property_callback_map_.clear();
@@ -1010,4 +1010,4 @@ JSNativeClass<T>::JSNativeClass(const JSNativeClassBuilder<T>& builder) {
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 
-#endif // _JAVASCRIPTCORECPP_RAII_JSNATIVECLASSBUILDER_HPP_
+#endif // _JAVASCRIPTCORECPP_JSNATIVECLASSBUILDER_HPP_

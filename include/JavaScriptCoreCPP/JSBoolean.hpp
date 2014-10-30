@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_RAII_JSBOOLEAN_HPP_
-#define _JAVASCRIPTCORECPP_RAII_JSBOOLEAN_HPP_
+#ifndef _JAVASCRIPTCORECPP_JSBOOLEAN_HPP_
+#define _JAVASCRIPTCORECPP_JSBOOLEAN_HPP_
 
 #include "JavaScriptCoreCPP/JSValue.hpp"
 #include <stdexcept>
@@ -24,7 +24,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
   The only way to create a JSBoolean is by using the
   JSContext::CreateBoolean member function.
 */
-#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
+#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 class JSBoolean final : public JSValue, public detail::JSPerformanceCounter<JSBoolean> {
 #else
 class JSBoolean final : public JSValue {
@@ -90,4 +90,4 @@ class JSBoolean final : public JSValue {
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 
-#endif // _JAVASCRIPTCORECPP_RAII_JSBOOLEAN_HPP_
+#endif // _JAVASCRIPTCORECPP_JSBOOLEAN_HPP_

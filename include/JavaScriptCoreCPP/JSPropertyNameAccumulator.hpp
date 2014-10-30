@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_RAII_JSPROPERTYNAMEACCUMULATOR_HPP_
-#define _JAVASCRIPTCORECPP_RAII_JSPROPERTYNAMEACCUMULATOR_HPP_
+#ifndef _JAVASCRIPTCORECPP_JSPROPERTYNAMEACCUMULATOR_HPP_
+#define _JAVASCRIPTCORECPP_JSPROPERTYNAMEACCUMULATOR_HPP_
 
 #include "JavaScriptCoreCPP/JSString.hpp"
 #include <iostream>
@@ -27,7 +27,7 @@ class JSObject;
   ordered set used to collect the names of a JavaScript object's
   properties
 */
-#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
+#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 class JSPropertyNameAccumulator	: public detail::JSPerformanceCounter<JSPropertyNameAccumulator> {
 #else
 class JSPropertyNameAccumulator	{
@@ -75,4 +75,4 @@ private:
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 
-#endif // _JAVASCRIPTCORECPP_RAII_JSVALUE_HPP_
+#endif // _JAVASCRIPTCORECPP_JSVALUE_HPP_

@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_RAII_JSPROPERTYATTRIBUTE_HPP_
-#define _JAVASCRIPTCORECPP_RAII_JSPROPERTYATTRIBUTE_HPP_
+#ifndef _JAVASCRIPTCORECPP_JSPROPERTYATTRIBUTE_HPP_
+#define _JAVASCRIPTCORECPP_JSPROPERTYATTRIBUTE_HPP_
 
 #include <functional>
 #include <JavaScriptCore/JavaScript.h>
@@ -58,4 +58,4 @@ struct hash<JSPropertyAttribute> {
 
 }  // namespace std {
 
-#endif // _JAVASCRIPTCORECPP_RAII_JSPROPERTYATTRIBUTE_HPP_
+#endif // _JAVASCRIPTCORECPP_JSPROPERTYATTRIBUTE_HPP_

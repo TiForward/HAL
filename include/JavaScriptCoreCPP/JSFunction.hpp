@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_RAII_JSFUNCTION_HPP_
-#define _JAVASCRIPTCORECPP_RAII_JSFUNCTION_HPP_
+#ifndef _JAVASCRIPTCORECPP_JSFUNCTION_HPP_
+#define _JAVASCRIPTCORECPP_JSFUNCTION_HPP_
 
 #include "JavaScriptCoreCPP/JSObject.hpp"
 
@@ -25,7 +25,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
   The only way to create a JSFunction is by using the
   JSContext::CreateFunction member function.
 */
-#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
+#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 class JSFunction final : public JSObject, public detail::JSPerformanceCounter<JSFunction> {
 #else
 class JSFunction final : public JSObject {
@@ -41,4 +41,4 @@ class JSFunction final : public JSObject {
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 
-#endif // _JAVASCRIPTCORECPP_RAII_JSFUNCTION_HPP_
+#endif // _JAVASCRIPTCORECPP_JSFUNCTION_HPP_

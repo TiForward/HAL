@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTCALLBACKS_HPP_
-#define _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTCALLBACKS_HPP_
+#ifndef _JAVASCRIPTCORECPP_JSNATIVEOBJECTCALLBACKS_HPP_
+#define _JAVASCRIPTCORECPP_JSNATIVEOBJECTCALLBACKS_HPP_
 
 #include "JavaScriptCoreCPP/JSNativeClassAttribute.hpp"
 #include "JavaScriptCoreCPP/JSPropertyNameAccumulator.hpp"
@@ -445,4 +445,4 @@ using ConvertToTypeCallback = std::function<JSValue(const T&, const JSValue::Typ
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 
-#endif // _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTCALLBACKS_HPP_
+#endif // _JAVASCRIPTCORECPP_JSNATIVEOBJECTCALLBACKS_HPP_

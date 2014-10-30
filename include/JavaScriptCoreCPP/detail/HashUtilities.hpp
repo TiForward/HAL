@@ -4,8 +4,8 @@
 //  Copyright (c) 2014 Appcelerator. All rights reserved.
 //
 
-#ifndef _JAVASCRIPTCORECPP_RAII_HASHUTILITIES_HPP_
-#define _JAVASCRIPTCORECPP_RAII_HASHUTILITIES_HPP_
+#ifndef _JAVASCRIPTCORECPP_HASHUTILITIES_HPP_
+#define _JAVASCRIPTCORECPP_HASHUTILITIES_HPP_
 
 #include <functional>
 
@@ -47,4 +47,4 @@ std::size_t hash_val(const Types&... args) {
 
 }} // namespace JavaScriptCoreCPP { namespace detail {
 
-#endif // _JAVASCRIPTCORECPP_RAII_HASHUTILITIES_HPP_
+#endif // _JAVASCRIPTCORECPP_HASHUTILITIES_HPP_

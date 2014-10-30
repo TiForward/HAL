@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_RAII_JSNULL_HPP_
-#define _JAVASCRIPTCORECPP_RAII_JSNULL_HPP_
+#ifndef _JAVASCRIPTCORECPP_JSNULL_HPP_
+#define _JAVASCRIPTCORECPP_JSNULL_HPP_
 
 #include "JavaScriptCoreCPP/JSValue.hpp"
 
@@ -22,7 +22,7 @@ namespace JavaScriptCoreCPP { namespace RAII {
   The only way to create a JSNull is by using the
   JSContext::CreateNull member function.
 */
-#ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
+#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 class JSNull final : public JSValue, public detail::JSPerformanceCounter<JSNull> {
 #else
 class JSNull final : public JSValue {
@@ -39,4 +39,4 @@ private:
 
 }} // namespace JavaScriptCoreCPP { namespace RAII {
 
-#endif // _JAVASCRIPTCORECPP_RAII_JSNULL_HPP_
+#endif // _JAVASCRIPTCORECPP_JSNULL_HPP_

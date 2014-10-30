@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_RAII_JSNATIVECLASSATTRIBUTE_HPP_
-#define _JAVASCRIPTCORECPP_RAII_JSNATIVECLASSATTRIBUTE_HPP_
+#ifndef _JAVASCRIPTCORECPP_JSNATIVECLASSATTRIBUTE_HPP_
+#define _JAVASCRIPTCORECPP_JSNATIVECLASSATTRIBUTE_HPP_
 
 #include <functional>
 #include <JavaScriptCore/JavaScript.h>
@@ -54,4 +54,4 @@ struct hash<JSNativeClassAttribute> {
 
 }  // namespace std {
 
-#endif // _JAVASCRIPTCORECPP_RAII_JSNATIVECLASSATTRIBUTE_HPP_
+#endif // _JAVASCRIPTCORECPP_JSNATIVECLASSATTRIBUTE_HPP_

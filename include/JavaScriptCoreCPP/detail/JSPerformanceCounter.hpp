@@ -7,14 +7,14 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_RAII_DETAIL_JSPERFORMANCECOUNTER_HPP_
-#define _JAVASCRIPTCORECPP_RAII_DETAIL_JSPERFORMANCECOUNTER_HPP_
+#ifndef _JAVASCRIPTCORECPP_DETAIL_JSPERFORMANCECOUNTER_HPP_
+#define _JAVASCRIPTCORECPP_DETAIL_JSPERFORMANCECOUNTER_HPP_
 
 #include <atomic>
 
 namespace JavaScriptCoreCPP { namespace detail {
 
-// Add -DJAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE=1 to enable the performance counters.
+// Add -DJAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE=1 to enable the performance counters.
 
 template <typename T>
 class JSPerformanceCounter {
@@ -124,4 +124,4 @@ std::atomic<long> JSPerformanceCounter<T>::objects_move_assigned_;
 
 }} // namespace JavaScriptCoreCPP { namespace detail {
 
-#endif // _JAVASCRIPTCORECPP_RAII_DETAIL_JSPERFORMANCECOUNTER_HPP_
+#endif // _JAVASCRIPTCORECPP_DETAIL_JSPERFORMANCECOUNTER_HPP_
