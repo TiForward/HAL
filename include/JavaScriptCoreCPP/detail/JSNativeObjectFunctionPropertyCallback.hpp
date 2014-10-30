@@ -27,7 +27,7 @@ class JSNativeObject;
 
 namespace JavaScriptCoreCPP { namespace detail {
 
-using namespace JavaScriptCoreCPP::RAII;
+using namespace JavaScriptCoreCPP;
 
 /*!
   @class

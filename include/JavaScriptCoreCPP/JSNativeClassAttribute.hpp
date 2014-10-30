@@ -38,7 +38,7 @@ enum class JSNativeClassAttribute : JSClassAttributes {
 // stored in an unordered container.
 namespace std {
 
-using namespace JavaScriptCoreCPP::RAII;
+using namespace JavaScriptCoreCPP;
 
 template<>
 struct hash<JSNativeClassAttribute> {

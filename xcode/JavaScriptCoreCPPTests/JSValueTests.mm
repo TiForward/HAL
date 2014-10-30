@@ -10,7 +10,7 @@
 #include "JavaScriptCoreCPP/RAII.hpp"
 #import <XCTest/XCTest.h>
 
-using namespace JavaScriptCoreCPP::RAII;
+using namespace JavaScriptCoreCPP;
 
 namespace UnitTestConstants {
   static const double pi { 3.141592653589793 };

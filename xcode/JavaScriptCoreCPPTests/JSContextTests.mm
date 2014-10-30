@@ -10,7 +10,7 @@
 #include "JavaScriptCoreCPP/RAII.hpp"
 #import <XCTest/XCTest.h>
 
-using namespace JavaScriptCoreCPP::RAII;
+using namespace JavaScriptCoreCPP;
 
 @interface JSContextTests2 : XCTestCase
 @end

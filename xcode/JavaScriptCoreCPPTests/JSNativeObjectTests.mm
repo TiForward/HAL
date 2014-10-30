@@ -11,7 +11,7 @@
 #include "Widget.hpp"
 #import <XCTest/XCTest.h>
 
-using namespace JavaScriptCoreCPP::RAII;
+using namespace JavaScriptCoreCPP;
 
 @interface JSClassDefinitionBuilderTests : XCTestCase
 @end

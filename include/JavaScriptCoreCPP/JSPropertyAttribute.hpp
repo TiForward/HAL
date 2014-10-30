@@ -42,7 +42,7 @@ enum class JSPropertyAttribute : JSPropertyAttributes {
 // in an unordered container.
 namespace std {
 
-using namespace JavaScriptCoreCPP::RAII;
+using namespace JavaScriptCoreCPP;
 
 template<>
 struct hash<JSPropertyAttribute> {

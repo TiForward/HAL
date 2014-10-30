@@ -14,7 +14,7 @@
 static JavaScriptCoreCPP::detail::JSPerformanceCounterPrinter js_performancecounter_printer;
 #endif
 
-using namespace JavaScriptCoreCPP::RAII;
+using namespace JavaScriptCoreCPP;
 
 JSContextGroup makeJSContextGroup() {
   JSContextGroup js_context_group;

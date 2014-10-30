@@ -10,7 +10,7 @@
 #include "JavaScriptCoreCPP/RAII.hpp"
 #import <XCTest/XCTest.h>
 
-using namespace JavaScriptCoreCPP::RAII;
+using namespace JavaScriptCoreCPP;
 
 JSString makeJSString() {
   JSString js_string;

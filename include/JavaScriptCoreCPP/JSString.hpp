@@ -258,7 +258,7 @@ std::ostream& operator << (std::ostream& ostream, const JSString& js_string) {
 
 namespace std {
 
-using namespace JavaScriptCoreCPP::RAII;
+using namespace JavaScriptCoreCPP;
 
 template<>
 struct hash<JSString> {

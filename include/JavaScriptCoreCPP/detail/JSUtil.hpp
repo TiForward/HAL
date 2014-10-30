@@ -19,7 +19,7 @@
 
 namespace JavaScriptCoreCPP { namespace detail {
 
-using namespace JavaScriptCoreCPP::RAII;
+using namespace JavaScriptCoreCPP;
 
 template<typename T, typename... Ts>
 std::unique_ptr<T> make_unique(Ts&&... params) {
