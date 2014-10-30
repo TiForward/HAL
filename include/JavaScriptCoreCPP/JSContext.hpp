@@ -642,7 +642,7 @@ private:
 
 	// The JSPropertyNameArray constructor needs access to operator
 	// JSContextRef().
-	friend class detail::JSPropertyNameArray;
+	friend class JSPropertyNameArray;
 
 	// The JSNativeClass static functions need access to the JSContext
 	// constructor.

@@ -17,13 +17,10 @@
 #include <unordered_set>
 #include <algorithm>
 
-namespace JavaScriptCoreCPP { namespace detail {
-class JSPropertyNameArray;
-}}
-
 namespace JavaScriptCoreCPP {
 
 class JSPropertyNameAccumulator;
+class JSPropertyNameArray;
 class JSClass;
 
 /*!
@@ -373,6 +370,17 @@ class JSObject : public JSValue {
 	/*!
 	  @method
 	  
+	  @abstract Return the names of this JavaScript object's enumerable
+	  properties.
+	  
+	  @result A JSPropertyNameArray containing the names object's
+	  enumerable properties. Ownership follows the Create Rule.
+	*/
+	JSPropertyNameArray CopyPropertyNames() const;
+
+	/*!
+	  @method
+	  
 	  @abstract Collect the names of this JavaScript object's
 	  properties.
 	  
@@ -389,9 +397,7 @@ class JSObject : public JSValue {
 	  names to the accumulator. Property name accumulators are used by
 	  JavaScript for...in loops.
 	*/
-	virtual void GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const {
-		return;
-	}
+	virtual void GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const;
 	
  private:
 
@@ -437,7 +443,7 @@ class JSObject : public JSValue {
 	
 	// The JSPropertyNameArray constructor needs access to operator
 	// JSObjectRef().
-	friend class detail::JSPropertyNameArray;
+	friend class JSPropertyNameArray;
 
 
 	// JSArray needs access to js_object_ref__ to change its value.

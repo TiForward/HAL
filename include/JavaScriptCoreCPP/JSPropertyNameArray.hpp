@@ -17,7 +17,7 @@
 #include <cassert>
 #include <JavaScriptCore/JavaScript.h>
 
-namespace JavaScriptCoreCPP { namespace detail {
+namespace JavaScriptCoreCPP {
 
 /*!
   @class
@@ -44,7 +44,8 @@ private:
 	  @result A JSPropertyNameArray containing the names of the object's
 	  enumerable properties.
 	*/
-	JSPropertyNameArray(const JSObject& js_object) : js_property_name_array_ref__(JSObjectCopyPropertyNames(js_object.get_context(), js_object)) {
+	JSPropertyNameArray(const JSObject& js_object)
+			: js_property_name_array_ref__(JSObjectCopyPropertyNames(js_object.get_context(), js_object)) {
 	}
   
 	/*!
@@ -74,7 +75,7 @@ private:
 		return JSPropertyNameArrayGetNameAtIndex(js_property_name_array_ref__, index);
 	}
 	
-	operator std::vector<JSString>() const {
+	explicit operator std::vector<JSString>() const {
 		std::vector<JSString> property_names;
 		for (size_t i = 0, count = GetCount(); i < count; ++i) {
 			property_names.emplace_back(GetNameAtIndex(i));
@@ -88,13 +89,14 @@ private:
   }
 
 	// Copy constructor.
-	JSPropertyNameArray(const JSPropertyNameArray& rhs) : js_property_name_array_ref__(rhs.js_property_name_array_ref__) {
+	JSPropertyNameArray(const JSPropertyNameArray& rhs)
+			: js_property_name_array_ref__(rhs.js_property_name_array_ref__) {
 		JSPropertyNameArrayRetain(js_property_name_array_ref__);
 	}
 	
   // Move constructor.
-  JSPropertyNameArray(JSPropertyNameArray&& rhs) : js_property_name_array_ref__(rhs.js_property_name_array_ref__) {
-	  JSPropertyNameArrayRetain(js_property_name_array_ref__);
+	JSPropertyNameArray(JSPropertyNameArray&& rhs)
+			: js_property_name_array_ref__(rhs.js_property_name_array_ref__) {
   }
   
   // Create a copy of another JSPropertyNameArray by assignment. This
@@ -127,6 +129,6 @@ private:
 	JSPropertyNameArrayRef js_property_name_array_ref__;
 };
 
-}} // namespace JavaScriptCoreCPP { namespace detail {
+} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_DETAIL_JSPROPERTYNAMEARRAY_HPP_

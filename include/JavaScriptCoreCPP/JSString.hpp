@@ -190,7 +190,7 @@ private:
 
   // JSPropertyNameArray::GetNameAtIndex needs access to operator
   // JSStringRef().
-  friend class detail::JSPropertyNameArray;
+  friend class JSPropertyNameArray;
 
   // JSPropertyNameAccumulator::AddName needs access to operator
   // JSStringRef().

@@ -35,7 +35,7 @@ class JSPropertyNameAccumulator	{
 	
  public:
 	
-	JSPropertyNameAccumulator() = default;
+	JSPropertyNameAccumulator() = delete;
 	~JSPropertyNameAccumulator() = default;
 	
 	/*!
@@ -59,7 +59,8 @@ private:
 	JSPropertyNameAccumulator& operator=(JSPropertyNameAccumulator&& rhs) = delete;
 
 	// For interoperability with the JavaScriptCore C API.
-	JSPropertyNameAccumulator(const JSPropertyNameAccumulatorRef& js_property_name_accumulator_ref) : js_property_name_accumulator_ref__(js_property_name_accumulator_ref) {
+	JSPropertyNameAccumulator(const JSPropertyNameAccumulatorRef& js_property_name_accumulator_ref)
+			: js_property_name_accumulator_ref__(js_property_name_accumulator_ref) {
 		assert(js_property_name_accumulator_ref__);
 	}
 	
@@ -67,7 +68,9 @@ private:
 	operator JSPropertyNameAccumulatorRef() const {
 		return js_property_name_accumulator_ref__;
 	}
-	
+
+	// JSObject needs access to the JSPropertyNameAccumulator
+	// constructor.
 	friend class JSObject;
 
 	JSPropertyNameAccumulatorRef js_property_name_accumulator_ref__;

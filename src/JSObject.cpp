@@ -10,13 +10,13 @@
 #include "JavaScriptCoreCPP/JSObject.hpp"
 #include "JavaScriptCoreCPP/JSClass.hpp"
 #include "JavaScriptCoreCPP/JSPropertyNameAccumulator.hpp"
+#include "JavaScriptCoreCPP/JSPropertyNameArray.hpp"
 
 #include "JavaScriptCoreCPP/JSUndefined.hpp"
 #include "JavaScriptCoreCPP/JSNull.hpp"
 #include "JavaScriptCoreCPP/JSBoolean.hpp"
 #include "JavaScriptCoreCPP/JSNumber.hpp"
 
-#include "JavaScriptCoreCPP/detail/JSPropertyNameArray.hpp"
 #include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 
 #include <type_traits>
@@ -215,6 +215,16 @@ bool JSObject::DeleteProperty(const JSString& property_name) {
 	}
 	
 	return result;
+}
+
+JSPropertyNameArray JSObject::CopyPropertyNames() const {
+	return JSPropertyNameArray(*this);
+}
+
+void JSObject::GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const {
+	for (const auto& property_name : static_cast<std::vector<JSString>>(CopyPropertyNames())) {
+		accumulator.AddName(property_name);
+	}
 }
 
 JSObject::operator JSUndefined() const {

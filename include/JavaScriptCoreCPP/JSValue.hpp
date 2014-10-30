@@ -470,7 +470,7 @@ public:
 	// GetPrototype(), SetPrototype() and for generating error messages.
 	friend class JSObject;
 	
-	// friend class detail::JSPropertyNameArray;
+	// friend class JSPropertyNameArray;
 
 	// JSArray needs access to the JSValue constructor for generating
 	// error messages.
