@@ -70,13 +70,13 @@ class JSNativeObject : public JSObject {
 	// Copy constructor.
 	JSNativeObject(const JSNativeObject& rhs)
 			: JSObject(rhs)
-			, js_native_class__(rhs.js_native_class) {
+			, js_native_class__(rhs.js_native_class__) {
 	}
 	
 	// Move constructor.
 	JSNativeObject(JSNativeObject&& rhs)
 			: JSObject(rhs)
-			, js_native_class__(rhs.js_native_class) {
+			, js_native_class__(rhs.js_native_class__) {
 	}
 	
 #ifdef JAVASCRIPTCORECPP_RAII_MOVE_SEMANTICS_ENABLE
@@ -210,7 +210,7 @@ JSContext JSContextGroup::CreateContext(const JSNativeClass<T>& global_object_cl
 }
 
 template<typename T, typename... Us>
-T JSContext::CreateObject(const JSNativeClass<T>& js_native_class, Us&&... T_constructor_arguments) const {
+T JSContext::CreateObject(Us&&... T_constructor_arguments) const {
 	const auto object = T(*this, std::forward<Us>(T_constructor_arguments)...);
 	object.AttachToContext();
 	return object;

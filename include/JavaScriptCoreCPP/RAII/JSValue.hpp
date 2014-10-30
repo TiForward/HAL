@@ -48,38 +48,26 @@ class JSPropertyNameArray;
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
-class JSValue;
-class JSUndefined;
-class JSNull;
-class JSBoolean;
-class JSNumber;
 class JSObject;
+class JSFunction;
 class JSArray;
 class JSDate;
 class JSError;
 class JSRegExp;
-class JSFunction;
-
-// class JSObject;
-// class JSFunction;
-// class JSArray;
-// class JSDate;
-// class JSError;
-// class JSRegExp;
 
 /*!
   @class
   
   @discussion A JSValue is an RAII wrapper around a JSValueRef, the
   JavaScriptCore C API representation of a JavaScript value.
-
+  
   The only way to create a JSValue is by using the
-  JSContext::CreateValue member function.
+  JSContext::CreateXXX member functions.
 */
 #ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
-class JSValue	: public JSContextMethods, public detail::JSPerformanceCounter<JSValue> {
+class JSValue	: public detail::JSPerformanceCounter<JSValue> {
 #else
-class JSValue	: public JSContextMethods {
+class JSValue {
 #endif
 	
  public:
@@ -355,48 +343,6 @@ public:
 		return js_context__;
 	}
 	
-	// These are convenience methods that simply forward to this
-	// JavaScript value's execution context. Complete documentation of
-	// these methods is in JSContextMethods.hpp.
-	virtual JSObject       get_global_object() const override final;
-	virtual JSContextGroup get_context_group() const override final;
-	virtual JSValue        CreateValueFromJSON(const JSString& js_string) const override final;
-	virtual JSValue        CreateString() const override final;
-	virtual JSValue        CreateString(const JSString& js_string) const override final;
-	virtual JSValue        CreateString(const char* string)        const override final;
-	virtual JSValue        CreateString(const std::string& string) const override final;
-	virtual JSUndefined    CreateUndefined() const override final;
-	virtual JSNull         CreateNull() const override final;
-	virtual JSBoolean      CreateBoolean(bool boolean) const override final;
-	virtual JSNumber       CreateNumber() const override final;
-	virtual JSNumber       CreateNumber(double number) const override final;
-	virtual JSNumber       CreateNumber(int32_t number) const override final;
-	virtual JSNumber       CreateNumber(uint32_t number) const override final;
-	virtual JSObject       CreateObject() const override final;
-	virtual JSObject       CreateObject(const JSClass& js_class, void* private_data = nullptr) const override final;
-	virtual JSArray        CreateArray() const override final;
-	virtual JSArray        CreateArray(const std::vector<JSValue>& arguments) const override final;
-	virtual JSDate         CreateDate() const override final;
-	virtual JSDate         CreateDate(const std::vector<JSValue>& arguments) const override final;
-	virtual JSError        CreateError() const override final;
-	virtual JSError        CreateError(const std::vector<JSValue>& arguments) const override final;
-	virtual JSRegExp       CreateRegExp() const override final;
-	virtual JSRegExp       CreateRegExp(const std::vector<JSValue>& arguments) const override final;
-	virtual JSFunction     CreateFunction(const JSString& function_name, const std::vector<JSString>& parameter_names, const JSString& body, const JSString& source_url = JSString(), int starting_line_number = 1) const override final;
-	virtual JSValue        JSEvaluateScript(const JSString& script, const JSString& source_url = JSString(), int starting_line_number = 1) const override final;
-	virtual JSValue        JSEvaluateScript(const JSString& script, const JSObject& this_object, const JSString& source_url = JSString(), int starting_line_number = 1) const override final;
-	virtual bool           JSCheckScriptSyntax(const JSString& script, const JSString& source_url = JSString(), int starting_line_number = 1) const override final;
-	
-	virtual void GarbageCollect() const override final {
-		return js_context__.GarbageCollect();
-	}
-	
-#ifdef DEBUG
-	virtual void SynchronousGarbageCollectForDebugging() const override final {
-		return js_context__.SynchronousGarbageCollectForDebugging();
-	}
-#endif
-
 	virtual ~JSValue() {
 	  JSValueUnprotect(js_context__, js_value_ref__);
   }
