@@ -10,8 +10,8 @@
 #ifndef _JAVASCRIPTCORECPP_RAII_DETAIL_JSPROPERTYNAMEARRAY_HPP_
 #define _JAVASCRIPTCORECPP_RAII_DETAIL_JSPROPERTYNAMEARRAY_HPP_
 
-#include "JavaScriptCoreCPP/RAII/JSObject.hpp"
-#include "JavaScriptCoreCPP/RAII/JSString.hpp"
+#include "JavaScriptCoreCPP/JSObject.hpp"
+#include "JavaScriptCoreCPP/JSString.hpp"
 #include <vector>
 #include <algorithm>
 #include <cassert>

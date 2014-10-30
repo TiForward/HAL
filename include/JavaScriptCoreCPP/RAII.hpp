@@ -10,35 +10,35 @@
 #ifndef _JAVASCRIPTCORECPP_RAII_RAII_HPP_
 #define _JAVASCRIPTCORECPP_RAII_RAII_HPP_
 
-#include "JavaScriptCoreCPP/RAII/JSContextGroup.hpp"
-#include "JavaScriptCoreCPP/RAII/JSContext.hpp"
+#include "JavaScriptCoreCPP/JSContextGroup.hpp"
+#include "JavaScriptCoreCPP/JSContext.hpp"
 
-#include "JavaScriptCoreCPP/RAII/JSString.hpp"
+#include "JavaScriptCoreCPP/JSString.hpp"
 
-#include "JavaScriptCoreCPP/RAII/JSValue.hpp"
-#include "JavaScriptCoreCPP/RAII/JSUndefined.hpp"
-#include "JavaScriptCoreCPP/RAII/JSNull.hpp"
-#include "JavaScriptCoreCPP/RAII/JSBoolean.hpp"
-#include "JavaScriptCoreCPP/RAII/JSNumber.hpp"
+#include "JavaScriptCoreCPP/JSValue.hpp"
+#include "JavaScriptCoreCPP/JSUndefined.hpp"
+#include "JavaScriptCoreCPP/JSNull.hpp"
+#include "JavaScriptCoreCPP/JSBoolean.hpp"
+#include "JavaScriptCoreCPP/JSNumber.hpp"
 
-#include "JavaScriptCoreCPP/RAII/JSObject.hpp"
-#include "JavaScriptCoreCPP/RAII/JSArray.hpp"
-#include "JavaScriptCoreCPP/RAII/JSDate.hpp"
-#include "JavaScriptCoreCPP/RAII/JSError.hpp"
-#include "JavaScriptCoreCPP/RAII/JSFunction.hpp"
-#include "JavaScriptCoreCPP/RAII/JSRegExp.hpp"
+#include "JavaScriptCoreCPP/JSObject.hpp"
+#include "JavaScriptCoreCPP/JSArray.hpp"
+#include "JavaScriptCoreCPP/JSDate.hpp"
+#include "JavaScriptCoreCPP/JSError.hpp"
+#include "JavaScriptCoreCPP/JSFunction.hpp"
+#include "JavaScriptCoreCPP/JSRegExp.hpp"
 
-#include "JavaScriptCoreCPP/RAII/JSClass.hpp"
-#include "JavaScriptCoreCPP/RAII/JSPropertyNameAccumulator.hpp"
+#include "JavaScriptCoreCPP/JSClass.hpp"
+#include "JavaScriptCoreCPP/JSPropertyNameAccumulator.hpp"
 
-#include "JavaScriptCoreCPP/RAII/JSNativeClassBuilder.hpp"
-#include "JavaScriptCoreCPP/RAII/JSNativeClass.hpp"
-#include "JavaScriptCoreCPP/RAII/JSNativeClassAttribute.hpp"
-#include "JavaScriptCoreCPP/RAII/JSNativeObject.hpp"
+#include "JavaScriptCoreCPP/JSNativeClassBuilder.hpp"
+#include "JavaScriptCoreCPP/JSNativeClass.hpp"
+#include "JavaScriptCoreCPP/JSNativeClassAttribute.hpp"
+#include "JavaScriptCoreCPP/JSNativeObject.hpp"
 
 #ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
-#include "JavaScriptCoreCPP/RAII/detail/JSPerformanceCounter.hpp"
-#include "JavaScriptCoreCPP/RAII/detail/JSPerformanceCounterPrinter.hpp"
+#include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
+#include "JavaScriptCoreCPP/detail/JSPerformanceCounterPrinter.hpp"
 #endif
 
 #endif // _JAVASCRIPTCORECPP_RAII_RAII_HPP_

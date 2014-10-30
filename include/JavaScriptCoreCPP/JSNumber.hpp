@@ -10,7 +10,7 @@
 #ifndef _JAVASCRIPTCORECPP_RAII_JSNUMBER_HPP_
 #define _JAVASCRIPTCORECPP_RAII_JSNUMBER_HPP_
 
-#include "JavaScriptCoreCPP/RAII/JSValue.hpp"
+#include "JavaScriptCoreCPP/JSValue.hpp"
 #include <cstdint>
 #include <stdexcept>
 

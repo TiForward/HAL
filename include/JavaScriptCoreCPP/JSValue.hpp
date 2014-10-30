@@ -10,9 +10,9 @@
 #ifndef _JAVASCRIPTCORECPP_RAII_JSVALUE_HPP_
 #define _JAVASCRIPTCORECPP_RAII_JSVALUE_HPP_
 
-#include "JavaScriptCoreCPP/RAII/JSContext.hpp"
-#include "JavaScriptCoreCPP/RAII/JSString.hpp"
-#include "JavaScriptCoreCPP/RAII/detail/JSPerformanceCounter.hpp"
+#include "JavaScriptCoreCPP/JSContext.hpp"
+#include "JavaScriptCoreCPP/JSString.hpp"
+#include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 #include <iostream>
 #include <sstream>
 #include <cassert>

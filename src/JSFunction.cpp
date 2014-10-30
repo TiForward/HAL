@@ -7,7 +7,7 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/RAII/JSFunction.hpp"
+#include "JavaScriptCoreCPP/JSFunction.hpp"
 #include <vector>
 #include <algorithm>
 #include <stdexcept>

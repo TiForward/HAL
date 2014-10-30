@@ -7,7 +7,7 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/RAII/RAII.hpp"
+#include "JavaScriptCoreCPP/RAII.hpp"
 #import <XCTest/XCTest.h>
 
 using namespace JavaScriptCoreCPP::RAII;

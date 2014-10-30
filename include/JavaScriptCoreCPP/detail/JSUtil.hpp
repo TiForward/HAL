@@ -10,8 +10,8 @@
 #ifndef _JAVASCRIPTCORECPP_RAII_JSUTIL_HPP_
 #define _JAVASCRIPTCORECPP_RAII_JSUTIL_HPP_
 
-#include "JavaScriptCoreCPP/RAII/JSPropertyAttribute.hpp"
-#include "JavaScriptCoreCPP/RAII/JSNativeClassAttribute.hpp"
+#include "JavaScriptCoreCPP/JSPropertyAttribute.hpp"
+#include "JavaScriptCoreCPP/JSNativeClassAttribute.hpp"
 
 #include <cstdint>
 #include <memory>

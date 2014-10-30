@@ -10,9 +10,9 @@
 #ifndef _JAVASCRIPTCORECPP_RAII_JSCONTEXT_HPP_
 #define _JAVASCRIPTCORECPP_RAII_JSCONTEXT_HPP_
 
-#include "JavaScriptCoreCPP/RAII/JSContextGroup.hpp"
-#include "JavaScriptCoreCPP/RAII/JSClass.hpp"
-#include "JavaScriptCoreCPP/RAII/JSString.hpp"
+#include "JavaScriptCoreCPP/JSContextGroup.hpp"
+#include "JavaScriptCoreCPP/JSClass.hpp"
+#include "JavaScriptCoreCPP/JSString.hpp"
 #include <vector>
 #include <atomic>
 #include <cassert>

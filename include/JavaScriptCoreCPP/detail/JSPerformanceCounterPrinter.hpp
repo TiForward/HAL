@@ -12,7 +12,7 @@
 
 #ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE
 
-#include "JavaScriptCoreCPP/RAII/RAII.hpp"
+#include "JavaScriptCoreCPP/RAII.hpp"
 #include <iostream>
 
 namespace JavaScriptCoreCPP { namespace detail {

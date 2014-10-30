@@ -7,7 +7,7 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/RAII/detail/JSUtil.hpp"
+#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 #include <bitset>
 
 namespace JavaScriptCoreCPP { namespace detail {

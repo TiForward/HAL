@@ -10,8 +10,8 @@
 #ifndef _JAVASCRIPTCORECPP_RAII_JSNATIVECLASSBUILDER_HPP_
 #define _JAVASCRIPTCORECPP_RAII_JSNATIVECLASSBUILDER_HPP_
 
-#include "JavaScriptCoreCPP/RAII/JSNativeClass.hpp"
-#include "JavaScriptCoreCPP/RAII/detail/JSUtil.hpp"
+#include "JavaScriptCoreCPP/JSNativeClass.hpp"
+#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 #include <unordered_set>
 #include <memory>
 #include <iostream>

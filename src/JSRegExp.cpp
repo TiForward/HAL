@@ -7,7 +7,7 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/RAII/JSRegExp.hpp"
+#include "JavaScriptCoreCPP/JSRegExp.hpp"
 #include <vector>
 #include <algorithm>
 #include <stdexcept>

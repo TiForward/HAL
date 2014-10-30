@@ -10,7 +10,7 @@
 #ifndef _JAVASCRIPTCORECPP_RAII_JSPROPERTYNAMEACCUMULATOR_HPP_
 #define _JAVASCRIPTCORECPP_RAII_JSPROPERTYNAMEACCUMULATOR_HPP_
 
-#include "JavaScriptCoreCPP/RAII/JSString.hpp"
+#include "JavaScriptCoreCPP/JSString.hpp"
 #include <iostream>
 #include <cassert>
 

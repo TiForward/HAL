@@ -10,9 +10,9 @@
 #ifndef _JAVASCRIPTCORECPP_RAII_JSOBJECT_HPP_
 #define _JAVASCRIPTCORECPP_RAII_JSOBJECT_HPP_
 
-#include "JavaScriptCoreCPP/RAII/JSValue.hpp"
-#include "JavaScriptCoreCPP/RAII/JSClass.hpp"
-#include "JavaScriptCoreCPP/RAII/JSPropertyAttribute.hpp"
+#include "JavaScriptCoreCPP/JSValue.hpp"
+#include "JavaScriptCoreCPP/JSClass.hpp"
+#include "JavaScriptCoreCPP/JSPropertyAttribute.hpp"
 #include <vector>
 #include <unordered_set>
 #include <algorithm>

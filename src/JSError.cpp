@@ -7,7 +7,7 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/RAII/JSError.hpp"
+#include "JavaScriptCoreCPP/JSError.hpp"
 #include <vector>
 #include <algorithm>
 #include <stdexcept>

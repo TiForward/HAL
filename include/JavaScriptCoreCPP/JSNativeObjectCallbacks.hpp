@@ -10,9 +10,9 @@
 #ifndef _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTCALLBACKS_HPP_
 #define _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECTCALLBACKS_HPP_
 
-#include "JavaScriptCoreCPP/RAII/JSNativeClassAttribute.hpp"
-#include "JavaScriptCoreCPP/RAII/JSPropertyNameAccumulator.hpp"
-#include "JavaScriptCoreCPP/RAII/JSValue.hpp"
+#include "JavaScriptCoreCPP/JSNativeClassAttribute.hpp"
+#include "JavaScriptCoreCPP/JSPropertyNameAccumulator.hpp"
+#include "JavaScriptCoreCPP/JSValue.hpp"
 #include <vector>
 
 namespace JavaScriptCoreCPP { namespace RAII {

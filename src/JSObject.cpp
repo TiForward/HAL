@@ -7,17 +7,17 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/RAII/JSObject.hpp"
-#include "JavaScriptCoreCPP/RAII/JSClass.hpp"
-#include "JavaScriptCoreCPP/RAII/JSPropertyNameAccumulator.hpp"
+#include "JavaScriptCoreCPP/JSObject.hpp"
+#include "JavaScriptCoreCPP/JSClass.hpp"
+#include "JavaScriptCoreCPP/JSPropertyNameAccumulator.hpp"
 
-#include "JavaScriptCoreCPP/RAII/JSUndefined.hpp"
-#include "JavaScriptCoreCPP/RAII/JSNull.hpp"
-#include "JavaScriptCoreCPP/RAII/JSBoolean.hpp"
-#include "JavaScriptCoreCPP/RAII/JSNumber.hpp"
+#include "JavaScriptCoreCPP/JSUndefined.hpp"
+#include "JavaScriptCoreCPP/JSNull.hpp"
+#include "JavaScriptCoreCPP/JSBoolean.hpp"
+#include "JavaScriptCoreCPP/JSNumber.hpp"
 
-#include "JavaScriptCoreCPP/RAII/detail/JSPropertyNameArray.hpp"
-#include "JavaScriptCoreCPP/RAII/detail/JSUtil.hpp"
+#include "JavaScriptCoreCPP/detail/JSPropertyNameArray.hpp"
+#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 
 #include <type_traits>
 #include <sstream>

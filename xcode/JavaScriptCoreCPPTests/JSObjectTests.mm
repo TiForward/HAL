@@ -7,7 +7,7 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/RAII/RAII.hpp"
+#include "JavaScriptCoreCPP/RAII.hpp"
 #include <unordered_set>
 #include <limits>
 #import <XCTest/XCTest.h>

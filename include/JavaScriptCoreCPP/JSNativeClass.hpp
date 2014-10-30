@@ -10,13 +10,13 @@
 #ifndef _JAVASCRIPTCORECPP_RAII_JSNATIVECLASS_HPP_
 #define _JAVASCRIPTCORECPP_RAII_JSNATIVECLASS_HPP_
 
-#include "JavaScriptCoreCPP/RAII/JSClass.hpp"
-#include "JavaScriptCoreCPP/RAII/JSObject.hpp"
-#include "JavaScriptCoreCPP/RAII/JSString.hpp"
-#include "JavaScriptCoreCPP/RAII/JSNativeObjectCallbacks.hpp"
-#include "JavaScriptCoreCPP/RAII/detail/JSNativeObjectValuePropertyCallback.hpp"
-#include "JavaScriptCoreCPP/RAII/detail/JSNativeObjectFunctionPropertyCallback.hpp"
-#include "JavaScriptCoreCPP/RAII/detail/JSUtil.hpp"
+#include "JavaScriptCoreCPP/JSClass.hpp"
+#include "JavaScriptCoreCPP/JSObject.hpp"
+#include "JavaScriptCoreCPP/JSString.hpp"
+#include "JavaScriptCoreCPP/JSNativeObjectCallbacks.hpp"
+#include "JavaScriptCoreCPP/detail/JSNativeObjectValuePropertyCallback.hpp"
+#include "JavaScriptCoreCPP/detail/JSNativeObjectFunctionPropertyCallback.hpp"
+#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 
 #include <cstdint>
 #include <memory>

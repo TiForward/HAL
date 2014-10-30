@@ -10,7 +10,7 @@
 #ifndef _JAVASCRIPTCORECPP_RAII_JSARRAY_HPP_
 #define _JAVASCRIPTCORECPP_RAII_JSARRAY_HPP_
 
-#include "JavaScriptCoreCPP/RAII/JSObject.hpp"
+#include "JavaScriptCoreCPP/JSObject.hpp"
 #include <vector>
 
 namespace JavaScriptCoreCPP { namespace RAII {

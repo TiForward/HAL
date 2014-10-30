@@ -7,9 +7,9 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/RAII/JSContextGroup.hpp"
-#include "JavaScriptCoreCPP/RAII/JSContext.hpp"
-#include "JavaScriptCoreCPP/RAII/JSClass.hpp"
+#include "JavaScriptCoreCPP/JSContextGroup.hpp"
+#include "JavaScriptCoreCPP/JSContext.hpp"
+#include "JavaScriptCoreCPP/JSClass.hpp"
 
 namespace JavaScriptCoreCPP { namespace RAII {
 

@@ -10,7 +10,7 @@
 #ifndef _JAVASCRIPTCORECPP_RAII_JSREGEXP_HPP_
 #define _JAVASCRIPTCORECPP_RAII_JSREGEXP_HPP_
 
-#include "JavaScriptCoreCPP/RAII/JSObject.hpp"
+#include "JavaScriptCoreCPP/JSObject.hpp"
 
 namespace JavaScriptCoreCPP { namespace RAII {
 

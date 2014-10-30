@@ -10,11 +10,11 @@
 #ifndef _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_HPP_
 #define _JAVASCRIPTCORECPP_RAII_JSNATIVEOBJECT_HPP_
 
-//#include "JavaScriptCoreCPP/RAII/detail/JSUtil.hpp"
+//#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 
-#include "JavaScriptCoreCPP/RAII/JSNativeClass.hpp"
-#include "JavaScriptCoreCPP/RAII/JSObject.hpp"
-#include "JavaScriptCoreCPP/RAII/JSContext.hpp"
+#include "JavaScriptCoreCPP/JSNativeClass.hpp"
+#include "JavaScriptCoreCPP/JSObject.hpp"
+#include "JavaScriptCoreCPP/JSContext.hpp"
 
 #include <JavaScriptCore/JavaScript.h>
 

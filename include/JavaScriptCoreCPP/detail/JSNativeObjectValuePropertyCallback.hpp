@@ -10,10 +10,10 @@
 #ifndef _JAVASCRIPTCORECPP_RAII_DETAIL_JSNATIVEOBJECTVALUEPROPERTYCALLBACK_HPP_
 #define _JAVASCRIPTCORECPP_RAII_DETAIL_JSNATIVEOBJECTVALUEPROPERTYCALLBACK_HPP_
 
-#include "JavaScriptCoreCPP/RAII/JSNativeObjectCallbacks.hpp"
-#include "JavaScriptCoreCPP/RAII/JSPropertyAttribute.hpp"
-#include "JavaScriptCoreCPP/RAII/detail/HashUtilities.hpp"
-#include "JavaScriptCoreCPP/RAII/detail/JSUtil.hpp"
+#include "JavaScriptCoreCPP/JSNativeObjectCallbacks.hpp"
+#include "JavaScriptCoreCPP/JSPropertyAttribute.hpp"
+#include "JavaScriptCoreCPP/detail/HashUtilities.hpp"
+#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 #include <functional>
 #include <sstream>
 

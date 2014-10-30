@@ -7,7 +7,7 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/RAII/JSDate.hpp"
+#include "JavaScriptCoreCPP/JSDate.hpp"
 #include <vector>
 #include <algorithm>
 #include <stdexcept>

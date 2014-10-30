@@ -7,7 +7,7 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/RAII/JSNumber.hpp"
+#include "JavaScriptCoreCPP/JSNumber.hpp"
 #include "JSUtil.hpp"
 #include <sstream>
 #include <cassert>

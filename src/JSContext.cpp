@@ -7,20 +7,20 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/RAII/JSContext.hpp"
+#include "JavaScriptCoreCPP/JSContext.hpp"
 
-#include "JavaScriptCoreCPP/RAII/JSValue.hpp"
-#include "JavaScriptCoreCPP/RAII/JSUndefined.hpp"
-#include "JavaScriptCoreCPP/RAII/JSNull.hpp"
-#include "JavaScriptCoreCPP/RAII/JSBoolean.hpp"
-#include "JavaScriptCoreCPP/RAII/JSNumber.hpp"
+#include "JavaScriptCoreCPP/JSValue.hpp"
+#include "JavaScriptCoreCPP/JSUndefined.hpp"
+#include "JavaScriptCoreCPP/JSNull.hpp"
+#include "JavaScriptCoreCPP/JSBoolean.hpp"
+#include "JavaScriptCoreCPP/JSNumber.hpp"
 
-#include "JavaScriptCoreCPP/RAII/JSObject.hpp"
-#include "JavaScriptCoreCPP/RAII/JSArray.hpp"
-#include "JavaScriptCoreCPP/RAII/JSDate.hpp"
-#include "JavaScriptCoreCPP/RAII/JSError.hpp"
-#include "JavaScriptCoreCPP/RAII/JSFunction.hpp"
-#include "JavaScriptCoreCPP/RAII/JSRegExp.hpp"
+#include "JavaScriptCoreCPP/JSObject.hpp"
+#include "JavaScriptCoreCPP/JSArray.hpp"
+#include "JavaScriptCoreCPP/JSDate.hpp"
+#include "JavaScriptCoreCPP/JSError.hpp"
+#include "JavaScriptCoreCPP/JSFunction.hpp"
+#include "JavaScriptCoreCPP/JSRegExp.hpp"
 
 #include <vector>
 #include <algorithm>

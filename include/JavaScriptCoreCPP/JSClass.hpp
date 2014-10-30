@@ -10,7 +10,7 @@
 #ifndef _JAVASCRIPTCORECPP_RAII_JSCLASS_HPP_
 #define _JAVASCRIPTCORECPP_RAII_JSCLASS_HPP_
 
-#include "JavaScriptCoreCPP/RAII/detail/JSPerformanceCounter.hpp"
+#include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 #include <utility>
 #include <JavaScriptCore/JavaScript.h>
 

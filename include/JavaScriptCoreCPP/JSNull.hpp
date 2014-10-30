@@ -10,7 +10,7 @@
 #ifndef _JAVASCRIPTCORECPP_RAII_JSNULL_HPP_
 #define _JAVASCRIPTCORECPP_RAII_JSNULL_HPP_
 
-#include "JavaScriptCoreCPP/RAII/JSValue.hpp"
+#include "JavaScriptCoreCPP/JSValue.hpp"
 
 namespace JavaScriptCoreCPP { namespace RAII {
 
