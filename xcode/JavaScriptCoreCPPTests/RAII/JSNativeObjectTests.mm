@@ -84,7 +84,7 @@ using namespace JavaScriptCoreCPP::RAII;
   using NativeObjectPropertyCallbackHash = JSNativeObjectFunctionPropertyCallbackHash<Widget>;
   using NativeObjectFunctionCallbackSet  = std::unordered_set<NativeObjectPropertyCallback, NativeObjectPropertyCallbackHash>;
   
-  JSNativeObjectFunctionPropertyCallback<Widget> HelloCallback("hello", &Widget::Hello, {JSPropertyAttribute::DontDelete});
+  JSNativeObjectFunctionPropertyCallback<Widget> HelloCallback("hello", &Widget::SayHello, {JSPropertyAttribute::DontDelete});
   
   NativeObjectFunctionCallbackSet function_callbacks;
   XCTAssertEqual(0, function_callbacks.count(HelloCallback));
@@ -102,12 +102,12 @@ using namespace JavaScriptCoreCPP::RAII;
   builder
       // .Initialize(&Widget::Initialize)
       // .Finalize(&Widget::Finalize)
-      // .Constructor(&Widget::Constructor)
+      .Constructor(&Widget::Constructor)
       // .HasInstance(&Widget::HasInstance)
       .AddValueProperty("name", &Widget::GetName, &Widget::SetName)
       .AddValueProperty("number", &Widget::GetNumber, &Widget::SetNumber)
       .AddValueProperty("pi", &Widget::GetPi)
-      .AddFunctionProperty("hello", &Widget::Hello)
+      .AddFunctionProperty("hello", &Widget::SayHello)
       // .GetProperty(&Widget::GetProperty)
       // .SetProperty(&Widget::SetProperty)
       // .DeleteProperty(&Widget::DeleteProperty)
@@ -122,11 +122,16 @@ using namespace JavaScriptCoreCPP::RAII;
 
 - (void)testJSNativeObject {
   JSContext js_context = js_context_group.CreateContext();
-  auto native_object = js_context.CreateObject<Widget>("Matt", 42);
+  auto global_object = js_context.get_global_object();
 
+  auto widget = js_context.CreateObject<Widget>();
+  global_object.SetProperty("Widget", widget);
+      
+  
   JSString script =
-      "var widget = new Widget();"
-      "widget.hello();"
+      "Widget.sayHello();"
+      // "var widget = new Widget();"
+      // "widget.hello();"
       ;
   js_context.JSEvaluateScript(script);
 }

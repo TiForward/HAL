@@ -55,9 +55,6 @@ class JSDate;
 class JSError;
 class JSRegExp;
 
-
-
-
 /*!
   @class
   

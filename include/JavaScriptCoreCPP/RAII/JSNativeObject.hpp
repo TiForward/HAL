@@ -193,7 +193,6 @@ class JSNativeObject : public JSObject {
 				// Replace the JSObjectRef of our base class with one based on
 				// our JSNativeClass that has its private data set to a
 				// pointer to ourselves.
-				std::clog << "MDL: Hello, world." << std::endl;
 				JSValueUnprotect(self -> get_context(), self -> js_object_ref__);
 				self -> js_object_ref__ = JSObject(self -> get_context(), self -> js_native_class__, self);
 				self -> attached_to_context__ = true;

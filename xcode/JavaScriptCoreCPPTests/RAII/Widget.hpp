@@ -54,7 +54,7 @@ class Widget final : public JSNativeObject<Widget> {
 		return pi_;
 	}
 
-	JSValue Hello(const std::vector<JSValue>& arguments, const JSObject& this_object) {
+	JSValue SayHello(const std::vector<JSValue>& arguments, const JSObject& this_object) {
 		std::ostringstream os;
 		os << "Hello";
 
@@ -76,7 +76,7 @@ class Widget final : public JSNativeObject<Widget> {
 	// Your constructor can have as many arguments as you like, but the
 	// first one must be the JSContext that your native object will
 	// execute in.
-	Widget(const JSContext& js_context, JSString name, int number)
+	Widget(const JSContext& js_context, JSString name = {"world"}, int number = 42)
 			: JSNativeObject<Widget>(js_context, JSExport())
 			, name_(js_context.CreateString(name))
 			, number_(js_context.CreateNumber(number)) {
@@ -102,11 +102,11 @@ private:
 				js_native_class = builder
 						.Initialize(&Widget::Initialize)
 						.Finalize(&Widget::Finalize)
-						// .Constructor(&Widget::Constructor)
+						.Constructor(&Widget::Constructor)
 						.AddValueProperty("name", &Widget::GetName, &Widget::SetName)
 						.AddValueProperty("number", &Widget::GetNumber, &Widget::SetNumber)
 						.AddValueProperty("pi", &Widget::GetPi)
-						.AddFunctionProperty("hello", &Widget::Hello)
+						.AddFunctionProperty("sayHello", &Widget::SayHello)
 						.build();
 			});
 		
