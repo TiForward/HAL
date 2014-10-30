@@ -27,27 +27,9 @@ namespace JavaScriptCoreCPP {
   an array of JavaScript property names.
 */
 class JSPropertyNameArray final	{
-	
-private:
 
-	// This class is only intended to be used as a helper class by
-	// JSObject.
-	friend class JSObject;
+ public:
 	
-	/*!
-	  @method
-	  
-	  @abstract Gets the names of an object's enumerable properties.
-	  
-	  @param object The object whose property names you want to get.
-	  
-	  @result A JSPropertyNameArray containing the names of the object's
-	  enumerable properties.
-	*/
-	JSPropertyNameArray(const JSObject& js_object)
-			: js_property_name_array_ref__(JSObjectCopyPropertyNames(js_object.get_context(), js_object)) {
-	}
-  
 	/*!
 	  @method
 	  
@@ -117,6 +99,22 @@ private:
     swap(first.js_property_name_array_ref__, second.js_property_name_array_ref__);
   }
   
+private:
+
+	/*!
+	  @method
+	  
+	  @abstract Gets the names of an object's enumerable properties.
+	  
+	  @param object The object whose property names you want to get.
+	  
+	  @result A JSPropertyNameArray containing the names of the object's
+	  enumerable properties.
+	*/
+	JSPropertyNameArray(const JSObject& js_object)
+			: js_property_name_array_ref__(JSObjectCopyPropertyNames(js_object.get_context(), js_object)) {
+	}
+  
   // For interoperability with the JavaScriptCore C API.
   operator JSPropertyNameArrayRef() const {
 	  return js_property_name_array_ref__;
@@ -125,6 +123,9 @@ private:
 	// Prevent heap based objects.
 	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
 	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
+	
+  // JSObject needs access to the JSPropertyNameArray constructor.
+	friend class JSObject;
 	
 	JSPropertyNameArrayRef js_property_name_array_ref__;
 };

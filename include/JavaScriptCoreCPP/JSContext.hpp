@@ -601,6 +601,10 @@ private:
 		return JSContextGetGlobalContext(js_context_ref__);
 	}
 
+	// Prevent heap based objects.
+	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
+	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
+	
   // Only a JSContextGroup can create a JSContext.
 	friend class JSContextGroup;
 
@@ -658,7 +662,6 @@ private:
 
   // This function requires access to operator JSContextRef().
   friend bool operator==(const JSValue& lhs, const JSValue& rhs);
-
 
   // Return true if the two JSValues are equal as compared by the JS == operator.
   friend bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs);

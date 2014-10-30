@@ -449,6 +449,10 @@ public:
 	  return js_value_ref__;
   }
 
+	// Prevent heap based objects.
+	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
+	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
+	
 	// Only a JSContext can create a JSValue.
 	friend class JSContext;
 

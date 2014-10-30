@@ -117,7 +117,6 @@ class JSString final	{
 
 	// Move constructor.
 	JSString(JSString&& rhs) : js_string_ref__(rhs.js_string_ref__) {
-		JSStringRetain(js_string_ref__);
 	}
 	
 #ifdef JAVASCRIPTCORECPP_MOVE_SEMANTICS_ENABLE
@@ -178,6 +177,10 @@ private:
     return js_string_ref__;
   }
 
+	// Prevent heap based objects.
+	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
+	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
+	
   // JSContext::JSEvaluateScript and JSContext::JSCheckScriptSyntax
   // need access to operator JSStringRef().
   friend class JSContext;

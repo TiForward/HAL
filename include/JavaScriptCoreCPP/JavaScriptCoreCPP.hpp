@@ -28,8 +28,10 @@
 #include "JavaScriptCoreCPP/JSFunction.hpp"
 #include "JavaScriptCoreCPP/JSRegExp.hpp"
 
-#include "JavaScriptCoreCPP/JSClass.hpp"
 #include "JavaScriptCoreCPP/JSPropertyNameAccumulator.hpp"
+#include "JavaScriptCoreCPP/JSPropertyNameArray.hpp"
+
+#include "JavaScriptCoreCPP/JSClass.hpp"
 
 #include "JavaScriptCoreCPP/JSNativeClassBuilder.hpp"
 #include "JavaScriptCoreCPP/JSNativeClass.hpp"
