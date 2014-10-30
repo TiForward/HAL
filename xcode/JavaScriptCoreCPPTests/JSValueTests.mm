@@ -1,392 +1,249 @@
-//
-//  JSValueTests.m
-//  JavaScriptCoreCPP
-//
-//  Created by Matt Langston on 9/19/14.
-//  Copyright (c) 2014 Appcelerator. All rights reserved.
-//
+/**
+ * JavaScriptCoreCPP
+ * Author: Matthew D. Langston
+ *
+ * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Apache Public License.
+ * Please see the LICENSE included with this distribution for details.
+ */
 
-#import <Cocoa/Cocoa.h>
+#include "JavaScriptCoreCPP/RAII/RAII.hpp"
 #import <XCTest/XCTest.h>
-#include "JavaScriptCoreCPP/JSValue.h"
-#include <iostream>
-#include <chrono>
-#include <iomanip>
-#include <stdexcept>
 
-@interface JSValueTests : XCTestCase
-@end
+using namespace JavaScriptCoreCPP::RAII;
 
 namespace UnitTestConstants {
   static const double pi { 3.141592653589793 };
 }
 
-template <typename C>
-void printClockData() {
-  using namespace std;
-    
-  cout << "- precision: ";
-  // The type of time unit.
-  using P = typename C::period;
-    
-  // If time unit is less or equal to one millisecond.
-  if (ratio_less<P, milli>::value) {
-    // Convert to and print as milliseconds.
-    using TT = typename ratio_multiply<P, kilo>::type;
-    cout << fixed << double(TT::num) / TT::den << " milliseconds" << endl;
-  } else {
-    // print as seconds
-    cout << fixed << double(P::num) / P::den << " seconds" << endl;
-  }
-    
-  cout << "- is_steady: " << boolalpha << C::is_steady << endl;
-}
+@interface JSValueTests2 : XCTestCase
+@end
 
-inline
-std::string asString(const std::chrono::system_clock::time_point& tp) {
-  // Convert to system time.
-  std::time_t t = std::chrono::system_clock::to_time_t(tp);
-    
-  // Convert to calendar time.
-  //std::string ts = std::ctime(&t);
-  std::string ts = std::asctime(std::localtime(&t));
-  //std::string ts = std::asctime(std::gmtime(&t));
-    
-  // Strip trailing newline.
-  ts.resize(ts.size() - 1);
-    
-  return ts;
-}
-
-inline
-std::chrono::system_clock::time_point
-makeTimePoint(int year, int mon, int day, int hour, int min, int sec = 0) {
-  struct std::tm tm;
-  tm.tm_sec   = sec;         // second of minute (0..59 and 60 for leap seconds)
-  tm.tm_min   = min;         // minute of hour (0..59)
-  tm.tm_hour  = hour;        // hour of day (0.23)
-  tm.tm_mday  = day;         // day of month (0..31)
-  tm.tm_mon   = mon - 1;     // month of year (0..11)
-  tm.tm_year  = year - 1900; // year since 1900
-  tm.tm_isdst = -1;          // determine whether daylight savings time.
-
-  std::time_t time_t = std::mktime(&tm);
-  if (time_t == -1) {
-    throw std::invalid_argument("not a valid system time");
-  }
-    
-  return std::chrono::system_clock::from_time_t(time_t);
-}
-
-@implementation JSValueTests {
-  JSContext_ptr_t context_ptr;
+@implementation JSValueTests2 {
+  JSContextGroup js_context_group;
 }
 
 - (void)setUp {
   [super setUp];
   // Put setup code here. This method is called before the invocation of each test method in the class.
-  context_ptr = JSContext::create();
 }
 
 - (void)tearDown {
   // Put teardown code here. This method is called after the invocation of each test method in the class.
   [super tearDown];
-  context_ptr = nullptr;
-
-  std::cout << "MDL: JSSValue::ctorCounter = " << JSValue::ctorCounter() << std::endl;
-  std::cout << "MDL: JSSValue::dtorCounter = " << JSValue::dtorCounter() << std::endl;
 }
 
-- (void)testDate {
-  std::cout << "system_clock: " << std::endl;
-  printClockData<std::chrono::system_clock>();
-    
-  std::cout << "\nhigh_resolution_clock: " << std::endl;
-  printClockData<std::chrono::high_resolution_clock>();
-    
-  std::cout << "\nsteady_clock: " << std::endl;
-  printClockData<std::chrono::steady_clock>();
-    
-  // Print the epoch of this system clock:
-  std::chrono::system_clock::time_point tp;
-  std::cout << "epoch: " << asString(tp) << std::endl;
-    
-  tp = std::chrono::system_clock::now();
-  std::cout << "now:   " << asString(tp) << std::endl;
-
-  tp = std::chrono::system_clock::time_point::min();
-  //std::cout << "min:   " << asString(tp) << std::endl;
-
-  tp = std::chrono::system_clock::time_point::max();
-  //std::cout << "max:   " << asString(tp) << std::endl;
-    
-  auto tp1 = makeTimePoint(2010, 01, 01, 00, 00);
-  std::cout << "tp1: " << asString(tp1) << std::endl;
-
-  auto tp2 = makeTimePoint(2011, 05, 23, 13, 44);
-  std::cout << "tp2: " << asString(tp2) << std::endl;
+- (void)testJSUndefined {
+  JSContext js_context = js_context_group.CreateContext();
+  JSUndefined js_undefined = js_context.CreateUndefined();
+  XCTAssertEqual("undefined", static_cast<std::string>(js_undefined));
+  XCTAssertTrue(js_undefined.IsUndefined());
+  XCTAssertFalse(js_undefined.IsNull());
+  XCTAssertFalse(js_undefined.IsBoolean());
+  XCTAssertFalse(js_undefined.IsNumber());
+  XCTAssertFalse(js_undefined.IsString());
+  XCTAssertFalse(js_undefined.IsObject());
 }
 
-- (void)testUndefined {
-  auto undefinedValue_ptr = JSValue::valueWithUndefinedInContext(context_ptr);
-  XCTAssertEqual("undefined", static_cast<std::string>(*undefinedValue_ptr));
-  XCTAssertTrue(undefinedValue_ptr->isUndefined());
-  XCTAssertFalse(undefinedValue_ptr->isNull());
-  XCTAssertFalse(undefinedValue_ptr->isBoolean());
-  XCTAssertFalse(undefinedValue_ptr->isNumber());
-  XCTAssertFalse(undefinedValue_ptr->isString());
-  XCTAssertFalse(undefinedValue_ptr->isObject());
+- (void)testJSNull {
+  JSContext js_context = js_context_group.CreateContext();
+  JSNull js_null = js_context.CreateNull();
+  XCTAssertEqual("null", static_cast<std::string>(js_null));
+  XCTAssertFalse(js_null.IsUndefined());
+  XCTAssertTrue(js_null.IsNull());
+  XCTAssertFalse(js_null.IsBoolean());
+  XCTAssertFalse(js_null.IsNumber());
+  XCTAssertFalse(js_null.IsString());
+  XCTAssertFalse(js_null.IsObject());
 }
 
-- (void)testBool {
-  auto falseValue_ptr = JSValue::valueWithBoolInContext(false, context_ptr);
-  XCTAssertFalse(static_cast<bool>(*falseValue_ptr));
-  XCTAssertEqual("false", static_cast<std::string>(*falseValue_ptr));
-
-  XCTAssertFalse(falseValue_ptr->isUndefined());
-  XCTAssertFalse(falseValue_ptr->isNull());
-  XCTAssertTrue(falseValue_ptr->isBoolean());
-  XCTAssertFalse(falseValue_ptr->isNumber());
-  XCTAssertFalse(falseValue_ptr->isString());
-  XCTAssertFalse(falseValue_ptr->isObject());
-    
-  auto trueValue_ptr = JSValue::valueWithBoolInContext(true, context_ptr);
-  XCTAssertTrue(static_cast<bool>(*trueValue_ptr));
-  XCTAssertEqual("true", static_cast<std::string>(*trueValue_ptr));
-
-  XCTAssertFalse(trueValue_ptr->isUndefined());
-  XCTAssertFalse(trueValue_ptr->isNull());
-  XCTAssertTrue(trueValue_ptr->isBoolean());
-  XCTAssertFalse(trueValue_ptr->isNumber());
-  XCTAssertFalse(trueValue_ptr->isString());
-  XCTAssertFalse(trueValue_ptr->isObject());
-}
-
-- (void)testDouble {
-  auto doubleValue_ptr = JSValue::valueWithDoubleInContext(UnitTestConstants::pi, context_ptr);
-  XCTAssertEqualWithAccuracy(UnitTestConstants::pi, static_cast<double>(*doubleValue_ptr), std::numeric_limits<double>::epsilon());
-  XCTAssertEqual("3.141592653589793", static_cast<std::string>(*doubleValue_ptr));
+- (void)testJSBoolean {
+  JSContext js_context = js_context_group.CreateContext();
+  JSBoolean js_false = js_context.CreateBoolean(false);
+  XCTAssertFalse(js_false);
   
-  XCTAssertFalse(doubleValue_ptr->isUndefined());
-  XCTAssertFalse(doubleValue_ptr->isNull());
-  XCTAssertFalse(doubleValue_ptr->isBoolean());
-  XCTAssertTrue(doubleValue_ptr->isNumber());
-  XCTAssertFalse(doubleValue_ptr->isString());
-  XCTAssertFalse(doubleValue_ptr->isObject());
-
-  auto piValue_ptr  = context_ptr -> evaluateScript("Math.PI");
-  XCTAssertEqualWithAccuracy(UnitTestConstants::pi, static_cast<double>(*piValue_ptr), std::numeric_limits<double>::epsilon());
+  XCTAssertEqual("false", static_cast<std::string>(js_false));
+  XCTAssertFalse(js_false.IsUndefined());
+  XCTAssertFalse(js_false.IsNull());
+  XCTAssertTrue(js_false.IsBoolean());
+  XCTAssertFalse(js_false.IsNumber());
+  XCTAssertFalse(js_false.IsString());
+  XCTAssertFalse(js_false.IsObject());
+  
+  JSBoolean js_true = js_context.CreateBoolean(true);
+  XCTAssertTrue(js_true);
+  
+  XCTAssertEqual("true", static_cast<std::string>(js_true));
+  XCTAssertFalse(js_false.IsUndefined());
+  XCTAssertFalse(js_false.IsNull());
+  XCTAssertTrue(js_false.IsBoolean());
+  XCTAssertFalse(js_false.IsNumber());
+  XCTAssertFalse(js_false.IsString());
+  XCTAssertFalse(js_false.IsObject());
+  
+  JSBoolean js_boolean = js_context.CreateBoolean(true);
+  XCTAssertTrue(js_boolean);
+  js_boolean = false;
+  XCTAssertFalse(js_boolean);
 }
 
-- (void)testInt32 {
-  auto intValue_ptr = JSValue::valueWithInt32InContext(42, context_ptr);
-  XCTAssertEqual(42, static_cast<int32_t>(*intValue_ptr));
-  XCTAssertEqual("42", static_cast<std::string>(*intValue_ptr));
-
-  XCTAssertFalse(intValue_ptr->isUndefined());
-  XCTAssertFalse(intValue_ptr->isNull());
-  XCTAssertFalse(intValue_ptr->isBoolean());
-  XCTAssertTrue(intValue_ptr->isNumber());
-  XCTAssertFalse(intValue_ptr->isString());
-  XCTAssertFalse(intValue_ptr->isObject());
-
-  auto result_ptr  = context_ptr -> evaluateScript("21 / 7");
-  XCTAssertEqual(3, static_cast<int32_t>(*result_ptr));
+- (void)testJSNumber {
+  JSContext js_context = js_context_group.CreateContext();
+  JSNumber js_double = js_context.CreateNumber(UnitTestConstants::pi);
+  XCTAssertEqualWithAccuracy(UnitTestConstants::pi, static_cast<double>(js_double), std::numeric_limits<double>::epsilon());
   
+  XCTAssertEqual("3.141592653589793", static_cast<std::string>(js_double));
+  XCTAssertFalse(js_double.IsUndefined());
+  XCTAssertFalse(js_double.IsNull());
+  XCTAssertFalse(js_double.IsBoolean());
+  XCTAssertTrue(js_double.IsNumber());
+  XCTAssertFalse(js_double.IsString());
+  XCTAssertFalse(js_double.IsObject());
+  
+  const int32_t int32_value = 42;
+  JSNumber js_int32 = js_context.CreateNumber(int32_value);
+  XCTAssertEqual(int32_value, static_cast<int32_t>(js_int32));
+  
+  XCTAssertEqual("42", static_cast<std::string>(js_int32));
+  XCTAssertFalse(js_int32.IsUndefined());
+  XCTAssertFalse(js_int32.IsNull());
+  XCTAssertFalse(js_int32.IsBoolean());
+  XCTAssertTrue(js_int32.IsNumber());
+  XCTAssertFalse(js_int32.IsString());
+  XCTAssertFalse(js_int32.IsObject());
+
+  const uint32_t uint32_value = 42;
+  JSNumber js_uint32 = js_context.CreateNumber(uint32_value);
+  XCTAssertEqual(uint32_value, static_cast<uint32_t>(js_uint32));
+  
+  XCTAssertEqual("42", static_cast<std::string>(js_uint32));
+  XCTAssertFalse(js_uint32.IsUndefined());
+  XCTAssertFalse(js_uint32.IsNull());
+  XCTAssertFalse(js_uint32.IsBoolean());
+  XCTAssertTrue(js_uint32.IsNumber());
+  XCTAssertFalse(js_uint32.IsString());
+  XCTAssertFalse(js_uint32.IsObject());
+
+  //  auto piValue_ptr  = context_ptr . evaluateScript("Math.PI");
+  //  XCTAssertEqualWithAccuracy(UnitTestConstants::pi, static_cast<double>(*piValue_ptr), std::numeric_limits<double>::epsilon());
+
+  //  auto result_ptr  = context_ptr . evaluateScript("21 / 7");
+  //  XCTAssertEqual(3, static_cast<int32_t>(*result_ptr));
+
+  //  auto result_ptr  = context_ptr . evaluateScript("21 / 7");
+  //  XCTAssertEqual(3, static_cast<uint32_t>(*result_ptr));
 }
 
-- (void)testUInt32 {
-  auto uintValue_ptr = JSValue::valueWithUInt32InContext(42, context_ptr);
-  XCTAssertEqual(42, static_cast<uint32_t>(*uintValue_ptr));
-  XCTAssertEqual("42", static_cast<std::string>(*uintValue_ptr));
+- (void)testToJSONString {
+  JSContext js_context = js_context_group.CreateContext();
+  JSUndefined js_undefined = js_context.CreateUndefined();
+  JSString js_undefined_json = js_undefined.ToJSONString();
+  //std::clog << "MDL: js_undefined_json = " << js_undefined_json << std::endl;
+  XCTAssertEqual(0, js_undefined_json.length());
   
-  XCTAssertFalse(uintValue_ptr->isUndefined());
-  XCTAssertFalse(uintValue_ptr->isNull());
-  XCTAssertFalse(uintValue_ptr->isBoolean());
-  XCTAssertTrue(uintValue_ptr->isNumber());
-  XCTAssertFalse(uintValue_ptr->isString());
-  XCTAssertFalse(uintValue_ptr->isObject());
+  JSNull js_null = js_context.CreateNull();
+  JSString js_null_json = js_null.ToJSONString();
+  std::clog << "MDL: js_null_json = " << js_null_json << std::endl;
+  XCTAssertEqual("null", js_null_json);
+  
+  JSBoolean js_false = js_context.CreateBoolean(false);
+  JSString js_false_sjon = js_false.ToJSONString();
+  //std::clog << "MDL: js_false_sjon = " << js_false_sjon << std::endl;
+  XCTAssertEqual("false", js_false_sjon);
 
-  auto result_ptr  = context_ptr -> evaluateScript("21 / 7");
-  XCTAssertEqual(3, static_cast<uint32_t>(*result_ptr));
+  JSBoolean js_true = js_context.CreateBoolean(true);
+  JSString js_true_sjon = js_true.ToJSONString();
+  //std::clog << "MDL: js_true_sjon = " << js_true_sjon << std::endl;
+  XCTAssertEqual("true", js_true_sjon);
   
+  JSNumber js_double = js_context.CreateNumber(UnitTestConstants::pi);
+  JSString js_double_sjon = js_double.ToJSONString();
+  //std::clog << "MDL: js_double_sjon = " << js_double_sjon << std::endl;
+  XCTAssertEqual("3.141592653589793", js_double_sjon);
+
+  JSNumber js_int32 = js_context.CreateNumber(int32_t(42));
+  JSString js_int32_sjon = js_int32.ToJSONString();
+  //std::clog << "MDL: js_int32_sjon = " << js_int32_sjon << std::endl;
+  XCTAssertEqual("42", js_int32_sjon);
+
+  JSNumber js_uint32 = js_context.CreateNumber(uint32_t(42));
+  JSString js_uint32_sjon = js_uint32.ToJSONString();
+  //std::clog << "MDL: js_uint32_sjon = " << js_uint32_sjon << std::endl;
+  XCTAssertEqual("42", js_uint32_sjon);
 }
 
 - (void)testString {
-  auto stringValue_ptr = JSValue::valueWithStringInContext("hello, world", context_ptr);
-  XCTAssertEqual("hello, world", static_cast<std::string>(*stringValue_ptr));
-    
-  XCTAssertFalse(stringValue_ptr->isUndefined());
-  XCTAssertFalse(stringValue_ptr->isNull());
-  XCTAssertFalse(stringValue_ptr->isBoolean());
-  XCTAssertFalse(stringValue_ptr->isNumber());
-  XCTAssertTrue(stringValue_ptr->isString());
-  XCTAssertFalse(stringValue_ptr->isObject());
-
-  auto result_ptr  = context_ptr -> evaluateScript("\"hello, JavaScript\"");
-  XCTAssertEqual("hello, JavaScript", static_cast<std::string>(*result_ptr));
+  JSContext js_context = js_context_group.CreateContext();
+  JSValue js_value = js_context.CreateString("hello, world");
+  XCTAssertEqual("hello, world", static_cast<std::string>(js_value));
   
+  XCTAssertFalse(js_value.IsUndefined());
+  XCTAssertFalse(js_value.IsNull());
+  XCTAssertFalse(js_value.IsBoolean());
+  XCTAssertFalse(js_value.IsNumber());
+  XCTAssertTrue(js_value.IsString());
+  XCTAssertFalse(js_value.IsObject());
+  
+  JSString js_string = static_cast<JSString>(js_value);
+  XCTAssertEqual("hello, world", js_string);
+  
+//  auto result_ptr  = context_ptr . evaluateScript("\"hello, JavaScript\"");
+//  XCTAssertEqual("hello, JavaScript", static_cast<std::string>(*result_ptr));
 }
 
-- (void)testObject {
-  auto objectValue_ptr = JSValue::valueWithNewObjectInContext(context_ptr);
-  XCTAssertFalse(objectValue_ptr->isUndefined());
-  XCTAssertFalse(objectValue_ptr->isNull());
-  XCTAssertFalse(objectValue_ptr->isBoolean());
-  XCTAssertFalse(objectValue_ptr->isNumber());
-  XCTAssertFalse(objectValue_ptr->isString());
-  XCTAssertTrue(objectValue_ptr->isObject());
-
-  auto result_ptr  = context_ptr -> evaluateScript("new Object()");
-  XCTAssertTrue(result_ptr -> isObject());
-
-  result_ptr  = context_ptr -> evaluateScript("Object()");
-  XCTAssertTrue(result_ptr -> isObject());
+- (void)testCopyingValuesBetweenContexts {
+  JSContext js_context_1 = js_context_group.CreateContext();
+  JSValue js_value_1 = js_context_1.CreateString("foo");
+  XCTAssertEqual("foo", static_cast<std::string>(js_value_1));
   
-  // It is surprising to me that an object literal, "{}", is not an object.
-  result_ptr  = context_ptr -> evaluateScript("{}");
-  XCTAssertTrue(result_ptr -> isUndefined());
-
-  // But this is an object.
-  result_ptr  = context_ptr -> evaluateScript("var a = {}; a");
-  XCTAssertTrue(result_ptr -> isObject());
+  JSContext js_context_2 = js_context_group.CreateContext();
+  JSValue js_value_2 = js_context_1.CreateString("bar");
+  XCTAssertEqual("bar", static_cast<std::string>(js_value_2));
   
-  // This is nor a primitive string.
-  result_ptr  = context_ptr -> evaluateScript("new String()");
-  XCTAssertTrue(result_ptr -> isObject());
-  XCTAssertFalse(result_ptr -> isString());
-
-  // Yet this is a primitive string (i.e. without new).
-  result_ptr  = context_ptr -> evaluateScript("String()");
-  XCTAssertFalse(result_ptr -> isObject());
-  XCTAssertTrue(result_ptr -> isString());
-
-  result_ptr  = context_ptr -> evaluateScript("new Date()");
-  XCTAssertTrue(result_ptr -> isObject());
-
-  result_ptr  = context_ptr -> evaluateScript("new Array()");
-  XCTAssertTrue(result_ptr -> isObject());
-
-  // An array literal is an Object, as expected. Why isn't an object literal,
-  // "{}", an Object?
-  result_ptr  = context_ptr -> evaluateScript("[]");
-  XCTAssertTrue(result_ptr -> isObject());
-
-  result_ptr  = context_ptr -> evaluateScript("[1, 3, 5, 7]");
-  XCTAssertTrue(result_ptr -> isObject());
-}
-
-- (void)testValueForProperty {
-  auto result_ptr  = context_ptr -> evaluateScript("[1, 3, 5, 7]");
-  XCTAssertTrue(result_ptr -> isObject());
-  XCTAssertTrue(result_ptr -> hasProperty("length"));
-  JSValue_ptr_t length_ptr = result_ptr -> valueForProperty("length");
-  XCTAssertEqual(4, static_cast<int32_t>(*length_ptr));
-
-  result_ptr  = context_ptr -> evaluateScript("\"hello, JavaScript\"");
-  XCTAssertTrue(result_ptr -> isString());
-  XCTAssertTrue(result_ptr -> hasProperty("length"));
-  length_ptr = result_ptr -> valueForProperty("length");
-  XCTAssertEqual(17, static_cast<int32_t>(*length_ptr));
+  XCTAssertNotEqual(js_context_1, js_context_2);
+  XCTAssertEqual(js_context_1.get_context_group(), js_context_2.get_context_group());
+  js_value_2 = js_value_1;
+  XCTAssertEqual("foo", static_cast<std::string>(js_value_2));
   
-  // Trying to reference an undefined property returns undefined.
-  XCTAssertFalse(result_ptr -> hasProperty("foo"));
-  auto foo_ptr = result_ptr -> valueForProperty("foo");
-  XCTAssertTrue(foo_ptr->isUndefined());
-}
+  // Show that copying JSValues between different JSContextGroups throws a
+  // std::runtime_error exception.
+  JSContextGroup js_context_group_2;
 
-- (void)testCustomProperty {
-  auto object_ptr  = context_ptr -> evaluateScript("new Object()");
-  XCTAssertTrue(object_ptr -> isObject());
+  JSContext js_context_3 = js_context_group_2.CreateContext();
+  JSValue js_value_3 = js_context_3.CreateString("baz");
+  XCTAssertEqual("baz", static_cast<std::string>(js_value_3));
 
-  XCTAssertFalse(object_ptr -> hasProperty("foo"));
-  object_ptr -> setValueForProperty(JSValue::valueWithInt32InContext(42, context_ptr), "foo");
-  XCTAssertTrue(object_ptr -> hasProperty("foo"));
-  auto value_ptr = object_ptr -> valueForProperty("foo");
-  XCTAssertEqual(42, static_cast<int32_t>(*value_ptr));
+  JSContext js_context_4 = js_context_group_2.CreateContext();
+  JSValue js_value_4 = js_context_4.CreateString("foobar");
+  XCTAssertEqual("foobar", static_cast<std::string>(js_value_4));
 
-  // Should be able to delete a property we created.
-  XCTAssertTrue(object_ptr -> deleteProperty("foo"));
-
-  // It is legal to delete a non-existent property.
-  XCTAssertTrue(object_ptr -> deleteProperty("bar"));
+  XCTAssertNotEqual(js_context_3, js_context_4);
+  XCTAssertEqual(js_context_3.get_context_group(), js_context_4.get_context_group());
   
-  const std::string quoteString = "Life can only be understood backwards; but it must be lived forwards.";
+  XCTAssertNotEqual(js_context_1.get_context_group(), js_context_3.get_context_group());
+  XCTAssertNotEqual(js_context_1.get_context_group(), js_context_4.get_context_group());
 
-  // You can't set a custom propery on a bool.
-  value_ptr = JSValue::valueWithBoolInContext(true, context_ptr);
-  value_ptr -> setValueForProperty(JSValue::valueWithStringInContext(quoteString, context_ptr), "quote");
-  XCTAssertFalse(value_ptr -> hasProperty("quote"));
+  XCTAssertNotEqual(js_context_2.get_context_group(), js_context_3.get_context_group());
+  XCTAssertNotEqual(js_context_2.get_context_group(), js_context_4.get_context_group());
   
-  // You can't set a custom propery on a double.
-  value_ptr = JSValue::valueWithDoubleInContext(3.14, context_ptr);
-  value_ptr -> setValueForProperty(JSValue::valueWithStringInContext(quoteString, context_ptr), "quote");
-  XCTAssertFalse(value_ptr -> hasProperty("quote"));
-
-  // You can't set a custom propery on an int32_t.
-  value_ptr = JSValue::valueWithInt32InContext(42, context_ptr);
-  value_ptr -> setValueForProperty(JSValue::valueWithStringInContext(quoteString, context_ptr), "quote");
-  XCTAssertFalse(value_ptr -> hasProperty("quote"));
-
-  // You can't set a custom propery on an uint32_t.
-  value_ptr = JSValue::valueWithUInt32InContext(42, context_ptr);
-  value_ptr -> setValueForProperty(JSValue::valueWithStringInContext(quoteString, context_ptr), "quote");
-  XCTAssertFalse(value_ptr -> hasProperty("quote"));
-
-  // You can't set a custom propery on a string.
-  value_ptr = JSValue::valueWithStringInContext("hello, world", context_ptr);
-  value_ptr -> setValueForProperty(JSValue::valueWithStringInContext(quoteString, context_ptr), "quote");
-  XCTAssertFalse(value_ptr -> hasProperty("quote"));
-
-  // You can set a custom propery on a string.
-  value_ptr = JSValue::valueWithNewObjectInContext(context_ptr);
-  value_ptr -> setValueForProperty(JSValue::valueWithStringInContext(quoteString, context_ptr), "quote");
-  XCTAssertTrue(value_ptr -> hasProperty("quote"));
-  XCTAssertEqual(quoteString, static_cast<std::string>(*(value_ptr -> valueForProperty("quote"))));
-
-  // You can set a custom propery on an array.
-  value_ptr = JSValue::valueWithNewArrayInContext(context_ptr);
-  value_ptr -> setValueForProperty(JSValue::valueWithStringInContext(quoteString, context_ptr), "quote");
-  XCTAssertTrue(value_ptr -> hasProperty("quote"));
-  XCTAssertEqual(quoteString, static_cast<std::string>(*(value_ptr -> valueForProperty("quote"))));
-
-  // You can set a custom propery on a RegExp.
-  value_ptr = JSValue::valueWithNewRegularExpressionFromPatternAndFlagsInContext("^Live can only .+$", "", context_ptr);
-  value_ptr -> setValueForProperty(JSValue::valueWithStringInContext(quoteString, context_ptr), "quote");
-  XCTAssertTrue(value_ptr -> hasProperty("quote"));
-  XCTAssertEqual(quoteString, static_cast<std::string>(*(value_ptr -> valueForProperty("quote"))));
-
-  // You can set a custom propery on a Error.
-  value_ptr = JSValue::valueWithNewErrorFromMessageInContext("Error Message Goes Here", context_ptr);
-  value_ptr -> setValueForProperty(JSValue::valueWithStringInContext(quoteString, context_ptr), "quote");
-  XCTAssertTrue(value_ptr -> hasProperty("quote"));
-  XCTAssertEqual(quoteString, static_cast<std::string>(*(value_ptr -> valueForProperty("quote"))));
-
-  // You can't set a custom propery on a Null.
-  value_ptr = JSValue::valueWithNullInContext(context_ptr);
-  value_ptr -> setValueForProperty(JSValue::valueWithStringInContext(quoteString, context_ptr), "quote");
-  XCTAssertFalse(value_ptr -> hasProperty("quote"));
-
-  // You can't set a custom propery on a Undefined.
-  value_ptr = JSValue::valueWithUndefinedInContext(context_ptr);
-  value_ptr -> setValueForProperty(JSValue::valueWithStringInContext(quoteString, context_ptr), "quote");
-  XCTAssertFalse(value_ptr -> hasProperty("quote"));
-}
-
-- (void)testExamle {
-  std::cout << "MDL: sizeof(size_t)" << sizeof(size_t) << std::endl;
-  std::cout << "MDL: sizeof(unsigned)" << sizeof(unsigned) << std::endl;
-  std::cout << "MDL: sizeof(NSUInteger)" << sizeof(NSUInteger) << std::endl;
+  try {
+    js_value_3 = js_value_1;
+    XCTFail("Copying JSValues between different JSContextGroups did not throw a std::runtime_error exception");
+  } catch (const std::runtime_error& exception) {
+    XCTAssert(YES, @"Caught expected std::runtime_error exception.");
+  } catch (...) {
+    XCTFail("Caught unexpected unknown exception, but we expected a std::runtime_error exception.");
+  }
 }
 
 // As of 2014.09.20 Travis CI only supports Xcode 5.1 which lacks support for
 // measureBlock.
 #ifndef TRAVIS
-- (void)testPerformanceExample {
-  // This is an example of a performance test case.
+- (void)testJSContextCreationPerformance {
   [self measureBlock:^{
-      // Put the code you want to measure the time of here.
-    }];
+    // How long does it take to create a JSValue?
+    JSUndefined js_value(js_context);
+  }];
 }
 #endif
 

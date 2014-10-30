@@ -1,14 +1,21 @@
 add_library(JavaScriptCoreCPP
-  JSContext.cpp
-  JSProxy.cpp
-  JSString.cpp
-  JSValue.cpp
-  JSVirtualMachine.cpp
-
+	JSArray.cpp
+	JSContext.cpp
+	JSContextGroup.cpp
+	JSDate.cpp
+	JSError.cpp
+	JSFunction.cpp
+	JSNumber.cpp
+	JSObject.cpp
+	JSRegExp.cpp
+	JSValue.cpp
 	RAII/JSValue.cpp
+	#detail/HashUtilities.cpp
+	detail/JSUtil.cpp
   )
 
 target_link_libraries(JavaScriptCoreCPP
   ${JavaScriptCore_LIBRARIES}
   ${Boost_LIBRARIES}
   )
+

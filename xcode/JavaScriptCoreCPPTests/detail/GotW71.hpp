@@ -1,15 +1,17 @@
-//
-//  GotW71.h
-//  TiValue
-//
-//  Created by Matt Langston on 9/10/14.
-//  Copyright (c) 2014 Pedro Enrique. All rights reserved.
-//
+/**
+ * JavaScriptCoreCPP
+ * Author: Matthew D. Langston
+ *
+ * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Apache Public License.
+ * Please see the LICENSE included with this distribution for details.
+ */
+
 // http://www.gotw.ca/gotw/071.htm
 
 
-#ifndef __TiValue__GotW71__
-#define __TiValue__GotW71__
+#ifndef _JAVASCRIPTCORECPP_XCODE_JAVASCRIPTCORECPPTESTS_GOTW71_HPP_
+#define _JAVASCRIPTCORECPP_XCODE_JAVASCRIPTCORECPPTESTS_GOTW71_HPP_
 
 // Example 2(d): Alternative way of requiring
 // exactly T* T::Clone() const
@@ -153,4 +155,4 @@ class XTraits
 
 // ... etc. for every class derived from Cloneable
 
-#endif /* defined(__TiValue__GotW71__) */
+#endif  // _JAVASCRIPTCORECPP_XCODE_JAVASCRIPTCORECPPTESTS_GOTW71_HPP_

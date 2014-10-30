@@ -1,21 +1,23 @@
-//
-//  JSContextTests.m
-//  TiValue
-//
-//  Created by Matt Langston on 9/10/14.
-//  Copyright (c) 2014 Pedro Enrique. All rights reserved.
-//
+/**
+ * JavaScriptCoreCPP
+ * Author: Matthew D. Langston
+ *
+ * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Apache Public License.
+ * Please see the LICENSE included with this distribution for details.
+ */
 
-#import <Cocoa/Cocoa.h>
+#include "JavaScriptCoreCPP/RAII/RAII.hpp"
 #import <XCTest/XCTest.h>
-#include "JavaScriptCoreCPP/JSContext.h"
-#include "JavaScriptCoreCPP/JSValue.h"
 
-@interface JSContextTests : XCTestCase
+using namespace JavaScriptCoreCPP::RAII;
 
+@interface JSContextTests2 : XCTestCase
 @end
 
-@implementation JSContextTests
+@implementation JSContextTests2 {
+  JSContextGroup js_context_group;
+}
 
 - (void)setUp {
   [super setUp];
@@ -25,59 +27,64 @@
 - (void)tearDown {
   // Put teardown code here. This method is called after the invocation of each test method in the class.
   [super tearDown];
-    
-  std::cout << "MDL: JSContext::ctorCounter = " << JSContext::ctorCounter() << std::endl;
-  std::cout << "MDL: JSContext::dtorCounter = " << JSContext::dtorCounter() << std::endl;
-
-  std::cout << "MDL: JSValue::ctorCounter = " << JSValue::ctorCounter() << std::endl;
-  std::cout << "MDL: JSValue::dtorCounter = " << JSValue::dtorCounter() << std::endl;
-
-  std::cout << "MDL: JSString::ctorCounter = " << JSString::ctorCounter() << std::endl;
-  std::cout << "MDL: JSString::dtorCounter = " << JSString::dtorCounter() << std::endl;
 }
 
-- (void)testException{
-  auto context_ptr = JSContext::create();
-  auto exception_ptr = context_ptr -> exception();
-  XCTAssertFalse(static_cast<bool>(exception_ptr));
-    
-  context_ptr -> setExceptionHandler([](const JSContext_ptr_t& context_ptr, const JSValue_ptr_t& exception_ptr) {
-        
-      context_ptr->setException(exception_ptr);});
+- (void)testJSEvaluateScript {
+  JSContext js_context = js_context_group.CreateContext();
+  JSValue js_value = js_context.JSEvaluateScript("'Hello, world.'");
+  //std::clog << "MDL: js_value = " << js_value << std::endl;
+  XCTAssertEqual("Hello, world.", static_cast<std::string>(js_value));
 }
 
-- (void)testGlobalObject{
-  auto context_ptr = JSContext::create();
-  auto globalObject = context_ptr -> globalObject();
-
-  XCTAssertFalse(globalObject->isUndefined());
-  XCTAssertFalse(globalObject->isNull());
-  XCTAssertFalse(globalObject->isBoolean());
-  XCTAssertFalse(globalObject->isNumber());
-  XCTAssertFalse(globalObject->isString());
-  XCTAssertTrue(globalObject->isObject());
-}
-
-- (void)testEvaluateScript {
-  auto context_ptr = JSContext::create();
-  auto result_ptr  = context_ptr -> evaluateScript("2 + 2");
-  std::clog << "MDL(JSContext): result = " << *result_ptr << std::endl;
-
-  //XCTAssertEqual(JSString("\"hello world\"")          , *context_ptr->evaluateScript("JSON.stringify(testMethod('hello world'));"));
-  //    XCTAssertEqual("[\"hello\",\"world\"]"    , context_ptr->evaluateScript("JSON.stringify(testMethod('hello','world'));"));
-  //    XCTAssertEqual("[\"hello world\"]"        , context_ptr->evaluateScript("JSON.stringify(testMethod(['hello world']));"));
-  //    XCTAssertEqual("[[\"hello\"],[\"world\"]]", context_ptr->evaluateScript("JSON.stringify(testMethod(['hello'], ['world']));"));
-  //    XCTAssertEqual("[1,2,3,4,5,6]"            , context_ptr->evaluateScript("JSON.stringify(testMethod(1,2,3,4,5,6));"));
+- (void)testJSContext {
+  JSContext js_context_1 = js_context_group.CreateContext();
+  JSContext js_context_2 = js_context_group.CreateContext();
+  XCTAssertNotEqual(js_context_1, js_context_2);
+  
+  // Test copy constructor.
+  JSContext js_context_3(js_context_1);
+  XCTAssertEqual(js_context_1, js_context_3);
+  
+  // Test copy assignment.
+  JSContext js_context_4 = js_context_1;
+  XCTAssertEqual(js_context_1, js_context_4);
+  
+  // Test move constructor.
+  JSContext js_context_5(js_context_group.CreateContext());
+  
+  // Test unified assignment operator
+  JSContext js_context_6 = js_context_1;
+  XCTAssertEqual(js_context_1, js_context_6);
+  
+  // Test creating JSContexts in different groups.
+  JSContext js_context_7 = js_context_group.CreateContext();
+  JSContext js_context_8 = js_context_group.CreateContext();
+  XCTAssertNotEqual(js_context_7, js_context_8);
+  
+  // Test copy constructor.
+  JSContext js_context_9(js_context_7);
+  XCTAssertEqual(js_context_7, js_context_9);
+  
+  // Test copy assignment.
+  JSContext js_context_10 = js_context_7;
+  XCTAssertEqual(js_context_7, js_context_10);
+  
+  // Test move constructor.
+  JSContext js_context_11(js_context_group.CreateContext());
+  
+  // Test unified assignment operator
+  JSContext js_context_12 = js_context_7;
+  XCTAssertEqual(js_context_7, js_context_12);
 }
 
 // As of 2014.09.20 Travis CI only supports Xcode 5.1 which lacks support for
 // measureBlock.
 #ifndef TRAVIS
-- (void)testPerformanceExample {
-  // This is an example of a performance test case.
+- (void)testJSContextCreationPerformance {
   [self measureBlock:^{
-      // Put the code you want to measure the time of here.
-    }];
+    // How long does it take to create a JSContext?
+    JSContext js_context;
+  }];
 }
 #endif
 
