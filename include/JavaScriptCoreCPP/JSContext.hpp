@@ -46,7 +46,7 @@
 extern "C" JS_EXPORT void JSSynchronousGarbageCollectForDebugging(JSContextRef);
 #endif
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP {
 
 class JSValue;
 class JSUndefined;
@@ -680,6 +680,6 @@ bool operator!=(const JSContext& lhs, const JSContext& rhs) {
   return ! (lhs == rhs);
 }
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSCONTEXT_HPP_

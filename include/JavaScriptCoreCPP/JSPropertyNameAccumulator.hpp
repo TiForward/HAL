@@ -14,7 +14,7 @@
 #include <iostream>
 #include <cassert>
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP {
 
 class JSObject;
 
@@ -73,6 +73,6 @@ private:
 	JSPropertyNameAccumulatorRef js_property_name_accumulator_ref__;
 };
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSVALUE_HPP_

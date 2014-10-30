@@ -46,7 +46,7 @@ namespace JavaScriptCoreCPP { namespace detail {
 class JSPropertyNameArray;
 }}
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP {
 
 class JSObject;
 class JSFunction;
@@ -556,6 +556,6 @@ std::ostream& operator << (std::ostream& ostream, const JSValue::Type& js_value_
 	return ostream;
 }
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSVALUE_HPP_

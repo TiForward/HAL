@@ -12,7 +12,7 @@
 #include <sstream>
 #include <cassert>
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP {
 
 JSNumber::operator double() const {
 	JSValueRef exception { nullptr };
@@ -34,4 +34,4 @@ JSNumber::operator int32_t() const {
 	return detail::to_int32_t(operator double());
 }
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP {

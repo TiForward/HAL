@@ -44,7 +44,7 @@ namespace JavaScriptCoreCPP { namespace detail {
 class JSPropertyNameArray;
 }}
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP {
 
 /*!
   @class
@@ -254,7 +254,7 @@ std::ostream& operator << (std::ostream& ostream, const JSString& js_string) {
 	return ostream;
 }
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP {
 
 namespace std {
 

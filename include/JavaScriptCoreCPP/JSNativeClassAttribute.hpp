@@ -13,7 +13,7 @@
 #include <functional>
 #include <JavaScriptCore/JavaScript.h>
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP {
 
 /*!
   @enum
@@ -31,7 +31,7 @@ enum class JSNativeClassAttribute : JSClassAttributes {
 	NoAutomaticPrototype
 };
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP {
 
 
 // Provide a hash function so that a JSNativeClassAttribute can be

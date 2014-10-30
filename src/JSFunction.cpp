@@ -13,7 +13,7 @@
 #include <stdexcept>
 #include <cassert>
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP {
 
 JSFunction::JSFunction(const JSContext& js_context, const JSString& function_name, const std::vector<JSString>& parameter_names, const JSString& body, const JSString& source_url, int starting_line_number) : JSObject(js_context) {
 	JSValueRef exception { nullptr };
@@ -39,4 +39,4 @@ JSFunction::JSFunction(const JSContext& js_context, const JSString& function_nam
 	js_object_ref__ = js_object_ref;
 }
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP {

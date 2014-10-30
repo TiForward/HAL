@@ -14,7 +14,7 @@
 #include <stdexcept>
 #include <iostream>
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP {
 
 /*!
   @class
@@ -88,6 +88,6 @@ class JSBoolean final : public JSValue {
 	friend JSValue;
 };
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSBOOLEAN_HPP_

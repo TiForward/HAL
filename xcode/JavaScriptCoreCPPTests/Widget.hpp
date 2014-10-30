@@ -14,7 +14,7 @@
 #include <iostream>
 #include <sstream>
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP {
 
 /*!
   @class
@@ -115,7 +115,7 @@ private:
 	
 };
 	
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP {
 
 #endif // _TITANIUM_MOBILE_WINDOWS_JAVASCRIPTCORECPP_XCODE_JAVASCRIPTCORECPPTESTS_RAII_WIDGET_HPP_
 

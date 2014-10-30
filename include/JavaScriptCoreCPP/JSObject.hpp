@@ -21,7 +21,7 @@ namespace JavaScriptCoreCPP { namespace detail {
 class JSPropertyNameArray;
 }}
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP {
 
 class JSPropertyNameAccumulator;
 class JSClass;
@@ -467,6 +467,6 @@ class JSObject : public JSValue {
 	JSObjectRef js_object_ref__{ nullptr };
 };
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSOBJECT_HPP_

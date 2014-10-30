@@ -12,7 +12,7 @@
 
 #include "JavaScriptCoreCPP/JSObject.hpp"
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP {
 
 /*!
   @class
@@ -39,6 +39,6 @@ class JSDate final : public JSObject {
 	friend JSContext;
 };
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSDATE_HPP_

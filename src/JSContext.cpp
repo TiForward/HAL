@@ -27,7 +27,7 @@
 #include <stdexcept>
 #include <cassert>
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP {
 
 JSContext::JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class)
 		: js_context_group__(js_context_group)
@@ -200,4 +200,4 @@ JSObject JSContext::get_global_object() const {
 std::atomic<long> JSContext::js_context_id_counter_;
 #endif
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP {

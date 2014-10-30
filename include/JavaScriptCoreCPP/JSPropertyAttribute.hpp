@@ -13,7 +13,7 @@
 #include <functional>
 #include <JavaScriptCore/JavaScript.h>
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP {
 
 /*!
   @enum
@@ -35,7 +35,7 @@ enum class JSPropertyAttribute : JSPropertyAttributes {
 	DontDelete
 };
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP {
 
 
 // Provide a hash function so that a JSPropertyAttribute can be stored

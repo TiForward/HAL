@@ -12,7 +12,7 @@
 
 #include "JavaScriptCoreCPP/JSValue.hpp"
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP {
 
 /*!
   @class
@@ -37,6 +37,6 @@ private:
 	friend JSContext;
 };
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSNULL_HPP_

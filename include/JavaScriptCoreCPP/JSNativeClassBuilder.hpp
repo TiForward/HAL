@@ -20,7 +20,7 @@
 
 //#define JAVASCRIPTCORECPP_JSNATIVECLASSBUILDER_DEBUG
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP {
 
 using namespace JavaScriptCoreCPP::detail;
 
@@ -1008,6 +1008,6 @@ JSNativeClass<T>::JSNativeClass(const JSNativeClassBuilder<T>& builder) {
 	js_class_ref__ = JSClassCreate(&js_class_definition_);
 }
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSNATIVECLASSBUILDER_HPP_

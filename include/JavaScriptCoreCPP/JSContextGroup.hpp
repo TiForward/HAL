@@ -40,7 +40,7 @@
 #endif  // JAVASCRIPTCORECPP_THREAD_SAFE
 
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP {
 
 class JSContext;
 class JSClass;
@@ -224,6 +224,6 @@ bool operator!=(const JSContextGroup& lhs, const JSContextGroup& rhs) {
   return ! (lhs == rhs);
 }
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSCONTEXTGROUP_HPP_

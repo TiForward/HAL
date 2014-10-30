@@ -37,7 +37,7 @@
 #endif  // JAVASCRIPTCORECPP_THREAD_SAFE
 
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP {
 
 /*!
   @class
@@ -128,6 +128,6 @@ class JSClass	{
 	JAVASCRIPTCORECPP_JSCLASS_MUTEX;
 };
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSCLASS_HPP_

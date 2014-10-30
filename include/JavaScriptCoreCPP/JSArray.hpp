@@ -13,7 +13,7 @@
 #include "JavaScriptCoreCPP/JSObject.hpp"
 #include <vector>
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP {
 
 /*!
   @class
@@ -40,6 +40,6 @@ class JSArray final : public JSObject {
 	friend JSContext;
 };
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSARRAY_HPP_

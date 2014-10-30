@@ -61,7 +61,7 @@
 #endif  // JAVASCRIPTCORECPP_JSNATIVECLASS_THREAD_SAFE
 
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP {
 
 using namespace JavaScriptCoreCPP::detail;
 
@@ -560,6 +560,6 @@ JSObjectRef JSNativeClass<T>::JSObjectCallAsConstructorCallback(JSContextRef js_
 	return result;
 }
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSNATIVECLASS_HPP_

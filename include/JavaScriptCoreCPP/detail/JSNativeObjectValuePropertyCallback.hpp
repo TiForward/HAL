@@ -17,12 +17,12 @@
 #include <functional>
 #include <sstream>
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP {
 
 template<typename T>
 class JSNativeObject;
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP {
 
 
 namespace JavaScriptCoreCPP { namespace detail {

@@ -23,7 +23,7 @@
 #include <sstream>
 #include <limits>
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP {
 
 JSObject::JSObject(const JSContext& js_context, const JSClass& js_class, void* private_data)
 		: JSObject(js_context, JSObjectMake(js_context, js_class, private_data)) {
@@ -233,4 +233,4 @@ JSObject::operator JSNumber() const {
 	return get_context().CreateNumber(std::numeric_limits<double>::quiet_NaN());
 }
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP {

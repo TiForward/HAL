@@ -15,7 +15,7 @@
 #include "JavaScriptCoreCPP/JSValue.hpp"
 #include <vector>
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP {
 
 class JSString;
 class JSObject;
@@ -443,6 +443,6 @@ using CallAsFunctionCallback = std::function<JSValue(T&, const std::vector<JSVal
 template<typename T>
 using ConvertToTypeCallback = std::function<JSValue(const T&, const JSValue::Type&)>;
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSNATIVEOBJECTCALLBACKS_HPP_

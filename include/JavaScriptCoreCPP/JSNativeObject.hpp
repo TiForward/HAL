@@ -22,7 +22,7 @@
 #define JAVASCRIPTCORECPP_JSNATIVEOBJECT_DEBUG
 
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP {
 
 using namespace JavaScriptCoreCPP::detail;
 
@@ -221,6 +221,6 @@ T JSContext::CreateObject(Us&&... constructor_arguments) const {
 	return object;
 }
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSNATIVEOBJECT_HPP_

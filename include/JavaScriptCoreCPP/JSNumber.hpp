@@ -14,7 +14,7 @@
 #include <cstdint>
 #include <stdexcept>
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP {
 
 /*!
   @class
@@ -148,6 +148,6 @@ public:
 	friend JSValue;
 };
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSNUMBER_HPP_

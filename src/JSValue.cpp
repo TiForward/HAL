@@ -30,7 +30,7 @@
 #include <sstream>
 #include <cassert>
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP {
 
 JSValue::JSValue(const JSContext& js_context, const JSString& js_string, bool parse_as_json) : js_context__(js_context) {
 	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
@@ -248,4 +248,4 @@ std::string to_string(const JSValue::Type& js_value_type) {
 	}
 }
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP {

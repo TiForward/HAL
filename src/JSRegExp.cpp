@@ -13,7 +13,7 @@
 #include <stdexcept>
 #include <cassert>
 
-namespace JavaScriptCoreCPP { namespace RAII {
+namespace JavaScriptCoreCPP {
 
 JSRegExp::JSRegExp(const JSContext& js_context, const std::vector<JSValue>& arguments) : JSObject(js_context) {
 	JSValueRef exception { nullptr };
@@ -38,4 +38,4 @@ JSRegExp::JSRegExp(const JSContext& js_context, const std::vector<JSValue>& argu
 	js_object_ref__ = js_object_ref;
 }
 
-}} // namespace JavaScriptCoreCPP { namespace RAII {
+}} // namespace JavaScriptCoreCPP {
