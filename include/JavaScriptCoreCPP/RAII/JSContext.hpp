@@ -245,8 +245,8 @@ class JSContext final {
 	/*!
 	  @method
 	  
-	  @abstract Create a JavaScript object from a custom JSClass and
-	  optional private data.
+	  @abstract Create a JavaScript object in this execution context
+	  from a custom JSClass and optional private data.
 	  
 	  @discussion This constructor allocates storage for private data
 	  that you can use the GetPrivate and SetPrivate methods to store
@@ -270,20 +270,19 @@ class JSContext final {
 	/*!
 	  @method
 	  
-	  @abstract Create a JavaScript object defined by a JSNativeClass
-	  that is implemented by a C++ object.
+	  @abstract Create a JavaScript object in this execution context
+	  that is implemented by a C++ class.
 	  
-	  @param js_native_class The JSNativeClass used to create this
-	  object.
+	  @param T Any class that derives from JSNativeObject.
+
+	  @param constructor_arguments The constructor arguments to pass to
+	  T.
 	  
-	  @param T_constructor_arguments The constructor arguments to use
-	  when creating the type T.
-	  
-	  @result A JavaScript object defined by a JSNativeClass that is
-	  implemented by a C++ object.
+	  @result A JavaScript object running in this execution context that
+	  is implemented by a C++ class.
 	*/
 	template<typename T, typename... Us>
-	T CreateObject(Us&&... T_constructor_arguments) const;
+	T CreateObject(Us&&... constructor_arguments) const;
 
 	/*!
 	  @method

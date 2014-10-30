@@ -7,7 +7,7 @@
 //
 
 #include "JavaScriptCoreCPP/RAII/RAII.hpp"
-#include "NativeObject.hpp"
+#include "Widget.hpp"
 #import <XCTest/XCTest.h>
 
 using namespace JavaScriptCoreCPP::RAII;
@@ -42,45 +42,16 @@ using namespace JavaScriptCoreCPP::RAII;
   XCTAssertEqual(1, attributes.size());
 }
 
-- (void)testObjectCallbacks {
-  InitializeCallback<NativeObject>        InitializeCallback        = &NativeObject::Initialize;
-  FinalizeCallback<NativeObject>          FinalizeCallback          = &NativeObject::Finalize;
-  CallAsConstructorCallback<NativeObject> CallAsConstructorCallback = &NativeObject::Constructor;
-  CallAsFunctionCallback<NativeObject>    Helloallback              = &NativeObject::Hello;
-  CallAsFunctionCallback<NativeObject>    GoodbyeCallback           = &NativeObject::Goodbye;
-}
-
-- (void)testPropertyCallbacks {
-  using NativeObjectPropertyCallback     = JSNativeObjectFunctionPropertyCallback<NativeObject>;
-  using NativeObjectPropertyCallbackHash = JSNativeObjectFunctionPropertyCallbackHash<NativeObject>;
-  using NativeObjectFunctionCallbackSet  = std::unordered_set<NativeObjectPropertyCallback, NativeObjectPropertyCallbackHash>;
-  
-  NativeObjectFunctionCallbackSet function_callbacks;
-
-  JSNativeObjectFunctionPropertyCallback<NativeObject>   HelloCallback("hello"  , &NativeObject::Hello  , {JSPropertyAttribute::DontDelete});
-  JSNativeObjectFunctionPropertyCallback<NativeObject> GoodbyeCallback("goodbye", &NativeObject::Goodbye, {JSPropertyAttribute::DontDelete});
-  
-  XCTAssertEqual(0, function_callbacks.count(HelloCallback));
-  XCTAssertEqual(0, function_callbacks.count(GoodbyeCallback));
-  
-  const auto insert_result = function_callbacks.insert(HelloCallback);
-  XCTAssertTrue(insert_result.second);
-  XCTAssertEqual(1, function_callbacks.count(HelloCallback));
-  XCTAssertEqual(*insert_result.first, HelloCallback);
-  
-  XCTAssertEqual(1, function_callbacks.size());
-}
-
 - (void)testValuePropertyCallback {
-  using NativeObjectPropertyCallback     = JSNativeObjectValuePropertyCallback<NativeObject>;
-  using NativeObjectPropertyCallbackHash = JSNativeObjectValuePropertyCallbackHash<NativeObject>;
+  using NativeObjectPropertyCallback     = JSNativeObjectValuePropertyCallback<Widget>;
+  using NativeObjectPropertyCallbackHash = JSNativeObjectValuePropertyCallbackHash<Widget>;
   using NativeObjectValueCallbackSet     = std::unordered_set<NativeObjectPropertyCallback, NativeObjectPropertyCallbackHash>;
   
   NativeObjectValueCallbackSet value_property_callbacks;
 
-  JSNativeObjectValuePropertyCallback<NativeObject>   NamePropertyCallback("name"  , &NativeObject::GetName  , &NativeObject::SetName  , {JSPropertyAttribute::DontDelete});
-  JSNativeObjectValuePropertyCallback<NativeObject> NumberPropertyCallback("number", &NativeObject::GetNumber, &NativeObject::SetNumber, {JSPropertyAttribute::DontDelete});
-  JSNativeObjectValuePropertyCallback<NativeObject>     PiPropertyCallback("pi"    , &NativeObject::GetPi    , nullptr                 , {JSPropertyAttribute::DontDelete});
+  JSNativeObjectValuePropertyCallback<Widget>   NamePropertyCallback("name"  , &Widget::GetName  , &Widget::SetName  , {JSPropertyAttribute::DontDelete});
+  JSNativeObjectValuePropertyCallback<Widget> NumberPropertyCallback("number", &Widget::GetNumber, &Widget::SetNumber, {JSPropertyAttribute::DontDelete});
+  JSNativeObjectValuePropertyCallback<Widget>     PiPropertyCallback("pi"    , &Widget::GetPi    , nullptr                 , {JSPropertyAttribute::DontDelete});
   
   XCTAssertEqual(1, NamePropertyCallback.get_attributes().count(JSPropertyAttribute::DontDelete));
   XCTAssertEqual(0, NamePropertyCallback.get_attributes().count(JSPropertyAttribute::ReadOnly));
@@ -108,41 +79,42 @@ using namespace JavaScriptCoreCPP::RAII;
   XCTAssertEqual(2, value_property_callbacks.size());
 }
 
-- (void)testGetFunctionName {
-  JSContext js_context = js_context_group.CreateContext();
-
-  auto foo = js_context.CreateFunction("foo", {}, "return arguments.callee.toString().match(/function ([^\(]+)/)[1];");
-  XCTAssertTrue(foo.IsFunction());
-  XCTAssertTrue(foo.IsObject());
-  std::clog << "MDL: foo() = " << foo() << std::endl;
-  XCTAssertEqual("foo", static_cast<std::string>(foo()));
-  XCTAssertEqual("foo", static_cast<std::string>(foo(js_context.CreateNumber(42))));
-
-  auto add = js_context.CreateFunction("add", {"a", "b"}, "return a + b;");
-  std::clog << "MDL: add = "
-            << add({js_context.CreateNumber(2), js_context.CreateNumber(2)})
-            << std::endl;
+- (void)testFunctionPropertyCallbacks {
+  using NativeObjectPropertyCallback     = JSNativeObjectFunctionPropertyCallback<Widget>;
+  using NativeObjectPropertyCallbackHash = JSNativeObjectFunctionPropertyCallbackHash<Widget>;
+  using NativeObjectFunctionCallbackSet  = std::unordered_set<NativeObjectPropertyCallback, NativeObjectPropertyCallbackHash>;
+  
+  JSNativeObjectFunctionPropertyCallback<Widget> HelloCallback("hello", &Widget::Hello, {JSPropertyAttribute::DontDelete});
+  
+  NativeObjectFunctionCallbackSet function_callbacks;
+  XCTAssertEqual(0, function_callbacks.count(HelloCallback));
+  
+  const auto insert_result = function_callbacks.insert(HelloCallback);
+  XCTAssertTrue(insert_result.second);
+  XCTAssertEqual(1, function_callbacks.count(HelloCallback));
+  XCTAssertEqual(*insert_result.first, HelloCallback);
+  
+  XCTAssertEqual(1, function_callbacks.size());
 }
 
 - (void)testJSNativeClassBuilder {
-  JSNativeClassBuilder<NativeObject> builder("MyClass");
+  JSNativeClassBuilder<Widget> builder("Widget");
   builder
-      .Initialize(&NativeObject::Initialize)
-      .Finalize(&NativeObject::Finalize)
-      // .Constructor(&NativeObject::Constructor)
-      // .HasInstance(&NativeObject::HasInstance)
-      .AddValueProperty("name", &NativeObject::GetName, &NativeObject::SetName)
-      .AddValueProperty("number", &NativeObject::GetNumber, &NativeObject::SetNumber)
-      .AddValueProperty("pi", &NativeObject::GetPi)
-      .AddFunctionProperty("hello", &NativeObject::Hello)
-      .AddFunctionProperty("goodbye", &NativeObject::Goodbye)
-      // .GetProperty(&NativeObject::GetProperty)
-      // .SetProperty(&NativeObject::SetProperty)
-      // .DeleteProperty(&NativeObject::DeleteProperty)
-      // .GetPropertyNames(&NativeObject::GetPropertyNames)
-      // .HasProperty(&NativeObject::HasProperty)
-      // .Function(&NativeObject::CallAsFunction)
-      // .ConvertType(&NativeObject::ConvertToType);
+      // .Initialize(&Widget::Initialize)
+      // .Finalize(&Widget::Finalize)
+      // .Constructor(&Widget::Constructor)
+      // .HasInstance(&Widget::HasInstance)
+      .AddValueProperty("name", &Widget::GetName, &Widget::SetName)
+      .AddValueProperty("number", &Widget::GetNumber, &Widget::SetNumber)
+      .AddValueProperty("pi", &Widget::GetPi)
+      .AddFunctionProperty("hello", &Widget::Hello)
+      // .GetProperty(&Widget::GetProperty)
+      // .SetProperty(&Widget::SetProperty)
+      // .DeleteProperty(&Widget::DeleteProperty)
+      // .GetPropertyNames(&Widget::GetPropertyNames)
+      // .HasProperty(&Widget::HasProperty)
+      // .Function(&Widget::CallAsFunction)
+      // .ConvertType(&Widget::ConvertToType);
       ;
   
   auto native_class = builder.build();
@@ -150,14 +122,13 @@ using namespace JavaScriptCoreCPP::RAII;
 
 - (void)testJSNativeObject {
   JSContext js_context = js_context_group.CreateContext();
-  NativeObject native_object(js_context);
-  native_object.Test();
-  native_object.Test();
-  native_object.Test();
+  auto native_object = js_context.CreateObject<Widget>("Matt", 42);
 
-  auto native_object2 = js_context.CreateObject<NativeObject>();
-  
-  //JSContext js_context = js_context_group.CreateContext(native_class);
+  JSString script =
+      "var widget = new Widget();"
+      "widget.hello();"
+      ;
+  js_context.JSEvaluateScript(script);
 }
 
 // As of 2014.09.20 Travis CI only supports Xcode 5.1 which lacks support for

@@ -55,13 +55,48 @@ class JSDate;
 class JSError;
 class JSRegExp;
 
+
+
+
 /*!
   @class
   
   @discussion A JSValue is an RAII wrapper around a JSValueRef, the
-  JavaScriptCore C API representation of a JavaScript value.
+  JavaScriptCore C API representation of a JavaScript value. This is
+  the base class for all JavaScript values and objects, and hence
+  serves as the base class for most of the classes in the
+  JavaScriptCoreCPP library. These are the direct descendants of
+  JSValue:
+
+  JSUndefined
+  JSNull
+  JSBoolean
+  JSNumber
+  JSObject
+
+  And these are the direct descendants of JSObject (which derives from
+  JSValue):
+
+  JSFunction
+  JSArray
+  JSDate
+  JSError
+  JSRegExp
+  JSNativeObject
+
+  These are the only remaining major classes in the JavaScriptCoreCPP
+  library that do not have JSValue in their class hierarchy:
   
-  The only way to create a JSValue is by using the
+  JSClass
+  JSContext
+  JSContextGroup
+  JSString
+  JSNativeClass
+
+  The other ancillary helper classes in the JavaScriptCoreCPP library
+  also do not have JSValue in their class hierarchy.
+
+The only way to create a JSValue is by using the
   JSContext::CreateXXX member functions.
 */
 #ifdef JAVASCRIPTCORECPP_RAII_PERFORMANCE_COUNTER_ENABLE

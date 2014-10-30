@@ -40,7 +40,6 @@
 		C954A10019FD6AFA0040C3FD /* JSNativeObjectValuePropertyCallback.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C954A0FE19FD6AFA0040C3FD /* JSNativeObjectValuePropertyCallback.hpp */; };
 		C954A10419FDCC780040C3FD /* JSUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C954A10319FDCC780040C3FD /* JSUtil.cpp */; };
 		C954A10619FE6BEC0040C3FD /* JSNativeClass.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C954A10519FE6BEC0040C3FD /* JSNativeClass.hpp */; };
-		C97453D61A01980C00CB4CA9 /* JSContextInterface.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C97453D51A01980C00CB4CA9 /* JSContextInterface.hpp */; };
 		C9A4E62519F2EC6B00CF25BF /* JSClass.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A4E61D19F2EC6B00CF25BF /* JSClass.hpp */; };
 		C9A4E62719F2EC6B00CF25BF /* JSContext.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A4E61F19F2EC6B00CF25BF /* JSContext.hpp */; };
 		C9A4E62819F2EC6B00CF25BF /* JSContextGroup.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9A4E62019F2EC6B00CF25BF /* JSContextGroup.hpp */; };
@@ -128,7 +127,6 @@
 		C954A0FE19FD6AFA0040C3FD /* JSNativeObjectValuePropertyCallback.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSNativeObjectValuePropertyCallback.hpp; path = include/JavaScriptCoreCPP/RAII/detail/JSNativeObjectValuePropertyCallback.hpp; sourceTree = "<group>"; };
 		C954A10319FDCC780040C3FD /* JSUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSUtil.cpp; path = src/RAII/detail/JSUtil.cpp; sourceTree = "<group>"; };
 		C954A10519FE6BEC0040C3FD /* JSNativeClass.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSNativeClass.hpp; path = include/JavaScriptCoreCPP/RAII/JSNativeClass.hpp; sourceTree = "<group>"; };
-		C97453D51A01980C00CB4CA9 /* JSContextInterface.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSContextInterface.hpp; path = include/JavaScriptCoreCPP/RAII/JSContextInterface.hpp; sourceTree = "<group>"; };
 		C9A4E61D19F2EC6B00CF25BF /* JSClass.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSClass.hpp; path = include/JavaScriptCoreCPP/RAII/JSClass.hpp; sourceTree = "<group>"; };
 		C9A4E61F19F2EC6B00CF25BF /* JSContext.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSContext.hpp; path = include/JavaScriptCoreCPP/RAII/JSContext.hpp; sourceTree = "<group>"; };
 		C9A4E62019F2EC6B00CF25BF /* JSContextGroup.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSContextGroup.hpp; path = include/JavaScriptCoreCPP/RAII/JSContextGroup.hpp; sourceTree = "<group>"; };
@@ -160,7 +158,7 @@
 		C9A4E66E19F721C900CF25BF /* JSPropertyNameAccumulator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSPropertyNameAccumulator.hpp; path = include/JavaScriptCoreCPP/RAII/JSPropertyNameAccumulator.hpp; sourceTree = "<group>"; };
 		C9A4E67A19F8359C00CF25BF /* JSNativeObjectTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = JSNativeObjectTests.mm; path = RAII/JSNativeObjectTests.mm; sourceTree = "<group>"; };
 		C9A4E67C19F835FC00CF25BF /* HashUtilitiesTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = HashUtilitiesTests.mm; path = RAII/HashUtilitiesTests.mm; sourceTree = "<group>"; };
-		C9A4E67E19F83EC200CF25BF /* NativeObject.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = NativeObject.hpp; path = RAII/NativeObject.hpp; sourceTree = "<group>"; };
+		C9A4E67E19F83EC200CF25BF /* Widget.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Widget.hpp; path = RAII/Widget.hpp; sourceTree = "<group>"; };
 		C9A4E68219F87CAF00CF25BF /* RAII.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = RAII.hpp; path = include/JavaScriptCoreCPP/RAII/RAII.hpp; sourceTree = "<group>"; };
 		C9A4E68719F8876A00CF25BF /* JSContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSContext.cpp; path = src/RAII/JSContext.cpp; sourceTree = "<group>"; };
 		C9A4E68F19F8ACB900CF25BF /* JSNativeObject.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSNativeObject.hpp; path = include/JavaScriptCoreCPP/RAII/JSNativeObject.hpp; sourceTree = "<group>"; };
@@ -243,7 +241,6 @@
 		C954A0DE19F9E8F00040C3FD /* JSContext */ = {
 			isa = PBXGroup;
 			children = (
-				C97453D51A01980C00CB4CA9 /* JSContextInterface.hpp */,
 				C9A4E62019F2EC6B00CF25BF /* JSContextGroup.hpp */,
 				C954A0E619FAE1180040C3FD /* JSContextGroup.cpp */,
 				C9A4E61F19F2EC6B00CF25BF /* JSContext.hpp */,
@@ -383,7 +380,7 @@
 				C9A4E63719F32E7900CF25BF /* JSValueTests.mm */,
 				C9A4E63C19F420EB00CF25BF /* JSObjectTests.mm */,
 				C9A4E67A19F8359C00CF25BF /* JSNativeObjectTests.mm */,
-				C9A4E67E19F83EC200CF25BF /* NativeObject.hpp */,
+				C9A4E67E19F83EC200CF25BF /* Widget.hpp */,
 				C9A4E67C19F835FC00CF25BF /* HashUtilitiesTests.mm */,
 			);
 			name = RAII;
@@ -404,7 +401,6 @@
 				C954A0FA19FC522D0040C3FD /* JSPropertyAttribute.hpp in Headers */,
 				C954A0F819FC52080040C3FD /* JSNativeClassAttribute.hpp in Headers */,
 				C9A4E64D19F49E5700CF25BF /* JSArray.hpp in Headers */,
-				C97453D61A01980C00CB4CA9 /* JSContextInterface.hpp in Headers */,
 				C9A4E66F19F721C900CF25BF /* JSPropertyNameAccumulator.hpp in Headers */,
 				C936FD6B19CB97930082CB08 /* JSString.h in Headers */,
 				C9A4E64319F4533800CF25BF /* JSNull.hpp in Headers */,

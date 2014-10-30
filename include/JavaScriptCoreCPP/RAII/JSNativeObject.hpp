@@ -39,31 +39,8 @@ class JSNativeObject : public JSObject, public detail::JSPerformanceCounter<JSNa
 class JSNativeObject : public JSObject {
 #endif
 	
- protected:
+ public:
 
-	// This constructor is the one invoked by the T derived class.
-	// JSNativeObject(const JSContext& js_context, const JSNativeClass<T>& js_native_class)
-	// 		: JSObject(js_context, js_native_class, this) {
-	// }
-	
-	JSNativeObject(const JSContext& js_context, const JSNativeClass<T>& js_native_class)
-			: JSObject(js_context)
-			, js_native_class__(js_native_class) {
-	}
-
-	// virtual ~JSNativeObject() = default;
-
-	// // Copy constructor.
-	// JSNativeObject(const JSNativeObject<T>& rhs) = default;
-	
-	// // Move constructor.
-	// JSNativeObject(JSNativeObject<T>&& rhs) = default;
-
-	// // Copy assignment operators.
-	// JSNativeObject& operator=(const JSNativeObject<T>&) = default;
-	// JSNativeObject& operator=(JSNativeObject<T>&&) = default;
-	
-	
 	virtual ~JSNativeObject() {
 	}
 	
@@ -104,95 +81,122 @@ class JSNativeObject : public JSObject {
 	}
 	
 	virtual bool IsConstructor() const override final {
+		assert(attached_to_context__);
 		return JSObject::IsConstructor();
 	}
 
 	virtual bool HasInstance(const JSValue& possible_instance) const override final {
+		assert(attached_to_context__);
 		return JSObject::HasInstance(possible_instance);
 	}
 
 	virtual JSObject CallAsConstructor(const std::vector<JSValue>& arguments) override final {
+		assert(attached_to_context__);
 		return JSObject::CallAsConstructor(arguments);
 	}
 
 	virtual bool IsFunction() const override final {
+		assert(attached_to_context__);
 		return JSObject::IsFunction();
 	}
 
 	virtual JSValue CallAsFunction(const std::vector<JSValue>& arguments, const JSObject& this_object) override final {
+		assert(attached_to_context__);
 		return JSObject::CallAsFunction(arguments, this_object);
 	}
 	
 	virtual JSValue GetProperty(const JSString& property_name) const override final {
+		assert(attached_to_context__);
 		return JSObject::GetProperty(property_name);
 	}
 	
 	virtual JSValue GetProperty(unsigned property_index) const override final {
+		assert(attached_to_context__);
 		return JSObject::GetProperty(property_index);
 	}
 	
 	virtual void SetProperty(const JSString& property_name, const JSValue& property_value, const std::unordered_set<JSPropertyAttribute>& attributes = {}) override final {
+		assert(attached_to_context__);
 		return JSObject::SetProperty(property_name, property_value, attributes);
 	}
 	
 	virtual void SetProperty(unsigned property_index, const JSValue& property_value) override final {
+		assert(attached_to_context__);
 		return JSObject::SetProperty(property_index, property_value);
 	}
 	
 	virtual bool HasProperty(const JSString& property_name) const override final {
+		assert(attached_to_context__);
 		return JSObject::HasProperty(property_name);
 	}
 	
 	virtual bool DeleteProperty(const JSString& property_name) override final {
+		assert(attached_to_context__);
 		return JSObject::DeleteProperty(property_name);
 	}
 	
 	virtual operator JSUndefined() const override final {
+		assert(attached_to_context__);
 		return JSObject::operator JSUndefined();
 	}
 	
 	virtual operator JSNull() const override final {
+		assert(attached_to_context__);
 		return JSObject::operator JSNull();
 	}
 	
 	virtual operator JSBoolean() const override final {
+		assert(attached_to_context__);
 		return JSObject::operator JSBoolean();
 	}
 	
 	virtual operator JSNumber() const override final {
+		assert(attached_to_context__);
 		return JSObject::operator JSNumber();
 	}
 	
 	virtual operator JSString() const override final {
+		assert(attached_to_context__);
 		return JSObject::operator JSString();
 	}
 	
 	virtual JSValue GetPrototype() const override final {
+		assert(attached_to_context__);
 		return JSObject::GetPrototype();
 	}
 	
 	virtual void SetPrototype(const JSValue& js_value) override final {
+		assert(attached_to_context__);
 		JSObject::SetPrototype(js_value);
 	}
 
+ protected:
+	
+	JSNativeObject(const JSContext& js_context, const JSNativeClass<T>& js_native_class)
+			: JSObject(js_context)
+			, js_native_class__(js_native_class) {
+	}
+
 	virtual void* GetPrivate() const override final {
+		assert(attached_to_context__);
 		return nullptr;
 	}
 	
 	virtual bool SetPrivate(void* data) override final {
+		assert(attached_to_context__);
 		return false;
 	}
 
 	virtual void AttachToContext() const final {
-		static std::once_flag of;
 		auto self = const_cast<JSNativeObject*>(this);
-		std::call_once(of, [self] {
+		std::call_once(self -> attach_to_context_once_flag__, [self] {
 				// Replace the JSObjectRef of our base class with one based on
 				// our JSNativeClass that has its private data set to a
 				// pointer to ourselves.
 				std::clog << "MDL: Hello, world." << std::endl;
 				JSValueUnprotect(self -> get_context(), self -> js_object_ref__);
 				self -> js_object_ref__ = JSObject(self -> get_context(), self -> js_native_class__, self);
+				self -> attached_to_context__ = true;
 			});
 	}
 	
@@ -202,6 +206,8 @@ class JSNativeObject : public JSObject {
 	friend JSContext;
 
 	JSNativeClass<T> js_native_class__;
+	std::once_flag   attach_to_context_once_flag__;
+	bool             attached_to_context__ { false };
 };
 
 template<typename T>
@@ -210,8 +216,8 @@ JSContext JSContextGroup::CreateContext(const JSNativeClass<T>& global_object_cl
 }
 
 template<typename T, typename... Us>
-T JSContext::CreateObject(Us&&... T_constructor_arguments) const {
-	const auto object = T(*this, std::forward<Us>(T_constructor_arguments)...);
+T JSContext::CreateObject(Us&&... constructor_arguments) const {
+	const auto object = T(*this, std::forward<Us>(constructor_arguments)...);
 	object.AttachToContext();
 	return object;
 }
