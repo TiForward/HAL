@@ -27,8 +27,6 @@ class JSNativeObject;
 
 namespace JavaScriptCoreCPP { namespace detail {
 
-using namespace JavaScriptCoreCPP;
-
 /*!
   @class
   
@@ -285,6 +283,6 @@ struct hash<JSNativeObjectValuePropertyCallback<T>> {
 template<typename T>
 using JSNativeObjectValuePropertyCallbackHash = hash<JSNativeObjectValuePropertyCallback<T>>;
 
-} // namespace JavaScriptCoreCPP { namespace detail {
+}} // namespace JavaScriptCoreCPP { namespace detail {
 
 #endif // _JAVASCRIPTCORECPP_DETAIL_JSNATIVEOBJECTVALUEPROPERTYCALLBACK_HPP_

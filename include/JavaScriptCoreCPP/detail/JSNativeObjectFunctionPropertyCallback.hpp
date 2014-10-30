@@ -27,8 +27,6 @@ class JSNativeObject;
 
 namespace JavaScriptCoreCPP { namespace detail {
 
-using namespace JavaScriptCoreCPP;
-
 /*!
   @class
 
@@ -232,6 +230,9 @@ bool operator>=(const JSNativeObjectFunctionPropertyCallback<T>& lhs, const JSNa
 }
 
 template<typename T>
+struct hash;
+
+template<typename T>
 struct hash<JSNativeObjectFunctionPropertyCallback<T>> {
 	using argument_type = JSNativeObjectFunctionPropertyCallback<T>;
 	using result_type   = std::size_t;
@@ -244,6 +245,6 @@ struct hash<JSNativeObjectFunctionPropertyCallback<T>> {
 template<typename T>
 using JSNativeObjectFunctionPropertyCallbackHash = hash<JSNativeObjectFunctionPropertyCallback<T>>;
 
-} // namespace JavaScriptCoreCPP { namespace detail {
+}} // namespace JavaScriptCoreCPP { namespace detail {
 
 #endif // _JAVASCRIPTCORECPP_DETAIL_JSNATIVEOBJECTFUNCTIONPROPERTYCALLBACK_HPP_

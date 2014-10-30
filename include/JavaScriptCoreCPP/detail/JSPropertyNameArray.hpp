@@ -19,8 +19,6 @@
 
 namespace JavaScriptCoreCPP { namespace detail {
 
-using namespace JavaScriptCoreCPP;
-
 /*!
   @class
   
@@ -34,7 +32,7 @@ private:
 
 	// This class is only intended to be used as a helper class by
 	// JSObject.
-	friend class RAII::JSObject;
+	friend class JSObject;
 	
 	/*!
 	  @method

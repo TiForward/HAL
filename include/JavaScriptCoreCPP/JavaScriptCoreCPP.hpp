@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_RAII_HPP_
-#define _JAVASCRIPTCORECPP_RAII_HPP_
+#ifndef _JAVASCRIPTCORECPP_HPP_
+#define _JAVASCRIPTCORECPP_HPP_
 
 #include "JavaScriptCoreCPP/JSContextGroup.hpp"
 #include "JavaScriptCoreCPP/JSContext.hpp"
@@ -41,5 +41,4 @@
 #include "JavaScriptCoreCPP/detail/JSPerformanceCounterPrinter.hpp"
 #endif
 
-#endif // _JAVASCRIPTCORECPP_RAII_HPP_
-
+#endif // _JAVASCRIPTCORECPP_HPP_

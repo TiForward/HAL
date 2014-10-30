@@ -12,13 +12,11 @@
 
 #ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 
-#include "JavaScriptCoreCPP/RAII.hpp"
+#include "JavaScriptCoreCPP.hpp"
 #include <iostream>
 
 namespace JavaScriptCoreCPP { namespace detail {
 
-using namespace JavaScriptCoreCPP;
-		
 class JSPerformanceCounterPrinter {
  public:
 
@@ -180,7 +178,6 @@ class JSPerformanceCounterPrinter {
 };
 
 }} // namespace JavaScriptCoreCPP { namespace detail {
-
 
 #endif  // JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 

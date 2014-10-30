@@ -9,7 +9,7 @@ add_library(JavaScriptCoreCPP
 	JSObject.cpp
 	JSRegExp.cpp
 	JSValue.cpp
-	RAII/JSValue.cpp
+	JSValue.cpp
 	#detail/HashUtilities.cpp
 	detail/JSUtil.cpp
   )
