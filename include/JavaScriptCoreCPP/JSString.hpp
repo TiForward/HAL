@@ -254,7 +254,7 @@ std::ostream& operator << (std::ostream& ostream, const JSString& js_string) {
 	return ostream;
 }
 
-}} // namespace JavaScriptCoreCPP {
+} // namespace JavaScriptCoreCPP {
 
 namespace std {
 

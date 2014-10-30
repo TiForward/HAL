@@ -680,6 +680,6 @@ bool operator!=(const JSContext& lhs, const JSContext& rhs) {
   return ! (lhs == rhs);
 }
 
-}} // namespace JavaScriptCoreCPP {
+} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSCONTEXT_HPP_

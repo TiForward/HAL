@@ -37,6 +37,6 @@ private:
 	friend JSContext;
 };
 
-}} // namespace JavaScriptCoreCPP {
+} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSNULL_HPP_

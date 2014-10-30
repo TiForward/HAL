@@ -128,6 +128,6 @@ class JSClass	{
 	JAVASCRIPTCORECPP_JSCLASS_MUTEX;
 };
 
-}} // namespace JavaScriptCoreCPP {
+} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSCLASS_HPP_

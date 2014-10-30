@@ -39,6 +39,6 @@ class JSFunction final : public JSObject {
 	friend JSContext;
 };
 
-}} // namespace JavaScriptCoreCPP {
+} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSFUNCTION_HPP_

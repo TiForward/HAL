@@ -39,6 +39,6 @@ class JSError final : public JSObject {
 	friend JSContext;
 };
 
-}} // namespace JavaScriptCoreCPP {
+} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSERROR_HPP_

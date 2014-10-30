@@ -35,7 +35,7 @@ enum class JSPropertyAttribute : JSPropertyAttributes {
 	DontDelete
 };
 
-}} // namespace JavaScriptCoreCPP {
+} // namespace JavaScriptCoreCPP {
 
 
 // Provide a hash function so that a JSPropertyAttribute can be stored

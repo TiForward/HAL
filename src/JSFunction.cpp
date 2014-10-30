@@ -39,4 +39,4 @@ JSFunction::JSFunction(const JSContext& js_context, const JSString& function_nam
 	js_object_ref__ = js_object_ref;
 }
 
-}} // namespace JavaScriptCoreCPP {
+} // namespace JavaScriptCoreCPP {

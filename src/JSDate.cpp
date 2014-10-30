@@ -38,4 +38,4 @@ JSDate::JSDate(const JSContext& js_context, const std::vector<JSValue>& argument
 	js_object_ref__ = js_object_ref;
 }
 
-}} // namespace JavaScriptCoreCPP {
+} // namespace JavaScriptCoreCPP {

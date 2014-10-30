@@ -39,6 +39,6 @@ class JSDate final : public JSObject {
 	friend JSContext;
 };
 
-}} // namespace JavaScriptCoreCPP {
+} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSDATE_HPP_

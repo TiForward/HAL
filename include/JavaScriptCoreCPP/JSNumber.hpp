@@ -148,6 +148,6 @@ public:
 	friend JSValue;
 };
 
-}} // namespace JavaScriptCoreCPP {
+} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSNUMBER_HPP_

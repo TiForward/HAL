@@ -233,4 +233,4 @@ JSObject::operator JSNumber() const {
 	return get_context().CreateNumber(std::numeric_limits<double>::quiet_NaN());
 }
 
-}} // namespace JavaScriptCoreCPP {
+} // namespace JavaScriptCoreCPP {

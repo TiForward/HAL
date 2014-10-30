@@ -73,6 +73,6 @@ private:
 	JSPropertyNameAccumulatorRef js_property_name_accumulator_ref__;
 };
 
-}} // namespace JavaScriptCoreCPP {
+} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSVALUE_HPP_

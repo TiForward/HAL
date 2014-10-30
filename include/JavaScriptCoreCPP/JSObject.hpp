@@ -467,6 +467,6 @@ class JSObject : public JSValue {
 	JSObjectRef js_object_ref__{ nullptr };
 };
 
-}} // namespace JavaScriptCoreCPP {
+} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSOBJECT_HPP_

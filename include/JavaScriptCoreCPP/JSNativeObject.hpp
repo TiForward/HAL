@@ -221,6 +221,6 @@ T JSContext::CreateObject(Us&&... constructor_arguments) const {
 	return object;
 }
 
-}} // namespace JavaScriptCoreCPP {
+} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSNATIVEOBJECT_HPP_

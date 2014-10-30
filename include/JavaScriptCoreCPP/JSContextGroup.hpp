@@ -224,6 +224,6 @@ bool operator!=(const JSContextGroup& lhs, const JSContextGroup& rhs) {
   return ! (lhs == rhs);
 }
 
-}} // namespace JavaScriptCoreCPP {
+} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSCONTEXTGROUP_HPP_

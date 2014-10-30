@@ -556,6 +556,6 @@ std::ostream& operator << (std::ostream& ostream, const JSValue::Type& js_value_
 	return ostream;
 }
 
-}} // namespace JavaScriptCoreCPP {
+} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSVALUE_HPP_

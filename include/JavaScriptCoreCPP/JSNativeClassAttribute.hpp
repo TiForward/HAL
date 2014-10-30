@@ -31,7 +31,7 @@ enum class JSNativeClassAttribute : JSClassAttributes {
 	NoAutomaticPrototype
 };
 
-}} // namespace JavaScriptCoreCPP {
+} // namespace JavaScriptCoreCPP {
 
 
 // Provide a hash function so that a JSNativeClassAttribute can be

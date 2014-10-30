@@ -560,6 +560,6 @@ JSObjectRef JSNativeClass<T>::JSObjectCallAsConstructorCallback(JSContextRef js_
 	return result;
 }
 
-}} // namespace JavaScriptCoreCPP {
+} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSNATIVECLASS_HPP_

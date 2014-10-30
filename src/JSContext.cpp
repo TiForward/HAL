@@ -200,4 +200,4 @@ JSObject JSContext::get_global_object() const {
 std::atomic<long> JSContext::js_context_id_counter_;
 #endif
 
-}} // namespace JavaScriptCoreCPP {
+} // namespace JavaScriptCoreCPP {

@@ -248,4 +248,4 @@ std::string to_string(const JSValue::Type& js_value_type) {
 	}
 }
 
-}} // namespace JavaScriptCoreCPP {
+} // namespace JavaScriptCoreCPP {
