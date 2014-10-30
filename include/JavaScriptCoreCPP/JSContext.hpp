@@ -464,7 +464,7 @@ class JSContext final {
 	  an exception.
 	  
 	*/
-	JSValue JSEvaluateScript(const JSString& script, const JSObject& this_object, const JSString& source_url = JSString(), int starting_line_number = 1) const;
+	JSValue JSEvaluateScript(const JSString& script, JSObject& this_object, const JSString& source_url = JSString(), int starting_line_number = 1) const;
 
 	/*!
 	  @method

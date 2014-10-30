@@ -52,7 +52,7 @@ class JSNativeObjectFunctionPropertyCallback final	{
 	  For example, given this class definition:
 	  
 	  class Foo {
-	    JSValue CallAsFunction(const std::vector<JSValue>& arguments, const JSObject& this_object);
+	    JSValue CallAsFunction(const std::vector<JSValue>& arguments, JSObject& this_object);
 	  };
 	  
 	  You would define the callback like this:

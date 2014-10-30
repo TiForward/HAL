@@ -115,16 +115,16 @@ class JSObject : public JSValue {
 	  be called as a function, or calling the function itself threw a
 	  JavaScript exception.
 	*/
-	virtual JSValue operator()(                                                                     ) final { return CallAsFunction(                      ); }
-	virtual JSValue operator()(                                          const JSObject& this_object) final { return CallAsFunction(           this_object); }
-	virtual JSValue operator()(const JSValue&               argument                                ) final { return CallAsFunction(argument              ); }
-	virtual JSValue operator()(const JSString&              argument                                ) final { return CallAsFunction(argument              ); }
-	virtual JSValue operator()(const JSValue&               argument ,   const JSObject& this_object) final { return CallAsFunction(argument , this_object); }
-	virtual JSValue operator()(const JSString&              argument ,   const JSObject& this_object) final { return CallAsFunction(argument , this_object); }
-	virtual JSValue operator()(const std::vector<JSValue>&  arguments                               ) final { return CallAsFunction(arguments             ); }
-	virtual JSValue operator()(const std::vector<JSString>& arguments                               ) final { return CallAsFunction(arguments             ); }
-	virtual JSValue operator()(const std::vector<JSValue>&  arguments,   const JSObject& this_object) final { return CallAsFunction(arguments, this_object); }
-	virtual JSValue operator()(const std::vector<JSString>& arguments,   const JSObject& this_object) final { return CallAsFunction(arguments, this_object); }
+	virtual JSValue operator()(                                                               ) final { return CallAsFunction(                      ); }
+	virtual JSValue operator()(                                          JSObject& this_object) final { return CallAsFunction(           this_object); }
+	virtual JSValue operator()(const JSValue&               argument                          ) final { return CallAsFunction(argument              ); }
+	virtual JSValue operator()(const JSString&              argument                          ) final { return CallAsFunction(argument              ); }
+	virtual JSValue operator()(const JSValue&               argument ,   JSObject& this_object) final { return CallAsFunction(argument , this_object); }
+	virtual JSValue operator()(const JSString&              argument ,   JSObject& this_object) final { return CallAsFunction(argument , this_object); }
+	virtual JSValue operator()(const std::vector<JSValue>&  arguments                         ) final { return CallAsFunction(arguments             ); }
+	virtual JSValue operator()(const std::vector<JSString>& arguments                         ) final { return CallAsFunction(arguments             ); }
+	virtual JSValue operator()(const std::vector<JSValue>&  arguments,   JSObject& this_object) final { return CallAsFunction(arguments, this_object); }
+	virtual JSValue operator()(const std::vector<JSString>& arguments,   JSObject& this_object) final { return CallAsFunction(arguments, this_object); }
 
 	/*!
 	  @method
@@ -349,7 +349,7 @@ class JSObject : public JSValue {
 	  
 	  @result Return the function's return value.
 	*/
-	virtual JSValue CallAsFunction(const std::vector<JSValue>&  arguments, const JSObject& this_object);
+	virtual JSValue CallAsFunction(const std::vector<JSValue>&  arguments, JSObject& this_object);
 	
 	/*!
 	  @method
@@ -402,14 +402,14 @@ class JSObject : public JSValue {
 	*/
 	void GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const;
 
-	JSValue CallAsFunction(                                                                   ) { return CallAsFunction(std::vector<JSValue>()                      ); }
-	JSValue CallAsFunction(                                        const JSObject& this_object) { return CallAsFunction(std::vector<JSValue>()         , this_object); }
-	JSValue CallAsFunction(const JSValue&               argument                              ) { return CallAsFunction(std::vector<JSValue> {argument}             ); }
-	JSValue CallAsFunction(const JSString&              argument                              ) { return CallAsFunction(std::vector<JSString>{argument}             ); }
-	JSValue CallAsFunction(const JSValue&               argument , const JSObject& this_object) { return CallAsFunction(std::vector<JSValue> {argument}, this_object); }
-	JSValue CallAsFunction(const JSString&              argument , const JSObject& this_object) { return CallAsFunction(std::vector<JSString>{argument}, this_object); }
-	JSValue CallAsFunction(const std::vector<JSValue>&  arguments                             ) { return CallAsFunction(arguments                      , *this      );}
-	JSValue CallAsFunction(const std::vector<JSString>& arguments                             ) {
+	JSValue CallAsFunction(                                                             ) { return CallAsFunction(std::vector<JSValue>()                      ); }
+	JSValue CallAsFunction(                                        JSObject& this_object) { return CallAsFunction(std::vector<JSValue>()         , this_object); }
+	JSValue CallAsFunction(const JSValue&               argument                        ) { return CallAsFunction(std::vector<JSValue> {argument}             ); }
+	JSValue CallAsFunction(const JSString&              argument                        ) { return CallAsFunction(std::vector<JSString>{argument}             ); }
+	JSValue CallAsFunction(const JSValue&               argument , JSObject& this_object) { return CallAsFunction(std::vector<JSValue> {argument}, this_object); }
+	JSValue CallAsFunction(const JSString&              argument , JSObject& this_object) { return CallAsFunction(std::vector<JSString>{argument}, this_object); }
+	JSValue CallAsFunction(const std::vector<JSValue>&  arguments                       ) { return CallAsFunction(arguments                      , *this      );}
+	JSValue CallAsFunction(const std::vector<JSString>& arguments                       ) {
 		std::vector<JSValue> arguments_array;
 		std::transform(arguments.begin(),
 		               arguments.end(),
@@ -418,7 +418,7 @@ class JSObject : public JSValue {
 		return CallAsFunction(arguments_array);
 	}
 
-	JSValue CallAsFunction(const std::vector<JSString>& arguments, const JSObject& this_object) {
+	JSValue CallAsFunction(const std::vector<JSString>& arguments, JSObject& this_object) {
 		std::vector<JSValue> arguments_array;
 		std::transform(arguments.begin(),
 		               arguments.end(),

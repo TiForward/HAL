@@ -75,7 +75,7 @@ JSObject JSObject::CallAsConstructor(const std::vector<JSValue>&  arguments) {
 	return JSObject(get_context(), js_object_ref);
 }
 
-JSValue JSObject::CallAsFunction(const std::vector<JSValue>&  arguments, const JSObject& this_object) {
+JSValue JSObject::CallAsFunction(const std::vector<JSValue>&  arguments, JSObject& this_object) {
 	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
 	static const std::string log_prefix { "MDL: JSObject::CallAsFunction: " };
 	

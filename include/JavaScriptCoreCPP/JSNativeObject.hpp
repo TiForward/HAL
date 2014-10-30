@@ -90,7 +90,7 @@ class JSNativeObject : public JSObject {
 		return JSObject::CallAsConstructor(arguments);
 	}
 
-	virtual JSValue CallAsFunction(const std::vector<JSValue>& arguments, const JSObject& this_object) override final {
+	virtual JSValue CallAsFunction(const std::vector<JSValue>& arguments, JSObject& this_object) override final {
 		assert(attached_to_context__);
 		return JSObject::CallAsFunction(arguments, this_object);
 	}

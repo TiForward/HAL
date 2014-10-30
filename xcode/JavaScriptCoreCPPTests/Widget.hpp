@@ -54,7 +54,7 @@ class Widget final : public JSNativeObject<Widget> {
 		return pi_;
 	}
 
-	JSValue SayHello(const std::vector<JSValue>& arguments, const JSObject& this_object) {
+	JSValue SayHello(const std::vector<JSValue>& arguments, JSObject& this_object) {
 		std::ostringstream os;
 		os << "Hello";
 

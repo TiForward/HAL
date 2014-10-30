@@ -338,7 +338,7 @@ class JSNativeClassBuilder final {
 	  @discussion For example, given this class definition:
 	  
 	  class Foo {
-	    JSValue SayHello(const std::vector<JSValue>& arguments, const JSObject& this_object);
+	    JSValue SayHello(const std::vector<JSValue>& arguments, JSObject& this_object);
 	  };
 
 	  You would call the builer like this:
@@ -734,7 +734,7 @@ class JSNativeClassBuilder final {
 	  For example, given this class definition:
 	  
 	  class Foo {
-	    JSValue DoSomething(const std::vector<JSValue>& arguments, const JSObject& this_object);
+	    JSValue DoSomething(const std::vector<JSValue>& arguments, JSObject& this_object);
 	  };
 
 	  You would call the builer like this:

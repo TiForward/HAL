@@ -154,7 +154,7 @@ JSValue JSContext::JSEvaluateScript(const JSString& script, const JSString& sour
 	return result;
 }
 
-JSValue JSContext::JSEvaluateScript(const JSString& script, const JSObject& this_object, const JSString& source_url, int starting_line_number) const {
+JSValue JSContext::JSEvaluateScript(const JSString& script, JSObject& this_object, const JSString& source_url, int starting_line_number) const {
 	JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
 	JSValueRef js_value_ref { nullptr };
 	const JSStringRef source_url_ref = (source_url.length() > 0) ? static_cast<JSStringRef>(source_url) : nullptr;
