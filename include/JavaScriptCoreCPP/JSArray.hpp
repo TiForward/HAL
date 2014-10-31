@@ -31,13 +31,10 @@ class JSArray final : public JSObject {
 	
  private:
 
-	JSArray(const JSContext& js_context) : JSArray(js_context, std::vector<JSValue>()) {
-	}
-	
-	JSArray(const JSContext& js_context, const std::vector<JSValue>& arguments);
-
 	// Only a JSContext can create a JSArray.
 	friend JSContext;
+	
+	JSArray(const JSContext& js_context, const std::vector<JSValue>& arguments);
 };
 
 } // namespace JavaScriptCoreCPP {

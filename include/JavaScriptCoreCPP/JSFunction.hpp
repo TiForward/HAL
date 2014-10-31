@@ -32,11 +32,11 @@ class JSFunction final : public JSObject {
 #endif
 	
  private:
-
-	JSFunction(const JSContext& js_context, const JSString& function_name, const std::vector<JSString>& parameter_names, const JSString& body, const JSString& source_url, int starting_line_number);
-
+	
 	// Only a JSContext can create a JSFunction.
 	friend JSContext;
+	
+	JSFunction(const JSContext& js_context, const JSString& body, const std::vector<JSString>& parameter_names, const JSString& function_name, const JSString& source_url, int starting_line_number);
 };
 
 } // namespace JavaScriptCoreCPP {

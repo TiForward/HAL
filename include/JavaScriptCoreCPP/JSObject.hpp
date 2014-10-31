@@ -70,17 +70,10 @@ class JSObject : public JSValue {
 		return false;
 	}
 
-	virtual JSObject CallAsConstructor(                                      ) final { return CallAsConstructor(std::vector<JSValue>()         ); }
-	virtual JSObject CallAsConstructor(const JSValue&               argument ) final { return CallAsConstructor(std::vector<JSValue> {argument}); }
-	virtual JSObject CallAsConstructor(const JSString&              argument ) final { return CallAsConstructor(std::vector<JSString>{argument}); }
-	virtual JSObject CallAsConstructor(const std::vector<JSString>& arguments) final {
-		std::vector<JSValue> arguments_array;
-		std::transform(arguments.begin(),
-		               arguments.end(),
-		               std::back_inserter(arguments_array),
-		               [this](const JSString& js_string) { return get_context().CreateString(js_string); });
-		return CallAsConstructor(arguments_array);
-	}
+	virtual JSObject CallAsConstructor(                                      ) final;
+	virtual JSObject CallAsConstructor(JSValue                      argument ) final;
+	virtual JSObject CallAsConstructor(JSString                     argument ) final;
+	virtual JSObject CallAsConstructor(const std::vector<JSString>& arguments) final;
 
 	/*!
 	  @method
@@ -115,16 +108,17 @@ class JSObject : public JSValue {
 	  be called as a function, or calling the function itself threw a
 	  JavaScript exception.
 	*/
-	virtual JSValue operator()(                                                               ) final { return CallAsFunction(                      ); }
-	virtual JSValue operator()(                                          JSObject& this_object) final { return CallAsFunction(           this_object); }
-	virtual JSValue operator()(const JSValue&               argument                          ) final { return CallAsFunction(argument              ); }
-	virtual JSValue operator()(const JSString&              argument                          ) final { return CallAsFunction(argument              ); }
-	virtual JSValue operator()(const JSValue&               argument ,   JSObject& this_object) final { return CallAsFunction(argument , this_object); }
-	virtual JSValue operator()(const JSString&              argument ,   JSObject& this_object) final { return CallAsFunction(argument , this_object); }
-	virtual JSValue operator()(const std::vector<JSValue>&  arguments                         ) final { return CallAsFunction(arguments             ); }
-	virtual JSValue operator()(const std::vector<JSString>& arguments                         ) final { return CallAsFunction(arguments             ); }
-	virtual JSValue operator()(const std::vector<JSValue>&  arguments,   JSObject& this_object) final { return CallAsFunction(arguments, this_object); }
-	virtual JSValue operator()(const std::vector<JSString>& arguments,   JSObject& this_object) final { return CallAsFunction(arguments, this_object); }
+	virtual JSValue operator()(                                                            ) final { return CallAsFunction(                      ); }
+	virtual JSValue operator()(JSValue                      argument                       ) final { return CallAsFunction(argument              ); }
+	virtual JSValue operator()(JSString                     argument                       ) final { return CallAsFunction(argument              ); }
+	virtual JSValue operator()(const std::vector<JSValue>&  arguments                      ) final { return CallAsFunction(arguments             ); }
+	virtual JSValue operator()(const std::vector<JSString>& arguments                      ) final { return CallAsFunction(arguments             ); }
+
+	virtual JSValue operator()(                                        JSObject this_object) final { return CallAsFunction(           this_object); }
+	virtual JSValue operator()(JSValue                      argument , JSObject this_object) final { return CallAsFunction(argument , this_object); }
+	virtual JSValue operator()(JSString                     argument , JSObject this_object) final { return CallAsFunction(argument , this_object); }
+	virtual JSValue operator()(const std::vector<JSValue>&  arguments, JSObject this_object) final { return CallAsFunction(arguments, this_object); }
+	virtual JSValue operator()(const std::vector<JSString>& arguments, JSObject this_object) final { return CallAsFunction(arguments, this_object); }
 
 	/*!
 	  @method
@@ -234,23 +228,6 @@ class JSObject : public JSValue {
 	*/
 	virtual JSPropertyNameArray CopyPropertyNames() const final;
 
-	/*! 
-	  @method
-	  
-	  @abstract Convert this JavaScript object to another JavaScript
-	  type. An object converted to boolean is 'true.' An object
-	  converted to object is itself.
-	  
-	  @result The objects's converted value.
-	*/
-	virtual operator JSUndefined() const final;
-	virtual operator JSNull()      const final;
-	virtual operator JSBoolean()   const final;
-	virtual operator JSNumber()    const;
-	virtual operator JSString()    const {
-		return static_cast<JSString>(*this);
-	}
-
 	/*!
 	  @method
 	  
@@ -287,8 +264,9 @@ class JSObject : public JSValue {
 	
 	// Move constructor.
 	JSObject(JSObject&& rhs)
-			: JSValue(rhs)
+			: JSValue(std::move(rhs))
 			, js_object_ref__(rhs.js_object_ref__) {
+		JSValueProtect(get_context(), js_object_ref__);
 	}
 	
 #ifdef JAVASCRIPTCORECPP_MOVE_SEMANTICS_ENABLE
@@ -317,7 +295,7 @@ class JSObject : public JSValue {
 
  protected:
 	
-	JSObject(const JSContext& js_context, const JSClass& js_class = {}, void* private_data = nullptr);
+	explicit JSObject(const JSContext& js_context, const JSClass& js_class = {}, void* private_data = nullptr);
 
 	/*!
 	  @method
@@ -333,7 +311,7 @@ class JSObject : public JSValue {
 	  be called as a constructor, or calling the constructor itself
 	  threw a JavaScript exception.
 	*/
-	virtual JSObject CallAsConstructor(const std::vector<JSValue>&  arguments);
+	virtual JSObject CallAsConstructor(const std::vector<JSValue>& arguments);
 
 	/*!
 	  @method
@@ -349,7 +327,7 @@ class JSObject : public JSValue {
 	  
 	  @result Return the function's return value.
 	*/
-	virtual JSValue CallAsFunction(const std::vector<JSValue>&  arguments, JSObject& this_object);
+	virtual JSValue CallAsFunction(const std::vector<JSValue>& arguments, JSObject this_object);
 	
 	/*!
 	  @method
@@ -402,42 +380,34 @@ class JSObject : public JSValue {
 	*/
 	void GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const;
 
-	JSValue CallAsFunction(                                                             ) { return CallAsFunction(std::vector<JSValue>()                      ); }
-	JSValue CallAsFunction(                                        JSObject& this_object) { return CallAsFunction(std::vector<JSValue>()         , this_object); }
-	JSValue CallAsFunction(const JSValue&               argument                        ) { return CallAsFunction(std::vector<JSValue> {argument}             ); }
-	JSValue CallAsFunction(const JSString&              argument                        ) { return CallAsFunction(std::vector<JSString>{argument}             ); }
-	JSValue CallAsFunction(const JSValue&               argument , JSObject& this_object) { return CallAsFunction(std::vector<JSValue> {argument}, this_object); }
-	JSValue CallAsFunction(const JSString&              argument , JSObject& this_object) { return CallAsFunction(std::vector<JSString>{argument}, this_object); }
-	JSValue CallAsFunction(const std::vector<JSValue>&  arguments                       ) { return CallAsFunction(arguments                      , *this      );}
-	JSValue CallAsFunction(const std::vector<JSString>& arguments                       ) {
-		std::vector<JSValue> arguments_array;
-		std::transform(arguments.begin(),
-		               arguments.end(),
-		               std::back_inserter(arguments_array),
-		               [this](const JSString& js_string) { return JSValue(get_context().CreateString(js_string)); });
-		return CallAsFunction(arguments_array);
-	}
+	JSValue CallAsFunction(                                                            );
+	JSValue CallAsFunction(JSValue                      argument                       );
+	JSValue CallAsFunction(JSString                     argument                       );
+	JSValue CallAsFunction(const std::vector<JSValue>&  arguments                      );
+	JSValue CallAsFunction(const std::vector<JSString>& arguments                      );
 
-	JSValue CallAsFunction(const std::vector<JSString>& arguments, JSObject& this_object) {
-		std::vector<JSValue> arguments_array;
-		std::transform(arguments.begin(),
-		               arguments.end(),
-		               std::back_inserter(arguments_array),
-		               [this](const JSString& js_string) { return get_context().CreateString(js_string); });
-		return CallAsFunction(arguments_array, this_object);
-	}
+	JSValue CallAsFunction(                                        JSObject this_object);
+	JSValue CallAsFunction(JSValue                      argument , JSObject this_object);
+	JSValue CallAsFunction(JSString                     argument , JSObject this_object);
+	JSValue CallAsFunction(const std::vector<JSString>& arguments, JSObject this_object);
+
+
+	// Only a JSContext can create a JSObject.
+	friend class JSContext;
+
+	// The JSNativeClass static functions need access to the following
+	// JSObject constructor.
+	template<typename T>
+	friend class JSNativeClass;
 
 	// For interoperability with the JavaScriptCore C API.
-	JSObject(const JSContext& js_context, JSObjectRef js_object_ref);
+	explicit JSObject(const JSContext& js_context, JSObjectRef js_object_ref);
 
 	// For interoperability with the JavaScriptCore C API.
 	operator JSObjectRef() const {
 		return js_object_ref__;
 	}
 	
-	// Only a JSContext can create a JSObject.
-	friend class JSContext;
-
 	// JSValue::operator JSObject() needs access to operator
 	// JSObjectRef().
 	friend class JSValue;
@@ -462,16 +432,12 @@ class JSObject : public JSValue {
 	// JSDate needs access to js_object_ref__ to change its value.
 	friend class JSFunction;
 
-	// The JSNativeClass static functions need access to the JSObject
-	// constructor.
-	template<typename T>
-	friend class JSNativeClass;
-
-	// JSNativeClass need access to the JSObject constructor.
+	// JSNativeObject need access to the JSObject constructor and access
+	// to js_object_ref__ to change its value.
 	template<typename T>
 	friend class JSNativeObject;
 
-	JSObjectRef js_object_ref__{ nullptr };
+	JSObjectRef js_object_ref__ { nullptr };
 };
 
 } // namespace JavaScriptCoreCPP {

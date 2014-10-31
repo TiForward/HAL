@@ -44,7 +44,19 @@ JSObject::JSObject(const JSContext& js_context, JSObjectRef js_object_ref)
 	JSValueProtect(js_context, js_object_ref__);
 }
 
-JSObject JSObject::CallAsConstructor(const std::vector<JSValue>&  arguments) {
+JSObject JSObject::CallAsConstructor(                                      ) { return CallAsConstructor(std::vector<JSValue>  {}        ); }
+JSObject JSObject::CallAsConstructor(JSValue                       argument) { return CallAsConstructor(std::vector<JSValue>  {argument}); }
+JSObject JSObject::CallAsConstructor(JSString                      argument) { return CallAsConstructor(std::vector<JSString> {argument}); }
+JSObject JSObject::CallAsConstructor(const std::vector<JSString>& arguments) {
+	std::vector<JSValue> arguments_array;
+	std::transform(arguments.begin(),
+	               arguments.end(),
+	               std::back_inserter(arguments_array),
+	               [this](const JSString& js_string) { return get_context().CreateString(js_string); });
+	return CallAsConstructor(arguments_array);
+}
+
+JSObject JSObject::CallAsConstructor(const std::vector<JSValue>& arguments) {
 	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
 	static const std::string log_prefix { "MDL: JSObject::CallAsConstructor: " };
 	
@@ -75,7 +87,32 @@ JSObject JSObject::CallAsConstructor(const std::vector<JSValue>&  arguments) {
 	return JSObject(get_context(), js_object_ref);
 }
 
-JSValue JSObject::CallAsFunction(const std::vector<JSValue>&  arguments, JSObject& this_object) {
+JSValue JSObject::CallAsFunction(                                      ) { return CallAsFunction(std::vector<JSValue>()                 ); }
+JSValue JSObject::CallAsFunction(JSValue                      argument ) { return CallAsFunction(std::vector<JSValue>  {argument}       ); }
+JSValue JSObject::CallAsFunction(JSString                     argument ) { return CallAsFunction(std::vector<JSString> {argument}       ); }
+JSValue JSObject::CallAsFunction(const std::vector<JSValue>&  arguments) { return CallAsFunction(arguments                       , *this); }
+JSValue JSObject::CallAsFunction(const std::vector<JSString>& arguments) {
+	std::vector<JSValue> arguments_array;
+	std::transform(arguments.begin(),
+	               arguments.end(),
+	               std::back_inserter(arguments_array),
+	               [this](const JSString& js_string) { return JSValue(get_context().CreateString(js_string)); });
+	return CallAsFunction(arguments_array);
+}
+
+JSValue JSObject::CallAsFunction(                                        JSObject this_object) { return CallAsFunction(std::vector<JSValue>()          , this_object); }
+JSValue JSObject::CallAsFunction(JSValue                      argument , JSObject this_object) { return CallAsFunction(std::vector<JSValue>  {argument}, this_object); }
+JSValue JSObject::CallAsFunction(JSString                     argument , JSObject this_object) { return CallAsFunction(std::vector<JSString> {argument}, this_object); }
+JSValue JSObject::CallAsFunction(const std::vector<JSString>& arguments, JSObject this_object) {
+	std::vector<JSValue> arguments_array;
+	std::transform(arguments.begin(),
+	               arguments.end(),
+	               std::back_inserter(arguments_array),
+	               [this](const JSString& js_string) { return get_context().CreateString(js_string); });
+	return CallAsFunction(arguments_array, this_object);
+}
+
+JSValue JSObject::CallAsFunction(const std::vector<JSValue>& arguments, JSObject this_object) {
 	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
 	static const std::string log_prefix { "MDL: JSObject::CallAsFunction: " };
 	
@@ -225,22 +262,6 @@ void JSObject::GetPropertyNames(const JSPropertyNameAccumulator& accumulator) co
 	for (const auto& property_name : static_cast<std::vector<JSString>>(CopyPropertyNames())) {
 		accumulator.AddName(property_name);
 	}
-}
-
-JSObject::operator JSUndefined() const {
-	return get_context().CreateUndefined();
-}
-
-JSObject::operator JSNull() const {
-	return get_context().CreateNull();
-}
-
-JSObject::operator JSBoolean() const {
-	return get_context().CreateBoolean(true);
-}
-
-JSObject::operator JSNumber() const {
-	return get_context().CreateNumber(std::numeric_limits<double>::quiet_NaN());
 }
 
 } // namespace JavaScriptCoreCPP {

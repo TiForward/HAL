@@ -71,12 +71,14 @@ class JSClass	{
 	}
 	
 	// Copy constructor.
-	JSClass(const JSClass& rhs) : js_class_ref__(rhs.js_class_ref__) {
+	JSClass(const JSClass& rhs)
+			: js_class_ref__(rhs.js_class_ref__) {
 		JSClassRetain(js_class_ref__);
 	}
 	
 	// Move constructor.
-	JSClass(JSClass&& rhs) : js_class_ref__(rhs.js_class_ref__) {
+	JSClass(JSClass&& rhs)
+			: js_class_ref__(rhs.js_class_ref__) {
 		JSClassRetain(js_class_ref__);
 	}
 	

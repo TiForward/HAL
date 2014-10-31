@@ -138,7 +138,7 @@ public:
 	  @result A JSString containing the JSON serialized representation
 	  of this JavaScript value.
 	*/
-	JSString ToJSONString(unsigned indent = 0);
+	virtual JSString ToJSONString(unsigned indent = 0) final;
 	
 	/*!
 	  @method
@@ -147,7 +147,7 @@ public:
 	  
 	  @result A JSString with the result of conversion.
 	*/
-	explicit operator JSString() const;
+	virtual explicit operator JSString() const final;
 	
 	/*!
 	  @method
@@ -156,7 +156,7 @@ public:
 	  
 	  @result A std::string with the result of conversion.
 	*/
-	explicit operator std::string() const {
+	virtual explicit operator std::string() const final {
 		return operator JSString();
 	}
 
@@ -167,7 +167,7 @@ public:
 	  
 	  @result The boolean result of conversion.
 	*/
-	explicit operator bool() const {
+	virtual explicit operator bool() const final {
 		return JSValueToBoolean(js_context__, js_value_ref__);
 	}
 	
@@ -178,7 +178,7 @@ public:
 	  
 	  @result A JSBoolean with the result of conversion.
 	*/
-	operator JSBoolean() const;
+	virtual operator JSBoolean() const final;
 
 	/*!
 	  @method
@@ -187,7 +187,7 @@ public:
 	  
 	  @result The double result of conversion.
 	*/
-	explicit operator double() const;
+	virtual explicit operator double() const final;
 
 	/*!
 	  @method
@@ -197,7 +197,7 @@ public:
 	  
 	  @result The int32_t result of conversion.
 	*/
-	explicit operator int32_t() const;
+	virtual explicit operator int32_t() const final;
 	
 	/*!
 	  @method
@@ -211,7 +211,7 @@ public:
 	  
 	  @result The uint32_t result of the conversion.
 	*/
-	explicit operator uint32_t() const  {
+	virtual explicit operator uint32_t() const final {
 		// As commented in the spec, the operation of ToInt32 and ToUint32
 		// only differ in how the result is interpreted; see NOTEs in
 		// sections 9.5 and 9.6.
@@ -225,7 +225,7 @@ public:
 	  
 	  @result A JSNumber with the result of conversion.
 	*/
-	operator JSNumber() const;
+	virtual operator JSNumber() const final;
 
 	/*!
 	  @method
@@ -237,7 +237,7 @@ public:
 	  @throws std::runtime_error if this JSValue could not be converted
 	  to a JSObject.
 	*/
-	operator JSObject() const;
+	virtual operator JSObject() const final;
 
   /*!
     @method
@@ -247,7 +247,7 @@ public:
     @result A value of type JSValue::Type that identifies this
     JavaScript value's type.
   */
-	Type GetType() const;
+	virtual Type GetType() const final;
 
 	/*!
     @method
@@ -258,7 +258,7 @@ public:
     @result true if this JavaScript value's type is the undefined
     type.
   */
-  bool IsUndefined() const {
+	virtual bool IsUndefined() const final {
 	  return JSValueIsUndefined(js_context__, js_value_ref__);
   }
 
@@ -270,7 +270,7 @@ public:
     
     @result true if this JavaScript value's type is the null type.
   */
-  bool IsNull() const {
+	virtual bool IsNull() const final {
 	  return JSValueIsNull(js_context__, js_value_ref__);
   }
   
@@ -282,7 +282,7 @@ public:
     
     @result true if this JavaScript value's type is the boolean type.
   */
-  bool IsBoolean() const {
+	virtual bool IsBoolean() const final {
 	  return JSValueIsBoolean(js_context__, js_value_ref__);
   }
 
@@ -294,7 +294,7 @@ public:
     
     @result true if this JavaScript value's type is the number type.
   */
-  bool IsNumber() const {
+	virtual bool IsNumber() const final {
 	  return JSValueIsNumber(js_context__, js_value_ref__);
   }
 
@@ -306,7 +306,7 @@ public:
     
     @result true if this JavaScript value's type is the string type.
   */
-  bool IsString() const {
+  virtual bool IsString() const final {
 	  return JSValueIsString(js_context__, js_value_ref__);
   }
 
@@ -318,7 +318,7 @@ public:
     
     @result true if this JavaScript value's type is the object type.
   */
-	bool IsObject() const {
+	virtual bool IsObject() const final {
 		return JSValueIsObject(js_context__, js_value_ref__);
 	}
 	
@@ -333,7 +333,7 @@ public:
 	  @result true if this JavaScript value is an object with a given
 	  class in its class chain.
 	*/
-	bool IsObjectOfClass(const JSClass& js_class) const {
+	virtual bool IsObjectOfClass(const JSClass& js_class) const final {
 		return JSValueIsObjectOfClass(js_context__, js_value_ref__, js_class);
 	}
 
@@ -349,7 +349,7 @@ public:
     @result true if this JavaScript value was constructed by the given
     constructor as compared by the JavaScript 'instanceof' operator.
   */
-	bool IsInstanceOfConstructor(const JSObject& constructor) const;
+	virtual bool IsInstanceOfConstructor(const JSObject& constructor) const final;
 
 	/*!
 	  @method
@@ -362,7 +362,7 @@ public:
 	  @result true this JavaScript value is equal to another JavaScript
 	  by usong the JavaScript == operator.
 	*/
-	bool IsEqualWithTypeCoercion(const JSValue& js_value) const;
+	virtual bool IsEqualWithTypeCoercion(const JSValue& js_value) const final;
 
 	/*!
 	  @method
@@ -371,7 +371,7 @@ public:
 	  
 	  @result The the execution context of this JavaScript value.
 	*/
-	JSContext get_context() const {
+	virtual JSContext get_context() const final {
 		return js_context__;
 	}
 	
@@ -426,80 +426,50 @@ public:
     swap(first.js_context__  , second.js_context__);
     swap(first.js_value_ref__, second.js_value_ref__);
   }
+
+ protected:
   
- private:
+	// A JSContext can create a JSValue.
+	friend class JSContext;
 
 	JSValue(const JSContext& js_context, const JSString& js_string, bool parse_as_json = false);
 
+	// JSObject needs access to the following JSValue constructor for
+	// GetPrototype() and for generating error messages, as well as
+	// operator JSValueRef() for SetPrototype()
+	friend class JSObject;
+
+	// These classes need access to the following JSValue constructor
+	// for generating error messages.
+	friend class JSArray;
+	friend class JSDate;
+	friend class JSFunction;
+	friend class JSRegExp;
+	friend class JSError;
+
 	// For interoperability with the JavaScriptCore C API.
-	explicit JSValue(const JSContext& js_context, JSValueRef js_value_ref)
+	JSValue(const JSContext& js_context, JSValueRef js_value_ref)
 			: js_context__(js_context)
 			, js_value_ref__(js_value_ref)  {
 		assert(js_value_ref__);
 		JSValueProtect(js_context__, js_value_ref__);
 	}
 
-  // For interoperability with the JavaScriptCore C API.
-	// operator JSContextRef() const {
-	//   return js_context__;
-  // }
+ private:
 
+	// The JSNativeClass static functions need access to operator
+	// JSValueRef().
+	template<typename T>
+	friend class JSNativeClass;
+	
 	// For interoperability with the JavaScriptCore C API.
 	operator JSValueRef() const {
-	  return js_value_ref__;
-  }
+		return js_value_ref__;
+	}
 
 	// Prevent heap based objects.
 	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
 	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
-	
-	// Only a JSContext can create a JSValue.
-	friend class JSContext;
-
-	// JSUndefined needs access to the JSValue constructor.
-	friend class JSUndefined;
-
-	// JSNull needs access to the JSValue constructor.
-	friend class JSNull;
-
-	// JSBoolean needs access to operator JSValueRef().
-	friend class JSBoolean;
-
-	// JSNumber::operator double() needs access to operator JSValueRef()
-	// to change its value and to the JSValue constructor for reporting
-	// error messages.
-	friend class JSNumber;
-
-	// JSObject needs access to the JSValue constructor for
-	// GetPrototype(), SetPrototype() and for generating error messages.
-	friend class JSObject;
-	
-	// friend class JSPropertyNameArray;
-
-	// JSArray needs access to the JSValue constructor for generating
-	// error messages.
-	friend class JSArray;
-
-	// JSDate needs access to the JSValue constructor for generating
-	// error messages.
-	friend class JSDate;
-	
-	// JSError needs access to the JSValue constructor for generating
-	// error messages.
-	friend class JSError;
-	
-	// JSRegExp needs access to the JSValue constructor for generating
-	// error messages.
-	friend class JSRegExp;
-
-	// JSFunction needs access to the JSValue constructor for generating
-	// error messages.
-	friend class JSFunction;
-
-  // The JSNativeClass static functions need access to operator
-  // JSValueRef().
-	template<typename T>
-	friend class JSNativeClass;
 	
 	// This function requires access to operator JSValueRef().
 	friend bool operator==(const JSValue& lhs, const JSValue& rhs);

@@ -46,20 +46,14 @@ class JSBoolean final : public JSValue {
 	  not be converted to a boolean.
 	*/
 	JSBoolean& operator=(const JSValue& js_value) {
-		JSValue::operator JSBoolean();
+		JSValue::operator=(static_cast<JSBoolean>(js_value));
 		return *this;
   }
 
-	/*!
-	  @method
-	  
-	  @abstract Convert a JSBoolean to a boolean.
-	  
-	  @result The boolean result of conversion.
-	*/
-	operator bool() const {
-		return JSValueToBoolean(get_context(), *this);
-	}
+	JSBoolean& operator=(JSValue&& js_value) {
+		JSValue::operator=(static_cast<JSBoolean>(js_value));
+		return *this;
+  }
 
 	/*!
     @method
@@ -71,21 +65,18 @@ class JSBoolean final : public JSValue {
     @result The JSBoolean with the new value of the given boolean.
   */
 	JSBoolean& operator=(bool boolean) {
-		const bool current_value = operator bool();
-		if (current_value != boolean) {
-			JSValue::operator=(JSBoolean(get_context(), boolean));
-		}
+		JSValue::operator=(JSBoolean(get_context(), boolean));
 		return *this;
 	}
 
  private:
 
-	JSBoolean(const JSContext& js_context, bool boolean) : JSValue(js_context, JSValueMakeBoolean(js_context, boolean)) {
-	}
-	
-	// Only JSContext and JSValue can create a JSBoolean.
+	// Only JSContext can create a JSBoolean.
 	friend JSContext;
-	friend JSValue;
+	
+	JSBoolean(const JSContext& js_context, bool boolean)
+			: JSValue(js_context, JSValueMakeBoolean(js_context, boolean)) {
+	}
 };
 
 } // namespace JavaScriptCoreCPP {

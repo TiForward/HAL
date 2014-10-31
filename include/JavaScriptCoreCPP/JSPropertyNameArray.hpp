@@ -79,6 +79,7 @@ class JSPropertyNameArray final	{
   // Move constructor.
 	JSPropertyNameArray(JSPropertyNameArray&& rhs)
 			: js_property_name_array_ref__(rhs.js_property_name_array_ref__) {
+		JSPropertyNameArrayRetain(js_property_name_array_ref__);
   }
   
   // Create a copy of another JSPropertyNameArray by assignment. This
@@ -101,6 +102,9 @@ class JSPropertyNameArray final	{
   
 private:
 
+  // Only a JSObject can create a JSPropertyNameArray.
+	friend class JSObject;
+	
 	/*!
 	  @method
 	  
@@ -111,8 +115,8 @@ private:
 	  @result A JSPropertyNameArray containing the names of the object's
 	  enumerable properties.
 	*/
-	JSPropertyNameArray(const JSObject& js_object)
-			: js_property_name_array_ref__(JSObjectCopyPropertyNames(js_object.get_context(), js_object)) {
+  explicit JSPropertyNameArray(const JSObject& js_object)
+		  : js_property_name_array_ref__(JSObjectCopyPropertyNames(js_object.get_context(), js_object)) {
 	}
   
   // For interoperability with the JavaScriptCore C API.
@@ -123,9 +127,6 @@ private:
 	// Prevent heap based objects.
 	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
 	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
-	
-  // JSObject needs access to the JSPropertyNameArray constructor.
-	friend class JSObject;
 	
 	JSPropertyNameArrayRef js_property_name_array_ref__;
 };

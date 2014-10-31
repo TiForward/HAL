@@ -10,6 +10,7 @@
 #ifndef _JAVASCRIPTCORECPP_JSCONTEXTGROUP_HPP_
 #define _JAVASCRIPTCORECPP_JSCONTEXTGROUP_HPP_
 
+#include "JavaScriptCoreCPP/JSClass.hpp"
 #include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 #include <utility>
 #include <cassert>
@@ -87,33 +88,16 @@ class JSContextGroup final	{
 	  this context group may share and exchange JavaScript objects with
 	  one another.
 	*/
-	JSContextGroup() : js_context_group_ref__(JSContextGroupCreate()) {
+	JSContextGroup()
+			: js_context_group_ref__(JSContextGroupCreate()) {
 	}
 	
 	/*!
 	  @method
 	  
 	  @abstract Create a JavaScript execution context within this
-	  context group with a default global object populated with all of
-	  the standard built-in JavaScript objects, such as Object,
-	  Function, String, and Array. Scripts may execute in this context
-	  concurrently with scripts executing in other contexts.
-
-	  @discussion All JSContexts within this context group may share and
-	  exchange JavaScript values with one another.
-	  
-	  When JavaScript objects from the same context group are used in
-	  multiple threads, explicit synchronization is required.
-	*/
-	JSContext CreateContext() const;
-
-	/*!
-	  @method
-	  
-	  @abstract Create a JavaScript execution context within this
-	  context group with a global object created from a custom
-	  JSClass. Scripts may execute in this context concurrently with
-	  scripts executing in other contexts.
+	  context group. Scripts may execute in this context concurrently
+	  with scripts executing in other contexts.
 
 	  @discussion All JSContexts within this context group may share and
 	  exchange JavaScript values with one another.
@@ -121,16 +105,22 @@ class JSContextGroup final	{
 	  When JavaScript objects from the same context group are used in
 	  multiple threads, explicit synchronization is required.
 
-	  @param global_object_class The JSClass used to create the global
-	  object.
+	  Providing an optional custom JSClass allows you to create a custom
+	  global object for this execution context. The default JSClass will
+	  create the global object populated with all of the standard
+	  built-in JavaScript objects, such as Object, Function, String, and
+	  Array
+
+	  @param global_object_class An optional JSClass used to create the
+	  global object.
 	*/
-	JSContext CreateContext(const JSClass& global_object_class) const;
+	JSContext CreateContext(const JSClass& global_object_class = {}) const;
 
 	/*!
 	  @method
 	  
 	  @abstract Create a JavaScript execution context within this
-	  context group with a global object created from a custom
+	  context group with a custom global object created from a custom
 	  JSNativeClass. Scripts may execute in this context concurrently
 	  with scripts executing in other contexts.
 
@@ -151,12 +141,15 @@ class JSContextGroup final	{
 	}
 	
 	// Copy constructor.
-	JSContextGroup(const JSContextGroup& rhs) : js_context_group_ref__(rhs.js_context_group_ref__) {
+	JSContextGroup(const JSContextGroup& rhs)
+			: js_context_group_ref__(rhs.js_context_group_ref__) {
 		JSContextGroupRetain(js_context_group_ref__);
 	}
 	
   // Move constructor.
-  JSContextGroup(JSContextGroup&& rhs) : js_context_group_ref__(rhs.js_context_group_ref__) {
+  JSContextGroup(JSContextGroup&& rhs)
+		  : js_context_group_ref__(rhs.js_context_group_ref__) {
+	  JSContextGroupRetain(js_context_group_ref__);
   }
 
 
@@ -188,7 +181,8 @@ class JSContextGroup final	{
  private:
 
   // For interoperability with the JavaScriptCore C API.
-  explicit JSContextGroup(JSContextGroupRef js_context_group_ref) : js_context_group_ref__(js_context_group_ref) {
+  explicit JSContextGroup(JSContextGroupRef js_context_group_ref)
+		  : js_context_group_ref__(js_context_group_ref) {
 		assert(js_context_group_ref__);
 		JSContextGroupRetain(js_context_group_ref__);
 	}

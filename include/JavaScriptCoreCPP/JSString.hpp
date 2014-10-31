@@ -40,10 +40,6 @@
 #endif  // JAVASCRIPTCORECPP_THREAD_SAFE
 
 
-namespace JavaScriptCoreCPP { namespace detail {
-class JSPropertyNameArray;
-}}
-
 namespace JavaScriptCoreCPP {
 
 /*!
@@ -75,7 +71,8 @@ class JSString final	{
 	  
 	  @result An empty JavaScript string with a length of zero.
 	*/
-	JSString() : js_string_ref__(JSStringCreateWithUTF8CString(nullptr)) {
+	JSString()
+			: js_string_ref__(JSStringCreateWithUTF8CString(nullptr)) {
 	}
 	
 	/*!
@@ -89,7 +86,8 @@ class JSString final	{
 	  
 	  @result A JSString containing string.
 	*/
-	JSString(const char* string) : js_string_ref__(JSStringCreateWithUTF8CString(string)) {
+	JSString(const char* string)
+			: js_string_ref__(JSStringCreateWithUTF8CString(string)) {
   }
 
 	/*!
@@ -103,7 +101,8 @@ class JSString final	{
 	  
 	  @result A JSString containing string.
 	*/
-	explicit JSString(const std::string& string) : JSString(string.c_str()) {
+	explicit JSString(const std::string& string)
+			: JSString(string.c_str()) {
 	}
 
 	~JSString() {
@@ -111,12 +110,15 @@ class JSString final	{
 	}
 
 	// Copy constructor.
-	JSString(const JSString& rhs) : js_string_ref__(rhs.js_string_ref__) {
+	JSString(const JSString& rhs)
+			: js_string_ref__(rhs.js_string_ref__) {
 		JSStringRetain(js_string_ref__);
 	}
 
 	// Move constructor.
-	JSString(JSString&& rhs) : js_string_ref__(rhs.js_string_ref__) {
+	JSString(JSString&& rhs)
+			: js_string_ref__(rhs.js_string_ref__) {
+		JSStringRetain(js_string_ref__);
 	}
 	
 #ifdef JAVASCRIPTCORECPP_MOVE_SEMANTICS_ENABLE
@@ -167,7 +169,8 @@ class JSString final	{
 private:
 
   // For interoperability with the JavaScriptCore C API.
-  JSString(const JSStringRef& js_string_ref) : js_string_ref__(js_string_ref) {
+	JSString(const JSStringRef& js_string_ref)
+			: js_string_ref__(js_string_ref) {
 	  assert(js_string_ref__);
     JSStringRetain(js_string_ref__);
   }
@@ -206,7 +209,7 @@ private:
   // The JSNativeClass static functions need access to the JSString
   // constructor.
   template<typename T>
-	friend class JSNativeClass;
+  friend class JSNativeClass;
 	
   // template<typename T>
 	// friend class JSNativeObject;

@@ -65,9 +65,8 @@ class JSNativeClassBuilder final {
 	  @abstract Create a builder with the given class with all callbacks
 	  initialized to nullptr.
 	*/
-	JSNativeClassBuilder(const JSString& class_name)
-			: class_name_(class_name)
-			, parent_class_(&kJSClassDefinitionEmpty) {
+	explicit JSNativeClassBuilder(const JSString& class_name)
+			: class_name_(class_name) {
 	}
 	
 	/*!
@@ -76,9 +75,9 @@ class JSNativeClassBuilder final {
 	  @abstract Create a builder that is initialized from an existing
 	  JSNativeClass.
 	*/
-	JSNativeClassBuilder(const JSNativeClass<T>& js_native_class);
+	explicit JSNativeClassBuilder(const JSNativeClass<T>& js_native_class);
 
-	JSNativeClassBuilder() = delete;;
+	JSNativeClassBuilder() = delete;
 	~JSNativeClassBuilder() = default;
 	
 	JSNativeClassBuilder(const JSNativeClassBuilder<T>& rhs) = default;

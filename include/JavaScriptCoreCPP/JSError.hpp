@@ -29,14 +29,11 @@ class JSError final : public JSObject {
 #endif
 	
  private:
-
-	JSError(const JSContext& js_context) : JSError(js_context, std::vector<JSValue>()) {
-	}
-	
-	JSError(const JSContext& js_context, const std::vector<JSValue>& arguments);
 	
 	// Only a JSContext can create a JSError.
 	friend JSContext;
+	
+	JSError(const JSContext& js_context, const std::vector<JSValue>& arguments);
 };
 
 } // namespace JavaScriptCoreCPP {

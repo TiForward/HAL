@@ -21,10 +21,6 @@
 #include "JavaScriptCoreCPP/JSFunction.hpp"
 #include "JavaScriptCoreCPP/JSRegExp.hpp"
 
-// #include "JavaScriptCoreCPP/JSBoolean.hpp"
-// #include "JavaScriptCoreCPP/JSNumber.hpp"
-// #include "JavaScriptCoreCPP/JSObject.hpp"
-
 #include "JSUtil.hpp"
 #include <stdexcept>
 #include <sstream>
@@ -93,7 +89,7 @@ JSValue::operator JSString() const {
 }
 
 JSValue::operator JSBoolean() const {
-	return JSBoolean(js_context__, operator bool());
+	return js_context__.CreateBoolean(operator bool());
 }
 
 JSValue::operator double() const {
@@ -119,7 +115,7 @@ JSValue::operator int32_t() const {
 }
 
 JSValue::operator JSNumber() const {
-	return JSNumber(js_context__, operator double());
+	return js_context__.CreateNumber(operator double());
 }
 
 JSValue::operator JSObject() const {

@@ -29,14 +29,11 @@ class JSDate final : public JSObject {
 #endif
 	
  private:
-
-	JSDate(const JSContext& js_context) : JSDate(js_context, std::vector<JSValue>()) {
-	}
 	
-	JSDate(const JSContext& js_context, const std::vector<JSValue>& arguments);
-
 	// Only a JSContext can create a JSDate.
 	friend JSContext;
+	
+	JSDate(const JSContext& js_context, const std::vector<JSValue>& arguments);
 };
 
 } // namespace JavaScriptCoreCPP {

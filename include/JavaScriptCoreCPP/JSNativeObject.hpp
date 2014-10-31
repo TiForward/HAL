@@ -52,7 +52,7 @@ class JSNativeObject : public JSObject {
 	
 	// Move constructor.
 	JSNativeObject(JSNativeObject&& rhs)
-			: JSObject(rhs)
+			: JSObject(std::move(rhs))
 			, js_native_class__(rhs.js_native_class__) {
 	}
 	
@@ -66,7 +66,7 @@ class JSNativeObject : public JSObject {
 	// X& X::operator=(const X&), and the move assignment operator,
 	// X& X::operator=(X&&);
 	JSNativeObject& operator=(JSNativeObject rhs) {
-		JSValue::operator=(rhs);
+		JSObject::operator=(rhs);
 		swap(*this, rhs);
 		return *this;
 	}
@@ -90,18 +90,22 @@ class JSNativeObject : public JSObject {
 		return JSObject::CallAsConstructor(arguments);
 	}
 
-	virtual JSValue CallAsFunction(const std::vector<JSValue>& arguments, JSObject& this_object) override final {
+	virtual JSValue CallAsFunction(const std::vector<JSValue>& arguments, JSObject this_object) override final {
 		assert(attached_to_context__);
 		return JSObject::CallAsFunction(arguments, this_object);
 	}
 	
-
  protected:
 	
 	JSNativeObject(const JSContext& js_context, const JSNativeClass<T>& js_native_class)
 			: JSObject(js_context)
 			, js_native_class__(js_native_class) {
 	}
+
+ private:
+
+	// Only a JSContext can attach a JSNativeClass to itself.
+	friend JSContext;
 
 	virtual void AttachToContext() const final {
 		auto self = const_cast<JSNativeObject*>(this);
@@ -115,8 +119,6 @@ class JSNativeObject : public JSObject {
 			});
 	}
 	
- private:
-
 	virtual void* GetPrivate() const override final {
 		assert(attached_to_context__);
 		return nullptr;
@@ -126,9 +128,6 @@ class JSNativeObject : public JSObject {
 		assert(attached_to_context__);
 		return false;
 	}
-
-	// JSContext needs access to AttachToContext.
-	friend JSContext;
 
 	JSNativeClass<T> js_native_class__;
 	std::once_flag   attach_to_context_once_flag__;

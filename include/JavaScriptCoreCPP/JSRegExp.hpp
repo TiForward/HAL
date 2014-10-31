@@ -29,14 +29,11 @@ class JSRegExp final : public JSObject {
 #endif
 	
  private:
-
-	JSRegExp(const JSContext& js_context) : JSRegExp(js_context, std::vector<JSValue>()) {
-	}
-	
-	JSRegExp(const JSContext& js_context, const std::vector<JSValue>& arguments);
 	
 	// Only a JSContext can create a JSRegExp.
 	friend JSContext;
+
+	JSRegExp(const JSContext& js_context, const std::vector<JSValue>& arguments);
 };
 
 } // namespace JavaScriptCoreCPP {

@@ -5,10 +5,8 @@ add_library(JavaScriptCoreCPP
 	JSDate.cpp
 	JSError.cpp
 	JSFunction.cpp
-	JSNumber.cpp
 	JSObject.cpp
 	JSRegExp.cpp
-	JSValue.cpp
 	JSValue.cpp
 	#detail/HashUtilities.cpp
 	detail/JSUtil.cpp

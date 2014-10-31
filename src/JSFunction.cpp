@@ -15,7 +15,7 @@
 
 namespace JavaScriptCoreCPP {
 
-JSFunction::JSFunction(const JSContext& js_context, const JSString& function_name, const std::vector<JSString>& parameter_names, const JSString& body, const JSString& source_url, int starting_line_number) : JSObject(js_context) {
+JSFunction::JSFunction(const JSContext& js_context, const JSString& body, const std::vector<JSString>& parameter_names, const JSString& function_name, const JSString& source_url, int starting_line_number) : JSObject(js_context) {
 	JSValueRef exception { nullptr };
 	const JSStringRef source_url_ref = (source_url.length() > 0) ? static_cast<JSStringRef>(source_url) : nullptr;
 	JSObjectRef js_object_ref = nullptr;

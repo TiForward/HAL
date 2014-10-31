@@ -54,7 +54,7 @@ class Widget final : public JSNativeObject<Widget> {
 		return pi_;
 	}
 
-	JSValue SayHello(const std::vector<JSValue>& arguments, JSObject& this_object) {
+	JSValue SayHello(const std::vector<JSValue>& arguments, JSObject this_object) {
 		std::ostringstream os;
 		os << "Hello";
 
@@ -92,7 +92,7 @@ private:
 
 	JSValue        name_;
 	JSNumber       number_;
-	const JSNumber pi_ = get_context().CreateNumber(3.141592653589793);
+	const JSNumber pi_ { get_context().CreateNumber(3.141592653589793) };
 
 	static JSNativeClass<Widget> JSExport() {
 		static JSNativeClass<Widget> js_native_class("Widget");

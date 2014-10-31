@@ -29,12 +29,13 @@ class JSNull final : public JSValue {
 #endif
 	
 private:
-	
-	JSNull(const JSContext& js_context) : JSValue(js_context, JSValueMakeNull(js_context)) {
-	}
 
 	// Only a JSContext can create a JSNull.
 	friend JSContext;
+	
+	explicit JSNull(const JSContext& js_context)
+			: JSValue(js_context, JSValueMakeNull(js_context)) {
+	}
 };
 
 } // namespace JavaScriptCoreCPP {

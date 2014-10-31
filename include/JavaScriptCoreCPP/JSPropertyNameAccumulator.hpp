@@ -58,8 +58,11 @@ private:
 	JSPropertyNameAccumulator& operator=(const JSPropertyNameAccumulator& rhs) = delete;
 	JSPropertyNameAccumulator& operator=(JSPropertyNameAccumulator&& rhs) = delete;
 
+	// Only a JSObject can create a JSPropertyNameAccumulator.
+	friend class JSObject;
+
 	// For interoperability with the JavaScriptCore C API.
-	JSPropertyNameAccumulator(const JSPropertyNameAccumulatorRef& js_property_name_accumulator_ref)
+	explicit JSPropertyNameAccumulator(const JSPropertyNameAccumulatorRef& js_property_name_accumulator_ref)
 			: js_property_name_accumulator_ref__(js_property_name_accumulator_ref) {
 		assert(js_property_name_accumulator_ref__);
 	}
@@ -68,10 +71,6 @@ private:
 	operator JSPropertyNameAccumulatorRef() const {
 		return js_property_name_accumulator_ref__;
 	}
-
-	// JSObject needs access to the JSPropertyNameAccumulator
-	// constructor.
-	friend class JSObject;
 
 	JSPropertyNameAccumulatorRef js_property_name_accumulator_ref__;
 };

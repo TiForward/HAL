@@ -96,9 +96,10 @@ class JSNativeClass final : public JSClass {
 	
  public:
 
-	JSNativeClass(const JSString& class_name);
-	JSNativeClass(const JSNativeClassBuilder<T>& builder);
+	explicit JSNativeClass(const JSString& class_name);
+	explicit JSNativeClass(const JSNativeClassBuilder<T>& builder);
 	
+	JSNativeClass() = delete;
 	~JSNativeClass() = default;
 	
 	// Copy constructor.

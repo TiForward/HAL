@@ -388,7 +388,7 @@ using HasPropertyCallback = std::function<bool(const T&, const JSString&)>;
   @discussion For example, given this class definition:
   
   class Foo {
-    JSValue Bar(const std::vector<JSValue>& arguments, JSObject& this_object);
+    JSValue Bar(const std::vector<JSValue>& arguments, JSObject this_object);
   };
 
   You would define the callback like this:
@@ -410,7 +410,7 @@ using HasPropertyCallback = std::function<bool(const T&, const JSString&)>;
   @result Return the function's return value.
 */
 template<typename T>
-using CallAsFunctionCallback = std::function<JSValue(T&, const std::vector<JSValue>&, JSObject&)>;
+using CallAsFunctionCallback = std::function<JSValue(T&, const std::vector<JSValue>&, JSObject)>;
 	
 /*! 
   @typedef ConvertToTypeCallback

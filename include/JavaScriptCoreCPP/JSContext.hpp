@@ -11,7 +11,6 @@
 #define _JAVASCRIPTCORECPP_JSCONTEXT_HPP_
 
 #include "JavaScriptCoreCPP/JSContextGroup.hpp"
-#include "JavaScriptCoreCPP/JSClass.hpp"
 #include "JavaScriptCoreCPP/JSString.hpp"
 #include <vector>
 #include <atomic>
@@ -127,16 +126,6 @@ class JSContext final {
 	/*!
 	  @method
 	  
-	  @abstract Create a JavaScript value of the string type with a
-	  length of zero.
-	  
-	  @result A JSValue of the string type with a length of zero.
-	*/
-	JSValue CreateString() const;
-
-	/*!
-	  @method
-	  
 	  @abstract Create a JavaScript value of the string type.
 	  
 	  @param string The string to assign to the newly created JSValue.
@@ -144,9 +133,9 @@ class JSContext final {
 	  @result A JSValue of the string type that represents the value of
 	  string.
 	*/
-	JSValue CreateString(const JSString& js_string) const;
-	JSValue CreateString(const char* string)        const;
-	JSValue CreateString(const std::string& string) const;
+	JSValue CreateString(const JSString& js_string = {}) const;
+	JSValue CreateString(const char*        string     ) const;
+	JSValue CreateString(const std::string& string     ) const;
 
 	/*!
 	  @method
@@ -171,7 +160,7 @@ class JSContext final {
 	  
 	  @abstract Create a JavaScript value of the boolean type.
 	  
-	  @param boolean The bool to assign to the newly created JSBoolean.
+	  @param boolean The bool to pass to the JSBoolean constructor.
 	  
     @result A JavaScript value of the boolean type, representing the
     value of boolean.
@@ -179,23 +168,12 @@ class JSContext final {
 	JSBoolean CreateBoolean(bool boolean) const;
 
 	/*!
-	  @method
-	  
-	  @abstract Create a JavaScript value of the number type with the
-	  value 0.
-	  
-	  @result A JavaScript value of the number type, representing the
-	  value of 0.
-	*/
-	JSNumber CreateNumber() const;
-
-	/*!
     @method
     
     @abstract Create a JavaScript value of the number type from a
     double.
     
-    @param number The double to assign to the newly created JSNumber.
+    @param number The double to pass to the JSNumber constructor.
     
     @result A JavaScript value of the number type, representing the
     value of number.
@@ -207,7 +185,7 @@ class JSContext final {
     
     @abstract Create a JavaScript value of the number type an int32_t.
     
-    @param number The int32_t to assign to the newly created JSNumber.
+    @param number The int32_t to pass to the JSNumber constructor.
     
     @result A JavaScript value of the number type, representing the
     value of number.
@@ -220,8 +198,7 @@ class JSContext final {
     @abstract Create a JavaScript value of the number type from a
     uint32_t.
     
-    @param number The uint32_t to assign to the newly created
-    JSNumber.
+    @param number The uint32_t to pass to the JSNumber constructor.
     
     @result A JavaScript value of the number type, representing the
     value of number.
@@ -231,41 +208,33 @@ class JSContext final {
 	/*!
 	  @method
 	  
-	  @abstract Create an empty JavaScript object using the default
-	  object class.
+	  @abstract Create a JavaScript object in this execution context. An
+	  empty JavaScript object is returned if you do not provide any
+	  arguments.
 	  
 	  @discussion The default object class does not allocate storage for
 	  private data, so you cannot use the GetPrivate and SetPrivate
-	  methods when using this constructor.
-	  
-	  @result An empty JavaScript object.
-	*/
-	JSObject CreateObject() const;
+	  methods unless you provide a custom JSClass.
 
-	/*!
-	  @method
+	  Providing a custom JSClass allocates storage in the returned
+	  JSObject for private data so that you can use its GetPrivate and
+	  SetPrivate methods to store private data for callbacks.
 	  
-	  @abstract Create a JavaScript object in this execution context
-	  from a custom JSClass and optional private data.
-	  
-	  @discussion This constructor allocates storage for private data
-	  that you can use the GetPrivate and SetPrivate methods to store
-	  private data for callbacks.
-	  
-	  The private data is set on the created object before the intialize
-	  callbacks in its class chain are called. This enables the
-	  initialize callbacks to retrieve and manipulate the private data
-	  through the GetPrivate method.
+	  The private data is set on the created object before its intialize
+	  callback is called. This enables the initialize callback to
+	  retrieve and manipulate the private data through the GetPrivate
+	  method.
 
-	  @param js_class The JSClass used to create this object.
+	  @param js_class An optional custom JSClass to pass to the JSObject
+	  constructor.
 	  
 	  @param private_data An optional void* to set as the object's
-	  private data. Pass nullptr to specify no private data.
+	  private data.
 	  
-	  @result A JavaScript object created from a custom JSClass and
-	  optional private data.
+	  @result A JavaScript object created from the given JSClass and
+	  private data.
 	*/
-	JSObject CreateObject(const JSClass& js_class, void* private_data = nullptr) const;
+	JSObject CreateObject(const JSClass& js_class = {}, void* private_data = nullptr) const;
 
 	/*!
 	  @method
@@ -287,15 +256,6 @@ class JSContext final {
 	/*!
 	  @method
 	  
-	  @abstract Create JavaScript Array object.
-	  
-    @result A JavaScript object that is an Array.
-	*/
-	JSArray CreateArray() const;
-
-	/*!
-	  @method
-	  
 	  @abstract Create a JavaScript Array object.
 	  
 	  @discussion The behavior of this constructor does not exactly
@@ -303,43 +263,26 @@ class JSContext final {
 	  the vector of arguments contains one element then the JSArray is
 	  also created with on element.
 	  
-	  @param arguments The JavaScript values to populate the array.
+	  @param arguments Optional JavaScript values to populate the
+	  array. Otherwise an empty array is created.
 	  
     @result A JavaScript object that is an Array, populated with the
     given JavaScript values.
 	*/
-	JSArray CreateArray(const std::vector<JSValue>& arguments) const;
+	JSArray CreateArray(const std::vector<JSValue>& arguments = {}) const;
 
-	/*!
-	  @method
-	  
-	  @abstract Create JavaScript Date object.
-	  
-	  @result A JavaScript object of the Date type.
-	*/
-	JSDate CreateDate() const;
-
-	/*!
+ 	/*!
 	  @method
 	  
 	  @abstract Create a JavaScript Date object, as if by invoking the
 	  built-in Date constructor.
 	  
-	  @param arguments The JavaScript values to pass to the Date
+	  @param arguments Optional JavaScript values to pass to the Date
 	  Constructor.
 	  
     @result A JSObject that is a Date.
 	*/
-	JSDate CreateDate(const std::vector<JSValue>& arguments) const;
-
-	/*!
-	  @method
-	  
-	  @abstract Create JavaScript Error object.
-	  
-	  @result A JavaScript object of the Error type.
-	*/
-	JSError CreateError() const;
+	JSDate CreateDate(const std::vector<JSValue>& arguments = {}) const;
 
 	/*!
 	  @method
@@ -347,21 +290,12 @@ class JSContext final {
 	  @abstract Create a JavaScript Error object, as if by invoking the
 	  built-in Error constructor.
 	  
-	  @param arguments The JavaScript values to pass to the Error
+	  @param arguments Optional JavaScript values to pass to the Error
 	  Constructor.
 	  
     @result A JSObject that is a Error.
 	*/
-	JSError CreateError(const std::vector<JSValue>& arguments) const;
-
-	/*!
-	  @method
-	  
-	  @abstract Create a JavaScript RegExp object.
-	  
-    @result A JavaScript object of the RegExp type.
-	*/
-	JSRegExp CreateRegExp() const;
+	JSError CreateError(const std::vector<JSValue>& arguments = {}) const;
 
 	/*!
 	  @method
@@ -369,30 +303,30 @@ class JSContext final {
 	  @abstract Create a JavaScript RegExp object, as if by invoking the
 	  built-in RegExp constructor.
 	  
-	  @param arguments The JavaScript values to pass to the RegExp
+	  @param arguments Optional JavaScript values to pass to the RegExp
 	  Constructor.
 	  
     @result A JSObject that is a RegExp.
 	*/
-	JSRegExp CreateRegExp(const std::vector<JSValue>& arguments) const;
+	JSRegExp CreateRegExp(const std::vector<JSValue>& arguments = {}) const;
 
 	/*!
 	  @method
 	  
 	  @abstract Create a JavaScript function whose body is given as a
-	  string of JavaScript code. Use this class when you want to execute
-	  a script repeatedly to avoid the cost of re-parsing the script
-	  before each execution.
+	  string of JavaScript code. Use this method when you want to
+	  execute a script repeatedly to avoid the cost of re-parsing the
+	  script before each execution.
 
-	  @param function_name A JSString containing the function's
-	  name. This will be used when converting the function to
-	  string. Pass an empty string to create an anonymous function.
-	  
-	  @param parameter_names A JSString array containing the names of
-	  the function's parameters.
-	  
 	  @param body A JSString containing the script to use as the
 	  function's body.
+	  
+	  @param parameter_names An optional JSString array containing the
+	  names of the function's parameters.
+	  
+	  @param function_name An optional JSString containing the
+	  function's name. This will be used when converting the function to
+	  a string. An empty string creates an anonymous function.
 	  
 	  @param source_url An optional JSString containing a URL for the
 	  script's source file. This is only used when reporting exceptions.
@@ -406,10 +340,10 @@ class JSContext final {
 	  @result A JSObject that is a function. The object's prototype will
 	  be the default function prototype.
 	  
-	  @throws std::invalid_argument if either body or parameter_names
-	  contains a syntax error.
+	  @throws std::invalid_argument if either body, function_name or
+	  parameter_names contains a syntax error.
 	*/
-	JSFunction CreateFunction(const JSString& function_name, const std::vector<JSString>& parameter_names, const JSString& body, const JSString& source_url = JSString(), int starting_line_number = 1) const;
+	JSFunction CreateFunction(const JSString& body, const std::vector<JSString>& parameter_names = {}, const JSString& function_name = {}, const JSString& source_url = {}, int starting_line_number = 1) const;
 
 
 	/* Script Evaluation */
@@ -417,36 +351,12 @@ class JSContext final {
 	/*!
 	  @method
 	  
-	  @abstract Evaluate a string of JavaScript using the global object
-	  as "this.".
+	  @abstract Evaluate a string of JavaScript code.
 	  
 	  @param script A JSString containing the script to evaluate.
 	  
-	  @param source_url An optional JSString containing a URL for the
-	  script's source file. This is used by debuggers and when reporting
-	  exceptions.
-	  
-	  @param starting_line_number An optional integer value specifying
-	  the script's starting line number in the file located at
-	  source_url. This is only used when reporting exceptions. The value
-	  is one-based, so the first line is line 1 and invalid values are
-	  clamped to 1.
-	  
-	  @result The JSValue that results from evaluating script.
-
-	  @throws std::runtime_error exception if the evaluated script threw
-	  an exception.
-	*/
-	JSValue JSEvaluateScript(const JSString& script, const JSString& source_url = JSString(), int starting_line_number = 1) const;
-
-	/*!
-	  @method
-	  
-	  @abstract Evaluate a string of JavaScript.
-	  
-	  @param script A JSString containing the script to evaluate.
-	  
-	  @param this_object The object to use as "this".
+	  @param this_object An optional JavaScript object to use as
+	  "this". The default is the global object.
 	  
 	  @param source_url An optional JSString containing a URL for the
 	  script's source file. This is used by debuggers and when reporting
@@ -464,7 +374,8 @@ class JSContext final {
 	  an exception.
 	  
 	*/
-	JSValue JSEvaluateScript(const JSString& script, JSObject& this_object, const JSString& source_url = JSString(), int starting_line_number = 1) const;
+	JSValue JSEvaluateScript(const JSString& script,                       const JSString& source_url = {}, int starting_line_number = 1) const;
+	JSValue JSEvaluateScript(const JSString& script, JSObject this_object, const JSString& source_url = {}, int starting_line_number = 1) const;
 
 	/*!
 	  @method
@@ -487,7 +398,7 @@ class JSContext final {
 	  @result true if the script is syntactically correct, otherwise
 	  false.
 	*/
-	bool JSCheckScriptSyntax(const JSString& script, const JSString& source_url = JSString(), int starting_line_number = 1) const;
+	bool JSCheckScriptSyntax(const JSString& script, const JSString& source_url = {}, int starting_line_number = 1) const;
 	
 
 	/*!
@@ -556,6 +467,7 @@ class JSContext final {
 	JSContext(JSContext&& rhs)
 			: js_context_group__(rhs.js_context_group__)
 			, js_context_ref__(rhs.js_context_ref__) {
+		JSGlobalContextRetain(*this);
 	}
 	
 #ifdef JAVASCRIPTCORECPP_MOVE_SEMANTICS_ENABLE

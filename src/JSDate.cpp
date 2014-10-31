@@ -15,7 +15,8 @@
 
 namespace JavaScriptCoreCPP {
 
-JSDate::JSDate(const JSContext& js_context, const std::vector<JSValue>& arguments) : JSObject(js_context) {
+JSDate::JSDate(const JSContext& js_context, const std::vector<JSValue>& arguments)
+		: JSObject(js_context) {
 	JSValueRef exception { nullptr };
 	JSObjectRef js_object_ref = nullptr;
 	if (!arguments.empty()) {

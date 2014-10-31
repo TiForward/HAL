@@ -20,7 +20,6 @@
 		C97453ED1A027E3D00CB4CA9 /* JSUndefined.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C97453E61A027E3D00CB4CA9 /* JSUndefined.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		C97453EE1A027E3D00CB4CA9 /* JSValue.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C97453E71A027E3D00CB4CA9 /* JSValue.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		C97453EF1A027E3D00CB4CA9 /* JSValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97453E81A027E3D00CB4CA9 /* JSValue.cpp */; };
-		C97453F01A027E3D00CB4CA9 /* JSNumber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97453E91A027E3D00CB4CA9 /* JSNumber.cpp */; };
 		C97453F21A027F2F00CB4CA9 /* JSPropertyAttribute.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C97453F11A027F2F00CB4CA9 /* JSPropertyAttribute.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		C97453FF1A027F6000CB4CA9 /* JSArray.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C97453F31A027F6000CB4CA9 /* JSArray.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		C97454001A027F6000CB4CA9 /* JSDate.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C97453F41A027F6000CB4CA9 /* JSDate.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -86,7 +85,6 @@
 		C97453E61A027E3D00CB4CA9 /* JSUndefined.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSUndefined.hpp; path = include/JavaScriptCoreCPP/JSUndefined.hpp; sourceTree = "<group>"; };
 		C97453E71A027E3D00CB4CA9 /* JSValue.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSValue.hpp; path = include/JavaScriptCoreCPP/JSValue.hpp; sourceTree = "<group>"; };
 		C97453E81A027E3D00CB4CA9 /* JSValue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSValue.cpp; path = src/JSValue.cpp; sourceTree = "<group>"; };
-		C97453E91A027E3D00CB4CA9 /* JSNumber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSNumber.cpp; path = src/JSNumber.cpp; sourceTree = "<group>"; };
 		C97453F11A027F2F00CB4CA9 /* JSPropertyAttribute.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSPropertyAttribute.hpp; path = include/JavaScriptCoreCPP/JSPropertyAttribute.hpp; sourceTree = "<group>"; };
 		C97453F31A027F6000CB4CA9 /* JSArray.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSArray.hpp; path = include/JavaScriptCoreCPP/JSArray.hpp; sourceTree = "<group>"; };
 		C97453F41A027F6000CB4CA9 /* JSDate.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSDate.hpp; path = include/JavaScriptCoreCPP/JSDate.hpp; sourceTree = "<group>"; };
@@ -228,7 +226,6 @@
 				C97453E41A027E3D00CB4CA9 /* JSNull.hpp */,
 				C97453E31A027E3D00CB4CA9 /* JSBoolean.hpp */,
 				C97453E51A027E3D00CB4CA9 /* JSNumber.hpp */,
-				C97453E91A027E3D00CB4CA9 /* JSNumber.cpp */,
 			);
 			name = JSValue;
 			sourceTree = "<group>";
@@ -419,17 +416,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C974540A1A027F6000CB4CA9 /* JSFunction.cpp in Sources */,
-				C97454071A027F6000CB4CA9 /* JSArray.cpp in Sources */,
-				C97453EF1A027E3D00CB4CA9 /* JSValue.cpp in Sources */,
-				C97454281A02807900CB4CA9 /* JSUtil.cpp in Sources */,
-				C97454081A027F6000CB4CA9 /* JSDate.cpp in Sources */,
-				C97454051A027F6000CB4CA9 /* JSObject.cpp in Sources */,
 				C97453E21A027A1800CB4CA9 /* JSContextGroup.cpp in Sources */,
-				C97453F01A027E3D00CB4CA9 /* JSNumber.cpp in Sources */,
-				C97454061A027F6000CB4CA9 /* JSRegExp.cpp in Sources */,
 				C97453E11A027A1800CB4CA9 /* JSContext.cpp in Sources */,
+				C97453EF1A027E3D00CB4CA9 /* JSValue.cpp in Sources */,
+				C97454051A027F6000CB4CA9 /* JSObject.cpp in Sources */,
+				C97454071A027F6000CB4CA9 /* JSArray.cpp in Sources */,
+				C97454081A027F6000CB4CA9 /* JSDate.cpp in Sources */,
 				C97454091A027F6000CB4CA9 /* JSError.cpp in Sources */,
+				C97454061A027F6000CB4CA9 /* JSRegExp.cpp in Sources */,
+				C974540A1A027F6000CB4CA9 /* JSFunction.cpp in Sources */,
+				C97454281A02807900CB4CA9 /* JSUtil.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

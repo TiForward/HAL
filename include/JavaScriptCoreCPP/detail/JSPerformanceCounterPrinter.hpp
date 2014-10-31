@@ -20,6 +20,12 @@ namespace JavaScriptCoreCPP { namespace detail {
 class JSPerformanceCounterPrinter {
  public:
 
+	JSPerformanceCounterPrinter()                                                  = default;
+	JSPerformanceCounterPrinter(const JSPerformanceCounterPrinter& rhs)            = delete;
+	JSPerformanceCounterPrinter(JSPerformanceCounterPrinter&& rhs)                 = delete;
+	JSPerformanceCounterPrinter& operator=(const JSPerformanceCounterPrinter& rhs) = delete;
+	JSPerformanceCounterPrinter& operator=(JSPerformanceCounterPrinter&& rhs)      = delete;
+
 	~JSPerformanceCounterPrinter() {
 		static const std::string log_prefix { "MDL: JSPerformanceCounterPrinter: " };
 		std::clog << log_prefix << std::endl;
@@ -169,12 +175,6 @@ class JSPerformanceCounterPrinter {
 		std::clog << "JSPropertyNameAccumulator: objects_copy_assigned    = " << JSPerformanceCounter<JSPropertyNameAccumulator>::get_objects_copy_assigned()    << std::endl;
 		std::clog << "JSPropertyNameAccumulator: objects_move_assigned    = " << JSPerformanceCounter<JSPropertyNameAccumulator>::get_objects_move_assigned()    << std::endl;
 	}
-
-	JSPerformanceCounterPrinter()                                                  = default;
-	JSPerformanceCounterPrinter(const JSPerformanceCounterPrinter& rhs)            = delete;
-	JSPerformanceCounterPrinter(JSPerformanceCounterPrinter&& rhs)                 = delete;
-	JSPerformanceCounterPrinter& operator=(const JSPerformanceCounterPrinter& rhs) = delete;
-	JSPerformanceCounterPrinter& operator=(JSPerformanceCounterPrinter&& rhs)      = delete;
 };
 
 }} // namespace JavaScriptCoreCPP { namespace detail {

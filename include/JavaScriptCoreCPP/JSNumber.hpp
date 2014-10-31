@@ -86,66 +86,31 @@ public:
 	  not be converted to a JavaScript number.
 	*/
 	JSNumber& operator=(const JSValue& js_value) {
-		//JSValue::operator=(JSNumber(js_value));
-		JSValue::operator JSNumber();
+		JSValue::operator=(static_cast<JSNumber>(js_value));
 		return *this;
   }
 
-	/*!
-	  @method
-	  
-	  @abstract Convert a JSNumber to a double.
-	  
-	  @result The double result of conversion.
-	*/
-	operator double() const;
-	
-	/*!
-	  @method
-	  
-	  @abstract Convert a JSNumber to an int32_t according to the rules
-	  specified by the JavaScript language.
-	  
-	  @result The int32_t result of conversion.
-	*/
-	operator int32_t() const;
-	
-	/*!
-	  @method
-	  
-	  @abstract Convert a JSNumber to an uint32_t according to the rules
-	  specified by the JavaScript language.
-	  
-	  @discussion The JSNumber is converted to an uint32_t according to
-	  the rules specified by the JavaScript language (implements
-	  ToUInt32, defined in ECMA-262 9.6).
-	  
-	  @result The uint32_t result of the conversion.
-	*/
-	operator uint32_t() const  {
-		// As commented in the spec, the operation of ToInt32 and ToUint32
-		// only differ in how the result is interpreted; see NOTEs in
-		// sections 9.5 and 9.6.
-		return operator int32_t();
+	JSNumber& operator=(JSValue&& js_value) {
+		JSValue::operator=(static_cast<JSNumber>(js_value));
+		return *this;
 	}
 
- private:
+private:
 	
-	JSNumber(const JSContext& js_context) : JSNumber(js_context, 0) {
-	}
-	
-	JSNumber(const JSContext& js_context, double number) : JSValue(js_context, JSValueMakeNumber(js_context, number)) {
-	}
-	
-	JSNumber(const JSContext& js_context, int32_t number) : JSNumber(js_context, static_cast<double>(number)) {
-	}
-	
-	JSNumber(const JSContext& js_context, uint32_t number) : JSNumber(js_context, static_cast<double>(number)) {
-	}
-	
-	// Only JSContext and JSValue can create a JSNumber.
+	// Only a JSContext can create a JSNumber.
 	friend JSContext;
-	friend JSValue;
+
+	explicit JSNumber(const JSContext& js_context, double number = 0)
+			: JSValue(js_context, JSValueMakeNumber(js_context, number)) {
+	}
+	
+	JSNumber(const JSContext& js_context, int32_t number)
+			: JSNumber(js_context, static_cast<double>(number)) {
+	}
+	
+	JSNumber(const JSContext& js_context, uint32_t number)
+			: JSNumber(js_context, static_cast<double>(number)) {
+	}
 };
 
 } // namespace JavaScriptCoreCPP {

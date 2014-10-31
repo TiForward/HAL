@@ -42,12 +42,12 @@ JSContext::JSContext(JSContextRef js_context_ref)
 	JSGlobalContextRetain(*this);
 }
 
-JSValue JSContext::CreateValueFromJSON(const JSString& js_string) const {
-	return JSValue(*this, js_string, true);
+JSObject JSContext::get_global_object() const {
+	return JSObject(*this, JSContextGetGlobalObject(*this));
 }
 
-JSValue JSContext::CreateString() const {
-	return CreateString(JSString());
+JSValue JSContext::CreateValueFromJSON(const JSString& js_string) const {
+	return JSValue(*this, js_string, true);
 }
 
 JSValue JSContext::CreateString(const JSString& js_string) const {
@@ -74,10 +74,6 @@ JSBoolean JSContext::CreateBoolean(bool boolean) const {
 	return JSBoolean(*this, boolean);
 }
 
-JSNumber JSContext::CreateNumber() const {
-	return JSNumber(*this);
-}
-
 JSNumber JSContext::CreateNumber(double number) const {
 	return JSNumber(*this, number);
 }
@@ -90,71 +86,35 @@ JSNumber JSContext::CreateNumber(uint32_t number) const {
 	return JSNumber(*this, number);
 }
 
-JSObject JSContext::CreateObject() const {
-	return JSObject(*this);
-}
-	
 JSObject JSContext::CreateObject(const JSClass& js_class, void* private_data) const {
 	return JSObject(*this, js_class, private_data);
 }
 
-JSArray JSContext::CreateArray() const {
-	return JSArray(*this);
-}
-	
 JSArray JSContext::CreateArray(const std::vector<JSValue>& arguments) const {
 	return JSArray(*this, arguments);
 }
 
-JSDate JSContext::CreateDate() const {
-	return JSDate(*this);
-}
-	
 JSDate JSContext::CreateDate(const std::vector<JSValue>& arguments) const {
 	return JSDate(*this, arguments);
 }
 
-JSError JSContext::CreateError() const {
-	return JSError(*this);
-}
-	
 JSError JSContext::CreateError(const std::vector<JSValue>& arguments) const {
 	return JSError(*this, arguments);
 }
 
-JSRegExp JSContext::CreateRegExp() const {
-	return JSRegExp(*this);
-}
-	
 JSRegExp JSContext::CreateRegExp(const std::vector<JSValue>& arguments) const {
 	return JSRegExp(*this, arguments);
 }
 
-JSFunction JSContext::CreateFunction(const JSString& function_name, const std::vector<JSString>& parameter_names, const JSString& body, const JSString& source_url, int starting_line_number) const {
-	return JSFunction(*this, function_name, parameter_names, body, source_url, starting_line_number);
+JSFunction JSContext::CreateFunction(const JSString& body, const std::vector<JSString>& parameter_names, const JSString& function_name, const JSString& source_url, int starting_line_number) const {
+	return JSFunction(*this, body, parameter_names, function_name, source_url, starting_line_number);
 }
 
 JSValue JSContext::JSEvaluateScript(const JSString& script, const JSString& source_url, int starting_line_number) const {
-	JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-	JSValueRef js_value_ref { nullptr };
-	const JSObjectRef this_object { nullptr };
-	const JSStringRef source_url_ref = (source_url.length() > 0) ? static_cast<JSStringRef>(source_url) : nullptr;
-	JSValueRef exception { nullptr };
-	js_value_ref = ::JSEvaluateScript(js_context_ref__, script, this_object, source_url_ref, starting_line_number, &exception);
-	
-	if (exception) {
-		// assert(!js_object_ref);
-		static const std::string log_prefix { "MDL: JSEvaluateScript: " };
-		const std::string message = static_cast<std::string>(JSValue(*this, exception));
-		std::clog << log_prefix << " [ERROR] " << message << std::endl;
-		throw std::invalid_argument(message);
-	}
-
-	JSValue result(*this, js_value_ref);
-	return result;
+	return JSEvaluateScript(script, get_global_object(), source_url, starting_line_number);
 }
 
-JSValue JSContext::JSEvaluateScript(const JSString& script, JSObject& this_object, const JSString& source_url, int starting_line_number) const {
+JSValue JSContext::JSEvaluateScript(const JSString& script, JSObject this_object, const JSString& source_url, int starting_line_number) const {
 	JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
 	JSValueRef js_value_ref { nullptr };
 	const JSStringRef source_url_ref = (source_url.length() > 0) ? static_cast<JSStringRef>(source_url) : nullptr;
@@ -189,11 +149,6 @@ bool JSContext::JSCheckScriptSyntax(const JSString& script, const JSString& sour
 
 	return result;
 }
-
-JSObject JSContext::get_global_object() const {
-	return JSObject(*this, JSContextGetGlobalObject(*this));
-}
-
 
 #ifdef JAVASCRIPTCORECPP_JSCONTEXT_ENABLE_CONTEXT_ID
 // Definition of class static memner;

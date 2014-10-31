@@ -24,7 +24,6 @@ std::unique_ptr<T> make_unique(Ts&&... params) {
 	return std::unique_ptr<T>(new T(std::forward<Ts>(params)...));
 }
 
-
 // For hash functions for std::unordered_set<JSPropertyAttribute> and
 // interoperability with the JavaScriptCore C API.
 JSPropertyAttributes ToJSPropertyAttributes(const std::unordered_set<JSPropertyAttribute>& attributes);

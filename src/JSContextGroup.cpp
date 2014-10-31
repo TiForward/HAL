@@ -13,10 +13,6 @@
 
 namespace JavaScriptCoreCPP {
 
-JSContext JSContextGroup::CreateContext() const {
-	return JSContext(*this);
-}
-
 JSContext JSContextGroup::CreateContext(const JSClass& global_object_class) const {
 	return JSContext(*this, global_object_class);
 }

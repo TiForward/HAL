@@ -13,10 +13,10 @@
 
 using namespace JavaScriptCoreCPP;
 
-@interface JSClassDefinitionBuilderTests : XCTestCase
+@interface JSNativeObjectTests : XCTestCase
 @end
 
-@implementation JSClassDefinitionBuilderTests {
+@implementation JSNativeObjectTests {
   JSContextGroup js_context_group;
 }
 
@@ -134,7 +134,7 @@ using namespace JavaScriptCoreCPP;
       // "var widget = new Widget();"
       // "widget.hello();"
       ;
-  js_context.JSEvaluateScript(script);
+  // js_context.JSEvaluateScript(script);
 }
 
 // As of 2014.09.20 Travis CI only supports Xcode 5.1 which lacks support for
