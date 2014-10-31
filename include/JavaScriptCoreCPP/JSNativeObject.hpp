@@ -19,6 +19,7 @@
 #include <JavaScriptCore/JavaScript.h>
 
 
+#undef  JAVASCRIPTCORECPP_JSNATIVEOBJECT_DEBUG
 #define JAVASCRIPTCORECPP_JSNATIVEOBJECT_DEBUG
 
 
@@ -97,6 +98,7 @@ class JSNativeObject : public JSObject {
 			  //, js_native_class__(JSNativeClassBuilder<T>(js_native_class).build()) {
 			, js_native_class__(JSNativeClassBuilder<T>(js_native_class).HasInstance(&JSNativeObject<T>::HasInstance).build()) {
 		assert(JSNativeClassBuilder<T>(js_native_class__).HasInstance());
+		assert(JSNativeClassBuilder<T>(js_native_class__).Constructor());
 	}
 
  private:
@@ -104,7 +106,7 @@ class JSNativeObject : public JSObject {
 	// Only a JSContext can attach a JSNativeClass to itself.
 	friend JSContext;
 
-	virtual void AttachToContext() const final {
+	void AttachToContext() const {
 		auto self = const_cast<JSNativeObject*>(this);
 		std::call_once(self -> attach_to_context_once_flag__, [self] {
 				// Replace the JSObjectRef of our base class with one based on

@@ -109,11 +109,6 @@ using namespace JavaScriptCoreCPP;
       .AddValueProperty("number", &Widget::GetNumber, &Widget::SetNumber)
       .AddValueProperty("pi", &Widget::GetPi)
       .AddFunctionProperty("hello", &Widget::SayHello)
-      // .GetProperty(&Widget::GetProperty)
-      // .SetProperty(&Widget::SetProperty)
-      // .DeleteProperty(&Widget::DeleteProperty)
-      // .GetPropertyNames(&Widget::GetPropertyNames)
-      // .HasProperty(&Widget::HasProperty)
       // .Function(&Widget::CallAsFunction)
       // .ConvertType(&Widget::ConvertToType);
       ;
@@ -137,11 +132,13 @@ using namespace JavaScriptCoreCPP;
   
   JSString script =
       //"Widget;"
-      //"Widget.sayHello();"
-      "var widget = new Widget();"
+      //"typeof Widget;"
+      "Widget.name;"
+      //"var widget = new Widget();"
       // "widget.hello();"
       ;
-  js_context.JSEvaluateScript(script);
+  auto result = js_context.JSEvaluateScript(script);
+  std::clog << "MDL: result = " << static_cast<std::string>(result) << std::endl;
 }
 
 // As of 2014.09.20 Travis CI only supports Xcode 5.1 which lacks support for

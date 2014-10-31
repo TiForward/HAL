@@ -83,9 +83,11 @@ class Widget final : public JSNativeObject<Widget> {
 	}
 
 	void Initialize() {
+		std::clog << "MDL: Widget::Initialize" << std::endl;
 	}
 	
 	void Finalize() {
+		std::clog << "MDL: Widget::Finalize" << std::endl;
 	}
 
 private:

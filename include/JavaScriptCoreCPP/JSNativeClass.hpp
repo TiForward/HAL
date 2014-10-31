@@ -32,7 +32,10 @@
 #include <JavaScriptCore/JavaScript.h>
 
 
+#undef  JAVASCRIPTCORECPP_JSNATIVECLASS_DEBUG
 #define JAVASCRIPTCORECPP_JSNATIVECLASS_DEBUG
+
+#undef  JAVASCRIPTCORECPP_JSNATIVECLASS_THREAD_SAFE
 #define JAVASCRIPTCORECPP_JSNATIVECLASS_THREAD_SAFE
 
 
@@ -116,6 +119,7 @@ class JSNativeClass final : public JSClass {
 private:
 	
 	void InitializeJSStaticValueVector() {
+		static const std::string log_prefix { "MDL: JSNativeClass<T>::InitializeJSStaticValueVector: " };
 		if (!value_property_callback_map_.empty()) {
 			for (const auto& entry : value_property_callback_map_) {
 				const auto& property_name           = entry.first;
@@ -126,12 +130,16 @@ private:
 				js_static_value.setProperty = JSNativeClass<T>::JSStaticValueSetPropertyCallback;
 				js_static_value.attributes  = ToJSPropertyAttributes(value_property_callback.get_attributes());
 				js_static_values_.push_back(js_static_value);
+#ifdef JAVASCRIPTCORECPP_JSNATIVECLASS_DEBUG
+				std::clog << log_prefix << "Added value property " << js_static_values_.back().name << "." << std::endl;
+#endif
 			}
 			js_static_values_.push_back({nullptr, nullptr, nullptr, 0});
 		}
 	}
 	
 	void InitializeJSStaticFunctionVector() {
+		static const std::string log_prefix { "MDL: JSNativeClass<T>::InitializeJSStaticFunctionVector: " };
 		if (!function_property_callback_map_.empty()) {
 			for (const auto& entry : function_property_callback_map_) {
 				const auto& function_name              = entry.first;
@@ -141,12 +149,17 @@ private:
 				js_static_function.callAsFunction = JSStaticFunctionCallAsFunctionCallback;
 				js_static_function.attributes     = ToJSPropertyAttributes(function_property_callback.get_attributes());
 				js_static_functions_.push_back(js_static_function);
+#ifdef JAVASCRIPTCORECPP_JSNATIVECLASS_DEBUG
+				std::clog << log_prefix << "Added function property " << js_static_functions_.back().name << "." << std::endl;
+#endif
 			}
 			js_static_functions_.push_back({nullptr, nullptr, 0});
 		}
 	}
 	
 	void InitializeJSClassDefinition() {
+		static const std::string log_prefix { "MDL: JSNativeClass<T>::InitializeJSClassDefinition: " };
+
 		!class_name_.empty()                     && (js_class_definition_.className         = class_name_for_js_class_definition_.c_str());
 		!class_attributes_.empty()               && (js_class_definition_.attributes        = ToJSClassAttributes(class_attributes_));
 		parent_class_                            && (js_class_definition_.parentClass       = parent_class_);
@@ -154,11 +167,22 @@ private:
 		!function_property_callback_map_.empty() && (js_class_definition_.staticFunctions   = &js_static_functions_[0]);
 		initialize_callback_                     && (js_class_definition_.initialize        = JSNativeClass<T>::JSObjectInitializeCallback);
 		finalize_callback_                       && (js_class_definition_.finalize          = JSNativeClass<T>::JSObjectFinalizeCallback);
-		has_property_callback_                   && (js_class_definition_.hasProperty       = JSNativeClass<T>::JSObjectHasPropertyCallback);
-		get_property_callback_                   && (js_class_definition_.getProperty       = JSNativeClass<T>::JSObjectGetPropertyCallback);
-		set_property_callback_                   && (js_class_definition_.setProperty       = JSNativeClass<T>::JSObjectSetPropertyCallback);
-		delete_property_callback_                && (js_class_definition_.deleteProperty    = JSNativeClass<T>::JSObjectDeletePropertyCallback);
-		get_property_names_callback_             && (js_class_definition_.getPropertyNames  = JSNativeClass<T>::JSObjectGetPropertyNamesCallback);
+
+		// We provide these automatically by simply delegating to
+		// JSObject.
+		js_class_definition_.hasProperty       = JSNativeClass<T>::JSObjectHasPropertyCallback;
+		js_class_definition_.getProperty       = JSNativeClass<T>::JSObjectGetPropertyCallback;
+		js_class_definition_.setProperty       = JSNativeClass<T>::JSObjectSetPropertyCallback;
+		js_class_definition_.deleteProperty    = JSNativeClass<T>::JSObjectDeletePropertyCallback;
+		js_class_definition_.getPropertyNames  = JSNativeClass<T>::JSObjectGetPropertyNamesCallback;
+		
+#ifdef JAVASCRIPTCORECPP_JSNATIVECLASS_DEBUG
+		std::clog << log_prefix << "call_as_function_callback_    = " << std::boolalpha << (call_as_function_callback_    != nullptr) << "." << std::endl;
+		std::clog << log_prefix << "call_as_constructor_callback_ = " << std::boolalpha << (call_as_constructor_callback_ != nullptr) << "." << std::endl;
+		std::clog << log_prefix << "has_instance_callback_        = " << std::boolalpha << (has_instance_callback_        != nullptr) << "." << std::endl;
+		std::clog << log_prefix << "convert_to_type_callback_     = " << std::boolalpha << (convert_to_type_callback_     != nullptr) << "." << std::endl;
+#endif
+		
 		call_as_function_callback_               && (js_class_definition_.callAsFunction    = JSNativeClass<T>::JSObjectCallAsFunctionCallback);
 		call_as_constructor_callback_            && (js_class_definition_.callAsConstructor = JSNativeClass<T>::JSObjectCallAsConstructorCallback);
 		has_instance_callback_                   && (js_class_definition_.hasInstance       = JSNativeClass<T>::JSObjectHasInstanceCallback);
