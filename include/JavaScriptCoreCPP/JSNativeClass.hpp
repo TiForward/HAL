@@ -154,22 +154,19 @@ private:
 		!function_property_callback_map_.empty() && (js_class_definition_.staticFunctions   = &js_static_functions_[0]);
 		initialize_callback_                     && (js_class_definition_.initialize        = JSNativeClass<T>::JSObjectInitializeCallback);
 		finalize_callback_                       && (js_class_definition_.finalize          = JSNativeClass<T>::JSObjectFinalizeCallback);
-		// has_property_callback_                   && (js_class_definition_.hasProperty       = JSNativeClass<T>::JSObjectHasPropertyCallback);
-		// get_property_callback_                   && (js_class_definition_.getProperty       = JSNativeClass<T>::JSObjectGetPropertyCallback);
-		// set_property_callback_                   && (js_class_definition_.setProperty       = JSNativeClass<T>::JSObjectSetPropertyCallback);
-		// delete_property_callback_                && (js_class_definition_.deleteProperty    = JSNativeClass<T>::JSObjectDeletePropertyCallback);
-		// get_property_names_callback_             && (js_class_definition_.getPropertyNames  = JSNativeClass<T>::JSObjectGetPropertyNamesCallback);
+		has_property_callback_                   && (js_class_definition_.hasProperty       = JSNativeClass<T>::JSObjectHasPropertyCallback);
+		get_property_callback_                   && (js_class_definition_.getProperty       = JSNativeClass<T>::JSObjectGetPropertyCallback);
+		set_property_callback_                   && (js_class_definition_.setProperty       = JSNativeClass<T>::JSObjectSetPropertyCallback);
+		delete_property_callback_                && (js_class_definition_.deleteProperty    = JSNativeClass<T>::JSObjectDeletePropertyCallback);
+		get_property_names_callback_             && (js_class_definition_.getPropertyNames  = JSNativeClass<T>::JSObjectGetPropertyNamesCallback);
 		call_as_function_callback_               && (js_class_definition_.callAsFunction    = JSNativeClass<T>::JSObjectCallAsFunctionCallback);
 		call_as_constructor_callback_            && (js_class_definition_.callAsConstructor = JSNativeClass<T>::JSObjectCallAsConstructorCallback);
-		// has_instance_callback_                   && (js_class_definition_.hasInstance       = JSNativeClass<T>::JSObjectHasInstanceCallback);
-		// convert_to_type_callback_                && (js_class_definition_.convertToType     = JSNativeClass<T>::JSObjectConvertToTypeCallback);
+		has_instance_callback_                   && (js_class_definition_.hasInstance       = JSNativeClass<T>::JSObjectHasInstanceCallback);
+		convert_to_type_callback_                && (js_class_definition_.convertToType     = JSNativeClass<T>::JSObjectConvertToTypeCallback);
 	}
 
 	template<typename U>
 	friend class JSNativeClassBuilder;
-
-	template<typename U>
-	friend class JSNativeObject;
 
 	static JAVASCRIPTCORECPP_JSNATIVECLASS_STATIC_MUTEX;
 	
@@ -197,24 +194,31 @@ private:
 	static JSClassDefinition                              js_class_definition_;
 
 	// Support for JSStaticValue
-	static JSValueRef  JSStaticValueGetPropertyCallback(JSContextRef js_context_ref, JSObjectRef js_object_ref, JSStringRef property_name_ref, JSValueRef* exception);
-	static bool        JSStaticValueSetPropertyCallback(JSContextRef js_context_ref, JSObjectRef js_object_ref, JSStringRef property_name_ref, JSValueRef js_value_ref, JSValueRef* exception);
+	static JSValueRef  JSStaticValueGetPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception);
+	static bool        JSStaticValueSetPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef value_ref, JSValueRef* exception);
 	
 	// Support for JSStaticFunction
-	static JSValueRef  JSStaticFunctionCallAsFunctionCallback(JSContextRef js_context_ref, JSObjectRef js_function_ref, JSObjectRef js_this_object_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception);
+	static JSValueRef  JSStaticFunctionCallAsFunctionCallback(JSContextRef context_ref, JSObjectRef function_ref, JSObjectRef this_object_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception);
 	
 	// Remaining callbacks.
-	static void        JSObjectInitializeCallback(JSContextRef js_context_ref, JSObjectRef js_object_ref);
-	static void        JSObjectFinalizeCallback(JSObjectRef js_object_ref);
-	// static bool        JSObjectHasPropertyCallback(JSContextRef js_context_ref, JSObjectRef js_object_ref, JSStringRef property_name);
-	// static JSValueRef  JSObjectGetPropertyCallback(JSContextRef js_context_ref, JSObjectRef js_object_ref, JSStringRef property_name_ref, JSValueRef* exception);
-	// static bool        JSObjectSetPropertyCallback(JSContextRef js_context_ref, JSObjectRef js_object_ref, JSStringRef property_name_ref, JSValueRef js_value_ref, JSValueRef* exception);
-	// static bool        JSObjectDeletePropertyCallback(JSContextRef js_context_ref, JSObjectRef js_object_ref, JSStringRef property_name_ref, JSValueRef* exception);
-	// static void        JSObjectGetPropertyNamesCallback(JSContextRef js_context_ref, JSObjectRef js_object_ref, JSPropertyNameAccumulatorRef property_names);
-	static JSValueRef  JSObjectCallAsFunctionCallback(JSContextRef js_context_ref, JSObjectRef js_function_ref, JSObjectRef js_this_object_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception);
-	static JSObjectRef JSObjectCallAsConstructorCallback(JSContextRef js_context_ref, JSObjectRef js_constructor_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception);
-	// static bool        JSObjectHasInstanceCallback(JSContextRef js_context_ref, JSObjectRef js_constructor_ref, JSValueRef possible_instance, JSValueRef* exception);
-	// static JSValueRef  JSObjectConvertToTypeCallback(JSContextRef js_context_ref, JSObjectRef js_object_ref, JSType js_type, JSValueRef* exception);
+	static void        JSObjectInitializeCallback(JSContextRef context_ref, JSObjectRef object_ref);
+	static void        JSObjectFinalizeCallback(JSObjectRef object_ref);
+	static bool        JSObjectHasPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref);
+	static JSValueRef  JSObjectGetPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception);
+	static bool        JSObjectSetPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef value_ref, JSValueRef* exception);
+	static bool        JSObjectDeletePropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception);
+	static void        JSObjectGetPropertyNamesCallback(JSContextRef context_ref, JSObjectRef object_ref, JSPropertyNameAccumulatorRef property_names);
+	static JSValueRef  JSObjectCallAsFunctionCallback(JSContextRef context_ref, JSObjectRef function_ref, JSObjectRef this_object_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception);
+	static JSObjectRef JSObjectCallAsConstructorCallback(JSContextRef context_ref, JSObjectRef constructor_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception);
+	static bool        JSObjectHasInstanceCallback(JSContextRef context_ref, JSObjectRef constructor_ref, JSValueRef possible_instance_ref, JSValueRef* exception);
+	static JSValueRef  JSObjectConvertToTypeCallback(JSContextRef context_ref, JSObjectRef object_ref, JSType type, JSValueRef* exception);
+
+	// Helper functions.
+	static std::vector<JSValue> ToJSValueVector(const JSContext& js_context, size_t argument_count, const JSValueRef arguments_array[]);
+	static JSValue::Type        ToJSValueType(JSType type);
+	static std::string          LogStdException(const std::string& function_name, const JSObject& js_object, const std::exception& exception);
+	static std::string          LogUnknownException(const std::string& function_name, const JSObject& js_object);
+
 };
 
 template<typename T> JAVASCRIPTCORECPP_JSNATIVECLASS_STATIC_MUTEX_TYPE JSNativeClass<T>::JAVASCRIPTCORECPP_JSNATIVECLASS_STATIC_MUTEX_NAME;
@@ -244,9 +248,9 @@ template<typename T> JSClassDefinition                              JSNativeClas
 
 // Support for JSStaticValue: getter
 template<typename T>
-JSValueRef JSNativeClass<T>::JSStaticValueGetPropertyCallback(JSContextRef js_context_ref, JSObjectRef js_object_ref, JSStringRef property_name_ref, JSValueRef* exception) {
+JSValueRef JSNativeClass<T>::JSStaticValueGetPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception) try {
 	JAVASCRIPTCORECPP_JSNATIVECLASS_STATIC_LOCK_GUARD;
-	static const std::string log_prefix { "MDL: JSNativeClass<T>::JSStaticValueGetPropertyCallback:" };
+	static const std::string log_prefix { "MDL: JSNativeClass<T>::JSStaticValueGetPropertyCallback: " };
 	
 	JSString property_name(property_name_ref);
 	const auto callback_position = value_property_callback_map_.find(property_name);
@@ -258,7 +262,7 @@ JSValueRef JSNativeClass<T>::JSStaticValueGetPropertyCallback(JSContextRef js_co
 	          << class_name_for_js_class_definition_
 	          << "."
 	          << property_name
-	          << ", callback found = "
+	          << " callback found = "
 	          << std::boolalpha
 	          << callback_found
 	          << "."
@@ -268,8 +272,7 @@ JSValueRef JSNativeClass<T>::JSStaticValueGetPropertyCallback(JSContextRef js_co
 	// precondition
 	assert(callback_found);
 
-	JSContext js_context(js_context_ref);
-	JSObject  js_object(js_context, js_object_ref);
+	JSObject js_object(JSContext(context_ref), object_ref);
 	const auto native_object_ptr = static_cast<T*>(js_object.GetPrivate());
 	const auto callback          = (callback_position -> second).get_get_property_callback();
 	const auto result            = callback(*native_object_ptr);
@@ -289,13 +292,17 @@ JSValueRef JSNativeClass<T>::JSStaticValueGetPropertyCallback(JSContextRef js_co
 #endif
 	
 	return result;
+} catch (const std::exception& e) {
+	*exception = JSValue(JSContext(context_ref), e.what());
+} catch (...) {
+	*exception = JSValue(JSContext(context_ref), "Unknown C++ exception from JavaScriptCoreCPP.");
 }
 
 // Support for JSStaticValue: setter
 template<typename T>
-bool JSNativeClass<T>::JSStaticValueSetPropertyCallback(JSContextRef js_context_ref, JSObjectRef js_object_ref, JSStringRef property_name_ref, JSValueRef js_value_ref, JSValueRef* exception) {
+bool JSNativeClass<T>::JSStaticValueSetPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef value_ref, JSValueRef* exception) try {
 	JAVASCRIPTCORECPP_JSNATIVECLASS_STATIC_LOCK_GUARD;
-	static const std::string log_prefix { "MDL: JSNativeClass<T>::JSStaticValueSetPropertyCallback:" };
+	static const std::string log_prefix { "MDL: JSNativeClass<T>::JSStaticValueSetPropertyCallback: " };
 
 	JSString property_name(property_name_ref);
 	const auto callback_position = value_property_callback_map_.find(property_name);
@@ -307,7 +314,7 @@ bool JSNativeClass<T>::JSStaticValueSetPropertyCallback(JSContextRef js_context_
 	          << class_name_for_js_class_definition_
 	          << "."
 	          << property_name
-	          << ", callback found = "
+	          << " callback found = "
 	          << std::boolalpha
 	          << callback_found
 	          << "."
@@ -316,10 +323,10 @@ bool JSNativeClass<T>::JSStaticValueSetPropertyCallback(JSContextRef js_context_
 
 	// precondition
 	assert(callback_found);
-	
-	JSContext js_context(js_context_ref);
-	JSObject  js_object(js_context, js_object_ref);
-	JSValue   js_value(js_context, js_value_ref);
+
+	JSContext js_context(context_ref);
+	JSObject  js_object(js_context, object_ref);
+	JSValue   js_value(js_context, value_ref);
 	const auto native_object_ptr = static_cast<T*>(js_object.GetPrivate());
 	const auto callback          = (callback_position -> second).get_set_property_callback();
 	const auto result            = callback(*native_object_ptr, js_value);
@@ -341,20 +348,28 @@ bool JSNativeClass<T>::JSStaticValueSetPropertyCallback(JSContextRef js_context_
 #endif
 	
 	return result;
+} catch (const std::exception& e) {
+	JSContext js_context(context_ref);
+	JSString message(LogStdException("JSNativeClass<T>::JSStaticValueSetPropertyCallback", JSObject(js_context, object_ref), e));
+	*exception = JSValue(js_context, message);
+} catch (...) {
+	JSContext js_context(context_ref);
+	JSString message(LogUnknownException("JSNativeClass<T>::JSStaticValueSetPropertyCallback", JSObject(js_context, object_ref)));
+	*exception = JSValue(js_context, message);
 }
 
 // Support for JSStaticFunction
 template<typename T>
-JSValueRef JSNativeClass<T>::JSStaticFunctionCallAsFunctionCallback(JSContextRef js_context_ref, JSObjectRef js_function_ref, JSObjectRef js_this_object_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception) {
+JSValueRef JSNativeClass<T>::JSStaticFunctionCallAsFunctionCallback(JSContextRef context_ref, JSObjectRef function_ref, JSObjectRef this_object_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception) try {
 	JAVASCRIPTCORECPP_JSNATIVECLASS_STATIC_LOCK_GUARD;
-	static const std::string log_prefix { "MDL: JSNativeClass<T>::JSStaticFunctionCallAsFunctionCallback:" };
-	
-	JSContext js_context(js_context_ref);
-	JSObject  js_function(js_context, js_function_ref);
+	static const std::string log_prefix { "MDL: JSNativeClass<T>::JSStaticFunctionCallAsFunctionCallback: " };
 
+	JSContext js_context(context_ref);
+	JSObject  js_function(js_context, function_ref);
+	
 	// precondition
 	assert(js_function.IsFunction());
-
+	
 	JSString function_name; // TODO
 	
 	const auto callback_position = function_property_callback_map_.find(function_name);
@@ -369,17 +384,16 @@ JSValueRef JSNativeClass<T>::JSStaticFunctionCallAsFunctionCallback(JSContextRef
 	          << class_name_for_js_class_definition_
 	          << "."
 	          << function_name
-	          << ", callback found = "
+	          << " callback found = "
 	          << std::boolalpha
 	          << callback_found
 	          << "."
 	          << std::endl;
 #endif
 
-	std::vector<JSValue> arguments;
-	std::transform(arguments_array, arguments_array + argument_count, std::back_inserter(arguments), [&js_context](JSValueRef js_value_ref) { return JSValue(js_context, js_value_ref); });
+	const std::vector<JSValue> arguments = ToJSValueVector(js_context, argument_count, arguments_array);
 
-	JSObject js_this_object(js_context, js_this_object_ref);
+	JSObject js_this_object(js_context, this_object_ref);
 	const auto native_object_ptr = static_cast<T*>(js_function.GetPrivate());
 	const auto callback          = (callback_position -> second).get_call_as_function_callback();
 	const auto result            = callback(*native_object_ptr, arguments, js_this_object);
@@ -401,12 +415,20 @@ JSValueRef JSNativeClass<T>::JSStaticFunctionCallAsFunctionCallback(JSContextRef
 #endif
 	
 	return result;
+} catch (const std::exception& e) {
+	JSContext js_context(context_ref);
+	JSString message(LogStdException("JSNativeClass<T>::JSStaticFunctionCallAsFunctionCallback", JSObject(js_context, function_ref), e));
+	*exception = JSValue(js_context, message);
+} catch (...) {
+	JSContext js_context(context_ref);
+	JSString message(LogUnknownException("JSNativeClass<T>::JSStaticFunctionCallAsFunctionCallback", JSObject(js_context, function_ref)));
+	*exception = JSValue(js_context, message);
 }
 
 template<typename T>
-void JSNativeClass<T>::JSObjectInitializeCallback(JSContextRef js_context_ref, JSObjectRef js_object_ref) {
+void JSNativeClass<T>::JSObjectInitializeCallback(JSContextRef context_ref, JSObjectRef object_ref) try {
 	JAVASCRIPTCORECPP_JSNATIVECLASS_STATIC_LOCK_GUARD;
-	static const std::string log_prefix { "MDL: JSNativeClass<T>::JSObjectInitializeCallback:" };
+	static const std::string log_prefix { "MDL: JSNativeClass<T>::JSObjectInitializeCallback: " };
 	
 	auto       callback       = initialize_callback_;
 	const bool callback_found = callback != nullptr;
@@ -415,7 +437,7 @@ void JSNativeClass<T>::JSObjectInitializeCallback(JSContextRef js_context_ref, J
 	std::clog << log_prefix
 	          << "[DEBUG] "
 	          << class_name_for_js_class_definition_
-	          << ".Initialize(), callback found = "
+	          << " callback found = "
 	          << std::boolalpha
 	          << callback_found
 	          << "."
@@ -425,16 +447,19 @@ void JSNativeClass<T>::JSObjectInitializeCallback(JSContextRef js_context_ref, J
 	// precondition
 	assert(callback);
 	
-	JSContext js_context(js_context_ref);
-	JSObject  js_object(js_context, js_object_ref);
+	JSObject  js_object(JSContext(context_ref), object_ref);
 	const auto native_object_ptr = static_cast<T*>(js_object.GetPrivate());
 	callback(*native_object_ptr);
+} catch (const std::exception& e) {
+	LogStdException("JSNativeClass<T>::JSObjectInitializeCallback", JSObject(JSContext(context_ref), object_ref), e);
+} catch (...) {
+	LogUnknownException("JSNativeClass<T>::JSObjectInitializeCallback", JSObject(JSContext(context_ref), object_ref));
 }
 
 template<typename T>
-void JSNativeClass<T>::JSObjectFinalizeCallback(JSObjectRef js_object_ref) {
+void JSNativeClass<T>::JSObjectFinalizeCallback(JSObjectRef object_ref) try {
 	JAVASCRIPTCORECPP_JSNATIVECLASS_STATIC_LOCK_GUARD;
-	static const std::string log_prefix { "MDL: JSNativeClass<T>::JSObjectFinalizeCallback:" };
+	static const std::string log_prefix { "MDL: JSNativeClass<T>::JSObjectFinalizeCallback: " };
 	
 	auto       callback       = finalize_callback_;
 	const bool callback_found = callback != nullptr;
@@ -443,7 +468,7 @@ void JSNativeClass<T>::JSObjectFinalizeCallback(JSObjectRef js_object_ref) {
 	std::clog << log_prefix
 	          << "[DEBUG] "
 	          << class_name_for_js_class_definition_
-	          << ".Finalize(), callback found = "
+	          << " callback found = "
 	          << std::boolalpha
 	          << callback_found
 	          << "."
@@ -453,17 +478,85 @@ void JSNativeClass<T>::JSObjectFinalizeCallback(JSObjectRef js_object_ref) {
 	// precondition
 	assert(finalize_callback_);
 
-	// TODO: get js_context_ref
-	// JSContext js_context(js_context_ref);
-	// JSObject  js_object(js_context, js_object_ref);
+	// TODO: get context_ref
+	// JSContext js_context(context_ref);
+	// JSObject  js_object(js_context, object_ref);
 	// const auto native_object_ptr = static_cast<T*>(js_object.GetPrivate());
 	// callback(*native_object_ptr);
+} catch (const std::exception& e) {
+	//LogStdException("JSNativeClass<T>::JSObjectFinalizeCallback", JSObject(JSContext(context_ref), object_ref), e);
+} catch (...) {
+	//LogUnknownException("JSNativeClass<T>::JSObjectFinalizeCallback", JSObject(JSContext(context_ref), object_ref));
 }
 
 template<typename T>
-JSValueRef JSNativeClass<T>::JSObjectCallAsFunctionCallback(JSContextRef js_context_ref, JSObjectRef js_function_ref, JSObjectRef js_this_object_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception) {
+bool JSNativeClass<T>::JSObjectHasPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref) try {
 	JAVASCRIPTCORECPP_JSNATIVECLASS_STATIC_LOCK_GUARD;
-	static const std::string log_prefix { "MDL: JSNativeClass<T>::JSObjectCallAsFunctionCallback:" };
+	return JSObject(JSContext(context_ref), object_ref).HasProperty(property_name_ref);
+} catch (const std::exception& e) {
+	LogStdException("JSNativeClass<T>::JSObjectHasPropertyCallback", JSObject(JSContext(context_ref), object_ref), e);
+} catch (...) {
+	LogUnknownException("JSNativeClass<T>::JSObjectHasPropertyCallback", JSObject(JSContext(context_ref), object_ref));
+}
+
+template<typename T>
+JSValueRef JSNativeClass<T>::JSObjectGetPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception) try {
+	JAVASCRIPTCORECPP_JSNATIVECLASS_STATIC_LOCK_GUARD;
+	return JSObject(JSContext(context_ref), object_ref).GetProperty(property_name_ref);
+} catch (const std::exception& e) {
+	JSContext js_context(context_ref);
+	JSString message(LogStdException("JSNativeClass<T>::JSObjectGetPropertyCallback", JSObject(js_context, object_ref), e));
+	*exception = JSValue(js_context, message);
+} catch (...) {
+	JSContext js_context(context_ref);
+	JSString message(LogUnknownException("JSNativeClass<T>::JSObjectGetPropertyCallback", JSObject(js_context, object_ref)));
+	*exception = JSValue(js_context, message);
+}
+
+template<typename T>
+bool JSNativeClass<T>::JSObjectSetPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef value_ref, JSValueRef* exception) try {
+	JAVASCRIPTCORECPP_JSNATIVECLASS_STATIC_LOCK_GUARD;
+	JSContext js_context(context_ref);
+	JSObject(js_context, object_ref).SetProperty(property_name_ref, JSValue(js_context, value_ref));
+	return true;
+} catch (const std::exception& e) {
+	JSContext js_context(context_ref);
+	JSString message(LogStdException("JSNativeClass<T>::JSObjectSetPropertyCallback", JSObject(js_context, object_ref), e));
+	*exception = JSValue(js_context, message);
+} catch (...) {
+	JSContext js_context(context_ref);
+	JSString message(LogUnknownException("JSNativeClass<T>::JSObjectSetPropertyCallback", JSObject(js_context, object_ref)));
+	*exception = JSValue(js_context, message);
+}
+
+template<typename T>
+bool JSNativeClass<T>::JSObjectDeletePropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception) try {
+	JAVASCRIPTCORECPP_JSNATIVECLASS_STATIC_LOCK_GUARD;
+	return JSObject(JSContext(context_ref), object_ref).DeleteProperty(property_name_ref);
+} catch (const std::exception& e) {
+	JSContext js_context(context_ref);
+	JSString message(LogStdException("JSNativeClass<T>::JSObjectDeletePropertyCallback", JSObject(js_context, object_ref), e));
+	*exception = JSValue(js_context, message);
+} catch (...) {
+	JSContext js_context(context_ref);
+	JSString message(LogUnknownException("JSNativeClass<T>::JSObjectDeletePropertyCallback", JSObject(js_context, object_ref)));
+	*exception = JSValue(js_context, message);
+}
+
+template<typename T>
+void JSNativeClass<T>::JSObjectGetPropertyNamesCallback(JSContextRef context_ref, JSObjectRef object_ref, JSPropertyNameAccumulatorRef property_names) try {
+	JAVASCRIPTCORECPP_JSNATIVECLASS_STATIC_LOCK_GUARD;
+	return JSObject(JSContext(context_ref), object_ref).GetPropertyNames(JSPropertyNameAccumulator(property_names));
+} catch (const std::exception& e) {
+	LogStdException("JSNativeClass<T>::JSObjectGetPropertyNamesCallback", JSObject(JSContext(context_ref), object_ref), e);
+} catch (...) {
+	LogUnknownException("JSNativeClass<T>::JSObjectGetPropertyNamesCallback", JSObject(JSContext(context_ref), object_ref));
+}
+
+template<typename T>
+JSValueRef JSNativeClass<T>::JSObjectCallAsFunctionCallback(JSContextRef context_ref, JSObjectRef function_ref, JSObjectRef this_object_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception) try {
+	JAVASCRIPTCORECPP_JSNATIVECLASS_STATIC_LOCK_GUARD;
+	static const std::string log_prefix { "MDL: JSNativeClass<T>::JSObjectCallAsFunctionCallback: " };
 	
 	auto       callback       = call_as_function_callback_;
 	const bool callback_found = callback != nullptr;
@@ -472,7 +565,7 @@ JSValueRef JSNativeClass<T>::JSObjectCallAsFunctionCallback(JSContextRef js_cont
 	std::clog << log_prefix
 	          << "[DEBUG] "
 	          << class_name_for_js_class_definition_
-	          << ".CallAsFunction(), callback found = "
+	          << " callback found = "
 	          << std::boolalpha
 	          << callback_found
 	          << "."
@@ -482,27 +575,26 @@ JSValueRef JSNativeClass<T>::JSObjectCallAsFunctionCallback(JSContextRef js_cont
 	// precondition
 	assert(callback);
 	
-	JSContext js_context(js_context_ref);
-	JSObject  js_object(js_context, js_function_ref);
+	JSContext js_context(context_ref);
+	JSObject  js_object(js_context, function_ref);
 	
 	// precondition
 	assert(js_object.IsFunction());
 	
-	JSObject js_this_object(js_context, js_this_object_ref);
-	std::vector<JSValue> arguments;
-	std::transform(arguments_array, arguments_array + argument_count, std::back_inserter(arguments), [&js_context](JSValueRef js_value_ref) { return JSValue(js_context, js_value_ref); });
+	JSObject this_object(js_context, this_object_ref);
 
-	const auto native_object_ptr = static_cast<T*>(js_object.GetPrivate());
-	const auto result = callback(*native_object_ptr, arguments, js_this_object);
+	const std::vector<JSValue> arguments         = ToJSValueVector(js_context, argument_count, arguments_array);
+	const auto                 native_object_ptr = static_cast<T*>(js_object.GetPrivate());
+	const auto                 result            = callback(*native_object_ptr, arguments, this_object);
 	
 #ifdef JAVASCRIPTCORECPP_JSNATIVECLASS_DEBUG
 	std::clog << log_prefix
 	          << "[DEBUG] "
 	          << class_name_for_js_class_definition_
-	          << ": "
-	          << static_cast<std::string>(js_this_object)
-	          << "(), argument count = "
+	          << " argument count = "
 	          << arguments.size()
+	          << ", this_object = "
+	          << static_cast<std::string>(this_object)
 	          << ", result = "
 	          << static_cast<std::string>(result)
 	          << "."
@@ -510,12 +602,20 @@ JSValueRef JSNativeClass<T>::JSObjectCallAsFunctionCallback(JSContextRef js_cont
 #endif
 
 	return result;
+} catch (const std::exception& e) {
+	JSContext js_context(context_ref);
+	JSString message(LogStdException("JSNativeClass<T>::JSObjectCallAsFunctionCallback", JSObject(js_context, function_ref), e));
+	*exception = JSValue(js_context, message);
+} catch (...) {
+	JSContext js_context(context_ref);
+	JSString message(LogUnknownException("JSNativeClass<T>::JSObjectCallAsFunctionCallback", JSObject(js_context, function_ref)));
+	*exception = JSValue(js_context, message);
 }
 
 template<typename T>
-JSObjectRef JSNativeClass<T>::JSObjectCallAsConstructorCallback(JSContextRef js_context_ref, JSObjectRef js_constructor_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception) {
+JSObjectRef JSNativeClass<T>::JSObjectCallAsConstructorCallback(JSContextRef context_ref, JSObjectRef constructor_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception) try {
 	JAVASCRIPTCORECPP_JSNATIVECLASS_STATIC_LOCK_GUARD;
-	static const std::string log_prefix { "MDL: JSNativeClass<T>::JSObjectCallAsConstructorCallback:" };
+	static const std::string log_prefix { "MDL: JSNativeClass<T>::JSObjectCallAsConstructorCallback: " };
 	
 	auto       callback       = call_as_constructor_callback_;
 	const bool callback_found = callback != nullptr;
@@ -524,7 +624,7 @@ JSObjectRef JSNativeClass<T>::JSObjectCallAsConstructorCallback(JSContextRef js_
 	std::clog << log_prefix
 	          << "[DEBUG] "
 	          << class_name_for_js_class_definition_
-	          << ".CallAsConstructor(), callback found = "
+	          << " callback found = "
 	          << std::boolalpha
 	          << callback_found
 	          << "."
@@ -534,23 +634,21 @@ JSObjectRef JSNativeClass<T>::JSObjectCallAsConstructorCallback(JSContextRef js_
 	// precondition
 	assert(callback);
 	
-	JSContext js_context(js_context_ref);
-	JSObject  js_object(js_context, js_constructor_ref);
+	JSContext js_context(context_ref);
+	JSObject  js_object(js_context, constructor_ref);
 	
 	// precondition
 	assert(js_object.IsConstructor());
 	
-	std::vector<JSValue> arguments;
-	std::transform(arguments_array, arguments_array + argument_count, std::back_inserter(arguments), [&js_context](JSValueRef js_value_ref) { return JSValue(js_context, js_value_ref); });
-
-	const auto native_object_ptr = static_cast<T*>(js_object.GetPrivate());
-	const auto result = callback(*native_object_ptr, arguments);
+	const std::vector<JSValue> arguments         = ToJSValueVector(js_context, argument_count, arguments_array);
+	const auto                 native_object_ptr = static_cast<T*>(js_object.GetPrivate());
+	const auto                 result            = callback(*native_object_ptr, arguments);
 	
 #ifdef JAVASCRIPTCORECPP_JSNATIVECLASS_DEBUG
 	std::clog << log_prefix
 	          << "[DEBUG] "
 	          << class_name_for_js_class_definition_
-	          << "(), argument count = "
+	          << " argument count = "
 	          << arguments.size()
 	          << ", result = "
 	          << static_cast<std::string>(result)
@@ -559,6 +657,186 @@ JSObjectRef JSNativeClass<T>::JSObjectCallAsConstructorCallback(JSContextRef js_
 #endif
 
 	return result;
+} catch (const std::exception& e) {
+	JSContext js_context(context_ref);
+	JSString message(LogStdException("JSNativeClass<T>::JSObjectCallAsConstructorCallback", JSObject(js_context, constructor_ref), e));
+	*exception = JSValue(js_context, message);
+} catch (...) {
+	JSContext js_context(context_ref);
+	JSString message(LogUnknownException("JSNativeClass<T>::JSObjectCallAsConstructorCallback", JSObject(js_context, constructor_ref)));
+	*exception = JSValue(js_context, message);
+}
+
+template<typename T>
+bool JSNativeClass<T>::JSObjectHasInstanceCallback(JSContextRef context_ref, JSObjectRef constructor_ref, JSValueRef possible_instance_ref, JSValueRef* exception) try {
+	JAVASCRIPTCORECPP_JSNATIVECLASS_STATIC_LOCK_GUARD;
+	static const std::string log_prefix { "MDL: JSNativeClass<T>::JSObjectHasInstanceCallback: " };
+	
+	auto       callback       = has_instance_callback_;
+	const bool callback_found = callback != nullptr;
+
+#ifdef JAVASCRIPTCORECPP_JSNATIVECLASS_DEBUG
+	std::clog << log_prefix
+	          << "[DEBUG] "
+	          << class_name_for_js_class_definition_
+	          << " callback found = "
+	          << std::boolalpha
+	          << callback_found
+	          << "."
+	          << std::endl;
+#endif
+	
+	// precondition
+	assert(callback);
+	
+	JSContext js_context(context_ref);
+	JSObject  js_object(js_context, constructor_ref);
+	JSValue   possible_instance(js_context, possible_instance_ref);
+
+	const auto native_object_ptr = static_cast<T*>(js_object.GetPrivate());
+	const auto result = callback(*native_object_ptr, possible_instance);
+	
+#ifdef JAVASCRIPTCORECPP_JSNATIVECLASS_DEBUG
+	std::clog << log_prefix
+	          << "[DEBUG] "
+	          << class_name_for_js_class_definition_
+	          << " possible_instance = "
+	          << static_cast<std::string>(possible_instance)
+	          << ", result = "
+	          << std::boolalpha
+	          << result
+	          << "."
+	          << std::endl;
+#endif
+
+	return result;
+} catch (const std::exception& e) {
+	JSContext js_context(context_ref);
+	JSString message(LogStdException("JSNativeClass<T>::JSObjectHasInstanceCallback", JSObject(js_context, constructor_ref), e));
+	*exception = JSValue(js_context, message);
+} catch (...) {
+	JSContext js_context(context_ref);
+	JSString message(LogUnknownException("JSNativeClass<T>::JSObjectHasInstanceCallback", JSObject(js_context, constructor_ref)));
+	*exception = JSValue(js_context, message);
+}
+
+template<typename T>
+JSValueRef JSNativeClass<T>::JSObjectConvertToTypeCallback(JSContextRef context_ref, JSObjectRef object_ref, JSType type, JSValueRef* exception) try {
+	JAVASCRIPTCORECPP_JSNATIVECLASS_STATIC_LOCK_GUARD;
+	static const std::string log_prefix { "MDL: JSNativeClass<T>::JSObjectConvertToTypeCallback: " };
+	
+	auto       callback       = convert_to_type_callback_;
+	const bool callback_found = callback != nullptr;
+	
+#ifdef JAVASCRIPTCORECPP_JSNATIVECLASS_DEBUG
+	std::clog << log_prefix
+	          << "[DEBUG] "
+	          << class_name_for_js_class_definition_
+	          << " callback found = "
+	          << std::boolalpha
+	          << callback_found
+	          << "."
+	          << std::endl;
+#endif
+	
+	// precondition
+	assert(callback);
+	
+	JSObject js_object(JSContext(context_ref), object_ref);
+	JSValue::Type js_type(ToJSValueType(type));
+	
+	const auto native_object_ptr = static_cast<T*>(js_object.GetPrivate());
+	const auto result = callback(*native_object_ptr, js_type);
+	
+#ifdef JAVASCRIPTCORECPP_JSNATIVECLASS_DEBUG
+	std::clog << log_prefix
+	          << "[DEBUG] "
+	          << class_name_for_js_class_definition_
+	          << " type = "
+	          << to_string(js_type)
+	          << ", result = "
+	          << std::boolalpha
+	          << result
+	          << "."
+	          << std::endl;
+#endif
+
+	return result;
+} catch (const std::exception& e) {
+	JSContext js_context(context_ref);
+	JSString message(LogStdException("JSNativeClass<T>::JSObjectConvertToTypeCallback", JSObject(js_context, object_ref), e));
+	*exception = JSValue(js_context, message);
+} catch (...) {
+	JSContext js_context(context_ref);
+	JSString message(LogUnknownException("JSNativeClass<T>::JSObjectConvertToTypeCallback", JSObject(js_context, object_ref)));
+	*exception = JSValue(js_context, message);
+}
+
+template<typename T>
+std::vector<JSValue> JSNativeClass<T>::ToJSValueVector(const JSContext& js_context, size_t argument_count, const JSValueRef arguments_array[]) {
+	std::vector<JSValue> arguments;
+	std::transform(arguments_array, arguments_array + argument_count, std::back_inserter(arguments), [&js_context](JSValueRef value_ref) { return JSValue(js_context, value_ref); });
+	return arguments;
+}
+
+template<typename T>
+JSValue::Type JSNativeClass<T>::ToJSValueType(JSType type) {
+	static const std::string log_prefix { "MDL: JSNativeClass<T>::ToJSValueType: " };
+	
+	switch (type) {
+		case kJSTypeUndefined:
+			return JSValue::Type::Undefined;
+		case kJSTypeNull:
+			return JSValue::Type::Null;
+		case kJSTypeBoolean:
+			return JSValue::Type::Boolean;
+		case kJSTypeNumber:
+			return JSValue::Type::Number;
+		case kJSTypeString:
+			return JSValue::Type::String;
+		case kJSTypeObject:
+			return JSValue::Type::Object;
+		default:
+			const std::string message = "[LOGIC ERROR] Unknown JSType " + std::to_string(type);
+			std::clog << log_prefix << message << std::endl;
+			throw std::logic_error(message);
+	}
+}
+
+template<typename T>
+std::string JSNativeClass<T>::LogStdException(const std::string& function_name, const JSObject& js_object, const std::exception& exception) {
+	static const std::string log_prefix { "JavaScriptCoreCPP caught exception in " };
+	
+	std::ostringstream os;
+	os << log_prefix
+	   << function_name
+	   << " for object "
+	   << static_cast<std::string>(js_object)
+	   << ", exception text = "
+	   << exception.what();
+	
+	const auto message = os.str();
+	
+	std::clog << message << std::endl;
+	
+	return message;
+}
+
+template<typename T>
+std::string JSNativeClass<T>::LogUnknownException(const std::string& function_name, const JSObject& js_object) {
+	static const std::string log_prefix { "JavaScriptCoreCPP caught unknown exception in " };
+	
+	std::ostringstream os;
+	os << log_prefix
+	   << function_name
+	   << " for object "
+	   << static_cast<std::string>(js_object);
+	
+	const auto message = os.str();
+	
+	std::clog << message << std::endl;
+	
+	return message;
 }
 
 } // namespace JavaScriptCoreCPP {

@@ -58,8 +58,12 @@ private:
 	JSPropertyNameAccumulator& operator=(const JSPropertyNameAccumulator& rhs) = delete;
 	JSPropertyNameAccumulator& operator=(JSPropertyNameAccumulator&& rhs) = delete;
 
-	// Only a JSObject can create a JSPropertyNameAccumulator.
+	// Only a JSObject and a JSNativeClass can create a
+	// JSPropertyNameAccumulator.
 	friend class JSObject;
+
+	template<typename T>
+	friend class JSNativeClass;
 
 	// For interoperability with the JavaScriptCore C API.
 	explicit JSPropertyNameAccumulator(const JSPropertyNameAccumulatorRef& js_property_name_accumulator_ref)

@@ -80,11 +80,6 @@ class JSNativeObject : public JSObject {
 		swap(first.js_native_class__, second.js_native_class__);
 	}
 	
-	virtual bool HasInstance(const JSValue& possible_instance) const override final {
-		assert(attached_to_context__);
-		return JSObject::HasInstance(possible_instance);
-	}
-
 	virtual JSObject CallAsConstructor(const std::vector<JSValue>& arguments) override final {
 		assert(attached_to_context__);
 		return JSObject::CallAsConstructor(arguments);
@@ -99,7 +94,9 @@ class JSNativeObject : public JSObject {
 	
 	JSNativeObject(const JSContext& js_context, const JSNativeClass<T>& js_native_class)
 			: JSObject(js_context)
-			, js_native_class__(js_native_class) {
+			  //, js_native_class__(JSNativeClassBuilder<T>(js_native_class).build()) {
+			, js_native_class__(JSNativeClassBuilder<T>(js_native_class).HasInstance(&JSNativeObject<T>::HasInstance).build()) {
+		assert(JSNativeClassBuilder<T>(js_native_class__).HasInstance());
 	}
 
  private:
@@ -129,11 +126,51 @@ class JSNativeObject : public JSObject {
 		return false;
 	}
 
+	bool HasInstance(const JSValue& possible_instance) const;
+
 	JSNativeClass<T> js_native_class__;
 	std::once_flag   attach_to_context_once_flag__;
 	bool             attached_to_context__ { false };
 };
 
+template<typename T>
+bool JSNativeObject<T>::HasInstance(const JSValue& possible_instance) const {
+	static const std::string log_prefix { "MDL: JSNativeObject<T>::HasInstance:" };
+	try {
+		static_cast<void>(dynamic_cast<const T&>(possible_instance));
+		return true;
+	} catch (const std::bad_cast& exception) {
+#ifdef JAVASCRIPTCORECPP_JSNATIVEOBJECT_DEBUG
+		std::clog << log_prefix
+		          << "[DEBUG] possible_instance "
+		          << possible_instance
+		          << " generated std::bad_cast exception: "
+		          << exception.what()
+		          << "."
+		          << std::endl;
+#endif
+	} catch (const std::exception& exception) {
+#ifdef JAVASCRIPTCORECPP_JSNATIVEOBJECT_DEBUG
+		std::clog << log_prefix
+		          << "[DEBUG] possible_instance "
+		          << possible_instance
+		          << " generated std::exception: "
+		          << exception.what()
+		          << "."
+		          << std::endl;
+#endif
+	} catch (...) {
+#ifdef JAVASCRIPTCORECPP_JSNATIVEOBJECT_DEBUG
+		std::clog << log_prefix
+		          << "[DEBUG] possible_instance "
+		          << possible_instance
+		          << " generated an unknown exception."
+		          << std::endl;
+#endif
+	}
+	return false;
+}
+	
 template<typename T>
 JSContext JSContextGroup::CreateContext(const JSNativeClass<T>& global_object_class) const {
 	return JSContext(*this, global_object_class);

@@ -817,7 +817,7 @@ class JSNativeClassBuilder final {
 
 	JSNativeClassBuilder<T>& AddValuePropertyCallback(const JSNativeObjectValuePropertyCallback<T>& value_property_callback);
 	JSNativeClassBuilder<T>& AddFunctionPropertyCallback(const JSNativeObjectFunctionPropertyCallback<T>& function_property_callback);
-
+	
 	template<typename U>
 	friend class JSNativeClass;
 

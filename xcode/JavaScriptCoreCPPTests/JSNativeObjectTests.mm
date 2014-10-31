@@ -125,16 +125,23 @@ using namespace JavaScriptCoreCPP;
   JSContext js_context = js_context_group.CreateContext();
   auto global_object = js_context.get_global_object();
 
+  XCTAssertFalse(global_object.HasProperty("Widget"));
   auto widget = js_context.CreateObject<Widget>();
   global_object.SetProperty("Widget", widget);
+  XCTAssertTrue(global_object.HasProperty("Widget"));
       
+  for (const auto& property_name : static_cast<std::vector<JSString>>(global_object.CopyPropertyNames())) {
+    //SetProperty(property_name, props.GetProperty(property_name));
+    std::clog << "MDL: property_name = " << property_name << std::endl;
+  }
   
   JSString script =
-      "Widget.sayHello();"
-      // "var widget = new Widget();"
+      //"Widget;"
+      //"Widget.sayHello();"
+      "var widget = new Widget();"
       // "widget.hello();"
       ;
-  // js_context.JSEvaluateScript(script);
+  js_context.JSEvaluateScript(script);
 }
 
 // As of 2014.09.20 Travis CI only supports Xcode 5.1 which lacks support for

@@ -56,20 +56,18 @@ class JSObject : public JSValue {
 	/*!
 	  @method
 	  
-	  @abstract Return the result when this JavaScript object is used as
-	  the target of an 'instanceof' expression. This method returns
-	  false by default.
+	  @abstract Call this JavaScript object as a constructor as if in a
+	  'new' expression.
 	  
-	  @param possible_instance The JSValue being tested to determine if
-	  it is an instance of this JavaScript object.
+	  @param arguments The JSValue argument(s) to pass to the function.
 	  
-	  @result Return true if this JavaScript object is an 'instanceof'
-	  possible_instance.
+	  @result The JavaScript object of the constructor's return value.
+	  
+	  @throws std::runtime_error if either this JavaScript object can't
+	  be called as a constructor, or calling the constructor itself
+	  threw a JavaScript exception.
 	*/
-	virtual bool HasInstance(const JSValue& possible_instance) const {
-		return false;
-	}
-
+	virtual JSObject CallAsConstructor(const std::vector<JSValue>&  arguments);
 	virtual JSObject CallAsConstructor(                                      ) final;
 	virtual JSObject CallAsConstructor(JSValue                      argument ) final;
 	virtual JSObject CallAsConstructor(JSString                     argument ) final;
@@ -100,14 +98,16 @@ class JSObject : public JSValue {
 
 	  @param arguments The JSValue argument(s) to pass to the function.
 	  
-	  @param this_object An optional JavaScript object to use as "this".
+	  @param this_object An optional JavaScript object to use as
+	  "this". The default value is this JavaScript object.
 	  
 	  @result Return the function's return value.
-
+	  
 	  @throws std::runtime_error if either this JavaScript object can't
 	  be called as a function, or calling the function itself threw a
 	  JavaScript exception.
 	*/
+
 	virtual JSValue operator()(                                                            ) final { return CallAsFunction(                      ); }
 	virtual JSValue operator()(JSValue                      argument                       ) final { return CallAsFunction(argument              ); }
 	virtual JSValue operator()(JSString                     argument                       ) final { return CallAsFunction(argument              ); }
@@ -300,35 +300,37 @@ class JSObject : public JSValue {
 	/*!
 	  @method
 	  
-	  @abstract Call this JavaScript object as a constructor as if in a
-	  'new' expression.
-	  
-	  @param arguments The JSValue argument(s) to pass to the function.
-	  
-	  @result The JavaScript object of the constructor's return value.
-	  
-	  @throws std::runtime_error if either this JavaScript object can't
-	  be called as a constructor, or calling the constructor itself
-	  threw a JavaScript exception.
-	*/
-	virtual JSObject CallAsConstructor(const std::vector<JSValue>& arguments);
-
-	/*!
-	  @method
-	  
 	  @abstract Call this JavaScript object as a function. If derived
 	  classes don't provide an implementation of this method then the
 	  default behavior is to throw a std::runtime_error exception.
 
-	  @param arguments A JSValue array of arguments to pass to the
-	  function.
+	  @discussion In the JavaScript expression 'myObject.myFunction()',
+	  the "this_object" parameter will be set to 'myObject' and this
+	  JavaScript object is 'myFunction'.
+
+	  @param arguments The JSValue argument(s) to pass to the function.
 	  
-	  @param this_object The object to use as "this".
+	  @param this_object An optional JavaScript object to use as
+	  "this". The default value is this JavaScript object.
 	  
 	  @result Return the function's return value.
+
+	  @throws std::runtime_error if either this JavaScript object can't
+	  be called as a function, or calling the function itself threw a
+	  JavaScript exception.
 	*/
-	virtual JSValue CallAsFunction(const std::vector<JSValue>& arguments, JSObject this_object);
-	
+	virtual JSValue CallAsFunction(const std::vector<JSValue>&  arguments, JSObject this_object);
+	virtual JSValue CallAsFunction(                                                            ) final;
+	virtual JSValue CallAsFunction(JSValue                      argument                       ) final;
+	virtual JSValue CallAsFunction(JSString                     argument                       ) final;
+	virtual JSValue CallAsFunction(const std::vector<JSValue>&  arguments                      ) final;
+	virtual JSValue CallAsFunction(const std::vector<JSString>& arguments                      ) final;
+
+	virtual JSValue CallAsFunction(                                        JSObject this_object) final;
+	virtual JSValue CallAsFunction(JSValue                      argument , JSObject this_object) final;
+	virtual JSValue CallAsFunction(JSString                     argument , JSObject this_object) final;
+	virtual JSValue CallAsFunction(const std::vector<JSString>& arguments, JSObject this_object) final;
+
 	/*!
 	  @method
 	  
@@ -378,19 +380,7 @@ class JSObject : public JSValue {
 	  names to the accumulator. Property name accumulators are used by
 	  JavaScript for...in loops.
 	*/
-	void GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const;
-
-	JSValue CallAsFunction(                                                            );
-	JSValue CallAsFunction(JSValue                      argument                       );
-	JSValue CallAsFunction(JSString                     argument                       );
-	JSValue CallAsFunction(const std::vector<JSValue>&  arguments                      );
-	JSValue CallAsFunction(const std::vector<JSString>& arguments                      );
-
-	JSValue CallAsFunction(                                        JSObject this_object);
-	JSValue CallAsFunction(JSValue                      argument , JSObject this_object);
-	JSValue CallAsFunction(JSString                     argument , JSObject this_object);
-	JSValue CallAsFunction(const std::vector<JSString>& arguments, JSObject this_object);
-
+	virtual void GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const final;
 
 	// Only a JSContext can create a JSObject.
 	friend class JSContext;
