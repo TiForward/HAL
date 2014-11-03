@@ -10,6 +10,7 @@
 #ifndef _JAVASCRIPTCORECPP_JSPROPERTYATTRIBUTE_HPP_
 #define _JAVASCRIPTCORECPP_JSPROPERTYATTRIBUTE_HPP_
 
+#include <cstddef>
 #include <functional>
 #include <JavaScriptCore/JavaScript.h>
 

@@ -15,7 +15,17 @@
 
 #include <cstdint>
 #include <memory>
+#include <vector>
 #include <unordered_set>
+
+// class JSStringRef;
+// class JSValueRef;
+
+namespace JavaScriptCoreCPP {
+class JSString;
+class JSContext;
+class JSValue;
+}
 
 namespace JavaScriptCoreCPP { namespace detail {
 
@@ -23,6 +33,18 @@ template<typename T, typename... Ts>
 std::unique_ptr<T> make_unique(Ts&&... params) {
 	return std::unique_ptr<T>(new T(std::forward<Ts>(params)...));
 }
+
+// Log and throw a std::logic_error from an internal component.
+void   ThrowLogicError(const std::string& internal_component_name, const std::string& message  );
+void   ThrowLogicError(const std::string& internal_component_name, const JSValue&     exception);
+void ThrowRuntimeError(const std::string& internal_component_name, const std::string& message  );
+void ThrowRuntimeError(const std::string& internal_component_name, const JSValue&     exception);
+
+// For interoperability with the JavaScriptCore C API.
+std::vector<JSValue>     to_vector(const JSContext&, size_t count, const JSValueRef[]);
+std::vector<JSValue>     to_vector(const JSContext&, const std::vector<JSString>&);
+std::vector<JSValueRef>  to_vector(const std::vector<JSValue>& );
+std::vector<JSStringRef> to_vector(const std::vector<JSString>&);
 
 // For hash functions for std::unordered_set<JSPropertyAttribute> and
 // interoperability with the JavaScriptCore C API.

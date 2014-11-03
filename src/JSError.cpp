@@ -8,6 +8,7 @@
  */
 
 #include "JavaScriptCoreCPP/JSError.hpp"
+#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 #include <vector>
 #include <algorithm>
 #include <stdexcept>
@@ -15,27 +16,28 @@
 
 namespace JavaScriptCoreCPP {
 
-JSError::JSError(const JSContext& js_context, const std::vector<JSValue>& arguments) : JSObject(js_context) {
+JSError::JSError(const JSContext& js_context, const std::vector<JSValue>& arguments)
+		: JSObject(js_context, MakeError(js_context, arguments)) {
+}
+
+JSObjectRef JSError::MakeError(const JSContext& js_context, const std::vector<JSValue>& arguments) {
 	JSValueRef exception { nullptr };
 	JSObjectRef js_object_ref = nullptr;
 	if (!arguments.empty()) {
-		std::vector<JSValueRef> arguments_array;
-		std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [](const JSValue& js_value) { return static_cast<JSValueRef>(js_value); });
+		std::vector<JSValueRef> arguments_array = detail::ToJSValueRefVector(arguments);
 		js_object_ref = JSObjectMakeError(js_context, arguments_array.size(), &arguments_array[0], &exception);
 	} else {
 		js_object_ref = JSObjectMakeError(js_context, 0, nullptr, &exception);
 	}
 	
 	if (exception) {
-		// assert(!js_object_ref);
-		static const std::string log_prefix { "MDL: JSError(const std::vector<Value>& arguments, const JSContext& js_context): " };
-		const std::string message = static_cast<std::string>(JSValue(js_context, exception));
-		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
-		throw std::logic_error(message);
+		// If this assert fails then we need to JSValueUnprotect
+		// js_object_ref.
+		assert(!js_object_ref);
+		detail::ThrowRuntimeError("JSError", JSValue(js_context, exception));
 	}
-	
-	JSValueUnprotect(js_context, js_object_ref__);
-	js_object_ref__ = js_object_ref;
+
+	return js_object_ref;
 }
 
 } // namespace JavaScriptCoreCPP {

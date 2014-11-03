@@ -7,6 +7,7 @@
 #ifndef _JAVASCRIPTCORECPP_HASHUTILITIES_HPP_
 #define _JAVASCRIPTCORECPP_HASHUTILITIES_HPP_
 
+#include <cstddef>
 #include <functional>
 
 namespace JavaScriptCoreCPP { namespace detail {

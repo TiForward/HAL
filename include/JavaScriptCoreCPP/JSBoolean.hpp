@@ -11,8 +11,6 @@
 #define _JAVASCRIPTCORECPP_JSBOOLEAN_HPP_
 
 #include "JavaScriptCoreCPP/JSValue.hpp"
-#include <stdexcept>
-#include <iostream>
 
 namespace JavaScriptCoreCPP {
 

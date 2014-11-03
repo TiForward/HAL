@@ -133,9 +133,9 @@ using namespace JavaScriptCoreCPP;
   JSString script =
       //"Widget;"
       //"typeof Widget;"
-      "Widget.name;"
-      //"var widget = new Widget();"
-      // "widget.hello();"
+      // "Widget.name;"
+      "var widget = new Widget();"
+      "widget.sayHello();"
       ;
   auto result = js_context.JSEvaluateScript(script);
   std::clog << "MDL: result = " << static_cast<std::string>(result) << std::endl;

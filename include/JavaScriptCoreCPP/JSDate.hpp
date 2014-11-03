@@ -34,6 +34,8 @@ class JSDate final : public JSObject {
 	friend JSContext;
 	
 	JSDate(const JSContext& js_context, const std::vector<JSValue>& arguments);
+
+	static JSObjectRef MakeDate(const JSContext& js_context, const std::vector<JSValue>& arguments);
 };
 
 } // namespace JavaScriptCoreCPP {

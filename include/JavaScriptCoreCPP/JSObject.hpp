@@ -11,11 +11,11 @@
 #define _JAVASCRIPTCORECPP_JSOBJECT_HPP_
 
 #include "JavaScriptCoreCPP/JSValue.hpp"
-#include "JavaScriptCoreCPP/JSClass.hpp"
 #include "JavaScriptCoreCPP/JSPropertyAttribute.hpp"
 #include <vector>
 #include <unordered_set>
-#include <algorithm>
+
+extern "C" struct JSObjectRef;
 
 namespace JavaScriptCoreCPP {
 
@@ -44,81 +44,13 @@ class JSObject : public JSValue {
 	/*!
 	  @method
 	  
-	  @abstract Determine whether this object can be called as a
-	  constructor.
+	  @abstract Determine whether this JavaScript object has a property.
+
+	  @param property_name The name of the property to set.
 	  
-	  @result true if this object can be called as a constructor.
+	  @result true if this JavaScript object has the property.
 	*/
-	virtual bool IsConstructor() const final {
-		return JSObjectIsConstructor(get_context(), js_object_ref__);
-	}
-
-	/*!
-	  @method
-	  
-	  @abstract Call this JavaScript object as a constructor as if in a
-	  'new' expression.
-	  
-	  @param arguments The JSValue argument(s) to pass to the function.
-	  
-	  @result The JavaScript object of the constructor's return value.
-	  
-	  @throws std::runtime_error if either this JavaScript object can't
-	  be called as a constructor, or calling the constructor itself
-	  threw a JavaScript exception.
-	*/
-	virtual JSObject CallAsConstructor(const std::vector<JSValue>&  arguments);
-	virtual JSObject CallAsConstructor(                                      ) final;
-	virtual JSObject CallAsConstructor(JSValue                      argument ) final;
-	virtual JSObject CallAsConstructor(JSString                     argument ) final;
-	virtual JSObject CallAsConstructor(const std::vector<JSString>& arguments) final;
-
-	/*!
-	  @method
-	  
-	  @abstract Determine whether this object can be called as a
-	  function.
-	  
-	  @result true if this object can be called as a function.
-	*/
-	virtual bool IsFunction() const final {
-		return JSObjectIsFunction(get_context(), js_object_ref__);
-	}
-	
-	/*!
-	  @method
-	  
-	  @abstract Call this JavaScript object as a function. A
-	  std::runtime_error exception is thrown if this JavaScript object
-	  can't be called as a function.
-	  
-	  @discussion In the JavaScript expression 'myObject.myFunction()',
-	  the "this_object" parameter will be set to 'myObject' and this
-	  JavaScript object is 'myFunction'.
-
-	  @param arguments The JSValue argument(s) to pass to the function.
-	  
-	  @param this_object An optional JavaScript object to use as
-	  "this". The default value is this JavaScript object.
-	  
-	  @result Return the function's return value.
-	  
-	  @throws std::runtime_error if either this JavaScript object can't
-	  be called as a function, or calling the function itself threw a
-	  JavaScript exception.
-	*/
-
-	virtual JSValue operator()(                                                            ) final { return CallAsFunction(                      ); }
-	virtual JSValue operator()(JSValue                      argument                       ) final { return CallAsFunction(argument              ); }
-	virtual JSValue operator()(JSString                     argument                       ) final { return CallAsFunction(argument              ); }
-	virtual JSValue operator()(const std::vector<JSValue>&  arguments                      ) final { return CallAsFunction(arguments             ); }
-	virtual JSValue operator()(const std::vector<JSString>& arguments                      ) final { return CallAsFunction(arguments             ); }
-
-	virtual JSValue operator()(                                        JSObject this_object) final { return CallAsFunction(           this_object); }
-	virtual JSValue operator()(JSValue                      argument , JSObject this_object) final { return CallAsFunction(argument , this_object); }
-	virtual JSValue operator()(JSString                     argument , JSObject this_object) final { return CallAsFunction(argument , this_object); }
-	virtual JSValue operator()(const std::vector<JSValue>&  arguments, JSObject this_object) final { return CallAsFunction(arguments, this_object); }
-	virtual JSValue operator()(const std::vector<JSString>& arguments, JSObject this_object) final { return CallAsFunction(arguments, this_object); }
+	virtual bool HasProperty(const JSString& property_name) const final;
 
 	/*!
 	  @method
@@ -193,19 +125,6 @@ class JSObject : public JSValue {
 	/*!
 	  @method
 	  
-	  @abstract Determine whether this JavaScript object has a property.
-
-	  @param property_name The name of the property to set.
-	  
-	  @result true if this JavaScript object has the property.
-	*/
-	virtual bool HasProperty(const JSString& property_name) const final {
-		return JSObjectHasProperty(get_context(), js_object_ref__, property_name);
-	}
-
-	/*!
-	  @method
-	  
 	  @abstract Delete a property from this JavaScript object.
 
 	  @param property_name The name of the property to delete.
@@ -231,13 +150,86 @@ class JSObject : public JSValue {
 	/*!
 	  @method
 	  
+	  @abstract Determine whether this object can be called as a
+	  constructor.
+	  
+	  @result true if this object can be called as a constructor.
+	*/
+	virtual bool IsConstructor() const final;
+	
+	/*!
+	  @method
+	  
+	  @abstract Call this JavaScript object as a constructor as if in a
+	  'new' expression.
+	  
+	  @param arguments The JSValue argument(s) to pass to the function.
+	  
+	  @result The JavaScript object of the constructor's return value.
+	  
+	  @throws std::runtime_error if either this JavaScript object can't
+	  be called as a constructor, or calling the constructor itself
+	  threw a JavaScript exception.
+	*/
+	virtual JSObject CallAsConstructor(const std::vector<JSValue>&  arguments);
+	virtual JSObject CallAsConstructor(                                      ) final;
+	virtual JSObject CallAsConstructor(JSValue                      argument ) final;
+	virtual JSObject CallAsConstructor(JSString                     argument ) final;
+	virtual JSObject CallAsConstructor(const std::vector<JSString>& arguments) final;
+
+	/*!
+	  @method
+	  
+	  @abstract Determine whether this object can be called as a
+	  function.
+	  
+	  @result true if this object can be called as a function.
+	*/
+	virtual bool IsFunction() const final;
+	
+	/*!
+	  @method
+	  
+	  @abstract Call this JavaScript object as a function. A
+	  std::runtime_error exception is thrown if this JavaScript object
+	  can't be called as a function.
+	  
+	  @discussion In the JavaScript expression 'myObject.myFunction()',
+	  the "this_object" parameter will be set to 'myObject' and this
+	  JavaScript object is 'myFunction'.
+
+	  @param arguments The JSValue argument(s) to pass to the function.
+	  
+	  @param this_object An optional JavaScript object to use as
+	  "this". The default value is this JavaScript object.
+	  
+	  @result Return the function's return value.
+	  
+	  @throws std::runtime_error if either this JavaScript object can't
+	  be called as a function, or calling the function itself threw a
+	  JavaScript exception.
+	*/
+
+	virtual JSValue operator()(                                                            ) final { return CallAsFunction(                      ); }
+	virtual JSValue operator()(JSValue                      argument                       ) final { return CallAsFunction(argument              ); }
+	virtual JSValue operator()(JSString                     argument                       ) final { return CallAsFunction(argument              ); }
+	virtual JSValue operator()(const std::vector<JSValue>&  arguments                      ) final { return CallAsFunction(arguments             ); }
+	virtual JSValue operator()(const std::vector<JSString>& arguments                      ) final { return CallAsFunction(arguments             ); }
+
+	virtual JSValue operator()(                                        JSObject this_object) final { return CallAsFunction(           this_object); }
+	virtual JSValue operator()(JSValue                      argument , JSObject this_object) final { return CallAsFunction(argument , this_object); }
+	virtual JSValue operator()(JSString                     argument , JSObject this_object) final { return CallAsFunction(argument , this_object); }
+	virtual JSValue operator()(const std::vector<JSValue>&  arguments, JSObject this_object) final { return CallAsFunction(arguments, this_object); }
+	virtual JSValue operator()(const std::vector<JSString>& arguments, JSObject this_object) final { return CallAsFunction(arguments, this_object); }
+
+	/*!
+	  @method
+	  
 	  @abstract Return this JavaScript object's prototype.
 	  
 	  @result This JavaScript object's prototype.
 	*/
-	virtual JSValue GetPrototype() const final {
-		return JSValue(get_context(), JSObjectGetPrototype(get_context(), js_object_ref__));
-	}
+	virtual JSValue GetPrototype() const final;
 	
 	/*!
 	  @method
@@ -247,56 +239,41 @@ class JSObject : public JSValue {
 	  @param value The value to set as this JavaScript object's
 	  prototype.
 	*/
-	virtual void SetPrototype(const JSValue& js_value) final {
-		JSObjectSetPrototype(get_context(), js_object_ref__, js_value);
-	}
+	virtual void SetPrototype(const JSValue& js_value) final;
 	
-	virtual ~JSObject() {
-		JSValueUnprotect(get_context(), js_object_ref__);
-	}
+	JSObject() = delete;
+	~JSObject() = default;
+	JSObject(const JSObject&) = default;
+	JSObject(JSObject&&) = default;
+	JSObject& operator=(const JSObject&) = default;
+	JSObject& operator=(JSObject&&) = default;
 	
-	// Copy constructor.
-	JSObject(const JSObject& rhs)
-			: JSValue(rhs)
-			, js_object_ref__(rhs.js_object_ref__) {
-		JSValueProtect(get_context(), js_object_ref__);
-	}
-	
-	// Move constructor.
-	JSObject(JSObject&& rhs)
-			: JSValue(std::move(rhs))
-			, js_object_ref__(rhs.js_object_ref__) {
-		JSValueProtect(get_context(), js_object_ref__);
-	}
-	
-#ifdef JAVASCRIPTCORECPP_MOVE_SEMANTICS_ENABLE
-  JSObject& JSObject::operator=(const JSObject&) = default;
-  JSObject& JSObject::operator=(JSObject&&) = default;
-#endif
-
-	// Create a copy of another JSObject by assignment. This is a unified
-	// assignment operator that fuses the copy assignment operator,
-	// X& X::operator=(const X&), and the move assignment operator,
-	// X& X::operator=(X&&);
-	JSObject& operator=(JSObject rhs) {
-		JSValue::operator=(rhs);
-		swap(*this, rhs);
-		return *this;
-	}
-	
-	friend void swap(JSObject& first, JSObject& second) noexcept {
-		// enable ADL (not necessary in our case, but good practice)
-		using std::swap;
-		
-		// by swapping the members of two classes,
-		// the two classes are effectively swapped
-		swap(first.js_object_ref__, second.js_object_ref__);
-	}
-
  protected:
 	
-	explicit JSObject(const JSContext& js_context, const JSClass& js_class = {}, void* private_data = nullptr);
+	// Only JSContext and JSNativeObject use the following constructor.
+	friend class JSContext;
 
+	JSObject(const JSContext& js_context, const JSClass& js_class, void* private_data = nullptr);
+	
+	// In addition to derived classes, these classes need access to the
+	// following JSObject constructor.
+	friend JSValue;              // for operator JSObject()
+	template<typename T>
+	friend class JSNativeClass;  // for static functions
+	
+	// For interoperability with the JavaScriptCore C API.
+	JSObject(const JSContext& js_context, JSObjectRef js_object_ref)
+			: JSValue(js_context, js_object_ref) {
+	}
+	
+	// These classes need access to operator JSObjectRef().
+	friend class JSPropertyNameArray;
+
+	// For interoperability with the JavaScriptCore C API.
+	operator JSObjectRef() const {
+		return const_cast<JSObjectRef>(operator JSValueRef());
+	}
+	
 	/*!
 	  @method
 	  
@@ -339,9 +316,7 @@ class JSObject : public JSValue {
 	  @result A void* that is this object's private data, if the object
 	  has private data, otherwise nullptr.
 	*/
-	virtual void* GetPrivate() const {
-		return JSObjectGetPrivate(js_object_ref__);
-	}
+	virtual void* GetPrivate() const;
 	
 	/*!
 	  @method
@@ -355,9 +330,7 @@ class JSObject : public JSValue {
 	  
 	  @result true if this object can store private data.
 	*/
-	virtual bool SetPrivate(void* data) {
-		return JSObjectSetPrivate(js_object_ref__, data);
-	}
+	virtual bool SetPrivate(void* data);
 
  private:
 
@@ -381,53 +354,6 @@ class JSObject : public JSValue {
 	  JavaScript for...in loops.
 	*/
 	virtual void GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const final;
-
-	// Only a JSContext can create a JSObject.
-	friend class JSContext;
-
-	// The JSNativeClass static functions need access to the following
-	// JSObject constructor.
-	template<typename T>
-	friend class JSNativeClass;
-
-	// For interoperability with the JavaScriptCore C API.
-	explicit JSObject(const JSContext& js_context, JSObjectRef js_object_ref);
-
-	// For interoperability with the JavaScriptCore C API.
-	operator JSObjectRef() const {
-		return js_object_ref__;
-	}
-	
-	// JSValue::operator JSObject() needs access to operator
-	// JSObjectRef().
-	friend class JSValue;
-	
-	// The JSPropertyNameArray constructor needs access to operator
-	// JSObjectRef().
-	friend class JSPropertyNameArray;
-
-
-	// JSArray needs access to js_object_ref__ to change its value.
-	friend class JSArray;
-	
-	// JSDate needs access to js_object_ref__ to change its value.
-	friend class JSDate;
-	
-	// JSError needs access to js_object_ref__ to change its value.
-	friend class JSError;
-
-	// JSRegExp needs access to js_object_ref__ to change its value.
-	friend class JSRegExp;
-
-	// JSDate needs access to js_object_ref__ to change its value.
-	friend class JSFunction;
-
-	// JSNativeObject need access to the JSObject constructor and access
-	// to js_object_ref__ to change its value.
-	template<typename T>
-	friend class JSNativeObject;
-
-	JSObjectRef js_object_ref__ { nullptr };
 };
 
 } // namespace JavaScriptCoreCPP {

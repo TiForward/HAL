@@ -8,6 +8,7 @@
  */
 
 #include "JavaScriptCoreCPP/JSFunction.hpp"
+#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 #include <vector>
 #include <algorithm>
 #include <stdexcept>
@@ -15,28 +16,29 @@
 
 namespace JavaScriptCoreCPP {
 
-JSFunction::JSFunction(const JSContext& js_context, const JSString& body, const std::vector<JSString>& parameter_names, const JSString& function_name, const JSString& source_url, int starting_line_number) : JSObject(js_context) {
+JSFunction::JSFunction(const JSContext& js_context, const JSString& body, const std::vector<JSString>& parameter_names, const JSString& function_name, const JSString& source_url, int starting_line_number)
+		: JSObject(js_context, MakeFunction(js_context, body, parameter_names, function_name, source_url, starting_line_number)) {
+}
+
+JSObjectRef JSFunction::MakeFunction(const JSContext& js_context, const JSString& body, const std::vector<JSString>& parameter_names, const JSString& function_name, const JSString& source_url, int starting_line_number) {
 	JSValueRef exception { nullptr };
 	const JSStringRef source_url_ref = (source_url.length() > 0) ? static_cast<JSStringRef>(source_url) : nullptr;
 	JSObjectRef js_object_ref = nullptr;
 	if (!parameter_names.empty()) {
-		std::vector<JSStringRef> parameter_name_array;
-		std::transform(parameter_names.begin(), parameter_names.end(), std::back_inserter(parameter_name_array), [](const JSString& js_string) { return static_cast<JSStringRef>(js_string); });
+		std::vector<JSStringRef> parameter_name_array = detail::ToJSStringRefVector(parameter_names);
 		js_object_ref = JSObjectMakeFunction(js_context, function_name, static_cast<unsigned>(parameter_name_array.size()), &parameter_name_array[0], body, source_url_ref, starting_line_number, &exception);
 	} else {
 		js_object_ref = JSObjectMakeFunction(js_context, function_name, 0, nullptr, body, source_url_ref, starting_line_number, &exception);
 	}
 	
 	if (exception) {
-		// assert(!js_object_ref);
-		static const std::string log_prefix { "MDL: JSFunction: " };
-		const std::string message = static_cast<std::string>(JSValue(js_context, exception));
-		std::clog << log_prefix << " [ERROR] " << message << std::endl;
-		throw std::invalid_argument(message);
+		// If this assert fails then we need to JSValueUnprotect
+		// js_object_ref.
+		assert(!js_object_ref);
+		detail::ThrowRuntimeError("JSFunction", JSValue(js_context, exception));
 	}
-	
-	JSValueUnprotect(js_context, js_object_ref__);
-	js_object_ref__ = js_object_ref;
+
+	return js_object_ref;
 }
 
 } // namespace JavaScriptCoreCPP {

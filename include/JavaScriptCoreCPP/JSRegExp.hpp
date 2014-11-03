@@ -34,6 +34,8 @@ class JSRegExp final : public JSObject {
 	friend JSContext;
 
 	JSRegExp(const JSContext& js_context, const std::vector<JSValue>& arguments);
+
+	static JSObjectRef MakeRegExp(const JSContext& js_context, const std::vector<JSValue>& arguments);
 };
 
 } // namespace JavaScriptCoreCPP {

@@ -9,6 +9,9 @@
 
 #include "JavaScriptCoreCPP/JSValue.hpp"
 
+#include "JavaScriptCoreCPP/JSContext.hpp"
+#include "JavaScriptCoreCPP/JSString.hpp"
+
 #include "JavaScriptCoreCPP/JSUndefined.hpp"
 #include "JavaScriptCoreCPP/JSNull.hpp"
 #include "JavaScriptCoreCPP/JSBoolean.hpp"
@@ -21,28 +24,86 @@
 #include "JavaScriptCoreCPP/JSFunction.hpp"
 #include "JavaScriptCoreCPP/JSRegExp.hpp"
 
-#include "JSUtil.hpp"
-#include <stdexcept>
+#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
+
 #include <sstream>
 #include <cassert>
+
+#include <JavaScriptCore/JavaScript.h>
+
+#undef JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD
+#ifdef JAVASCRIPTCORECPP_THREAD_SAFE
+#define JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD std::lock_guard<JAVASCRIPTCORECPP_JSVALUE_MUTEX_TYPE> JAVASCRIPTCORECPP_JSVALUE_MUTEX_NAME_PREFIX##_lock(JAVASCRIPTCORECPP_JSVALUE_MUTEX_NAME);
+#else
+#define JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD
+#endif  // JAVASCRIPTCORECPP_THREAD_SAFE
 
 namespace JavaScriptCoreCPP {
 
 JSValue::JSValue(const JSContext& js_context, const JSString& js_string, bool parse_as_json) : js_context__(js_context) {
-	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
-		if (parse_as_json) {
-		JSValueRef js_value_ref = JSValueMakeFromJSONString(js_context, js_string);
-		if (!js_value_ref) {
-			static const std::string log_prefix { "MDL: JSONStringToJSValue: " };
-			std::ostringstream os;
-			os << "Input is not a valid JSON string: " << js_string;
-			const std::string message = os.str();
-			std::clog << log_prefix << " [ERROR] " << message << std::endl; 
-			throw std::invalid_argument(message);
+	if (parse_as_json) {
+		js_value_ref__ = JSValueMakeFromJSONString(js_context, js_string);
+		if (!js_value_ref__) {
+			const std::string message = "Input is not a valid JSON string: " + to_string(js_string);
+			detail::ThrowRuntimeError("JSValue", message);
 		}
 	} else {
 		js_value_ref__ = JSValueMakeString(js_context__, js_string);
 	}
+}
+
+// For interoperability with the JavaScriptCore C API.
+JSValue::JSValue(const JSContext& js_context, JSValueRef js_value_ref)
+		: js_context__(js_context)
+		, js_value_ref__(js_value_ref)  {
+	assert(js_value_ref__);
+	JSValueProtect(js_context__, js_value_ref__);
+}
+
+JSValue::~JSValue() {
+	JSValueUnprotect(js_context__, js_value_ref__);
+}
+
+JSValue::JSValue(const JSValue& rhs)
+		: js_context__(rhs.js_context__)
+		, js_value_ref__(rhs.js_value_ref__) {
+	JSValueProtect(js_context__, js_value_ref__);
+}
+
+JSValue::JSValue(JSValue&& rhs)
+		: js_context__(rhs.js_context__)
+		, js_value_ref__(rhs.js_value_ref__) {
+	JSValueProtect(js_context__, js_value_ref__);
+}
+
+// Create a copy of another JSValue by assignment. This is a unified
+// assignment operator that fuses the copy assignment operator
+//
+// X& X::operator=(const X&)
+//
+// and the move assignment operator
+//
+// X& X::operator=(X&&);
+JSValue& JSValue::operator=(JSValue rhs) {
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
+	// JSValues can only be copied between contexts within the same
+	// context group.
+	if (js_context_group__ != rhs.js_context_group__) {
+		detail::ThrowRuntimeError("JSValue", "JSValues must belong to JSContexts within the same JSContextGroup to be shared and exchanged.");
+	}
+	
+	swap(rhs);
+	return *this;
+}
+  
+void JSValue::swap(JSValue& other) noexcept {
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
+	using std::swap;
+	
+	// By swapping the members of two classes, the two classes are
+	// effectively swapped.
+	swap(js_context__  , other.js_context__);
+	swap(js_value_ref__, other.js_value_ref__);
 }
 
 JSString JSValue::ToJSONString(unsigned indent) {
@@ -50,35 +111,10 @@ JSString JSValue::ToJSONString(unsigned indent) {
 	JSValueRef exception { nullptr };
 	JSStringRef js_string_ref = JSValueCreateJSONString(js_context__, js_value_ref__, indent, &exception);
 	if (exception) {
-		// assert(!js_string_ref);
-		static const std::string log_prefix { "MDL: JSValueCreateJSONString: " };
-		std::ostringstream os;
-		os << "JSValue could not be serialized to a JSON string: " << JSValue(js_context__, exception);
-		const std::string message = os.str();
-		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
-		throw std::logic_error(message);
-	}
-	
-	JSString js_string;
-	if (js_string_ref) {
-		js_string = JSString(js_string_ref);
-		JSStringRelease(js_string_ref);
-	}
-	
-	return js_string;
-}
-
-JSValue::operator JSString() const {
-	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
-	JSValueRef exception { nullptr };
-	JSStringRef js_string_ref = JSValueToStringCopy(js_context__, js_value_ref__, &exception);
-	if (exception) {
-		static const std::string log_prefix { "MDL: JSValue::operator JSString() const: " };
-		std::ostringstream os;
-		os << "JSValue could not be converted to a JSString: "<< JSValue(js_context__, exception);
-		const std::string message = os.str();
-		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
-		throw std::logic_error(message);
+		// If this assert fails then we need to JSStringRelease
+		// js_string_ref.
+		assert(!js_string_ref);
+		detail::ThrowRuntimeError("JSValue", JSValue(js_context__, exception));
 	}
 	
 	assert(js_string_ref);
@@ -88,7 +124,28 @@ JSValue::operator JSString() const {
 	return js_string;
 }
 
+JSValue::operator JSString() const {
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
+	JSValueRef exception { nullptr };
+	JSStringRef js_string_ref = JSValueToStringCopy(js_context__, js_value_ref__, &exception);
+	if (exception) {
+		detail::ThrowRuntimeError("JSValue", JSValue(js_context__, exception));
+	}
+	
+	assert(js_string_ref);
+	JSString js_string(js_string_ref);
+	JSStringRelease(js_string_ref);
+	
+	return js_string;
+}
+
+JSValue::operator bool() const {
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
+	return JSValueToBoolean(js_context__, js_value_ref__);
+}
+
 JSValue::operator JSBoolean() const {
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
 	return js_context__.CreateBoolean(operator bool());
 }
 
@@ -98,13 +155,7 @@ JSValue::operator double() const {
 	const double result = JSValueToNumber(js_context__, js_value_ref__, &exception);
 	
 	if (exception) {
-		static const std::string log_prefix { "MDL: JSValue::operator JSNumber(): " };
-		std::ostringstream os;
-		os << "JSValue could not be converted to a JSNumber: "<< JSValue(js_context__, exception);
-		const std::string message = os.str();
-		std::clog << log_prefix << " [WARN] " << message << std::endl;
-		//std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
-		//throw std::logic_error(message);
+		detail::ThrowRuntimeError("JSValue", JSValue(js_context__, exception));
 	}
 	
 	return result;
@@ -115,6 +166,7 @@ JSValue::operator int32_t() const {
 }
 
 JSValue::operator JSNumber() const {
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
 	return js_context__.CreateNumber(operator double());
 }
 
@@ -124,22 +176,18 @@ JSValue::operator JSObject() const {
 	JSObjectRef js_object_ref = JSValueToObject(js_context__, js_value_ref__, &exception);
 	
 	if (exception) {
-		static const std::string log_prefix { "MDL: JSValue::operator JSObject(): " };
-		std::ostringstream os;
-		os << "JSValue could not be converted to a JSObject: "<< JSValue(js_context__, exception);
-		const std::string message = os.str();
-		std::clog << log_prefix << " [ERROR] " << message << std::endl;
-		throw std::runtime_error(message);
+		// If this assert fails then we need to JSValueUnprotect
+		// js_object_ref.
+		assert(!js_object_ref);
+		detail::ThrowRuntimeError("JSValue", JSValue(js_context__, exception));
 	}
 	
 	assert(js_object_ref);
-	JSObject js_object(js_context__, js_object_ref);
-	JSValueUnprotect(js_context__, js_object_ref);
-	
-	return js_object;
+	return JSObject(js_context__, js_object_ref);
 }
 
 JSValue::Type JSValue::GetType() const {
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
 	const JSType js_type = JSValueGetType(js_context__, js_value_ref__);
 	switch (js_type) {
 		case kJSTypeUndefined:
@@ -167,11 +215,44 @@ JSValue::Type JSValue::GetType() const {
 			break;
 			
 		default:
-			static const std::string log_prefix { "MDL: JSValue::get_type() const: " };
-			const std::string message = "JSValue could not decode JSType = " + std::to_string(js_type);
-			std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
-			throw std::logic_error(message);
+			const std::string message = "Could not decode JSType = " + std::to_string(js_type);
+			detail::ThrowLogicError("JSValue", message);
 	}
+}
+
+bool JSValue::IsUndefined() const {
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
+	return JSValueIsUndefined(js_context__, js_value_ref__);
+}
+
+bool IsNull() const {
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
+	return JSValueIsNull(js_context__, js_value_ref__);
+}
+
+bool IsBoolean() const {
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
+	return JSValueIsBoolean(js_context__, js_value_ref__);
+}
+
+bool IsNumber() const {
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
+	return JSValueIsNumber(js_context__, js_value_ref__);
+}
+
+bool IsString() const {
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
+	return JSValueIsString(js_context__, js_value_ref__);
+}
+
+bool IsObject() const {
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
+	return JSValueIsObject(js_context__, js_value_ref__);
+}
+
+bool IsObjectOfClass(const JSClass& js_class) const {
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
+	return JSValueIsObjectOfClass(js_context__, js_value_ref__, js_class);
 }
 
 bool JSValue::IsInstanceOfConstructor(const JSObject& constructor) const {
@@ -179,12 +260,7 @@ bool JSValue::IsInstanceOfConstructor(const JSObject& constructor) const {
 	JSValueRef exception { nullptr };
 	const bool result = JSValueIsInstanceOfConstructor(js_context__, js_value_ref__, constructor, &exception);
 	if (exception) {
-		static const std::string log_prefix { "MDL: JSValue::IsInstanceOfConstructor:" };
-		std::ostringstream os;
-		os << "JSValue caught exception during JSValueIsInstanceOfConstructor: " << JSValue(js_context__, exception);
-		const std::string message = os.str();
-		std::clog << log_prefix << " [DEBUG] " << message << std::endl;
-		assert(result == false);
+		detail::ThrowRuntimeError("JSValue", JSValue(js_context__, exception));
 	}
 	
 	return result;
@@ -195,11 +271,7 @@ bool JSValue::IsEqualWithTypeCoercion(const JSValue& rhs) const {
 	JSValueRef exception { nullptr };
 	const bool result = JSValueIsEqual(js_context__, js_value_ref__, rhs.js_value_ref__, &exception);
 	if (exception) {
-		static const std::string log_prefix { "MDL: IsEqualWithTypeCoercion: " };
-		std::ostringstream os;
-		os << "caught exception: " << JSValue(js_context__, exception);
-		const std::string message = os.str();
-		std::clog << log_prefix << " [ERROR] " << message << std::endl; 
+		detail::ThrowRuntimeError("JSValue", JSValue(js_context__, exception));
 	}
 	
 	return result;
@@ -208,40 +280,44 @@ bool JSValue::IsEqualWithTypeCoercion(const JSValue& rhs) const {
 std::string to_string(const JSValue::Type& js_value_type) {
 	switch (js_value_type) {
 		case JSValue::Type::Undefined:
-		return "Undefined";
-		break;
-
+			return "Undefined";
+			break;
+			
 		case JSValue::Type::Null:
-		return "Null";
-		break;
-
+			return "Null";
+			break;
+			
 		case JSValue::Type::Boolean:
-		return "Boolean";
-		break;
-
+			return "Boolean";
+			break;
+			
 		case JSValue::Type::Number:
-		return "Number";
-		break;
-
+			return "Number";
+			break;
+			
 		case JSValue::Type::String:
-		return "String";
-		break;
-
+			return "String";
+			break;
+			
 		case JSValue::Type::Object:
-		return "Object";
-		break;
-
+			return "Object";
+			break;
+			
 		default:
-			static const std::string log_prefix { "MDL: to_string(JSValue::Type): " };
 			std::ostringstream os;
-			os << log_prefix
-			   << "Could not map JSValue::Type with value "
+			os << "Could not map JSValue::Type with value "
 			   << static_cast<std::underlying_type<JSValue::Type>::type>(js_value_type)
 			   << " to a std::string.";
-			const std::string message = os.str();
-			std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl; 
-			throw std::logic_error(message);
+			detail::ThrowLogicError("JSValue", os.str());
 	}
+}
+
+bool operator==(const JSValue& lhs, const JSValue& rhs) {
+	return JSValueIsStrictEqual(lhs.get_context(), lhs, rhs);
+}
+
+bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs) {
+	return lhs.IsEqualWithTypeCoercion(rhs);
 }
 
 } // namespace JavaScriptCoreCPP {

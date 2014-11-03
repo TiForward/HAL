@@ -8,6 +8,7 @@
  */
 
 #include "JavaScriptCoreCPP/JSObject.hpp"
+
 #include "JavaScriptCoreCPP/JSClass.hpp"
 #include "JavaScriptCoreCPP/JSPropertyNameAccumulator.hpp"
 #include "JavaScriptCoreCPP/JSPropertyNameArray.hpp"
@@ -19,6 +20,7 @@
 
 #include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 
+#include <algorithm>
 #include <type_traits>
 #include <sstream>
 #include <limits>
@@ -29,57 +31,106 @@ JSObject::JSObject(const JSContext& js_context, const JSClass& js_class, void* p
 		: JSObject(js_context, JSObjectMake(js_context, js_class, private_data)) {
 }
 
-JSObject::JSObject(const JSContext& js_context, JSObjectRef js_object_ref)
-		: JSValue(js_context, js_object_ref)
-		, js_object_ref__(js_object_ref) {
-	
-	static const std::string log_prefix { "MDL: JSObject::JSObject(const JSContext& js_context, JSObjectRef js_object_ref): " };
-	
-	if (!js_object_ref__) {
-		const std::string message = "js_object_ref can not be nullptr.";
-		std::clog << log_prefix << " [LOGIC ERROR] " << message << std::endl;
-		throw std::logic_error(message);
+bool JSObject::HasProperty(const JSString& property_name) const {
+	return JSObjectHasProperty(get_context(), *this, property_name);
+}
+
+JSValue JSObject::GetProperty(const JSString& property_name) const {
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
+	JSValueRef exception { nullptr };
+	JSValueRef js_value_ref = JSObjectGetProperty(get_context(), *this, property_name, &exception);
+	if (exception) {
+		// If this assert fails then we need to JSValueUnprotect
+		// js_value_ref.
+		assert(!js_value_ref);
+		detail::ThrowRuntimeError("JSObject", JSValue(get_context(), exception));
 	}
 	
-	JSValueProtect(js_context, js_object_ref__);
+	assert(js_value_ref);
+	return JSValue(get_context(), js_value_ref);
+}
+
+JSValue JSObject::GetProperty(unsigned property_index) const {
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
+	JSValueRef exception { nullptr };
+	JSValueRef js_value_ref = JSObjectGetPropertyAtIndex(get_context(), *this, property_index, &exception);
+	if (exception) {
+		// If this assert fails then we need to JSValueUnprotect
+		// js_value_ref.
+		assert(!js_value_ref);
+		detail::ThrowRuntimeError("JSObject", JSValue(get_context(), exception));
+	}
+	
+	assert(js_value_ref);
+	return JSValue(get_context(), js_value_ref);
+}
+
+void JSObject::SetProperty(const JSString& property_name, const JSValue& property_value, const std::unordered_set<JSPropertyAttribute>& attributes) {
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
+
+	JSValueRef exception { nullptr };
+	JSObjectSetProperty(get_context(), *this, property_name, property_value, detail::ToJSPropertyAttributes(attributes), &exception);
+	if (exception) {
+		detail::ThrowRuntimeError("JSObject", JSValue(get_context(), exception));
+	}
+}
+
+void JSObject::SetProperty(unsigned property_index, const JSValue& property_value) {
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
+
+	JSValueRef exception { nullptr };
+	JSObjectSetPropertyAtIndex(get_context(), *this, property_index, property_value, &exception);
+	if (exception) {
+		detail::ThrowRuntimeError("JSObject", JSValue(get_context(), exception));
+	}
+}
+
+bool JSObject::DeleteProperty(const JSString& property_name) {
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
+	
+	JSValueRef exception { nullptr };
+	const bool result = JSObjectDeleteProperty(get_context(), *this, property_name, &exception);
+	if (exception) {
+		detail::ThrowRuntimeError("JSObject", JSValue(get_context(), exception));
+	}
+	
+	return result;
+}
+
+JSPropertyNameArray JSObject::CopyPropertyNames() const {
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
+	return JSPropertyNameArray(*this);
+}
+
+bool JSObject::IsConstructor() const {
+	return JSObjectIsConstructor(get_context(), *this);
 }
 
 JSObject JSObject::CallAsConstructor(                                      ) { return CallAsConstructor(std::vector<JSValue>  {}        ); }
 JSObject JSObject::CallAsConstructor(JSValue                       argument) { return CallAsConstructor(std::vector<JSValue>  {argument}); }
 JSObject JSObject::CallAsConstructor(JSString                      argument) { return CallAsConstructor(std::vector<JSString> {argument}); }
-JSObject JSObject::CallAsConstructor(const std::vector<JSString>& arguments) {
-	std::vector<JSValue> arguments_array;
-	std::transform(arguments.begin(),
-	               arguments.end(),
-	               std::back_inserter(arguments_array),
-	               [this](const JSString& js_string) { return get_context().CreateString(js_string); });
-	return CallAsConstructor(arguments_array);
-}
-
-JSObject JSObject::CallAsConstructor(const std::vector<JSValue>& arguments) {
+JSObject JSObject::CallAsConstructor(const std::vector<JSString>& arguments) { return CallAsConstructor(to_vector(arguments)            ); }
+JSObject JSObject::CallAsConstructor(const std::vector<JSValue>&  arguments) {
 	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
-	static const std::string log_prefix { "MDL: JSObject::CallAsConstructor: " };
 	
 	if (!IsConstructor()) {
-		const std::string message = "This object is not a constructor.";
-		std::clog << log_prefix << " [ERROR] " << message << std::endl;
-		throw std::runtime_error(message);
+		detail::ThrowRuntimeError("JSObject", "This JavaScript object is not a constructor.");
 	}
 	
 	JSValueRef exception { nullptr };
 	JSObjectRef js_object_ref = nullptr;
 	if (!arguments.empty()) {
-		std::vector<JSValueRef> arguments_array;
-		std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [](const JSValue& js_value) { return static_cast<JSValueRef>(js_value); });
-		js_object_ref = JSObjectCallAsConstructor(get_context(), js_object_ref__, arguments_array.size(), &arguments_array[0], &exception);
+		const auto arguments_array = ToJSValueRefVector(arguments);
+		js_object_ref = JSObjectCallAsConstructor(get_context(), *this, arguments_array.size(), &arguments_array[0], &exception);
 	} else {
-		js_object_ref = JSObjectCallAsConstructor(get_context(), js_object_ref__, 0, nullptr, &exception);
+		js_object_ref = JSObjectCallAsConstructor(get_context(), *this, 0, nullptr, &exception);
 	}
 	
 	if (exception) {
-		const auto message = static_cast<std::string>(JSValue(get_context(), exception));
-		std::clog << log_prefix << " [ERROR] " << message << std::endl;
-		throw std::runtime_error(message);
+		// If this assert fails then we need to JSValueUnprotect
+		// js_object_ref.
+		assert(!js_object_ref);
+		detail::ThrowRuntimeError("JSObject", JSValue(get_context(), exception));
 	}
 
 	// postcondition
@@ -87,178 +138,64 @@ JSObject JSObject::CallAsConstructor(const std::vector<JSValue>& arguments) {
 	return JSObject(get_context(), js_object_ref);
 }
 
-JSValue JSObject::CallAsFunction(                                      ) { return CallAsFunction(std::vector<JSValue>()                 ); }
-JSValue JSObject::CallAsFunction(JSValue                      argument ) { return CallAsFunction(std::vector<JSValue>  {argument}       ); }
-JSValue JSObject::CallAsFunction(JSString                     argument ) { return CallAsFunction(std::vector<JSString> {argument}       ); }
-JSValue JSObject::CallAsFunction(const std::vector<JSValue>&  arguments) { return CallAsFunction(arguments                       , *this); }
-JSValue JSObject::CallAsFunction(const std::vector<JSString>& arguments) {
-	std::vector<JSValue> arguments_array;
-	std::transform(arguments.begin(),
-	               arguments.end(),
-	               std::back_inserter(arguments_array),
-	               [this](const JSString& js_string) { return JSValue(get_context().CreateString(js_string)); });
-	return CallAsFunction(arguments_array);
+bool JSObject::IsFunction() const {
+	return JSObjectIsFunction(get_context(), *this);
 }
 
+JSValue JSObject::CallAsFunction(                                                            ) { return CallAsFunction(std::vector<JSValue>()                       ); }
+JSValue JSObject::CallAsFunction(JSValue                      argument                       ) { return CallAsFunction(std::vector<JSValue>  {argument}             ); }
+JSValue JSObject::CallAsFunction(JSString                     argument                       ) { return CallAsFunction(std::vector<JSString> {argument}             ); }
+JSValue JSObject::CallAsFunction(const std::vector<JSString>& arguments                      ) { return CallAsFunction(to_vector(arguments)                         ); }
+JSValue JSObject::CallAsFunction(const std::vector<JSValue>&  arguments                      ) { return CallAsFunction(arguments                       , *this      ); }
 JSValue JSObject::CallAsFunction(                                        JSObject this_object) { return CallAsFunction(std::vector<JSValue>()          , this_object); }
 JSValue JSObject::CallAsFunction(JSValue                      argument , JSObject this_object) { return CallAsFunction(std::vector<JSValue>  {argument}, this_object); }
 JSValue JSObject::CallAsFunction(JSString                     argument , JSObject this_object) { return CallAsFunction(std::vector<JSString> {argument}, this_object); }
-JSValue JSObject::CallAsFunction(const std::vector<JSString>& arguments, JSObject this_object) {
-	std::vector<JSValue> arguments_array;
-	std::transform(arguments.begin(),
-	               arguments.end(),
-	               std::back_inserter(arguments_array),
-	               [this](const JSString& js_string) { return get_context().CreateString(js_string); });
-	return CallAsFunction(arguments_array, this_object);
-}
-
-JSValue JSObject::CallAsFunction(const std::vector<JSValue>& arguments, JSObject this_object) {
+JSValue JSObject::CallAsFunction(const std::vector<JSString>& arguments, JSObject this_object) { return CallAsFunction(to_vector(arguments)            , this_object); }
+JSValue JSObject::CallAsFunction(const std::vector<JSValue>&  arguments, JSObject this_object) {
 	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
-	static const std::string log_prefix { "MDL: JSObject::CallAsFunction: " };
 	
 	if (!IsFunction()) {
-		const std::string message = "This object is not a function.";
-		std::clog << log_prefix << " [ERROR] " << message << std::endl;
-		throw std::runtime_error(message);
+		detail::ThrowRuntimeError("JSObject", "This JavaScript object is not a function.");
 	}
 	
 	JSValueRef exception { nullptr };
 	JSValueRef js_value_ref { nullptr };
 	if (!arguments.empty()) {
-		std::vector<JSValueRef> arguments_array;
-		std::transform(arguments.begin(), arguments.end(), std::back_inserter(arguments_array), [](const JSValue& js_value) { return static_cast<JSValueRef>(js_value); });
-		js_value_ref = JSObjectCallAsFunction(get_context(), js_object_ref__, this_object, arguments_array.size(), &arguments_array[0], &exception);
+		const auto arguments_array = ToJSValueRefVector(arguments);
+		js_value_ref = JSObjectCallAsFunction(get_context(), *this, this_object, arguments_array.size(), &arguments_array[0], &exception);
 	} else {
-		js_value_ref = JSObjectCallAsFunction(get_context(), js_object_ref__, this_object, 0, nullptr, &exception);
+		js_value_ref = JSObjectCallAsFunction(get_context(), *this, this_object, 0, nullptr, &exception);
 	}
 	
 	if (exception) {
-		const auto message = static_cast<std::string>(JSValue(get_context(), exception));
-		std::clog << log_prefix << " [ERROR] " << message << std::endl;
-		throw std::runtime_error(message);
+		// If this assert fails then we need to JSValueUnprotect
+		// js_value_ref.
+		assert(!js_value_ref);
+		detail::ThrowRuntimeError("JSObject", JSValue(get_context(), exception));
 	}
 	
 	assert(js_value_ref);
 	return JSValue(get_context(), js_value_ref);
 }
 
-JSValue JSObject::GetProperty(const JSString& property_name) const {
-	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
-	static const std::string log_prefix { "MDL: JSObject::GetProperty: " };
-	
-	JSValueRef exception { nullptr };
-	JSValueRef js_value_ref = JSObjectGetProperty(get_context(), js_object_ref__, property_name, &exception);
-	if (exception) {
-		std::ostringstream os;
-		os << "Caught exception getting property with name \"" << property_name << "\": " << JSValue(get_context(), exception);
-		const std::string message = os.str();
-		std::clog << log_prefix << " [ERROR] " << message << std::endl;
-		
-		assert(!js_value_ref);
-		
-		throw std::runtime_error(message);
-	}
-	
-	if (js_value_ref) {
-		JSValue js_value(get_context(), js_value_ref);
-		return js_value;
-	}
-	
-	return get_context().CreateUndefined();
+JSValue JSObject::GetPrototype() const {
+	return JSValue(get_context(), JSObjectGetPrototype(get_context(), *this));
 }
 
-JSValue JSObject::GetProperty(unsigned property_index) const {
-	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
-	static const std::string log_prefix { "MDL: JSObject::GetProperty: " };
-	
-	JSValueRef exception { nullptr };
-	JSValueRef js_value_ref = JSObjectGetPropertyAtIndex(get_context(), js_object_ref__, property_index, &exception);
-	if (exception) {
-		std::ostringstream os;
-		os << "Caught exception getting property at index \"" << property_index << "\": " << JSValue(get_context(), exception);
-		const std::string message = os.str();
-		std::clog << log_prefix << " [ERROR] " << message << std::endl;
-
-		assert(!js_value_ref);
-		
-		throw std::runtime_error(message);
-	}
-	
-	if (js_value_ref) {
-		JSValue js_value(get_context(), js_value_ref);
-		return js_value;
-	}
-	
-	return get_context().CreateUndefined();
+void JSObject::SetPrototype(const JSValue& js_value) {
+	JSObjectSetPrototype(get_context(), *this, js_value);
 }
 
-void JSObject::SetProperty(const JSString& property_name, const JSValue& property_value, const std::unordered_set<JSPropertyAttribute>& attributes) {
-	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
-	static const std::string log_prefix { "MDL: JSObject::SetProperty: " };
-	
-	JSValueRef exception { nullptr };
-	JSObjectSetProperty(get_context(), js_object_ref__, property_name, property_value, detail::ToJSPropertyAttributes(attributes), &exception);
-	if (exception) {
-		std::ostringstream os;
-		os << "Caught exception setting property with name \""
-		   << property_name
-		   << "\" to value \""
-		   << property_value
-		   << "\": "
-		   << JSValue(get_context(), exception);
-		const std::string message = os.str();
-		std::clog << log_prefix << " [ERROR] " << message << std::endl;
-
-		throw std::runtime_error(message);
-	}
+void* JSObject::GetPrivate() const {
+	return JSObjectGetPrivate(*this);
 }
 
-void JSObject::SetProperty(unsigned property_index, const JSValue& property_value) {
-	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
-	static const std::string log_prefix { "MDL: JSObject::SetPropertyAtIndex: " };
-	
-	JSValueRef exception { nullptr };
-	JSObjectSetPropertyAtIndex(get_context(), js_object_ref__, property_index, property_value, &exception);
-	if (exception) {
-		std::ostringstream os;
-		os << "Caught exception setting property with index \""
-		   << property_index
-		   << "\" to value \""
-		   << property_value
-		   << "\": "
-		   << JSValue(get_context(), exception);
-		const std::string message = os.str();
-		std::clog << log_prefix << " [ERROR] " << message << std::endl;
-
-		throw std::runtime_error(message);
-	}
-}
-
-bool JSObject::DeleteProperty(const JSString& property_name) {
-	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
-	static const std::string log_prefix { "MDL: JSObject::DeleteProperty: " };
-	
-	JSValueRef exception { nullptr };
-	const bool result = JSObjectDeleteProperty(get_context(), js_object_ref__, property_name, &exception);
-	if (exception) {
-		std::ostringstream os;
-		os << "Caught exception deleting property with name \""
-		   << property_name << "\": "
-		   << JSValue(get_context(), exception);
-		const std::string message = os.str();
-		std::clog << log_prefix << " [WARN] " << message << std::endl;
-		
-		throw std::runtime_error(message);
-	}
-	
-	return result;
-}
-
-JSPropertyNameArray JSObject::CopyPropertyNames() const {
-	return JSPropertyNameArray(*this);
+bool JSObject::SetPrivate(void* data) {
+	return JSObjectSetPrivate(*this, data);
 }
 
 void JSObject::GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const {
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
 	for (const auto& property_name : static_cast<std::vector<JSString>>(CopyPropertyNames())) {
 		accumulator.AddName(property_name);
 	}

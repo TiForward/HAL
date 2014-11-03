@@ -8,9 +8,74 @@
  */
 
 #include "JavaScriptCoreCPP/detail/JSUtil.hpp"
+#include "JavaScriptCoreCPP/JSValue.hpp"
+#include "JavaScriptCoreCPP/JSLogger.hpp"
+
 #include <bitset>
+#include <sstream>
+#include <stdexcept>
+
+#include <JavaScriptCore/JavaScript.h>
+
 
 namespace JavaScriptCoreCPP { namespace detail {
+
+void ThrowLogicError(const std::string& internal_component_name, const std::string& message) {
+	JAVASCRIPTCORECPP_LOG_ERROR(internal_component_name, ": ", message);
+	throw std::logic_error(message);
+}
+
+void ThrowLogicError(const std::string& internal_component_name, const JSValue& exception) {
+	const auto exception_message = to_string(exception);
+	JAVASCRIPTCORECPP_LOG_ERROR(internal_component_name, ": ", exception_message);
+	throw std::logic_error(exception_message);
+}
+
+void ThrowRuntimeError(const std::string& internal_component_name, const std::string& message) {
+	JAVASCRIPTCORECPP_LOG_ERROR(internal_component_name, ": ", message);
+	throw std::runtime_error(message);
+}
+
+void ThrowRuntimeError(const std::string& internal_component_name, const JSValue& exception) {
+	const auto exception_message = to_string(exception);
+	JAVASCRIPTCORECPP_LOG_ERROR(internal_component_name, ": ", exception_message);
+	throw std::runtime_error(exception_message);
+}
+
+std::vector<JSValue> to_vector(const JSContext& js_context, size_t count, const JSValueRef js_value_ref_array[]) {
+	std::vector<JSValue> js_value_vector;
+	std::transform(js_value_ref_array,
+	               js_value_ref_array + count,
+	               std::back_inserter(js_value_vector),
+	               [&js_context](JSValueRef value_ref) { return JSValue(js_context, value_ref); });
+	return js_value_vector;
+}
+
+std::vector<JSValue> to_vector(const JSContext& js_context, const std::vector<JSString>& js_string_vector) {
+	std::vector<JSValue> js_value_vector;
+	std::transform(js_string_vector.begin(),
+	               js_string_vector.end(),
+	               std::back_inserter(js_value_vector),
+	               [&js_context](const JSString& js_string) { return js_context.CreateString(js_string); });
+}
+
+std::vector<JSValueRef> to_vector(const std::vector<JSValue>& js_value_vector) {
+	std::vector<JSValueRef> js_value_ref_vector;
+	std::transform(js_value_vector.begin(),
+	               js_value_vector.end(),
+	               std::back_inserter(js_value_ref_vector),
+	               [](const JSValue& js_value) { return static_cast<JSValueRef>(js_value); });
+	return js_value_ref_vector;
+}
+
+std::vector<JSStringRef> to_vector(const std::vector<JSString>& js_string_vector) {
+	std::vector<JSStringRef> js_string_ref_vector;
+	std::transform(js_string_vector.begin(),
+	               js_string_vector.end(),
+	               std::back_inserter(js_string_ref_vector),
+	               [](const JSString& js_string) { return static_cast<JSStringRef>(js_string); });
+	return js_string_ref_vector;
+}
 
 JSPropertyAttributes ToJSPropertyAttributes(const std::unordered_set<JSPropertyAttribute>& attributes) {
 	using property_attribute_underlying_type = std::underlying_type<JSPropertyAttribute>::type;
@@ -23,6 +88,7 @@ JSPropertyAttributes ToJSPropertyAttributes(const std::unordered_set<JSPropertyA
 	return static_cast<property_attribute_underlying_type>(property_attributes.to_ulong());
 }
 
+// For interoperability with the JavaScriptCore C API.
 JSClassAttributes ToJSClassAttributes(const std::unordered_set<JSNativeClassAttribute>& attributes) {
 	using property_attribute_underlying_type = std::underlying_type<JSNativeClassAttribute>::type;
 	std::bitset<2> class_attributes;

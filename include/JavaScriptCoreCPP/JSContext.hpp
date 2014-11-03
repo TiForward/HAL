@@ -10,43 +10,26 @@
 #ifndef _JAVASCRIPTCORECPP_JSCONTEXT_HPP_
 #define _JAVASCRIPTCORECPP_JSCONTEXT_HPP_
 
-#include "JavaScriptCoreCPP/JSContextGroup.hpp"
-#include "JavaScriptCoreCPP/JSString.hpp"
 #include <vector>
-#include <atomic>
-#include <cassert>
-
+#include <utility>
 
 #ifdef JAVASCRIPTCORECPP_THREAD_SAFE
 #include <mutex>
-
-#undef  JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_TYPE
-#define JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_TYPE std::recursive_mutex
-
-#undef  JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_NAME_PREFIX
-#define JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_NAME_PREFIX js_context
-
-#undef  JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_NAME
-#define JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_NAME JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_NAME_PREFIX##_mutex_
-
-#undef  JAVASCRIPTCORECPP_JSCONTEXT_MUTEX
-#define JAVASCRIPTCORECPP_JSCONTEXT_MUTEX JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_TYPE JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_NAME;
-
-#undef  JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD
-#define JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD std::lock_guard<JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_TYPE> JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_NAME_PREFIX##_lock(JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_NAME);
-
-#else
-#define JAVASCRIPTCORECPP_JSCONTEXT_MUTEX
-#define JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD
-#endif  // JAVASCRIPTCORECPP_THREAD_SAFE
-
-
-#ifdef DEBUG
-extern "C" JS_EXPORT void JSSynchronousGarbageCollectForDebugging(JSContextRef);
 #endif
+
+#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
+#include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
+#endif
+
+extern "C" {
+	struct JSContextRef;
+	struct JSGlobalContextRef;
+}
 
 namespace JavaScriptCoreCPP {
 
+class JSContextGroup;
+class JSString;
 class JSValue;
 class JSUndefined;
 class JSNull;
@@ -121,7 +104,7 @@ class JSContext final {
 	  @throws std::invalid_argument exception if the string isn't a
 	  valid JSON formatted string.
 	*/
-	JSValue CreateValueFromJSON(const JSString& js_string) const ;
+	JSValue CreateValueFromJSON(const JSString& js_string) const;
 
 	/*!
 	  @method
@@ -417,9 +400,7 @@ class JSContext final {
 	  automatically destroyed when the last reference to the context
 	  group is released.
 	*/
-	void GarbageCollect() const {
-		JSGarbageCollect(js_context_ref__);
-	}
+	void GarbageCollect() const;
 	
 	/*!
 	  @method
@@ -433,153 +414,83 @@ class JSContext final {
 	  collected.
 	*/
 #ifdef DEBUG
-	void SynchronousGarbageCollectForDebugging() const {
-		JSSynchronousGarbageCollectForDebugging(js_context_ref__);
-	}
+	void SynchronousGarbageCollectForDebugging() const;
 #endif
 
-#ifdef JAVASCRIPTCORECPP_JSCONTEXT_ENABLE_CONTEXT_ID
-	/*!
-	  @method
-	  
-	  @abstract Return the unique ID of this JavaScript execution
-	  context.
-	  
-	  @result The unique ID of this JavaScript execution context.
-	*/
-	long get_context_id() const {
-		return js_context_id_;
-	}
-#endif
+	~JSContext();
+	JSContext(const JSContext&);
+	JSContext(JSContext&&);
+	JSContext& JSContext::operator=(const JSContext&) = delete;
+	JSContext& JSContext::operator=(JSContext&&) = delete;
+	JSContext& operator=(JSContext);
+	void swap(JSContext&) noexcept;
 
-	~JSContext() {
-		JSGlobalContextRelease(*this);
-	}
-	
-	// Copy constructor.
-	JSContext(const JSContext& rhs)
-			: js_context_group__(rhs.js_context_group__)
-			, js_context_ref__(rhs.js_context_ref__) {
-		JSGlobalContextRetain(*this);
-	}
-	
-  // Move constructor.
-	JSContext(JSContext&& rhs)
-			: js_context_group__(rhs.js_context_group__)
-			, js_context_ref__(rhs.js_context_ref__) {
-		JSGlobalContextRetain(*this);
-	}
-	
-#ifdef JAVASCRIPTCORECPP_MOVE_SEMANTICS_ENABLE
-  JSContext& JSContext::operator=(const JSContext&) = default;
-  JSContext& JSContext::operator=(JSContext&&) = default;
-#endif
-
-  // Create a copy of another JSContext by assignment. This is a
-  // unified assignment operator that fuses the copy assignment
-  // operator, X& X::operator=(const X&), and the move assignment
-  // operator, X& X::operator=(X&&);
-  JSContext& operator=(JSContext rhs) {
-	  JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-	  swap(*this, rhs);
-    return *this;
-  }
+ private:
   
-  friend void swap(JSContext& first, JSContext& second) noexcept {
-	  JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    // enable ADL (not necessary in our case, but good practice)
-    using std::swap;
-    
-    // by swapping the members of two classes,
-    // the two classes are effectively swapped
-    swap(first.js_context_group__, second.js_context_group__);
-    swap(first.js_context_ref__  , second.js_context_ref__);
-  }
-
-private:
-  
-  explicit JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class = {});
-  
-  // For interoperability with the JavaScriptCore C API.
-  explicit JSContext(JSContextRef js_context_ref);
-		
-	// For interoperability with the JavaScriptCore C API.
-  operator JSContextRef() const {
-		return js_context_ref__;
-	}
-
-	// For interoperability with the JavaScriptCore C API.
-	operator JSGlobalContextRef() const {
-		return JSContextGetGlobalContext(js_context_ref__);
-	}
-
-	// Prevent heap based objects.
-	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
-	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
-	
-  // Only a JSContextGroup can create a JSContext.
+  // Only a JSContextGroup create a JSContext using the following
+	// constructor.
 	friend class JSContextGroup;
 
-	// JSValue needs access to operator JSContextRef().
+	explicit JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class = {});
+  
+	// These classes and functions need access to operator
+	// JSContextRef().
 	friend class JSValue;
-	
-	// The JSUndefined constructor needs access to operator
-	// JSContextRef().
 	friend class JSUndefined;
-	
-	// The JSNull constructor needs access to operator JSContextRef().
 	friend class JSNull;
-
-	// JSBoolean::operator bool() needs access to operator
-	// JSContextRef().
 	friend class JSBoolean;
-	
-	// The JSNumber constructor needs access to operator JSContextRef().
 	friend class JSNumber;
-
-	// The JSObject constructor needs access to operator JSContextRef().
 	friend class JSObject;
-	
-	// The JSArray constructor needs access to operator JSContextRef().
 	friend class JSArray;
-
-	// The JSDate constructor needs access to operator JSContextRef().
 	friend class JSDate;
-
-	// The JSError constructor needs access to operator JSContextRef().
 	friend class JSError;
-
-	// The JSRegExp constructor needs access to operator JSContextRef().
 	friend class JSRegExp;
-
-	// The JSFunction constructor needs access to operator
-	// JSContextRef().
 	friend class JSFunction;
-
-	// The JSPropertyNameArray constructor needs access to operator
-	// JSContextRef().
 	friend class JSPropertyNameArray;
 
-	// The JSNativeClass static functions need access to the JSContext
-	// constructor.
-	template<typename T>
-	friend class JSNativeClass;
-	
-	// JSNativeClass need access to operator JSContextRef().
 	template<typename T>
 	friend class JSNativeObject;
+
+	friend bool operator==(const JSValue& lhs, const JSValue& rhs);
+	friend bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs);
 	
-	// Return true if the two JSContexts are equal.
+	// For interoperability with the JavaScriptCore C API.
+	operator JSContextRef() const {
+		return js_context_ref__;
+	}
+	
+  // Only the JSNativeClass static functions create a JSContext using
+	// the following constructor.
+	template<typename T>
+	friend class JSNativeClass;
+
+	// For interoperability with the JavaScriptCore C API.
+	explicit JSContext(JSContextRef js_context_ref);
+	operator JSGlobalContextRef() const;
+	
+	// Prevent heap based objects.
+	static void * operator new(std::size_t);			 // #1: To prevent allocation of scalar objects
+	static void * operator new [] (std::size_t);	 // #2: To prevent allocation of array of objects
+	
+	friend void swap(JSContext& first, JSContext& second) noexcept;
   friend bool operator==(const JSContext& lhs, const JSContext& rhs);
-
-  // This function requires access to operator JSContextRef().
-  friend bool operator==(const JSValue& lhs, const JSValue& rhs);
-
-  // Return true if the two JSValues are equal as compared by the JS == operator.
-  friend bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs);
   
   JSContextGroup js_context_group__;
   JSContextRef   js_context_ref__ { nullptr };
+
+#undef JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_TYPE
+#undef JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_NAME_PREFIX
+#undef JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_NAME
+#undef JAVASCRIPTCORECPP_JSCONTEXT_MUTEX
+#ifdef JAVASCRIPTCORECPP_THREAD_SAFE
+#define JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_TYPE        std::recursive_mutex
+#define JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_NAME_PREFIX js_context
+#define JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_NAME        JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_NAME_PREFIX##_mutex_
+#define JAVASCRIPTCORECPP_JSCONTEXT_MUTEX             JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_TYPE JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_NAME
+#else
+#define JAVASCRIPTCORECPP_JSCONTEXT_MUTEX
+#endif  // JAVASCRIPTCORECPP_THREAD_SAFE
+
   JAVASCRIPTCORECPP_JSCONTEXT_MUTEX;
 };
 
@@ -596,5 +507,13 @@ bool operator!=(const JSContext& lhs, const JSContext& rhs) {
 }
 
 } // namespace JavaScriptCoreCPP {
+
+namespace std {
+using JavaScriptCoreCPP::JSContext;
+template<>
+void swap<JSContextGroup>(JSContext& first, JSContext& second) noexcept {
+	first.swap(second);
+}
+}  // namespace std
 
 #endif // _JAVASCRIPTCORECPP_JSCONTEXT_HPP_

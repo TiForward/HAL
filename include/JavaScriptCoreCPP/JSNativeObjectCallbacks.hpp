@@ -10,7 +10,6 @@
 #ifndef _JAVASCRIPTCORECPP_JSNATIVEOBJECTCALLBACKS_HPP_
 #define _JAVASCRIPTCORECPP_JSNATIVEOBJECTCALLBACKS_HPP_
 
-#include "JavaScriptCoreCPP/JSNativeClassAttribute.hpp"
 #include "JavaScriptCoreCPP/JSPropertyNameAccumulator.hpp"
 #include "JavaScriptCoreCPP/JSValue.hpp"
 #include <vector>
@@ -21,6 +20,92 @@ class JSString;
 class JSObject;
 class JSValue;
 
+/*! 
+  @typedef GetNamedPropertyCallback
+
+  @abstract The callback to invoke when getting a property's value
+  from a JavaScript object.
+
+  @discussion For example, given this class definition:
+  
+  class Foo {
+    JSValue GetBar() const;
+  };
+
+  You would define the callback like this:
+
+  GetNamedPropertyCallback callback(&Foo::GetBar);
+
+
+  @param object A const reference to the native object backing the
+  JavaScript object.
+
+  @result Return the property's value if object has the property,
+  otherwise return JSUndefined.
+*/
+template<typename T>
+using GetNamedPropertyCallback = std::function<JSValue(const T&)>;
+	
+/*! 
+  @typedef SetNamedPropertyCallback
+
+  @abstract The callback to invoke when setting a property's value on
+  a JavaScript object.
+
+  @discussion For example, given this class definition:
+  
+  class Foo {
+    bool SetBar(const JSValue& value);
+  };
+
+  You would define the callback like this:
+
+  SetNamedPropertyCallback callback(&Foo::SetBar);
+
+  @param object A non-const reference to the native object backing the
+  JavaScript object.
+
+  @param value A JSValue to use as the property's value.
+
+  @result Return true to indicate that the property was set.
+*/
+template<typename T>
+using SetNamedPropertyCallback = std::function<bool(T&, const JSValue&)>;
+
+/*! 
+  @typedef CallAsFunctionCallback
+
+  @abstract The callback to invoke when a JavaScript object is called
+  as a function. If this callback does not exist, then calling your
+  object as a function will throw a JavaScript exception.
+
+  @discussion For example, given this class definition:
+  
+  class Foo {
+    JSValue Bar(const std::vector<JSValue>& arguments, JSObject this_object);
+  };
+
+  You would define the callback like this:
+
+  CallAsFunctionWithThisCallback callback(&Foo::Bar);
+  
+  In the JavaScript expression 'myObject.myFunction()', then
+  'myFunction' is the instance of Foo being called, and this_object
+  would be set to 'myObject'.
+
+  @param object A non-const reference to the native object backing the
+  JavaScript object.
+
+  @param arguments A JSValue array of arguments to pass to the
+  function.
+
+  @param this_object The object to use as "this".
+
+  @result Return the function's return value.
+*/
+template<typename T>
+using CallAsFunctionCallback = std::function<JSValue(T&, const std::vector<JSValue>&, JSObject)>;
+	
 /*! 
   @typedef InitializeCallback
 
@@ -156,56 +241,41 @@ template<typename T>
 using HasInstanceCallback = std::function<bool(const T&, const JSValue&)>;
 
 /*! 
-  @typedef GetNamedPropertyCallback
+  @typedef HasPropertyCallback
 
-  @abstract The callback to invoke when getting a property's value
-  from a JavaScript object.
-
-  @discussion For example, given this class definition:
+  @abstract The callback to invoke when determining whether a
+  JavaScript object has a property.
+  
+  @discussion The HasPropertyCallback enables optimization in cases
+  where only a property's existence needs to be known, not its value,
+  and computing its value is expensive. If the HasPropertyCallback
+  doesn't exist, then the GetPropertyCallback will be used instead.
+  
+  For example, given this class definition:
   
   class Foo {
-    JSValue GetBar() const;
+    bool HasProperty(const JSString& property_name) const;
   };
 
   You would define the callback like this:
 
-  GetNamedPropertyCallback callback(&Foo::GetBar);
-
+  HasPropertyCallback callback(&Foo::HasProperty);
 
   @param object A const reference to the native object backing the
   JavaScript object.
 
-  @result Return the property's value if object has the property,
-  otherwise return JSUndefined.
+  @param property_name A JSString containing the name of the property
+  to look up.
+
+  @result Return true to indicate that object has the property. Return
+  false to forward the reqeust to properties added by the
+  GetNamedPropertyCallback and/or SetNamedPropertyCallback callbacks
+  (if any), then properties vended by the class' parent class chain,
+  then properties belonging to the JavaScript object's prototype
+  chain.
 */
 template<typename T>
-using GetNamedPropertyCallback = std::function<JSValue(const T&)>;
-	
-/*! 
-  @typedef SetNamedPropertyCallback
-
-  @abstract The callback to invoke when setting a property's value on
-  a JavaScript object.
-
-  @discussion For example, given this class definition:
-  
-  class Foo {
-    bool SetBar(const JSValue& value);
-  };
-
-  You would define the callback like this:
-
-  SetNamedPropertyCallback callback(&Foo::SetBar);
-
-  @param object A non-const reference to the native object backing the
-  JavaScript object.
-
-  @param value A JSValue to use as the property's value.
-
-  @result Return true to indicate that the property was set.
-*/
-template<typename T>
-using SetNamedPropertyCallback = std::function<bool(T&, const JSValue&)>;
+using HasPropertyCallback = std::function<bool(const T&, const JSString&)>;
 
 /*! 
   @typedef GetPropertyCallback
@@ -341,77 +411,6 @@ using DeletePropertyCallback = std::function<bool(T&, const JSString&)>;
 template<typename T>
 using GetPropertyNamesCallback = std::function<void(const T&, const JSPropertyNameAccumulator&)>;
 
-/*! 
-  @typedef HasPropertyCallback
-
-  @abstract The callback to invoke when determining whether a
-  JavaScript object has a property.
-  
-  @discussion The HasPropertyCallback enables optimization in cases
-  where only a property's existence needs to be known, not its value,
-  and computing its value is expensive. If the HasPropertyCallback
-  doesn't exist, then the GetPropertyCallback will be used instead.
-  
-  For example, given this class definition:
-  
-  class Foo {
-    bool HasProperty(const JSString& property_name) const;
-  };
-
-  You would define the callback like this:
-
-  HasPropertyCallback callback(&Foo::HasProperty);
-
-  @param object A const reference to the native object backing the
-  JavaScript object.
-
-  @param property_name A JSString containing the name of the property
-  to look up.
-
-  @result Return true to indicate that object has the property. Return
-  false to forward the reqeust to properties added by the
-  GetNamedPropertyCallback and/or SetNamedPropertyCallback callbacks
-  (if any), then properties vended by the class' parent class chain,
-  then properties belonging to the JavaScript object's prototype
-  chain.
-*/
-template<typename T>
-using HasPropertyCallback = std::function<bool(const T&, const JSString&)>;
-	
-/*! 
-  @typedef CallAsFunctionCallback
-
-  @abstract The callback to invoke when a JavaScript object is called
-  as a function. If this callback does not exist, then calling your
-  object as a function will throw a JavaScript exception.
-
-  @discussion For example, given this class definition:
-  
-  class Foo {
-    JSValue Bar(const std::vector<JSValue>& arguments, JSObject this_object);
-  };
-
-  You would define the callback like this:
-
-  CallAsFunctionWithThisCallback callback(&Foo::Bar);
-  
-  In the JavaScript expression 'myObject.myFunction()', then
-  'myFunction' is the instance of Foo being called, and this_object
-  would be set to 'myObject'.
-
-  @param object A non-const reference to the native object backing the
-  JavaScript object.
-
-  @param arguments A JSValue array of arguments to pass to the
-  function.
-
-  @param this_object The object to use as "this".
-
-  @result Return the function's return value.
-*/
-template<typename T>
-using CallAsFunctionCallback = std::function<JSValue(T&, const std::vector<JSValue>&, JSObject)>;
-	
 /*! 
   @typedef ConvertToTypeCallback
 

@@ -14,6 +14,7 @@
 #include "JavaScriptCoreCPP/JSPropertyAttribute.hpp"
 #include "JavaScriptCoreCPP/detail/HashUtilities.hpp"
 #include "JavaScriptCoreCPP/detail/JSUtil.hpp"
+#include <cstddef>
 #include <functional>
 #include <sstream>
 

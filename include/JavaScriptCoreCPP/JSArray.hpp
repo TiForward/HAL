@@ -35,6 +35,8 @@ class JSArray final : public JSObject {
 	friend JSContext;
 	
 	JSArray(const JSContext& js_context, const std::vector<JSValue>& arguments);
+
+	static JSObjectRef MakeArray(const JSContext& js_context, const std::vector<JSValue>& arguments);
 };
 
 } // namespace JavaScriptCoreCPP {

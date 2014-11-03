@@ -39,7 +39,7 @@ class JSPropertyNameArray final	{
 	  @result The number of names in this JavaScript property name
 	  array.
 	*/
-	size_t GetCount() const {
+	std::size_t GetCount() const {
 		return JSPropertyNameArrayGetCount(js_property_name_array_ref__);
 	}
 	
@@ -53,13 +53,13 @@ class JSPropertyNameArray final	{
 	  
 	  @result A JSString containing the property name.
 	*/
-	JSString GetNameAtIndex(size_t index) const {
+	JSString GetNameAtIndex(std::size_t index) const {
 		return JSPropertyNameArrayGetNameAtIndex(js_property_name_array_ref__, index);
 	}
 	
 	explicit operator std::vector<JSString>() const {
 		std::vector<JSString> property_names;
-		for (size_t i = 0, count = GetCount(); i < count; ++i) {
+		for (std::size_t i = 0, count = GetCount(); i < count; ++i) {
 			property_names.emplace_back(GetNameAtIndex(i));
 		}
 
@@ -125,8 +125,8 @@ private:
   }
 
 	// Prevent heap based objects.
-	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
-	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
+	static void * operator new(std::size_t);			 // #1: To prevent allocation of scalar objects
+	static void * operator new [] (std::size_t);	 // #2: To prevent allocation of array of objects
 	
 	JSPropertyNameArrayRef js_property_name_array_ref__;
 };

@@ -37,6 +37,8 @@ class JSFunction final : public JSObject {
 	friend JSContext;
 	
 	JSFunction(const JSContext& js_context, const JSString& body, const std::vector<JSString>& parameter_names, const JSString& function_name, const JSString& source_url, int starting_line_number);
+
+	static JSObjectRef MakeFunction(const JSContext& js_context, const JSString& body, const std::vector<JSString>& parameter_names, const JSString& function_name, const JSString& source_url, int starting_line_number);
 };
 
 } // namespace JavaScriptCoreCPP {

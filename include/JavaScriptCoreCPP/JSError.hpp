@@ -34,6 +34,8 @@ class JSError final : public JSObject {
 	friend JSContext;
 	
 	JSError(const JSContext& js_context, const std::vector<JSValue>& arguments);
+
+	static JSObjectRef MakeError(const JSContext& js_context, const std::vector<JSValue>& arguments);
 };
 
 } // namespace JavaScriptCoreCPP {

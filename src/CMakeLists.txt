@@ -1,5 +1,6 @@
 add_library(JavaScriptCoreCPP
 	JSArray.cpp
+	JSClass.cpp
 	JSContext.cpp
 	JSContextGroup.cpp
 	JSDate.cpp

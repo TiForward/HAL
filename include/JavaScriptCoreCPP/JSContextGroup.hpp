@@ -11,46 +11,22 @@
 #define _JAVASCRIPTCORECPP_JSCONTEXTGROUP_HPP_
 
 #include "JavaScriptCoreCPP/JSClass.hpp"
-#include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 #include <utility>
-#include <cassert>
-#include <JavaScriptCore/JavaScript.h>
-
 
 #ifdef JAVASCRIPTCORECPP_THREAD_SAFE
 #include <mutex>
+#endif
 
-#undef  JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX_TYPE
-#define JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX_TYPE std::recursive_mutex
+#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
+#include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
+#endif
 
-#undef  JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX_NAME_PREFIX
-#define JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX_NAME_PREFIX js_context_group
-
-#undef  JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX_NAME
-#define JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX_NAME JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX_NAME_PREFIX##_mutex_
-
-#undef  JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX
-#define JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX_TYPE JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX_NAME;
-
-#undef  JAVASCRIPTCORECPP_JSCONTEXTGROUP_LOCK_GUARD
-#define JAVASCRIPTCORECPP_JSCONTEXTGROUP_LOCK_GUARD std::lock_guard<JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX_TYPE> JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX_NAME_PREFIX##_lock(JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX_NAME);
-
-#else
-#define JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX
-#define JAVASCRIPTCORECPP_JSCONTEXTGROUP_LOCK_GUARD
-#endif  // JAVASCRIPTCORECPP_THREAD_SAFE
-
+extern "C" struct JSContextGroupRef;
 
 namespace JavaScriptCoreCPP {
 
 class JSContext;
 class JSClass;
-
-template<typename T>
-class JSNativeClass;
-
-template<typename T>
-class JSNativeObject;
 
 /*!
   @class
@@ -88,9 +64,7 @@ class JSContextGroup final	{
 	  this context group may share and exchange JavaScript objects with
 	  one another.
 	*/
-	JSContextGroup()
-			: js_context_group_ref__(JSContextGroupCreate()) {
-	}
+	JSContextGroup();
 	
 	/*!
 	  @method
@@ -116,93 +90,50 @@ class JSContextGroup final	{
 	*/
 	JSContext CreateContext(const JSClass& global_object_class = {}) const;
 
-	/*!
-	  @method
-	  
-	  @abstract Create a JavaScript execution context within this
-	  context group with a custom global object created from a custom
-	  JSNativeClass. Scripts may execute in this context concurrently
-	  with scripts executing in other contexts.
 
-	  @discussion All JSContexts within this context group may share and
-	  exchange JavaScript values with one another.
-	  
-	  When JavaScript objects from the same context group are used in
-	  multiple threads, explicit synchronization is required.
-
-	  @param global_object_class The JSNativeClass used to create the
-	  global object.
-	*/
-	template<typename T>
-	JSContext CreateContext(const JSNativeClass<T>& global_object_class) const;
-
-	~JSContextGroup() {
-		JSContextGroupRelease(js_context_group_ref__);
-	}
-	
-	// Copy constructor.
-	JSContextGroup(const JSContextGroup& rhs)
-			: js_context_group_ref__(rhs.js_context_group_ref__) {
-		JSContextGroupRetain(js_context_group_ref__);
-	}
-	
-  // Move constructor.
-  JSContextGroup(JSContextGroup&& rhs)
-		  : js_context_group_ref__(rhs.js_context_group_ref__) {
-	  JSContextGroupRetain(js_context_group_ref__);
-  }
-
-
-#ifdef JAVASCRIPTCORECPP_MOVE_SEMANTICS_ENABLE
-  JSContextGroup& JSContextGroup::operator=(const JSContextGroup&) = default;
-  JSContextGroup& JSContextGroup::operator=(JSContextGroup&&) = default;
-#endif
-  
-  // Create a copy of another JSContextGroup by assignment. This is a
-  // unified assignment operator that fuses the copy assignment
-  // operator, X& X::operator=(const X&), and the move assignment
-  // operator, X& X::operator=(X&&);
-  JSContextGroup& operator=(JSContextGroup rhs) {
-	  JAVASCRIPTCORECPP_JSCONTEXTGROUP_LOCK_GUARD;
-		swap(*this, rhs);
-    return *this;
-  }
-  
-  friend void swap(JSContextGroup& first, JSContextGroup& second) noexcept {
-	  JAVASCRIPTCORECPP_JSCONTEXTGROUP_LOCK_GUARD;
-    // enable ADL (not necessary in our case, but good practice)
-    using std::swap;
-    
-    // by swapping the members of two classes,
-    // the two classes are effectively swapped
-    swap(first.js_context_group_ref__, second.js_context_group_ref__);
-  }
+	~JSContextGroup();
+	JSContextGroup(const JSContextGroup&);
+	JSContextGroup(JSContextGroup&&);
+	JSContextGroup& JSContextGroup::operator=(const JSContextGroup&) = delete;
+	JSContextGroup& JSContextGroup::operator=(JSContextGroup&&) = delete;
+	JSContextGroup& operator=(JSContextGroup);
+	void swap(JSContextGroup&) noexcept;
 
  private:
 
-  // For interoperability with the JavaScriptCore C API.
-  explicit JSContextGroup(JSContextGroupRef js_context_group_ref)
-		  : js_context_group_ref__(js_context_group_ref) {
-		assert(js_context_group_ref__);
-		JSContextGroupRetain(js_context_group_ref__);
-	}
+	// For interoperability with the JavaScriptCore C API.
+	explicit JSContextGroup(JSContextGroupRef js_context_group_ref);
 
-  // For interoperability with the JavaScriptCore C API.
-  operator JSContextGroupRef() const {
+  // JSContext needs access to operator JSContextGroupRef().
+	friend class JSContext;
+	
+	operator JSContextGroupRef() const {
 		return js_context_group_ref__;
 	}
 	
 	// Prevent heap based objects.
-	void* operator new(size_t)     = delete; // #1: To prevent allocation of scalar objects
-	void* operator new [] (size_t) = delete; // #2: To prevent allocation of array of objects
+	void* operator new(std::size_t)     = delete; // #1: To prevent allocation of scalar objects
+	void* operator new [] (std::size_t) = delete; // #2: To prevent allocation of array of objects
 
-  // Return true if the two JSContextGroups are equal.
-  friend bool operator==(const JSContextGroup& lhs, const JSContextGroup& rhs);
+	friend void swap(JSContextGroup& first, JSContextGroup& second) noexcept;
+	friend bool operator==(const JSContextGroup& lhs, const JSContextGroup& rhs);
 
-  // JSContext needs access to operator JSContextGroupRef().
-  friend class JSContext;
+  JSContextGroupRef js_context_group_ref__ { nullptr };
 
-  JSContextGroupRef js_context_group_ref__ {nullptr};
+#undef JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX_TYPE
+#undef JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX_NAME_PREFIX
+#undef JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX_NAME
+#undef JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX
+#undef JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX
+#ifdef JAVASCRIPTCORECPP_THREAD_SAFE
+#define JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX_TYPE        std::recursive_mutex
+#define JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX_NAME_PREFIX js_context_group
+#define JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX_NAME        JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX_NAME_PREFIX##_mutex_
+#define JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX             JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX_TYPE JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX_NAME
+#else
+#define JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX
+#endif  // JAVASCRIPTCORECPP_THREAD_SAFE
+  
   JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX;
 };
 
@@ -219,5 +150,13 @@ bool operator!=(const JSContextGroup& lhs, const JSContextGroup& rhs) {
 }
 
 } // namespace JavaScriptCoreCPP {
+
+namespace std {
+using JavaScriptCoreCPP::JSContextGroup;
+template<>
+void swap<JSContextGroup>(JSContextGroup& first, JSContextGroup& second) noexcept {
+	first.swap(second);
+}
+}  // namespace std
 
 #endif // _JAVASCRIPTCORECPP_JSCONTEXTGROUP_HPP_

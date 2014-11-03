@@ -10,50 +10,29 @@
 #ifndef _JAVASCRIPTCORECPP_JSVALUE_HPP_
 #define _JAVASCRIPTCORECPP_JSVALUE_HPP_
 
-#include "JavaScriptCoreCPP/JSContext.hpp"
-#include "JavaScriptCoreCPP/JSString.hpp"
-#include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
-#include <iostream>
-#include <sstream>
-#include <cassert>
-
+#include <ostream>
 
 #ifdef JAVASCRIPTCORECPP_THREAD_SAFE
 #include <mutex>
+#endif
 
-#undef  JAVASCRIPTCORECPP_JSVALUE_MUTEX_TYPE
-#define JAVASCRIPTCORECPP_JSVALUE_MUTEX_TYPE std::recursive_mutex
+#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
+#include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
+#endif
 
-#undef  JAVASCRIPTCORECPP_JSVALUE_MUTEX_NAME_PREFIX
-#define JAVASCRIPTCORECPP_JSVALUE_MUTEX_NAME_PREFIX js_context
-
-#undef  JAVASCRIPTCORECPP_JSVALUE_MUTEX_NAME
-#define JAVASCRIPTCORECPP_JSVALUE_MUTEX_NAME JAVASCRIPTCORECPP_JSVALUE_MUTEX_NAME_PREFIX##_mutex_
-
-#undef  JAVASCRIPTCORECPP_JSVALUE_MUTEX
-#define JAVASCRIPTCORECPP_JSVALUE_MUTEX JAVASCRIPTCORECPP_JSVALUE_MUTEX_TYPE JAVASCRIPTCORECPP_JSVALUE_MUTEX_NAME;
-
-#undef  JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD
-#define JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD std::lock_guard<JAVASCRIPTCORECPP_JSVALUE_MUTEX_TYPE> JAVASCRIPTCORECPP_JSVALUE_MUTEX_NAME_PREFIX##_lock(JAVASCRIPTCORECPP_JSVALUE_MUTEX_NAME);
-
-#else
-#define JAVASCRIPTCORECPP_JSVALUE_MUTEX
-#define JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD
-#endif  // JAVASCRIPTCORECPP_THREAD_SAFE
-
-
-namespace JavaScriptCoreCPP { namespace detail {
-class JSPropertyNameArray;
-}}
+extern "C" struct JSValueRef;
 
 namespace JavaScriptCoreCPP {
 
+class JSContext;
+class JSString;
 class JSObject;
 class JSFunction;
 class JSArray;
 class JSDate;
 class JSError;
 class JSRegExp;
+//class JSPropertyNameArray;
 
 /*!
   @class
@@ -93,7 +72,7 @@ class JSRegExp;
   The other ancillary helper classes in the JavaScriptCoreCPP library
   also do not have JSValue in their class hierarchy.
 
-The only way to create a JSValue is by using the
+  The only way to create a JSValue is by using the
   JSContext::CreateXXX member functions.
 */
 #ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
@@ -106,25 +85,23 @@ class JSValue {
 
 	/*!
 	  @enum Type
-	  @abstract     An enum identifying the type of a JSValue.
-	  @constant     Undefined  The unique undefined value.
-	  @constant     Null       The unique null value.
-	  @constant     Boolean    A primitive boolean value, one of true or false.
-	  @constant     Number     A primitive number value.
-	  @constant     String     A primitive string value.
-	  @constant     Object     An object value (meaning that this JSValue is a JSObject).
+	  @abstract An enum identifying the type of a JSValue.
+	  @constant Undefined  The unique undefined value.
+	  @constant Null       The unique null value.
+	  @constant Boolean    A primitive boolean value, one of true or false.
+	  @constant Number     A primitive number value.
+	  @constant String     A primitive string value.
+	  @constant Object     An object value (meaning that this JSValue is a JSObject).
 	*/
 	enum class Type {
-		Undefined = kJSTypeUndefined,
-		Null      = kJSTypeNull,
-		Boolean   = kJSTypeBoolean,
-		Number    = kJSTypeNumber,
-		String    = kJSTypeString,
-		Object    = kJSTypeObject
+		Undefined,
+		Null,
+		Boolean,
+		Number,
+		String,
+		Object
 	};
 
-public:
-	
 	/*!
 	  @method
 	  
@@ -133,111 +110,109 @@ public:
 	  
 	  @param indent The number of spaces to indent when nesting. If 0
 	  (the default), the resulting JSON will not contain newlines. The
-	  size of the indent is clamped to 10 spaces.
-	  
-	  @result A JSString containing the JSON serialized representation
-	  of this JavaScript value.
-	*/
-	virtual JSString ToJSONString(unsigned indent = 0) final;
-	
-	/*!
-	  @method
-	  
-	  @abstract Convert this JSValue to a JSString.
-	  
-	  @result A JSString with the result of conversion.
-	*/
-	virtual explicit operator JSString() const final;
-	
-	/*!
-	  @method
-	  
-	  @abstract Convert this JSValue to a std::string.
-	  
-	  @result A std::string with the result of conversion.
-	*/
-	virtual explicit operator std::string() const final {
-		return operator JSString();
-	}
+    size of the indent is clamped to 10 spaces.
+    
+    @result A JSString containing the JSON serialized representation
+    of this JavaScript value.
+  */
+  virtual JSString ToJSONString(unsigned indent = 0) final;
+  
+  /*!
+    @method
+    
+    @abstract Convert this JSValue to a JSString.
+    
+    @result A JSString with the result of conversion.
+  */
+  virtual explicit operator JSString() const final;
+  
+  /*!
+    @method
+    
+    @abstract Convert this JSValue to a std::string.
+    
+    @result A std::string with the result of conversion.
+  */
+  virtual explicit operator std::string() const final {
+    return operator JSString();
+  }
 
-	/*!
-	  @method
-	  
-	  @abstract Convert a JSValue to a boolean.
-	  
-	  @result The boolean result of conversion.
-	*/
-	virtual explicit operator bool() const final {
-		return JSValueToBoolean(js_context__, js_value_ref__);
-	}
-	
-	/*!
-	  @method
-	  
-	  @abstract Convert this JSValue to a JSBoolean.
-	  
-	  @result A JSBoolean with the result of conversion.
-	*/
-	virtual operator JSBoolean() const final;
+  /*!
+    @method
+    
+    @abstract Convert a JSValue to a boolean.
+    
+    @result The boolean result of conversion.
+  */
+  virtual explicit operator bool() const final;
+  
+  /*!
+    @method
+    
+    @abstract Convert this JSValue to a JSBoolean.
+    
+    @result A JSBoolean with the result of conversion.
+  */
+  virtual operator JSBoolean() const final;
 
-	/*!
-	  @method
-	  
-	  @abstract Convert a JSValue to a double.
-	  
-	  @result The double result of conversion.
-	*/
-	virtual explicit operator double() const final;
+  /*!
+    @method
+    
+    @abstract Convert a JSValue to a double.
+    
+    @result The double result of conversion.
+  */
+  virtual explicit operator double() const final;
 
-	/*!
-	  @method
-	  
-	  @abstract Convert a JSValue to an int32_t according to the rules
-	  specified by the JavaScript language.
-	  
-	  @result The int32_t result of conversion.
-	*/
-	virtual explicit operator int32_t() const final;
-	
-	/*!
-	  @method
-	  
-	  @abstract Convert a JSValue to an uint32_t according to the rules
-	  specified by the JavaScript language.
-	  
-	  @discussion The JSValue is converted to an uint32_t according to
-	  the rules specified by the JavaScript language (implements
-	  ToUInt32, defined in ECMA-262 9.6).
-	  
-	  @result The uint32_t result of the conversion.
-	*/
-	virtual explicit operator uint32_t() const final {
-		// As commented in the spec, the operation of ToInt32 and ToUint32
-		// only differ in how the result is interpreted; see NOTEs in
-		// sections 9.5 and 9.6.
-		return operator int32_t();
-	}
+  /*!
+    @method
+    
+    @abstract Convert a JSValue to an int32_t according to the rules
+    specified by the JavaScript language.
+    
+    @result The int32_t result of conversion.
+  */
+  virtual explicit operator int32_t() const final;
+  
+  /*!
+    @method
+    
+    @abstract Convert a JSValue to an uint32_t according to the rules
+    specified by the JavaScript language.
+    
+    @discussion The JSValue is converted to an uint32_t according to
+    the rules specified by the JavaScript language (implements
+    ToUInt32, defined in ECMA-262 9.6).
+    
+    @result The uint32_t result of the conversion.
+  */
+  virtual explicit operator uint32_t() const final {
+    // As commented in the spec, the operation of ToInt32 and ToUint32
+    // only differ in how the result is interpreted; see NOTEs in
+    // sections 9.5 and 9.6.
+    return operator int32_t();
+  }
 
-	/*!
-	  @method
-	  
-	  @abstract Convert this JSValue to a JSNumber.
-	  
-	  @result A JSNumber with the result of conversion.
-	*/
-	virtual operator JSNumber() const final;
+  /*!
+    @method
+    
+    @abstract Convert this JSValue to a JSNumber.
+    
+    @result A JSNumber with the result of conversion.
+  */
+  virtual operator JSNumber() const final;
 
-	/*!
-	  @method
-	  
-	  @abstract Convert this JSValue to a JSObject.
-	  
-	  @result A JSObject with the result of conversion.
-	  
-	  @throws std::runtime_error if this JSValue could not be converted
-	  to a JSObject.
-	*/
-	virtual operator JSObject() const final;
+  /*!
+    @method
+    
+    @abstract Convert this JSValue to a JSObject.
+    
+    @result A JSObject with the result of conversion.
+    
+    @throws std::runtime_error if this JSValue could not be converted
+    to a JSObject.
+  */
+  virtual operator JSObject() const final;
 
   /*!
     @method
@@ -247,9 +222,9 @@ public:
     @result A value of type JSValue::Type that identifies this
     JavaScript value's type.
   */
-	virtual Type GetType() const final;
+  virtual Type GetType() const final;
 
-	/*!
+  /*!
     @method
     
     @abstract Determine whether this JavaScript value's type is the
@@ -258,10 +233,8 @@ public:
     @result true if this JavaScript value's type is the undefined
     type.
   */
-	virtual bool IsUndefined() const final {
-	  return JSValueIsUndefined(js_context__, js_value_ref__);
-  }
-
+  virtual bool IsUndefined() const final;
+  
   /*!
     @method
     
@@ -270,9 +243,7 @@ public:
     
     @result true if this JavaScript value's type is the null type.
   */
-	virtual bool IsNull() const final {
-	  return JSValueIsNull(js_context__, js_value_ref__);
-  }
+  virtual bool IsNull() const final;
   
   /*!
     @method
@@ -282,9 +253,7 @@ public:
     
     @result true if this JavaScript value's type is the boolean type.
   */
-	virtual bool IsBoolean() const final {
-	  return JSValueIsBoolean(js_context__, js_value_ref__);
-  }
+  virtual bool IsBoolean() const final;
 
   /*!
     @method
@@ -294,9 +263,7 @@ public:
     
     @result true if this JavaScript value's type is the number type.
   */
-	virtual bool IsNumber() const final {
-	  return JSValueIsNumber(js_context__, js_value_ref__);
-  }
+  virtual bool IsNumber() const final;
 
   /*!
     @method
@@ -306,9 +273,7 @@ public:
     
     @result true if this JavaScript value's type is the string type.
   */
-  virtual bool IsString() const final {
-	  return JSValueIsString(js_context__, js_value_ref__);
-  }
+  virtual bool IsString() const final;
 
   /*!
     @method
@@ -318,26 +283,22 @@ public:
     
     @result true if this JavaScript value's type is the object type.
   */
-	virtual bool IsObject() const final {
-		return JSValueIsObject(js_context__, js_value_ref__);
-	}
-	
-	/*!
-	  @method
-	  
-	  @abstract Determine whether this JavaScript's value is an object
-	  with a given class in its class chain.
-	  
-	  @param jsClass The JSClass to test against.
-	  
-	  @result true if this JavaScript value is an object with a given
-	  class in its class chain.
-	*/
-	virtual bool IsObjectOfClass(const JSClass& js_class) const final {
-		return JSValueIsObjectOfClass(js_context__, js_value_ref__, js_class);
-	}
+  virtual bool IsObject() const final;
+  
+  /*!
+    @method
+    
+    @abstract Determine whether this JavaScript's value is an object
+    with a given class in its class chain.
+    
+    @param jsClass The JSClass to test against.
+    
+    @result true if this JavaScript value is an object with a given
+    class in its class chain.
+  */
+  virtual bool IsObjectOfClass(const JSClass& js_class) const final;
 
-	/*!
+  /*!
     @method
     
     @abstract Determine whether this JavaScript value was constructed
@@ -349,147 +310,123 @@ public:
     @result true if this JavaScript value was constructed by the given
     constructor as compared by the JavaScript 'instanceof' operator.
   */
-	virtual bool IsInstanceOfConstructor(const JSObject& constructor) const final;
+  virtual bool IsInstanceOfConstructor(const JSObject& constructor) const final;
 
-	/*!
-	  @method
-	  
-	  @abstract Determine whether this JavaScript value is equal to
-	  another JavaScript by usong the JavaScript == operator.
-	  
-	  @param js_value The JavaScript value to test.
-	  
-	  @result true this JavaScript value is equal to another JavaScript
-	  by usong the JavaScript == operator.
-	*/
-	virtual bool IsEqualWithTypeCoercion(const JSValue& js_value) const final;
-
-	/*!
-	  @method
-	  
-	  @abstract Return the execution context of this JavaScript value.
-	  
-	  @result The the execution context of this JavaScript value.
-	*/
-	virtual JSContext get_context() const final {
-		return js_context__;
-	}
-	
-	virtual ~JSValue() {
-	  JSValueUnprotect(js_context__, js_value_ref__);
-  }
-
-	// Copy constructor.
-	JSValue(const JSValue& rhs)
-			: js_context__(rhs.js_context__)
-			, js_value_ref__(rhs.js_value_ref__) {
-		JSValueProtect(js_context__, js_value_ref__);
-	}
-	
-	// Move constructor.
-	JSValue(JSValue&& rhs)
-			: js_context__(rhs.js_context__)
-			, js_value_ref__(rhs.js_value_ref__) {
-  }
-  
-#ifdef JAVASCRIPTCORECPP_MOVE_SEMANTICS_ENABLE
-  JSValue& JSValue::operator=(const JSValue&) = default;
-  JSValue& JSValue::operator=(JSValue&&) = default;
-#endif
-
-	// Create a copy of another JSValue by assignment. This is a unified
-	// assignment operator that fuses the copy assignment operator,
-  // X& X::operator=(const X&), and the move assignment operator,
-  // X& X::operator=(X&&);
-	JSValue& operator=(JSValue rhs) {
-		JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
-	  // Values can only be copied between contexts within the same
-	  // context group.
-		if (js_context__.get_context_group() != rhs.js_context__.get_context_group()) {
-		  static const std::string log_prefix { "MDL: JSValue& JSValue::operator=(JSValue rhs): " };
-		  const std::string message = "JSValues must belong to JSContexts within the same JSContextGroup to be shared and exchanged.";
-		  std::clog << log_prefix << " [ERROR] " << message << std::endl;
-		  throw std::runtime_error(message);
-	  }
-	  
-    swap(*this, rhs);
-    return *this;
-  }
-  
-	friend void swap(JSValue& first, JSValue& second) noexcept {
-		JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
-    // enable ADL (not necessary in our case, but good practice)
-    using std::swap;
+  /*!
+    @method
     
-    // by swapping the members of two classes,
-    // the two classes are effectively swapped
-    swap(first.js_context__  , second.js_context__);
-    swap(first.js_value_ref__, second.js_value_ref__);
+    @abstract Determine whether this JavaScript value is equal to
+    another JavaScript by usong the JavaScript == operator.
+    
+    @param js_value The JavaScript value to test.
+    
+    @result true this JavaScript value is equal to another JavaScript
+    by usong the JavaScript == operator.
+  */
+  virtual bool IsEqualWithTypeCoercion(const JSValue& js_value) const final;
+
+  /*!
+    @method
+    
+    @abstract Return the execution context of this JavaScript value.
+    
+    @result The the execution context of this JavaScript value.
+  */
+  virtual JSContext get_context() const final {
+    return js_context__;
   }
+  
+  virtual ~JSValue();
+  JSValue(const JSValue&);
+  JSValue(JSValue&&);
+  JSValue& JSValue::operator=(const JSValue&) = delete;
+  JSValue& JSValue::operator=(JSValue&&) = delete;
+  JSValue& operator=(JSValue);
+  void swap(JSValue&) noexcept;
 
  protected:
   
-	// A JSContext can create a JSValue.
-	friend class JSContext;
+  // A JSContext can create a JSValue.
+  friend class JSContext;
 
-	JSValue(const JSContext& js_context, const JSString& js_string, bool parse_as_json = false);
+  JSValue(const JSContext& js_context, const JSString& js_string, bool parse_as_json = false);
 
-	// JSObject needs access to the following JSValue constructor for
-	// GetPrototype() and for generating error messages, as well as
-	// operator JSValueRef() for SetPrototype()
-	friend class JSObject;
+  // These classes and functions need access to operator JSValueRef().
+  //friend class JSPropertyNameArray;
+  friend bool operator==(const JSValue& lhs, const JSValue& rhs);
 
-	// These classes need access to the following JSValue constructor
-	// for generating error messages.
-	friend class JSArray;
-	friend class JSDate;
-	friend class JSFunction;
-	friend class JSRegExp;
-	friend class JSError;
-
-	// For interoperability with the JavaScriptCore C API.
-	JSValue(const JSContext& js_context, JSValueRef js_value_ref)
-			: js_context__(js_context)
-			, js_value_ref__(js_value_ref)  {
-		assert(js_value_ref__);
-		JSValueProtect(js_context__, js_value_ref__);
-	}
+  // For interoperability with the JavaScriptCore C API.
+  virtual operator JSValueRef() const final {
+    return js_value_ref__;
+  }
 
  private:
 
-	// The JSNativeClass static functions need access to operator
-	// JSValueRef().
-	template<typename T>
-	friend class JSNativeClass;
-	
-	// For interoperability with the JavaScriptCore C API.
-	operator JSValueRef() const {
-		return js_value_ref__;
-	}
+  // JSObject needs access to the JSValue constructor for
+  // GetPrototype() and for generating error messages, as well as
+  // operator JSValueRef() for SetPrototype().
+  friend class JSObject;
 
-	// Prevent heap based objects.
-	static void * operator new(size_t);			 // #1: To prevent allocation of scalar objects
-	static void * operator new [] (size_t);	 // #2: To prevent allocation of array of objects
+  // These classes and functions create a JSValue using the following
+  // constructor.
+  friend class JSArray;        // for generating error messages
+  friend class JSDate;         // for generating error messages
+  friend class JSFunction;     // for generating error messages
+  friend class JSRegExp;       // for generating error messages
+  friend class JSError;        // for generating error messages
+  template<typename T>
+  friend class JSNativeClass;  // for static functions
+  
+  friend std::vector<JSValue>    detail::ToJSValueVector(const JSContext& js_context, size_t count, const JSValueRef js_value_ref_array[]);
+  friend std::vector<JSValueRef> detail::ToJSValueRefVector(const std::vector<JSValue>& js_value_vector);
+  
+  // For interoperability with the JavaScriptCore C API.
+  JSValue(const JSContext& js_context, JSValueRef js_value_ref);
+  
+  // Prevent heap based objects.
+	static void * operator new(std::size_t);		 // #1: To prevent allocation of scalar objects
+	static void * operator new [] (std::size_t); // #2: To prevent allocation of array of objects
 	
-	// This function requires access to operator JSValueRef().
-	friend bool operator==(const JSValue& lhs, const JSValue& rhs);
-
 	JSContext  js_context__;
 	JSValueRef js_value_ref__ { nullptr };
+
+#undef JAVASCRIPTCORECPP_JSVALUE_MUTEX_TYPE
+#undef JAVASCRIPTCORECPP_JSVALUE_MUTEX_NAME_PREFIX
+#undef JAVASCRIPTCORECPP_JSVALUE_MUTEX_NAME
+#undef JAVASCRIPTCORECPP_JSVALUE_MUTEX
+#ifdef JAVASCRIPTCORECPP_THREAD_SAFE
+#define JAVASCRIPTCORECPP_JSVALUE_MUTEX_TYPE        std::recursive_mutex
+#define JAVASCRIPTCORECPP_JSVALUE_MUTEX_NAME_PREFIX js_value
+#define JAVASCRIPTCORECPP_JSVALUE_MUTEX_NAME        JAVASCRIPTCORECPP_JSVALUE_MUTEX_NAME_PREFIX##_mutex_
+#define JAVASCRIPTCORECPP_JSVALUE_MUTEX             JAVASCRIPTCORECPP_JSVALUE_MUTEX_TYPE JAVASCRIPTCORECPP_JSVALUE_MUTEX_NAME
+#else
+#define JAVASCRIPTCORECPP_JSVALUE_MUTEX
+#endif  // JAVASCRIPTCORECPP_THREAD_SAFE
+
 	JAVASCRIPTCORECPP_JSVALUE_MUTEX;
 };
 
+inline
+to_string(const JSValue& js_value) {
+	return static_cast<std::string>(js_value);
+}
+
+std::string to_string(const JSValue::Type& js_value_type);
+
 /*!
   @function
-  @abstract Determine whether two JavaScript values are strict equal, as compared by the JS === operator.
-  @param    lhs The first value to test.
-  @param    rhs The second value to test.
-  @result   true if the two values are equal, false if they are not equal.
+  
+  @abstract Determine whether two JavaScript values are strict equal,
+  as compared by the JS === operator.
+  
+  @param lhs The first value to test.
+  
+  @param rhs The second value to test.
+  
+  @result true if the two values are equal, false if they are not
+  equal.
 */
-inline
-bool operator==(const JSValue& lhs, const JSValue& rhs) {
-	return JSValueIsStrictEqual(lhs.get_context(), lhs, rhs);
-}
+bool operator==(const JSValue& lhs, const JSValue& rhs);
 
 // Return true if the two JSValues are not strict equal, as compared by the JS === operator.
 inline
@@ -510,19 +447,13 @@ bool operator!=(const JSValue& lhs, const JSValue& rhs) {
   @result true if the two values are equal, false if they are not
   equal.
 */
-inline
-bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs) {
-	return lhs.IsEqualWithTypeCoercion(rhs);
-}
-
+bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs);
 
 inline
 std::ostream& operator << (std::ostream& ostream, const JSValue& js_value) {
-	ostream << static_cast<std::string>(js_value);
+	ostream << to_string(js_value);
 	return ostream;
 }
-
-std::string to_string(const JSValue::Type& js_value_type);
 
 inline
 std::ostream& operator << (std::ostream& ostream, const JSValue::Type& js_value_type) {
