@@ -13,13 +13,6 @@
 
 #include <JavaScriptCore/JavaScript.h>
 
-#undef JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD
-#ifdef JAVASCRIPTCORECPP_THREAD_SAFE
-#define JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD std::lock_guard<JAVASCRIPTCORECPP_JSSTRING_MUTEX_TYPE> JAVASCRIPTCORECPP_JSSTRING_MUTEX_NAME_PREFIX##_lock(JAVASCRIPTCORECPP_JSSTRING_MUTEX_NAME)
-#else
-#define JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD
-#endif  // JAVASCRIPTCORECPP_THREAD_SAFE
-
 namespace JavaScriptCoreCPP {
 
 // For interoperability with the JavaScriptCore C API.
@@ -58,7 +51,7 @@ JSString::JSString(const JSString& rhs)
 }
 
 JSString::JSString(JSString&& rhs)
-		: js_string_ref__(std::move(rhs.js_string_ref__)) {
+		: js_string_ref__(rhs.js_string_ref__) {
 	JSStringRetain(js_string_ref__);
 }
 
@@ -88,7 +81,5 @@ void JSString(JSString& other) noexcept {
 bool operator==(const JSString& lhs, const JSString& rhs) {
 	return JSStringIsEqual(lhs, rhs);
 }
-
-JAVASCRIPTCORECPP_JSCLASS_STATIC_MUTEX_TYPE JSClass::JAVASCRIPTCORECPP_JSCLASS_STATIC_MUTEX_NAME;
 
 } // namespace JavaScriptCoreCPP {

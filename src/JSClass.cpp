@@ -12,13 +12,6 @@
 
 #include <JavaScriptCore/JavaScript.h>
 
-#undef  JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD
-#ifdef  JAVASCRIPTCORECPP_THREAD_SAFE
-#define JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD std::lock_guard<JAVASCRIPTCORECPP_JSCLASS_MUTEX_TYPE> JAVASCRIPTCORECPP_JSCLASS_MUTEX_NAME##_lock(JAVASCRIPTCORECPP_JSCLASS_MUTEX)
-#else
-#define JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD
-#endif  // JAVASCRIPTCORECPP_THREAD_SAFE
-
 namespace JavaScriptCoreCPP {
 
 JSClass::JSClass(const JSClassDefinition& js_class_definition)
@@ -39,12 +32,12 @@ JSClass::JSClass(const JSClass& rhs)
 }
 
 JSClass::JSClass(JSClass&& rhs)
-		: js_class_ref__(std::move(rhs.js_class_ref__)) {
+		: js_class_ref__(rhs.js_class_ref__) {
 	JSClassRetain(js_class_ref__);
 }
 
-// Create a copy of another JSClassRetain by assignment. This is a
-// unified assignment operator that fuses the copy assignment operator
+// Create a copy of another JSClass by assignment. This is a unified
+// assignment operator that fuses the copy assignment operator
 //
 // X& X::operator=(const X&)
 //
@@ -68,24 +61,19 @@ void JSClass::swap(JSClass& other) noexcept {
 	swap(version__     , other.version__);
 }
 
-#undef  JAVASCRIPTCORECPP_JSCLASS_STATIC_LOCK_GUARD
+JSClass::empty_js_class_;
+JSClass::js_class_map_;
+
 #ifdef  JAVASCRIPTCORECPP_THREAD_SAFE
-#define JAVASCRIPTCORECPP_JSCLASS_STATIC_LOCK_GUARD std::lock_guard<JAVASCRIPTCORECPP_JSCLASS_STATIC_MUTEX_TYPE> JAVASCRIPTCORECPP_JSCLASS_STATIC_MUTEX_NAME_PREFIX##_lock(JAVASCRIPTCORECPP_JSCLASS_STATIC_MUTEX_NAME);
-#else
-#define JAVASCRIPTCORECPP_JSCLASS_STATIC_LOCK_GUARD
-JAVASCRIPTCORECPP_JSCLASS_STATIC_MUTEX_TYPE JSClass::JAVASCRIPTCORECPP_JSCLASS_STATIC_MUTEX_NAME;
+std::recursive_mutex JSClass::static_mutex__;
 #endif  // JAVASCRIPTCORECPP_THREAD_SAFE
 
-JSClass JSClass::GetClassWithName(const JSString& class_name) {
-	// TODO
-}
-
-std::size_t JSClass::GetClassCount() {
-	// TODO
-}
-
-std::vector<std::string> JSClass::GetClassNames() {
-	// TODO
+static JSClass EmptyJSClass() {
+	static std::once_flag of;
+	std::call_once(of, [] {
+			JSClassDefinition js_class_definition = kJSClassDefinitionEmpty;
+			empty_js_class_ = JSClass(&js_class_definition);
+		});
 }
 
 void JSClass::ThrowRuntimeErrorIfJSClassAlreadyExists(const JSString& js_class_name) {
@@ -100,6 +88,5 @@ void JSClass::ThrowRuntimeErrorIfJSClassAlreadyExists(const JSString& js_class_n
 		ThrowRuntimeError("JSClass", message);
 	}
 }
-
 
 } // namespace JavaScriptCoreCPP {

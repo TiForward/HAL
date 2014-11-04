@@ -11,20 +11,11 @@
 #define _JAVASCRIPTCORECPP_DETAIL_JSNATIVEOBJECTVALUEPROPERTYCALLBACK_HPP_
 
 #include "JavaScriptCoreCPP/JSNativeObjectCallbacks.hpp"
-#include "JavaScriptCoreCPP/JSPropertyAttribute.hpp"
-#include "JavaScriptCoreCPP/detail/HashUtilities.hpp"
-#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
-#include <cstddef>
-#include <functional>
-#include <sstream>
+#include "JavaScriptCoreCPP/detail/JSNativeObjectPropertyCallback.hpp"
 
-namespace JavaScriptCoreCPP {
-
-template<typename T>
-class JSNativeObject;
-
-} // namespace JavaScriptCoreCPP {
-
+#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
+#include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
+#endif
 
 namespace JavaScriptCoreCPP { namespace detail {
 
@@ -36,7 +27,11 @@ namespace JavaScriptCoreCPP { namespace detail {
   value property of a JavaScript object.
 */
 template<typename T>
-class JSNativeObjectValuePropertyCallback final	{
+#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
+class JSNativeObjectValuePropertyCallback final : public JSNativeObjectPropertyCallback, public detail::JSPerformanceCounter<JSNativeObjectValuePropertyCallback<T>> {
+#else
+class JSNativeObjectValuePropertyCallback final : public JSNativeObjectPropertyCallback {
+#endif
 	
  public:
 
@@ -76,10 +71,6 @@ class JSNativeObjectValuePropertyCallback final	{
 	*/
 	JSNativeObjectValuePropertyCallback(const JSString& property_name, GetNamedPropertyCallback<T> get_property_callback, SetNamedPropertyCallback<T> set_property_callback, const std::unordered_set<JSPropertyAttribute>& attributes);
 
-	JSString get_property_name() const {
-		return property_name__;
-	}
-	
 	GetNamedPropertyCallback<T> get_get_property_callback() const {
 		return get_property_callback__;
 	}
@@ -88,57 +79,53 @@ class JSNativeObjectValuePropertyCallback final	{
 		return set_property_callback__;
 	}
 
-	std::unordered_set<JSPropertyAttribute> get_attributes() const {
-		return attributes__;
-	}
-
-	std::size_t get_hash_value() const {
-		return hash_value__;
-	}
-
 	~JSNativeObjectValuePropertyCallback() {
+	}
+	
+	JSNativeObjectValuePropertyCallback(const JSNativeObjectValuePropertyCallback& rhs)
+			: JSNativeObjectPropertyCallback(rhs)
+			, get_property_callback__(rhs.get_property_callback__)
+			, set_property_callback__(rhs.set_property_callback__) {
+	}
+	
+	JSNativeObjectValuePropertyCallback(JSNativeObjectValuePropertyCallback&& rhs)
+			: JSNativeObjectPropertyCallback(rhs)
+			, get_property_callback__(std::move(rhs.get_property_callback__))
+			, set_property_callback__(std::move(rhs.set_property_callback__)) {
+	}
+	
+	JSNativeObjectValuePropertyCallback& JSNativeObjectValuePropertyCallback::operator=(const JSNativeObjectValuePropertyCallback&) = delete;
+	JSNativeObjectValuePropertyCallback& JSNativeObjectValuePropertyCallback::operator=(JSNativeObjectValuePropertyCallback&&) = delete;
+
+	// Create a copy of another JSNativeObjectFunctionPropertyCallback
+  // by assignment. This is a unified assignment operator that fuses
+  // the copy assignment operator
+  //
+  // X& X::operator=(const X&)
+  //
+  // and the move assignment operator
+  //
+  // X& X::operator=(X&&);
+  JSNativeObjectValuePropertyCallback& operator=(JSNativeObjectValuePropertyCallback rhs) {
+    JAVASCRIPTCORECPP_DETAIL_JSNATIVEOBJECTPROPERTYCALLBACK_LOCK_GUARD;
+    JSNativeObjectPropertyCallback::operator=(rhs);
+    swap(rhs);
+    return *this;
   }
 
-	// Copy constructor.
-	JSNativeObjectValuePropertyCallback(const JSNativeObjectValuePropertyCallback& rhs)
-			: property_name__(rhs.property_name__)
-			, get_property_callback__(rhs.get_property_callback__)
-			, set_property_callback__(rhs.set_property_callback__)
-			, attributes__(rhs.attributes__)
-			, hash_value__(hash_val(property_name__, ToJSPropertyAttributes(attributes__))) {
-	}
-	
-	// Move constructor.
-	JSNativeObjectValuePropertyCallback(JSNativeObjectValuePropertyCallback&& rhs)
-			: property_name__(rhs.property_name__)
-			, get_property_callback__(rhs.get_property_callback__)
-			, set_property_callback__(rhs.set_property_callback__)
-			, attributes__(rhs.attributes__)
-			, hash_value__(hash_val(property_name__, ToJSPropertyAttributes(attributes__))) {
-	}
-	
-	// Create a copy of another JSNativeObjectValuePropertyCallback by assignment. This is a
-	// unified assignment operator that fuses the copy assignment
-	// operator,
-	// X& X::operator=(const X&), and the move assignment operator,
-	// X& X::operator=(X&&);
-	JSNativeObjectValuePropertyCallback& operator=(JSNativeObjectValuePropertyCallback rhs) {
-		swap(*this, rhs);
-		return *this;
+  void swap(JSNativeObjectFunctionPropertyCallback& other) noexcept {
+	  JAVASCRIPTCORECPP_DETAIL_JSNATIVEOBJECTVALUEPROPERTYCALLBACK_LOCK_GUARD;
+	  using std::swap;
+	  
+	  // By swapping the members of two classes, the two classes are
+	  // effectively swapped.
+    swap(get_property_callback__, other.get_property_callback__);
+    swap(set_property_callback__, other.set_property_callback__);
   }
-  
-	friend void swap(JSNativeObjectValuePropertyCallback& first, JSNativeObjectValuePropertyCallback& second) noexcept {
-		// enable ADL (not necessary in our case, but good practice)
-		using std::swap;
-		
-    // by swapping the members of two classes,
-		// the two classes are effectively swapped
-    swap(first.property_name__        , second.property_name__);
-    swap(first.get_property_callback__, second.get_property_callback__);
-    swap(first.set_property_callback__, second.set_property_callback__);
-    swap(first.attributes__           , second.attributes__);
-    swap(first.hash_value__           , second.hash_value__);
-	}
+
+  friend void swap(JSNativeObjectValuePropertyCallback& first, JSNativeObjectValuePropertyCallback& second) noexcept {
+	  first.swap(second);
+  }
 
 private:
 	
@@ -148,60 +135,30 @@ private:
 	template<typename U>
 	friend bool operator<(const JSNativeObjectValuePropertyCallback<U>& lhs, const JSNativeObjectValuePropertyCallback<U>& rhs);
 
-	JSString                                property_name__;
-	GetNamedPropertyCallback<T>             get_property_callback__ { nullptr };
-	SetNamedPropertyCallback<T>             set_property_callback__ { nullptr };
-	std::unordered_set<JSPropertyAttribute> attributes__;
-	                     
-	// Precomputed hash value for JSNativeObjectValuePropertyCallback
-	// since instances of this class template are immutable.
-	std::size_t                             hash_value__;
+	GetNamedPropertyCallback<T> get_property_callback__ { nullptr };
+	SetNamedPropertyCallback<T> set_property_callback__ { nullptr };
 };
 
 template<typename T>
 JSNativeObjectValuePropertyCallback<T>::JSNativeObjectValuePropertyCallback(const JSString& property_name, GetNamedPropertyCallback<T> get_property_callback, SetNamedPropertyCallback<T> set_property_callback, const std::unordered_set<JSPropertyAttribute>& attributes)
-		: property_name__(property_name)
+		: JSNativeObjectPropertyCallback(property_name, attributes)
 		, get_property_callback__(get_property_callback)
-		, set_property_callback__(set_property_callback)
-		, attributes__(attributes)
-		, hash_value__(hash_val(property_name__, ToJSPropertyAttributes(attributes__))) {
-	
-	static const std::string log_prefix { "MDL: JSNativeObjectValuePropertyCallback: " };
-	
-	if (property_name__.empty()) {
-		std::ostringstream os;
-		os << "The property_name is empty. A valid JavaScript property name must be provided.";
-		const std::string message = os.str();
-		std::clog << log_prefix << " [ERROR] " << message << std::endl;
-		throw std::invalid_argument(message);
-	}
+		, set_property_callback__(set_property_callback) {
 	
 	if (!get_property_callback && !set_property_callback) {
-		std::ostringstream os;
-		os << "Both get_property_callback and set_property_callback are missing. At least one callback must be provided.";
-		const std::string message = os.str();
-		std::clog << log_prefix << " [ERROR] " << message << std::endl;
-		throw std::invalid_argument(message);
+		ThrowInvalidArgument("JSNativeObjectValuePropertyCallback", "Both get_property_callback and set_property_callback are missing. At least one callback must be provided");
 	}
 	
 	if (attributes.find(JSPropertyAttribute::ReadOnly) != attributes.end()) {
 		if (!get_property_callback) {
-			std::ostringstream os;
-			os << "ReadOnly attribute is set but get_property_callback is missing.";
-			const std::string message = os.str();
-			std::clog << log_prefix << " [ERROR] " << message << std::endl;
-			throw std::invalid_argument(message);
+			ThrowInvalidArgument("JSNativeObjectValuePropertyCallback", "ReadOnly attribute is set but get_property_callback is missing");
 		}
 		
 		if (set_property_callback) {
-			std::ostringstream os;
-			os << "ReadOnly attribute is set but set_property_callback is provided.";
-			const std::string message = os.str();
-			std::clog << log_prefix << " [ERROR] " << message << std::endl;
-			throw std::invalid_argument(message);
+			ThrowInvalidArgument("JSNativeObjectValuePropertyCallback", "ReadOnly attribute is set but set_property_callback is provided");
 		}
 	}
-
+	
 	// Force the ReadOnly attribute if only a getter is provided.
 	if (get_property_callback && !set_property_callback) {
 		attributes__.insert(JSPropertyAttribute::ReadOnly);
@@ -211,10 +168,6 @@ JSNativeObjectValuePropertyCallback<T>::JSNativeObjectValuePropertyCallback(cons
 // Return true if the two JSNativeObjectValuePropertyCallbacks are equal.
 template<typename T>
 bool operator==(const JSNativeObjectValuePropertyCallback<T>& lhs, const JSNativeObjectValuePropertyCallback<T>& rhs) {
-	if (lhs.property_name__ != rhs.property_name__) {
-		return false;
-	}
-
 	// get_property_callback__
 	if (lhs.get_property_callback__ && !rhs.get_property_callback__) {
 		return false;
@@ -233,7 +186,7 @@ bool operator==(const JSNativeObjectValuePropertyCallback<T>& lhs, const JSNativ
 		return false;
 	}
 	
-	return lhs.attributes__ == rhs.attributes__;
+	return static_cast<JSNativeObjectPropertyCallback>(lhs) == static_cast<JSNativeObjectPropertyCallback>(rhs);
 }
 
 // Return true if the two JSNativeObjectValuePropertyCallback are not
@@ -247,11 +200,7 @@ bool operator!=(const JSNativeObjectValuePropertyCallback<T>& lhs, const JSNativ
 // JSNativeObjectValuePropertyCallbacks.
 template<typename T>
 bool operator<(const JSNativeObjectValuePropertyCallback<T>& lhs, const JSNativeObjectValuePropertyCallback<T>& rhs) {
-	if (lhs.property_name__ < rhs.property_name__) {
-		return true;
-	}
-	
-	return lhs.attributes__ < rhs.attributes__;
+	return static_cast<JSNativeObjectPropertyCallback>(lhs) < static_cast<JSNativeObjectPropertyCallback>(rhs);
 }
 
 template<typename T>
@@ -268,21 +217,6 @@ template<typename T>
 bool operator>=(const JSNativeObjectValuePropertyCallback<T>& lhs, const JSNativeObjectValuePropertyCallback<T>& rhs) {
 	return ! (lhs < rhs);
 }
-
-template<typename T>
-struct hash<JSNativeObjectValuePropertyCallback<T>> {
-	using argument_type = JSNativeObjectValuePropertyCallback<T>;
-	using result_type   = std::size_t;
-	
-	result_type operator()(const argument_type& callback) const {
-		return callback.get_hash_value();
-	}
-};
-
-// Hash function for JSNativeObjectValuePropertyCallback so that they
-// can be stored in a std::unordered_set.
-template<typename T>
-using JSNativeObjectValuePropertyCallbackHash = hash<JSNativeObjectValuePropertyCallback<T>>;
 
 }} // namespace JavaScriptCoreCPP { namespace detail {
 

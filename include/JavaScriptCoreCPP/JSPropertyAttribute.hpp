@@ -12,7 +12,6 @@
 
 #include <cstddef>
 #include <functional>
-#include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP {
 
@@ -29,7 +28,7 @@ namespace JavaScriptCoreCPP {
   @constant DontDelete Specifies that the delete operation should fail
   on a property.
 */
-enum class JSPropertyAttribute : JSPropertyAttributes {
+enum class JSPropertyAttribute : unsigned /* typedef unsigned JSPropertyAttributes; */ {
 	None,
 	ReadOnly,
 	DontEnum,
@@ -43,19 +42,22 @@ enum class JSPropertyAttribute : JSPropertyAttributes {
 // in an unordered container.
 namespace std {
 
-using namespace JavaScriptCoreCPP;
+using JavaScriptCoreCPP::JSPropertyAttribute;
 
 template<>
 struct hash<JSPropertyAttribute> {
-	using argument_type = JSPropertyAttribute;
-	using result_type   = std::size_t;
-	
-	using property_attribute_underlying_type = std::underlying_type<JSPropertyAttribute>::type;
+	using argument_type   = JSPropertyAttribute;
+	using result_type     = std::size_t;
+	using underlying_type = std::underlying_type<argument_type>::type;
+	static const std::hash<underlying_type> hash_function;
 	
 	result_type operator()(const argument_type& property_attribute) const {
-		return std::hash<property_attribute_underlying_type>()(static_cast<property_attribute_underlying_type>(property_attribute));
+		return hash_function(static_cast<underlying_type>(property_attribute));
 	}
 };
+
+template<>
+std::hash<hash<JSPropertyAttribute>::underlying_type> hash<JSPropertyAttribute>::hash_function = std::hash<hash<JSPropertyAttribute>::underlying_type>();
 
 }  // namespace std {
 

@@ -12,13 +12,6 @@
 #include <cassert>
 #include <JavaScriptCore/JavaScript.h>
 
-#undef JAVASCRIPTCORECPP_JSCONTEXTGROUP_LOCK_GUARD
-#ifdef JAVASCRIPTCORECPP_THREAD_SAFE
-#define JAVASCRIPTCORECPP_JSCONTEXTGROUP_LOCK_GUARD std::lock_guard<JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX_TYPE> JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX_NAME_PREFIX##_lock(JAVASCRIPTCORECPP_JSCONTEXTGROUP_MUTEX_NAME)
-#else
-#define JAVASCRIPTCORECPP_JSCONTEXTGROUP_LOCK_GUARD
-#endif  // JAVASCRIPTCORECPP_THREAD_SAFE
-
 namespace JavaScriptCoreCPP {
 
 JSContextGroup::JSContextGroup()
@@ -46,7 +39,7 @@ JSContextGroup::JSContextGroup(const JSContextGroup& rhs)
 }
 	
 JSContextGroup::JSContextGroup(JSContextGroup&& rhs)
-		: js_context_group_ref__(std::move(rhs.js_context_group_ref__)) {
+		: js_context_group_ref__(rhs.js_context_group_ref__) {
 	JSContextGroupRetain(js_context_group_ref__);
 }
 

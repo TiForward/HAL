@@ -10,14 +10,14 @@
 #ifndef _JAVASCRIPTCORECPP_JSVALUE_HPP_
 #define _JAVASCRIPTCORECPP_JSVALUE_HPP_
 
+#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
+#include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
+#endif
+
 #include <ostream>
 
 #ifdef JAVASCRIPTCORECPP_THREAD_SAFE
 #include <mutex>
-#endif
-
-#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
-#include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 #endif
 
 extern "C" struct JSValueRef;
@@ -76,40 +76,40 @@ class JSRegExp;
   JSContext::CreateXXX member functions.
 */
 #ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
-class JSValue	: public detail::JSPerformanceCounter<JSValue> {
+class JSValue : public detail::JSPerformanceCounter<JSValue> {
 #else
 class JSValue {
 #endif
-	
+  
  public:
 
-	/*!
-	  @enum Type
-	  @abstract An enum identifying the type of a JSValue.
-	  @constant Undefined  The unique undefined value.
-	  @constant Null       The unique null value.
-	  @constant Boolean    A primitive boolean value, one of true or false.
-	  @constant Number     A primitive number value.
-	  @constant String     A primitive string value.
-	  @constant Object     An object value (meaning that this JSValue is a JSObject).
-	*/
-	enum class Type {
-		Undefined,
-		Null,
-		Boolean,
-		Number,
-		String,
-		Object
-	};
+  /*!
+    @enum Type
+    @abstract An enum identifying the type of a JSValue.
+    @constant Undefined  The unique undefined value.
+    @constant Null       The unique null value.
+    @constant Boolean    A primitive boolean value, one of true or false.
+    @constant Number     A primitive number value.
+    @constant String     A primitive string value.
+    @constant Object     An object value (meaning that this JSValue is a JSObject).
+  */
+  enum class Type {
+    Undefined,
+    Null,
+    Boolean,
+    Number,
+    String,
+    Object
+  };
 
-	/*!
-	  @method
-	  
-	  @abstract Return a JSString containing the JSON serialized
-	  representation of this JavaScript value.
-	  
-	  @param indent The number of spaces to indent when nesting. If 0
-	  (the default), the resulting JSON will not contain newlines. The
+  /*!
+    @method
+    
+    @abstract Return a JSString containing the JSON serialized
+    representation of this JavaScript value.
+    
+    @param indent The number of spaces to indent when nesting. If 0
+    (the default), the resulting JSON will not contain newlines. The
     size of the indent is clamped to 10 spaces.
     
     @result A JSString containing the JSON serialized representation
@@ -384,31 +384,22 @@ class JSValue {
   JSValue(const JSContext& js_context, JSValueRef js_value_ref);
   
   // Prevent heap based objects.
-	static void * operator new(std::size_t);		 // #1: To prevent allocation of scalar objects
-	static void * operator new [] (std::size_t); // #2: To prevent allocation of array of objects
-	
-	JSContext  js_context__;
-	JSValueRef js_value_ref__ { nullptr };
+  static void * operator new(std::size_t);     // #1: To prevent allocation of scalar objects
+  static void * operator new [] (std::size_t); // #2: To prevent allocation of array of objects
+  
+  JSContext  js_context__;
+  JSValueRef js_value_ref__ { nullptr };
 
-#undef JAVASCRIPTCORECPP_JSVALUE_MUTEX_TYPE
-#undef JAVASCRIPTCORECPP_JSVALUE_MUTEX_NAME_PREFIX
-#undef JAVASCRIPTCORECPP_JSVALUE_MUTEX_NAME
-#undef JAVASCRIPTCORECPP_JSVALUE_MUTEX
-#ifdef JAVASCRIPTCORECPP_THREAD_SAFE
-#define JAVASCRIPTCORECPP_JSVALUE_MUTEX_TYPE        std::recursive_mutex
-#define JAVASCRIPTCORECPP_JSVALUE_MUTEX_NAME_PREFIX js_value
-#define JAVASCRIPTCORECPP_JSVALUE_MUTEX_NAME        JAVASCRIPTCORECPP_JSVALUE_MUTEX_NAME_PREFIX##_mutex_
-#define JAVASCRIPTCORECPP_JSVALUE_MUTEX             JAVASCRIPTCORECPP_JSVALUE_MUTEX_TYPE JAVASCRIPTCORECPP_JSVALUE_MUTEX_NAME
-#else
-#define JAVASCRIPTCORECPP_JSVALUE_MUTEX
+#undef  JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD
+#ifdef  JAVASCRIPTCORECPP_THREAD_SAFE
+                                                             std::recursive_mutex       mutex__;
+#define JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD std::lock_guard<std::recursive_mutex> lock(mutex__)
 #endif  // JAVASCRIPTCORECPP_THREAD_SAFE
-
-	JAVASCRIPTCORECPP_JSVALUE_MUTEX;
 };
 
 inline
 to_string(const JSValue& js_value) {
-	return static_cast<std::string>(js_value);
+  return static_cast<std::string>(js_value);
 }
 
 std::string to_string(const JSValue::Type& js_value_type);
@@ -431,7 +422,7 @@ bool operator==(const JSValue& lhs, const JSValue& rhs);
 // Return true if the two JSValues are not strict equal, as compared by the JS === operator.
 inline
 bool operator!=(const JSValue& lhs, const JSValue& rhs) {
-	return ! (lhs == rhs);
+  return ! (lhs == rhs);
 }
 
 /*!
@@ -451,14 +442,14 @@ bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs);
 
 inline
 std::ostream& operator << (std::ostream& ostream, const JSValue& js_value) {
-	ostream << to_string(js_value);
-	return ostream;
+  ostream << to_string(js_value);
+  return ostream;
 }
 
 inline
 std::ostream& operator << (std::ostream& ostream, const JSValue::Type& js_value_type) {
-	ostream << to_string(js_value_type);
-	return ostream;
+  ostream << to_string(js_value_type);
+  return ostream;
 }
 
 } // namespace JavaScriptCoreCPP {

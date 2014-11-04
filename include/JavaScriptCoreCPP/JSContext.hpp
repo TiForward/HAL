@@ -10,6 +10,12 @@
 #ifndef _JAVASCRIPTCORECPP_JSCONTEXT_HPP_
 #define _JAVASCRIPTCORECPP_JSCONTEXT_HPP_
 
+#include "JavaScriptCoreCPP/JSClass.hpp"
+
+#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
+#include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
+#endif
+
 #include <vector>
 #include <utility>
 
@@ -17,13 +23,9 @@
 #include <mutex>
 #endif
 
-#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
-#include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
-#endif
-
 extern "C" {
-	struct JSContextRef;
-	struct JSGlobalContextRef;
+  struct JSContextRef;
+  struct JSGlobalContextRef;
 }
 
 namespace JavaScriptCoreCPP {
@@ -60,97 +62,97 @@ class JSFunction;
   multiple threads, explicit synchronization is required.
 */
 #ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
-class JSContext final	: public detail::JSPerformanceCounter<JSContext> {
+class JSContext final : public detail::JSPerformanceCounter<JSContext> {
 #else
 class JSContext final {
 #endif
-	
+  
  public:
-	
-	/*!
-	  @method
-	  
-	  @abstract Return the global object of this JavaScript execution
-	  context.
-	  
-	  @result The global object of this JavaScript execution context.
-	*/
-	JSObject get_global_object() const;
-	
-	/*!
-	  @method
-	  
-	  @abstract Return the context group of this JavaScript execution
-	  context.
-	  
-	  @result The context group of this JavaScript execution context.
-	*/
-	JSContextGroup get_context_group() const {
-		return js_context_group__;
-	}
+  
+  /*!
+    @method
+    
+    @abstract Return the global object of this JavaScript execution
+    context.
+    
+    @result The global object of this JavaScript execution context.
+  */
+  JSObject get_global_object() const;
+  
+  /*!
+    @method
+    
+    @abstract Return the context group of this JavaScript execution
+    context.
+    
+    @result The context group of this JavaScript execution context.
+  */
+  JSContextGroup get_context_group() const {
+    return js_context_group__;
+  }
 
-	/*!
-	  @method
-	  
-	  @abstract Create a JavaScript value from parsing a JSON formatted
-	  string.
-	  
-	  @param string The JSString that contains the JSON data to be
-	  parsed.
-	  
-	  @result A JavaScript value containing the result of parsing the
-	  JSON data.
-	  
-	  @throws std::invalid_argument exception if the string isn't a
-	  valid JSON formatted string.
-	*/
-	JSValue CreateValueFromJSON(const JSString& js_string) const;
+  /*!
+    @method
+    
+    @abstract Create a JavaScript value from parsing a JSON formatted
+    string.
+    
+    @param string The JSString that contains the JSON data to be
+    parsed.
+    
+    @result A JavaScript value containing the result of parsing the
+    JSON data.
+    
+    @throws std::invalid_argument exception if the string isn't a
+    valid JSON formatted string.
+  */
+  JSValue CreateValueFromJSON(const JSString& js_string) const;
 
-	/*!
-	  @method
-	  
-	  @abstract Create a JavaScript value of the string type.
-	  
-	  @param string The string to assign to the newly created JSValue.
-	  
-	  @result A JSValue of the string type that represents the value of
-	  string.
-	*/
-	JSValue CreateString(const JSString& js_string = {}) const;
-	JSValue CreateString(const char*        string     ) const;
-	JSValue CreateString(const std::string& string     ) const;
+  /*!
+    @method
+    
+    @abstract Create a JavaScript value of the string type.
+    
+    @param string The string to assign to the newly created JSValue.
+    
+    @result A JSValue of the string type that represents the value of
+    string.
+  */
+  JSValue CreateString(const JSString& js_string = {}) const;
+  JSValue CreateString(const char*        string     ) const;
+  JSValue CreateString(const std::string& string     ) const;
 
-	/*!
-	  @method
-	  
-	  @abstract Create a JavaScript value of the undefined type.
-	  
-	  @result The unique undefined value.
-	*/
-	JSUndefined CreateUndefined() const;
+  /*!
+    @method
+    
+    @abstract Create a JavaScript value of the undefined type.
+    
+    @result The unique undefined value.
+  */
+  JSUndefined CreateUndefined() const;
 
-	/*!
-	  @method
-	  
-	  @abstract Create a JavaScript value of the null type.
-	  
-	  @result The unique null value.
-	*/
-	JSNull CreateNull() const;
+  /*!
+    @method
+    
+    @abstract Create a JavaScript value of the null type.
+    
+    @result The unique null value.
+  */
+  JSNull CreateNull() const;
 
-	/*!
-	  @method
-	  
-	  @abstract Create a JavaScript value of the boolean type.
-	  
-	  @param boolean The bool to pass to the JSBoolean constructor.
-	  
+  /*!
+    @method
+    
+    @abstract Create a JavaScript value of the boolean type.
+    
+    @param boolean The bool to pass to the JSBoolean constructor.
+    
     @result A JavaScript value of the boolean type, representing the
     value of boolean.
   */
-	JSBoolean CreateBoolean(bool boolean) const;
+  JSBoolean CreateBoolean(bool boolean) const;
 
-	/*!
+  /*!
     @method
     
     @abstract Create a JavaScript value of the number type from a
@@ -161,7 +163,7 @@ class JSContext final {
     @result A JavaScript value of the number type, representing the
     value of number.
   */
-	JSNumber CreateNumber(double number) const;
+  JSNumber CreateNumber(double number) const;
 
   /*!
     @method
@@ -173,9 +175,9 @@ class JSContext final {
     @result A JavaScript value of the number type, representing the
     value of number.
   */
-	JSNumber CreateNumber(int32_t number) const;
+  JSNumber CreateNumber(int32_t number) const;
 
-	/*!
+  /*!
     @method
     
     @abstract Create a JavaScript value of the number type from a
@@ -186,318 +188,309 @@ class JSContext final {
     @result A JavaScript value of the number type, representing the
     value of number.
   */
-	JSNumber CreateNumber(uint32_t number) const;
+  JSNumber CreateNumber(uint32_t number) const;
 
-	/*!
-	  @method
-	  
-	  @abstract Create a JavaScript object in this execution context. An
-	  empty JavaScript object is returned if you do not provide any
-	  arguments.
-	  
-	  @discussion The default object class does not allocate storage for
-	  private data, so you cannot use the GetPrivate and SetPrivate
-	  methods unless you provide a custom JSClass.
+  /*!
+    @method
+    
+    @abstract Create a JavaScript object in this execution context. An
+    empty JavaScript object is returned if you do not provide any
+    arguments.
+    
+    @discussion The default object class does not allocate storage for
+    private data, so you cannot use the GetPrivate and SetPrivate
+    methods unless you provide a custom JSClass.
 
-	  Providing a custom JSClass allocates storage in the returned
-	  JSObject for private data so that you can use its GetPrivate and
-	  SetPrivate methods to store private data for callbacks.
-	  
-	  The private data is set on the created object before its intialize
-	  callback is called. This enables the initialize callback to
-	  retrieve and manipulate the private data through the GetPrivate
-	  method.
+    Providing a custom JSClass allocates storage in the returned
+    JSObject for private data so that you can use its GetPrivate and
+    SetPrivate methods to store private data for callbacks.
+    
+    The private data is set on the created object before its intialize
+    callback is called. This enables the initialize callback to
+    retrieve and manipulate the private data through the GetPrivate
+    method.
 
-	  @param js_class An optional custom JSClass to pass to the JSObject
-	  constructor.
-	  
-	  @param private_data An optional void* to set as the object's
-	  private data.
-	  
-	  @result A JavaScript object created from the given JSClass and
-	  private data.
-	*/
-	JSObject CreateObject(const JSClass& js_class = {}, void* private_data = nullptr) const;
+    @param js_class An optional custom JSClass to pass to the JSObject
+    constructor.
+    
+    @param private_data An optional void* to set as the object's
+    private data.
+    
+    @result A JavaScript object created from the given JSClass and
+    private data.
+  */
+  JSObject CreateObject(const JSClass& js_class = JSClass::EmptyJSClass(), void* private_data = nullptr) const;
 
-	/*!
-	  @method
-	  
-	  @abstract Create a JavaScript object in this execution context
-	  that is implemented by a C++ class.
-	  
-	  @param T Any class that derives from JSNativeObject.
+  /*!
+    @method
+    
+    @abstract Create a JavaScript object in this execution context
+    that is implemented by a C++ class.
+    
+    @param T Any class that derives from JSNativeObject.
 
-	  @param constructor_arguments The constructor arguments to pass to
-	  T.
-	  
-	  @result A JavaScript object running in this execution context that
-	  is implemented by a C++ class.
-	*/
-	template<typename T, typename... Us>
-	T CreateObject(Us&&... constructor_arguments) const;
+    @param constructor_arguments The constructor arguments to pass to
+    T.
+    
+    @result A JavaScript object running in this execution context that
+    is implemented by a C++ class.
+  */
+  template<typename T, typename... Us>
+  T CreateObject(Us&&... constructor_arguments) const;
 
-	/*!
-	  @method
-	  
-	  @abstract Create a JavaScript Array object.
-	  
-	  @discussion The behavior of this constructor does not exactly
-	  match the behavior of the built-in Array constructor in that if
-	  the vector of arguments contains one element then the JSArray is
-	  also created with on element.
-	  
-	  @param arguments Optional JavaScript values to populate the
-	  array. Otherwise an empty array is created.
-	  
+  /*!
+    @method
+    
+    @abstract Create a JavaScript Array object.
+    
+    @discussion The behavior of this constructor does not exactly
+    match the behavior of the built-in Array constructor in that if
+    the vector of arguments contains one element then the JSArray is
+    also created with on element.
+    
+    @param arguments Optional JavaScript values to populate the
+    array. Otherwise an empty array is created.
+    
     @result A JavaScript object that is an Array, populated with the
     given JavaScript values.
-	*/
-	JSArray CreateArray(const std::vector<JSValue>& arguments = {}) const;
+  */
+  JSArray CreateArray(const std::vector<JSValue>& arguments = {}) const;
 
- 	/*!
-	  @method
-	  
-	  @abstract Create a JavaScript Date object, as if by invoking the
-	  built-in Date constructor.
-	  
-	  @param arguments Optional JavaScript values to pass to the Date
-	  Constructor.
-	  
+  /*!
+    @method
+    
+    @abstract Create a JavaScript Date object, as if by invoking the
+    built-in Date constructor.
+    
+    @param arguments Optional JavaScript values to pass to the Date
+    Constructor.
+    
     @result A JSObject that is a Date.
-	*/
-	JSDate CreateDate(const std::vector<JSValue>& arguments = {}) const;
+  */
+  JSDate CreateDate(const std::vector<JSValue>& arguments = {}) const;
 
-	/*!
-	  @method
-	  
-	  @abstract Create a JavaScript Error object, as if by invoking the
-	  built-in Error constructor.
-	  
-	  @param arguments Optional JavaScript values to pass to the Error
-	  Constructor.
-	  
+  /*!
+    @method
+    
+    @abstract Create a JavaScript Error object, as if by invoking the
+    built-in Error constructor.
+    
+    @param arguments Optional JavaScript values to pass to the Error
+    Constructor.
+    
     @result A JSObject that is a Error.
-	*/
-	JSError CreateError(const std::vector<JSValue>& arguments = {}) const;
+  */
+  JSError CreateError(const std::vector<JSValue>& arguments = {}) const;
 
-	/*!
-	  @method
-	  
-	  @abstract Create a JavaScript RegExp object, as if by invoking the
-	  built-in RegExp constructor.
-	  
-	  @param arguments Optional JavaScript values to pass to the RegExp
-	  Constructor.
-	  
+  /*!
+    @method
+    
+    @abstract Create a JavaScript RegExp object, as if by invoking the
+    built-in RegExp constructor.
+    
+    @param arguments Optional JavaScript values to pass to the RegExp
+    Constructor.
+    
     @result A JSObject that is a RegExp.
-	*/
-	JSRegExp CreateRegExp(const std::vector<JSValue>& arguments = {}) const;
+  */
+  JSRegExp CreateRegExp(const std::vector<JSValue>& arguments = {}) const;
 
-	/*!
-	  @method
-	  
-	  @abstract Create a JavaScript function whose body is given as a
-	  string of JavaScript code. Use this method when you want to
-	  execute a script repeatedly to avoid the cost of re-parsing the
-	  script before each execution.
+  /*!
+    @method
+    
+    @abstract Create a JavaScript function whose body is given as a
+    string of JavaScript code. Use this method when you want to
+    execute a script repeatedly to avoid the cost of re-parsing the
+    script before each execution.
 
-	  @param body A JSString containing the script to use as the
-	  function's body.
-	  
-	  @param parameter_names An optional JSString array containing the
-	  names of the function's parameters.
-	  
-	  @param function_name An optional JSString containing the
-	  function's name. This will be used when converting the function to
-	  a string. An empty string creates an anonymous function.
-	  
-	  @param source_url An optional JSString containing a URL for the
-	  script's source file. This is only used when reporting exceptions.
-	  
-	  @param starting_line_number An optional integer value specifying
-	  the script's starting line number in the file located at
-	  source_url. This is only used when reporting exceptions. The value
-	  is one-based, so the first line is line 1 and invalid values are
-	  clamped to 1.
-	  
-	  @result A JSObject that is a function. The object's prototype will
-	  be the default function prototype.
-	  
-	  @throws std::invalid_argument if either body, function_name or
-	  parameter_names contains a syntax error.
-	*/
-	JSFunction CreateFunction(const JSString& body, const std::vector<JSString>& parameter_names = {}, const JSString& function_name = {}, const JSString& source_url = {}, int starting_line_number = 1) const;
+    @param body A JSString containing the script to use as the
+    function's body.
+    
+    @param parameter_names An optional JSString array containing the
+    names of the function's parameters.
+    
+    @param function_name An optional JSString containing the
+    function's name. This will be used when converting the function to
+    a string. An empty string creates an anonymous function.
+    
+    @param source_url An optional JSString containing a URL for the
+    script's source file. This is only used when reporting exceptions.
+    
+    @param starting_line_number An optional integer value specifying
+    the script's starting line number in the file located at
+    source_url. This is only used when reporting exceptions. The value
+    is one-based, so the first line is line 1 and invalid values are
+    clamped to 1.
+    
+    @result A JSObject that is a function. The object's prototype will
+    be the default function prototype.
+    
+    @throws std::invalid_argument if either body, function_name or
+    parameter_names contains a syntax error.
+  */
+  JSFunction CreateFunction(const JSString& body, const std::vector<JSString>& parameter_names = {}, const JSString& function_name = {}, const JSString& source_url = {}, int starting_line_number = 1) const;
 
 
-	/* Script Evaluation */
-	
-	/*!
-	  @method
-	  
-	  @abstract Evaluate a string of JavaScript code.
-	  
-	  @param script A JSString containing the script to evaluate.
-	  
-	  @param this_object An optional JavaScript object to use as
-	  "this". The default is the global object.
-	  
-	  @param source_url An optional JSString containing a URL for the
-	  script's source file. This is used by debuggers and when reporting
-	  exceptions.
-	  
-	  @param starting_line_number An optional integer value specifying
-	  the script's starting line number in the file located at
-	  source_url. This is only used when reporting exceptions. The value
-	  is one-based, so the first line is line 1 and invalid values are
-	  clamped to 1.
-	  
-	  @result The JSValue that results from evaluating script.
-	  
-	  @throws std::runtime_error exception if the evaluated script threw
-	  an exception.
-	  
-	*/
-	JSValue JSEvaluateScript(const JSString& script,                       const JSString& source_url = {}, int starting_line_number = 1) const;
-	JSValue JSEvaluateScript(const JSString& script, JSObject this_object, const JSString& source_url = {}, int starting_line_number = 1) const;
+  /* Script Evaluation */
+  
+  /*!
+    @method
+    
+    @abstract Evaluate a string of JavaScript code.
+    
+    @param script A JSString containing the script to evaluate.
+    
+    @param this_object An optional JavaScript object to use as
+    "this". The default is the global object.
+    
+    @param source_url An optional JSString containing a URL for the
+    script's source file. This is used by debuggers and when reporting
+    exceptions.
+    
+    @param starting_line_number An optional integer value specifying
+    the script's starting line number in the file located at
+    source_url. This is only used when reporting exceptions. The value
+    is one-based, so the first line is line 1 and invalid values are
+    clamped to 1.
+    
+    @result The JSValue that results from evaluating script.
+    
+    @throws std::runtime_error exception if the evaluated script threw
+    an exception.
+    
+  */
+  JSValue JSEvaluateScript(const JSString& script,                       const JSString& source_url = {}, int starting_line_number = 1) const;
+  JSValue JSEvaluateScript(const JSString& script, JSObject this_object, const JSString& source_url = {}, int starting_line_number = 1) const;
 
-	/*!
-	  @method
-	  
-	  @abstract Check for syntax errors in a string of JavaScript.
-	  
-	  @param script A JSString containing the script to check for syntax
-	  errors.
-	  
-	  @param source_url An optional JSString containing a URL for the
-	  script's source file. This is used by debuggers and when reporting
-	  exceptions.
-	  
-	  @param starting_line_number An optional integer value specifying
-	  the script's starting line number in the file located at
-	  source_url. This is only used when reporting exceptions. The value
-	  is one-based, so the first line is line 1 and invalid values are
-	  clamped to 1.
-	  
-	  @result true if the script is syntactically correct, otherwise
-	  false.
-	*/
-	bool JSCheckScriptSyntax(const JSString& script, const JSString& source_url = {}, int starting_line_number = 1) const;
-	
+  /*!
+    @method
+    
+    @abstract Check for syntax errors in a string of JavaScript.
+    
+    @param script A JSString containing the script to check for syntax
+    errors.
+    
+    @param source_url An optional JSString containing a URL for the
+    script's source file. This is used by debuggers and when reporting
+    exceptions.
+    
+    @param starting_line_number An optional integer value specifying
+    the script's starting line number in the file located at
+    source_url. This is only used when reporting exceptions. The value
+    is one-based, so the first line is line 1 and invalid values are
+    clamped to 1.
+    
+    @result true if the script is syntactically correct, otherwise
+    false.
+  */
+  bool JSCheckScriptSyntax(const JSString& script, const JSString& source_url = {}, int starting_line_number = 1) const;
+  
 
-	/*!
-	  @method
-	  
-	  @abstract Perform a JavaScript garbage collection.
-	  
-	  @discussion JavaScript values that are on the machine stack, in a
-	  register, protected by JSValueProtect, set as the global object of
-	  an execution context, or reachable from any such value will not be
-	  collected.
-	  
-	  During JavaScript execution, you are not required to call this
-	  function; the JavaScript engine will garbage collect as
-	  needed. JavaScript values created within a context group are
-	  automatically destroyed when the last reference to the context
-	  group is released.
-	*/
-	void GarbageCollect() const;
-	
-	/*!
-	  @method
-	  
-	  @abstract FOR DEBUG PURPOSES ONLY: Perform an immediate JavaScript
-	  garbage collection.
-	  
-	  @discussion JavaScript values that are on the machine stack, in a
-	  register, protected by JSValueProtect, set as the global object of
-	  an execution context, or reachable from any such value will not be
-	  collected.
-	*/
+  /*!
+    @method
+    
+    @abstract Perform a JavaScript garbage collection.
+    
+    @discussion JavaScript values that are on the machine stack, in a
+    register, protected by JSValueProtect, set as the global object of
+    an execution context, or reachable from any such value will not be
+    collected.
+    
+    During JavaScript execution, you are not required to call this
+    function; the JavaScript engine will garbage collect as
+    needed. JavaScript values created within a context group are
+    automatically destroyed when the last reference to the context
+    group is released.
+  */
+  void GarbageCollect() const;
+  
+  /*!
+    @method
+    
+    @abstract FOR DEBUG PURPOSES ONLY: Perform an immediate JavaScript
+    garbage collection.
+    
+    @discussion JavaScript values that are on the machine stack, in a
+    register, protected by JSValueProtect, set as the global object of
+    an execution context, or reachable from any such value will not be
+    collected.
+  */
 #ifdef DEBUG
-	void SynchronousGarbageCollectForDebugging() const;
+  void SynchronousGarbageCollectForDebugging() const;
 #endif
 
-	~JSContext();
-	JSContext(const JSContext&);
-	JSContext(JSContext&&);
-	JSContext& JSContext::operator=(const JSContext&) = delete;
-	JSContext& JSContext::operator=(JSContext&&) = delete;
-	JSContext& operator=(JSContext);
-	void swap(JSContext&) noexcept;
+  ~JSContext();
+  JSContext(const JSContext&);
+  JSContext(JSContext&&);
+  JSContext& JSContext::operator=(const JSContext&) = delete;
+  JSContext& JSContext::operator=(JSContext&&) = delete;
+  JSContext& operator=(JSContext);
+  void swap(JSContext&) noexcept;
 
  private:
   
   // Only a JSContextGroup create a JSContext using the following
-	// constructor.
-	friend class JSContextGroup;
+  // constructor.
+  friend class JSContextGroup;
 
-	explicit JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class = {});
+  explicit JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class = {});
   
-	// These classes and functions need access to operator
-	// JSContextRef().
-	friend class JSValue;
-	friend class JSUndefined;
-	friend class JSNull;
-	friend class JSBoolean;
-	friend class JSNumber;
-	friend class JSObject;
-	friend class JSArray;
-	friend class JSDate;
-	friend class JSError;
-	friend class JSRegExp;
-	friend class JSFunction;
-	friend class JSPropertyNameArray;
+  // These classes and functions need access to operator
+  // JSContextRef().
+  friend class JSValue;
+  friend class JSUndefined;
+  friend class JSNull;
+  friend class JSBoolean;
+  friend class JSNumber;
+  friend class JSObject;
+  friend class JSArray;
+  friend class JSDate;
+  friend class JSError;
+  friend class JSRegExp;
+  friend class JSFunction;
+  friend class JSPropertyNameArray;
 
-	template<typename T>
-	friend class JSNativeObject;
+  template<typename T>
+  friend class JSNativeObject;
 
-	friend bool operator==(const JSValue& lhs, const JSValue& rhs);
-	friend bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs);
-	
-	// For interoperability with the JavaScriptCore C API.
-	operator JSContextRef() const {
-		return js_context_ref__;
-	}
-	
+  friend bool operator==(const JSValue& lhs, const JSValue& rhs);
+  friend bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs);
+  
+  // For interoperability with the JavaScriptCore C API.
+  operator JSContextRef() const {
+    return js_context_ref__;
+  }
+  
   // Only the JSNativeClass static functions create a JSContext using
-	// the following constructor.
-	template<typename T>
-	friend class JSNativeClass;
+  // the following constructor.
+  template<typename T>
+  friend class JSNativeClass;
 
-	// For interoperability with the JavaScriptCore C API.
-	explicit JSContext(JSContextRef js_context_ref);
-	operator JSGlobalContextRef() const;
-	
-	// Prevent heap based objects.
-	static void * operator new(std::size_t);			 // #1: To prevent allocation of scalar objects
-	static void * operator new [] (std::size_t);	 // #2: To prevent allocation of array of objects
-	
-	friend void swap(JSContext& first, JSContext& second) noexcept;
+  // For interoperability with the JavaScriptCore C API.
+  explicit JSContext(JSContextRef js_context_ref);
+  operator JSGlobalContextRef() const;
+  
+  // Prevent heap based objects.
+  static void * operator new(std::size_t);       // #1: To prevent allocation of scalar objects
+  static void * operator new [] (std::size_t);   // #2: To prevent allocation of array of objects
+  
+  friend void swap(JSContext& first, JSContext& second) noexcept;
   friend bool operator==(const JSContext& lhs, const JSContext& rhs);
   
   JSContextGroup js_context_group__;
   JSContextRef   js_context_ref__ { nullptr };
 
-#undef JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_TYPE
-#undef JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_NAME_PREFIX
-#undef JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_NAME
-#undef JAVASCRIPTCORECPP_JSCONTEXT_MUTEX
-#ifdef JAVASCRIPTCORECPP_THREAD_SAFE
-#define JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_TYPE        std::recursive_mutex
-#define JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_NAME_PREFIX js_context
-#define JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_NAME        JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_NAME_PREFIX##_mutex_
-#define JAVASCRIPTCORECPP_JSCONTEXT_MUTEX             JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_TYPE JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_NAME
-#else
-#define JAVASCRIPTCORECPP_JSCONTEXT_MUTEX
+#undef  JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD
+#ifdef  JAVASCRIPTCORECPP_THREAD_SAFE
+                                                               std::recursive_mutex       mutex__;
+#define JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD std::lock_guard<std::recursive_mutex> lock(mutex__)
 #endif  // JAVASCRIPTCORECPP_THREAD_SAFE
-
-  JAVASCRIPTCORECPP_JSCONTEXT_MUTEX;
 };
 
 // Return true if the two JSContexts are equal.
 inline
 bool operator==(const JSContext& lhs, const JSContext& rhs) {
-	return (lhs.js_context_ref__ == rhs.js_context_ref__);
+  return (lhs.js_context_ref__ == rhs.js_context_ref__);
 }
   
 // Return true if the two JSContextGroups are not equal.
@@ -512,7 +505,7 @@ namespace std {
 using JavaScriptCoreCPP::JSContext;
 template<>
 void swap<JSContextGroup>(JSContext& first, JSContext& second) noexcept {
-	first.swap(second);
+  first.swap(second);
 }
 }  // namespace std
 

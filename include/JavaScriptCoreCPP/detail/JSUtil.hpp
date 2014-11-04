@@ -11,15 +11,16 @@
 #define _JAVASCRIPTCORECPP_JSUTIL_HPP_
 
 #include "JavaScriptCoreCPP/JSPropertyAttribute.hpp"
-#include "JavaScriptCoreCPP/JSNativeClassAttribute.hpp"
 
 #include <cstdint>
 #include <memory>
 #include <vector>
 #include <unordered_set>
 
-// class JSStringRef;
-// class JSValueRef;
+extern "C" {
+  struct JSStringRef;
+  struct JSValueRef;
+}
 
 namespace JavaScriptCoreCPP {
 class JSString;
@@ -35,10 +36,11 @@ std::unique_ptr<T> make_unique(Ts&&... params) {
 }
 
 // Log and throw a std::logic_error from an internal component.
-void   ThrowLogicError(const std::string& internal_component_name, const std::string& message  );
-void   ThrowLogicError(const std::string& internal_component_name, const JSValue&     exception);
-void ThrowRuntimeError(const std::string& internal_component_name, const std::string& message  );
-void ThrowRuntimeError(const std::string& internal_component_name, const JSValue&     exception);
+void      ThrowLogicError(const std::string& internal_component_name, const std::string& message  );
+void      ThrowLogicError(const std::string& internal_component_name, const JSValue&     exception);
+void    ThrowRuntimeError(const std::string& internal_component_name, const std::string& message  );
+void    ThrowRuntimeError(const std::string& internal_component_name, const JSValue&     exception);
+void ThrowInvalidArgument(const std::string& internal_component_name, const std::string& message  );
 
 // For interoperability with the JavaScriptCore C API.
 std::vector<JSValue>     to_vector(const JSContext&, size_t count, const JSValueRef[]);
@@ -46,13 +48,11 @@ std::vector<JSValue>     to_vector(const JSContext&, const std::vector<JSString>
 std::vector<JSValueRef>  to_vector(const std::vector<JSValue>& );
 std::vector<JSStringRef> to_vector(const std::vector<JSString>&);
 
-// For hash functions for std::unordered_set<JSPropertyAttribute> and
-// interoperability with the JavaScriptCore C API.
-JSPropertyAttributes ToJSPropertyAttributes(const std::unordered_set<JSPropertyAttribute>& attributes);
+// For interoperability with the JavaScriptCore C API.
+/* typedef unsigned JSPropertyAttributes */ unsigned ToJSPropertyAttributes(const std::unordered_set<JSPropertyAttribute>& attributes);
 
-// For hash functions for std::unordered_set<JSNativeClassAttribute>
-// and interoperability with the JavaScriptCore C API.
-JSClassAttributes ToJSClassAttributes(const std::unordered_set<JSNativeClassAttribute>& attributes);
+// For interoperability with the JavaScriptCore C API.
+/* typedef unsigned JSClassAttributes */ unsigned ToJSClassAttribute(JSNativeClassAttribute attribute);
 
 // This in the ToInt32 operation as defined in section 9.5 of the
 // ECMA-262 spec. Note that this operation is identical to ToUInt32

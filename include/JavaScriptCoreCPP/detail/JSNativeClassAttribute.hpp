@@ -7,14 +7,13 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_JSNATIVECLASSATTRIBUTE_HPP_
-#define _JAVASCRIPTCORECPP_JSNATIVECLASSATTRIBUTE_HPP_
+#ifndef _JAVASCRIPTCORECPP_DETAIL_JSNATIVECLASSATTRIBUTE_HPP_
+#define _JAVASCRIPTCORECPP_DETAIL_JSNATIVECLASSATTRIBUTE_HPP_
 
 #include <cstddef>
 #include <functional>
-#include <JavaScriptCore/JavaScript.h>
 
-namespace JavaScriptCoreCPP {
+namespace JavaScriptCoreCPP { namespace detail {
 
 /*!
   @enum
@@ -27,32 +26,35 @@ namespace JavaScriptCoreCPP {
   objects. Use NoAutomaticPrototype in combination with
   JSObject::SetPrototype to manage prototypes manually.
 */
-enum class JSNativeClassAttribute : JSClassAttributes {
+enum class JSNativeClassAttribute : unsigned /* typedef unsigned JSClassAttributes */ {
 	None,
 	NoAutomaticPrototype
 };
 
-} // namespace JavaScriptCoreCPP {
+} // JavaScriptCoreCPP { namespace detail {
 
 
 // Provide a hash function so that a JSNativeClassAttribute can be
 // stored in an unordered container.
 namespace std {
 
-using namespace JavaScriptCoreCPP;
+using namespace JavaScriptCoreCPP::detail::JSNativeClassAttribute;
 
 template<>
 struct hash<JSNativeClassAttribute> {
-	using argument_type = JSNativeClassAttribute;
-	using result_type   = std::size_t;
-
-	using class_attribute_underlying_type = std::underlying_type<JSNativeClassAttribute>::type;
+	using argument_type   = JSNativeClassAttribute;
+	using result_type     = std::size_t;
+	using underlying_type = std::underlying_type<JSNativeClassAttribute>::type;
+	static const std::hash<underlying_type> hash_function;
 	
 	result_type operator()(const argument_type& class_attribute) const {
-		return std::hash<class_attribute_underlying_type>()(static_cast<class_attribute_underlying_type>(class_attribute));
+		return hash_function(static_cast<underlying_type>(class_attribute));
 	}
 };
+	
+template<>
+std::hash<hash<JSClassAttribute>::underlying_type> hash<JSClassAttribute>::hash_function = std::hash<hash<JSClassAttribute>::underlying_type>();
 
 }  // namespace std {
 
-#endif // _JAVASCRIPTCORECPP_JSNATIVECLASSATTRIBUTE_HPP_
+#endif // _JAVASCRIPTCORECPP_DETAIL_JSNATIVECLASSATTRIBUTE_HPP_

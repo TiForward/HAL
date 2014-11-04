@@ -16,11 +16,11 @@
 #include "JavaScriptCoreCPP/JSObject.hpp"
 #include "JavaScriptCoreCPP/JSContext.hpp"
 
-#include <JavaScriptCore/JavaScript.h>
+#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
+#include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
+#endif
 
-
-#undef  JAVASCRIPTCORECPP_JSNATIVEOBJECT_DEBUG
-#define JAVASCRIPTCORECPP_JSNATIVEOBJECT_DEBUG
+//#include <JavaScriptCore/JavaScript.h>
 
 
 namespace JavaScriptCoreCPP {
@@ -42,9 +42,6 @@ class JSNativeObject : public JSObject {
 	
  public:
 
-	virtual ~JSNativeObject() {
-	}
-	
 	/*!
 	  @method
 	  
@@ -57,55 +54,53 @@ class JSNativeObject : public JSObject {
 		return class_name_;
 	}
 	
-	/*!
-	  @method
-	  
-	  @abstract Return the JSNativeClassAttributes that defines this
-	  JavaScript object.
-	  
-	  @result The JSNativeClassAttributes that defines this JavaScript
-	  object.
-	*/
-	std::unordered_set<JSNativeClassAttribute> ClassAttributes() const {
-		return class_attributes_;
+	virtual ~JSNativeObject() {
 	}
-
-	// Copy constructor.
+	
 	JSNativeObject(const JSNativeObject& rhs)
 			: JSObject(rhs)
 			, js_native_class__(rhs.js_native_class__) {
 	}
 	
-	// Move constructor.
 	JSNativeObject(JSNativeObject&& rhs)
-			: JSObject(std::move(rhs))
-			, js_native_class__(rhs.js_native_class__) {
+			: JSObject(rhs)
+			, js_native_class__(std::move(rhs.js_native_class__)) {
 	}
 	
-#ifdef JAVASCRIPTCORECPP_MOVE_SEMANTICS_ENABLE
-	JSNativeObject& JSNativeObject::operator=(const JSNativeObject&) = default;
-	JSNativeObject& JSNativeObject::operator=(JSNativeObject&&) = default;
-#endif
+	JSNativeObject& JSNativeObject::operator=(const JSNativeObject&) = delete;
+	JSNativeObject& JSNativeObject::operator=(JSNativeObject&&) = delete;
 	
-	// Create a copy of another JSNativeObject by assignment. This is a unified
-	// assignment operator that fuses the copy assignment operator,
-	// X& X::operator=(const X&), and the move assignment operator,
-	// X& X::operator=(X&&);
-	JSNativeObject& operator=(JSNativeObject rhs) {
-		JSObject::operator=(rhs);
-		swap(*this, rhs);
-		return *this;
-	}
-	
+  // Create a copy of another JSNativeObject by assignment. This is a
+  // unified assignment operator that fuses the copy assignment
+  // operator
+  //
+  // X& X::operator=(const X&)
+  //
+  // and the move assignment operator
+  //
+  // X& X::operator=(X&&);
+  JSNativeObject& operator=(JSNativeObject rhs) {
+	  JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
+	  JSObject::operator=(rhs);
+    swap(rhs);
+    return *this;
+  }
+
+  void swap(JSNativeObject& other) noexcept {
+	  JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
+	  using std::swap;
+	  
+	  // By swapping the members of two classes, the two classes are
+	  // effectively swapped.
+	  swap(js_native_class__            , other.js_native_class__);
+	  swap(attach_to_context_once_flag__, other.attach_to_context_once_flag__);
+	  swap(attached_to_context__        , other.attached_to_context__);
+  }
+
 	friend void swap(JSNativeObject& first, JSNativeObject& second) noexcept {
-		// enable ADL (not necessary in our case, but good practice)
-		using std::swap;
-		
-		// by swapping the members of two classes,
-		// the two classes are effectively swapped
-		swap(first.js_native_class__, second.js_native_class__);
+		first.swap(second);
 	}
-	
+
 	virtual JSObject CallAsConstructor(const std::vector<JSValue>& arguments) override final {
 		assert(attached_to_context__);
 		return JSObject::CallAsConstructor(arguments);
@@ -116,171 +111,66 @@ class JSNativeObject : public JSObject {
 		return JSObject::CallAsFunction(arguments, this_object);
 	}
 	
+	virtual bool HasInstance(const JSObject& constructor, const JSValue& possible_instance) const final {
+		bool result = false;
+		try {
+			static_cast<void>(dynamic_cast<const T&>(possible_instance));
+			result = true;
+		} catch (...) {
+		}
+		return result;
+	}
+
+ private:
+
+	// Only a JSContext can attach a JSNativeClass to itself.
+	friend JSContext;
+
+	void AttachToContext() const {
+		auto self = const_cast<JSNativeObject*>(this);
+		std::call_once(self -> attach_to_context_once_flag__, [self] {
+				// Replace the JSObjectRef of our base class with one based on
+				// our JSNativeClass that has its private data set to a
+				// pointer to ourselves.
+				// JSValueUnprotect(self -> get_context(), self -> js_object_ref__);
+				// self -> js_object_ref__ = JSObject(self -> get_context(), self -> js_native_class__, self);
+				// self -> attached_to_context__ = true;
+				self -> JSObject::SetPrivate(self);
+			});
+	}
+	
+	virtual void* GetPrivate() const override final {
+		assert(attached_to_context__);
+		return nullptr;
+	}
+	
+	virtual bool SetPrivate(void* data) override final {
+		assert(attached_to_context__);
+		return false;
+	}
+
+	JSNativeClass<T> js_native_class__;
+	std::once_flag   attach_to_context_once_flag__;
+	bool             attached_to_context__ { false };
+
  protected:
 	
 	JSNativeObject(const JSContext& js_context, const JSNativeClass<T>& js_native_class)
 			: JSObject(js_context, js_native_class)
-			, js_native_class__(JSNativeClassBuilder<T>(js_native_class).HasInstance(&JSNativeObject<T>::HasInstance).build()) {
-		assert(JSNativeClassBuilder<T>(js_native_class__).HasInstance());
-		assert(JSNativeClassBuilder<T>(js_native_class__).Constructor());
+			, js_native_class__(JSClassBuilder<T>(js_native_class).HasInstance(&JSNativeObject<T>::HasInstance).build()) {
+		assert(JSClassBuilder<T>(js_native_class__).HasInstance());
+		assert(JSClassBuilder<T>(js_native_class__).Constructor());
 	}
 
 	/*!
 	  @method
 	  
-	  @abstract Set the JSNativeClass's name that defines instances of
-	  this JavaScript object.
+	  @abstract Set the JSClass's name.
 	  
 	  @result void
-
-	  @throws std::logic_error if the JSNativeClass's name has already
-	  been set.
 	*/
-	static void set_class_name(const JSString& class_name) {
-		// TODO: Throw if class name is already set.
-		class_name_ = class_name;
-	}
-	
-	/*!
-	  @method
-	  
-	  @abstract By default all instances of this JavaScript object will
-	  have a shared prototype.
-
-	  Callingg this method Set the JSNativeClassAttributes that defines instances
-	  of this JavaScript object.
-
-	  @discussion Not setting the class_attributes The default is "None" which means a instances of this
-	  JavaScript object will have a shared prototype.
-
-	  NoAutomaticPrototype Specifies that a JSNativeClass should not
-	  automatically generate a shared prototype for its instance
-	  objects. Use NoAutomaticPrototype in combination with
-	  JSObject::SetPrototype to manage prototypes manually.
-	  
-	  @result void
-
-	  @throws std::logic_error if the JSNativeClass's class attributes
-	  have already been set.
-	*/
-	static void set_no_automatic_prototype() {
-		no_automatic_prototype_ = true;
-	}
-	
-	/*!
-	  @method
-	  
-	  @abstract Return the parent of the JSNativeClass. The default
-	  value is the default object class.
-	  
-	  @result The parent of the the JSNativeClass.
-	*/
-	JSClass ParentClass() const {
-		return parent_class_;
-	}
-
-	/*!
-	  @method
-	  
-	  @abstract Set the parent of the JSNativeClass.  The default value
-	  is the default object class.
-	  
-	  @result A reference to the builder for chaining.
-	*/
-	JSNativeClassBuilder<T>& ParentClass(const JSClass& parent_class) {
-		parent_class_ = parent_class;
-		return *this;
-	}
-
-	/*!
-	  @method
-
-	  @abstract Return the callback to invoke when a JavaScript object
-	  is first created.
-	  
-	  @result The callback to invoke when a JavaScript object is first
-	  created.
-	*/
-	InitializeCallback<T> Initialize() const {
-		return initialize_callback_;
-	}
-
-	/*!
-	  @method
-
-	  @abstract Set the callback to invoke when a JavaScript object is
-	  first created. Unlike the other object callbacks, the initialize
-	  callback is called on the least derived object (the parent object)
-	  first, and the most derived object last, analogous to the way C++
-	  constructors work in a class hierarchy.
-
-	  @discussion For example, given this class definition:
-
-	  class Foo {
-	    void Initialize();
-	  };
-
-	  You would call the builer like this:
-
-	  JSNativeClassBuilder<Foo> builder("Foo");
-	  builder.Initialize(&Foo::Initialize);
-  
-	  @result A reference to the builder for chaining.
-	*/
-	JSNativeClassBuilder<T>& Initialize(const InitializeCallback<T>& initialize_callback) {
-		initialize_callback_ = initialize_callback;
-		return *this;
-	}
-
-	/*!
-	  @method
-
-	  @abstract Return the callback to invoke when a JavaScript object
-	  is finalized (prepared for garbage collection).
-  	  
-	  @result The callback to invoke when a JavaScript object is
-	  finalized (prepared for garbage collection).
-	*/
-	FinalizeCallback<T> Finalize() const {
-		return finalize_callback_;
-	}
-
-	/*!
-	  @method
-
-	  @abstract Set the callback to invoke when a JavaScript object is
-	  finalized (prepared for garbage collection). This callback is
-	  invoked immediately before your C++ class destructor. An object
-	  may be finalized on any thread.
-
-	  @discussion The finalize callback is called on the most derived
-	  object first, and the least derived object (the parent object)
-	  last, analogous to that way C++ destructors work in a class
-	  hierarchy.
-	  
-	  You must not call any function that may cause a garbage collection
-	  or an allocation of a garbage collected object from within a
-	  FinalizeCallback. This basically means don't create any object
-	  whose class name begins with JS (e.g. JSString, JSValue, JSObject,
-	  etc.)  and don't call any methods on such objects that you may
-	  already have a reference to.
-	  
-	  For example, given this class definition:
-
-	  class Foo {
-	    void Finalize();
-	  };
-
-	  You would call the builer like this:
-
-	  JSNativeClassBuilder<Foo> builder("Foo");
-	  builder.Finalize(&Foo::Finalize);
-
-	  @result A reference to the builder for chaining.
-	*/
-	JSNativeClassBuilder<T>& Finalize(const FinalizeCallback<T>& finalize_callback) {
-		finalize_callback_ = finalize_callback;
-		return *this;
+	static void JSClassName(const JSString js_class_name) const {
+		// TODO
 	}
 
 	/*!
@@ -302,7 +192,7 @@ class JSNativeObject : public JSObject {
 
 	  You would call the builer like this:
 	  
-	  JSNativeClassBuilder<Foo> builder("Foo");
+	  JSClassBuilder<Foo> builder("Foo");
 	  builder.AddValueProperty("name", &Foo::GetName, &Foo::SetName);
 
 	  If you wanted the property ReadOnly, then you would call the
@@ -337,26 +227,10 @@ class JSNativeObject : public JSObject {
 
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeClassBuilder<T>& AddValueProperty(const JSString& property_name, GetNamedPropertyCallback<T> get_property_callback, SetNamedPropertyCallback<T> set_property_callback = nullptr, bool enumerable = true) {
-		std::unordered_set<JSPropertyAttribute> attributes { JSPropertyAttribute::DontDelete };
-		static_cast<void>(!enumerable && attributes.insert(JSPropertyAttribute::DontEnum).second);
-		static_cast<void>(!set_property_callback && attributes.insert(JSPropertyAttribute::ReadOnly).second);
-		return AddValuePropertyCallback(JSNativeObjectValuePropertyCallback<T>(property_name, get_property_callback, set_property_callback, attributes));
+	static void AddValueProperty(const JSString& property_name, GetNamedPropertyCallback<T> get_property_callback, SetNamedPropertyCallback<T> set_property_callback = nullptr, bool enumerable = true) {
+		// TODO
 	}
 	
-	/*!
-	  @method
-
-	  @abstract Remove all callbacks added by the
-	  AddValuePropertyCallback method.
-	  
-	  @result A reference to the builder for chaining.
-	*/
-	JSNativeClassBuilder<T>& RemoveAllValueProperties() {
-		value_property_callback_map_.clear();
-		return *this;
-	}
-
 	/*!
 	  @method
 
@@ -374,7 +248,7 @@ class JSNativeObject : public JSObject {
 
 	  You would call the builer like this:
 	  
-	  JSNativeClassBuilder<Foo> builder("Foo");
+	  JSClassBuilder<Foo> builder("Foo");
 	  builder.AddFunctionProperty("sayHello", &Foo::SayHello);
 
 	  @param function_name A JSString containing the function's name.
@@ -395,39 +269,122 @@ class JSNativeObject : public JSObject {
 
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeClassBuilder<T>& AddFunctionProperty(const JSString& function_name, CallAsFunctionCallback<T> call_as_function_callback, bool enumerable = true) {
-		std::unordered_set<JSPropertyAttribute> attributes { JSPropertyAttribute::DontDelete, JSPropertyAttribute::ReadOnly };
-		static_cast<void>(!enumerable && attributes.insert(JSPropertyAttribute::DontEnum).second);
-		return AddFunctionPropertyCallback(JSNativeObjectFunctionPropertyCallback<T>(function_name, call_as_function_callback, attributes));
+	static void AddFunctionProperty(const JSString& function_name, CallAsFunctionCallback<T> call_as_function_callback, bool enumerable = true) {
+		// TODO
 	}
-	
+
 	/*!
 	  @method
-
-	  @abstract Remove all callbacks added by the
-	  AddFunctionPropertyCallback method..
+	  
+	  @abstract Set the JSClass's version.
 	  
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeClassBuilder<T>& RemoveAllFunctionProperties() {
-		function_property_callback_map_.clear();
-		return *this;
+	static void JSClassVersion(uint32_t js_class_version) {
+		// TODO
 	}
 
+	/*!
+	  @method
+
+	  @abstract Set whether the JSClass created by this builder will
+	  instantiate JavaScript objects with an automatically generated
+	  prototype containing the JSClass's JavaScript function objects.
+	  
+	  @discussion Standard JavaScript practice calls for storing
+	  JavaScript function objects in prototypes so that they can be
+	  shared with JavaScript objects with that prototype. The default
+	  JSClass created by a JSClassBuilder follows this idiom,
+	  instantiating JavaScript objects with a shared, automatically
+	  generated prototype containing the JSClass's JavaScript function
+	  objects.
+	  
+	  To override this behavior call this method with a value of false,
+	  which specifies that the JSClass created by this builder should
+	  not automatically generate such a prototype. The resulting JSClass
+	  will then instantiate JavaScript objects with the default
+	  JavaScript object prototype, and give each JavaScript object its
+	  own copy of the JSClass's JavaScript function objects.
+	  
+	  @result A reference to the builder for chaining.
+	*/
+	static void AutomaticPrototype(bool automatic_prototype) {
+		// TODO
+	}
 
 	/*!
 	  @method
 	  
-	  @abstract Return the callback to invoke when a JavaScript object
-	  is used as a constructor in a 'new' expression. If you provide
-	  this callback then you must also provide the HasInstanceCallback
-	  as well.
-  
-	  @result The callback to invoke when an object is used as a
-	  constructor in a 'new' expression.
+	  @abstract Set the parent of the JSClass created by this builder.
+	  The default value is the default JavaScript object class.
+	  
+	  @result A reference to the builder for chaining.
 	*/
-	CallAsConstructorCallback<T> Constructor() const {
-		return call_as_constructor_callback_;
+	static void Parent(const JSClass& js_class_parent) {
+		// TODO
+	}
+
+	/*!
+	  @method
+
+	  @abstract Set the callback to invoke when a JavaScript object is
+	  first created. Unlike the other object callbacks, the initialize
+	  callback is called on the least derived object (the parent object)
+	  first, and the most derived object last, analogous to the way C++
+	  constructors work in a class hierarchy.
+
+	  @discussion For example, given this class definition:
+
+	  class Foo {
+	    void Initialize();
+	  };
+
+	  You would call the builer like this:
+
+	  JSClassBuilder<Foo> builder("Foo");
+	  builder.Initialize(&Foo::Initialize);
+  
+	  @result A reference to the builder for chaining.
+	*/
+	static void Initialize(const InitializeCallback<T>& initialize_callback) {
+		// TODO
+	}
+
+	/*!
+	  @method
+
+	  @abstract Set the callback to invoke when a JavaScript object is
+	  finalized (prepared for garbage collection). This callback is
+	  invoked immediately before your C++ class destructor. An object
+	  may be finalized on any thread.
+
+	  @discussion The finalize callback is called on the most derived
+	  object first, and the least derived object (the parent object)
+	  last, analogous to that way C++ destructors work in a class
+	  hierarchy.
+	  
+	  You must not call any function that may cause a garbage collection
+	  or an allocation of a garbage collected object from within a
+	  FinalizeCallback. This basically means don't create any object
+	  whose class name begins with JS (e.g. JSString, JSValue, JSObject,
+	  etc.)  and don't call any methods on such objects that you may
+	  already have a reference to.
+	  
+	  For example, given this class definition:
+
+	  class Foo {
+	    void Finalize();
+	  };
+
+	  You would call the builer like this:
+
+	  JSClassBuilder<Foo> builder("Foo");
+	  builder.Finalize(&Foo::Finalize);
+
+	  @result A reference to the builder for chaining.
+	*/
+	static void Finalize(const FinalizeCallback<T>& finalize_callback) {
+		// TODO
 	}
 
 	/*!
@@ -450,7 +407,7 @@ class JSNativeObject : public JSObject {
 	  
 	  You would call the builer like this:
 	  
-	  JSNativeClassBuilder<Foo> builder("Foo");
+	  JSClassBuilder<Foo> builder("Foo");
 	  builder.ConstructorCallback(&Foo::Constructor);
 
 	  If your callback were invoked by the JavaScript expression
@@ -459,86 +416,11 @@ class JSNativeObject : public JSObject {
 
 	  @result A reference to the builder for chaining.
 	*/
-	JSNativeClassBuilder<T>& Constructor(const CallAsConstructorCallback<T>& call_as_constructor_callback) {
-		call_as_constructor_callback_ = call_as_constructor_callback;
-		return *this;
+	static void Constructor(const CallAsConstructorCallback<T>& call_as_constructor_callback) {
+		// TODO
 	}
-
- private:
-
-	// Only a JSContext can attach a JSNativeClass to itself.
-	friend JSContext;
-
-	void AttachToContext() const {
-		auto self = const_cast<JSNativeObject*>(this);
-		std::call_once(self -> attach_to_context_once_flag__, [self] {
-				// Replace the JSObjectRef of our base class with one based on
-				// our JSNativeClass that has its private data set to a
-				// pointer to ourselves.
-				// JSValueUnprotect(self -> get_context(), self -> js_object_ref__);
-				// self -> js_object_ref__ = JSObject(self -> get_context(), self -> js_native_class__, self);
-				// self -> attached_to_context__ = true;
-				self -> JSObject::SetPrivate(self);
-			});
-	}
-	
-	virtual void* GetPrivate() const override final {
-		assert(attached_to_context__);
-		return nullptr;
-	}
-	
-	virtual bool SetPrivate(void* data) override final {
-		assert(attached_to_context__);
-		return false;
-	}
-
-	bool HasInstance(const JSValue& possible_instance) const;
-
-	JSNativeClass<T> js_native_class__;
-	std::once_flag   attach_to_context_once_flag__;
-	bool             attached_to_context__ { false };
-
-	static std::unordered_set<JSNativeClassAttribute>& class_attributes;
 };
 
-template<typename T>
-bool JSNativeObject<T>::HasInstance(const JSValue& possible_instance) const {
-	static const std::string log_prefix { "MDL: JSNativeObject<T>::HasInstance:" };
-	try {
-		static_cast<void>(dynamic_cast<const T&>(possible_instance));
-		return true;
-	} catch (const std::bad_cast& exception) {
-#ifdef JAVASCRIPTCORECPP_JSNATIVEOBJECT_DEBUG
-		std::clog << log_prefix
-		          << "[DEBUG] possible_instance "
-		          << possible_instance
-		          << " generated std::bad_cast exception: "
-		          << exception.what()
-		          << "."
-		          << std::endl;
-#endif
-	} catch (const std::exception& exception) {
-#ifdef JAVASCRIPTCORECPP_JSNATIVEOBJECT_DEBUG
-		std::clog << log_prefix
-		          << "[DEBUG] possible_instance "
-		          << possible_instance
-		          << " generated std::exception: "
-		          << exception.what()
-		          << "."
-		          << std::endl;
-#endif
-	} catch (...) {
-#ifdef JAVASCRIPTCORECPP_JSNATIVEOBJECT_DEBUG
-		std::clog << log_prefix
-		          << "[DEBUG] possible_instance "
-		          << possible_instance
-		          << " generated an unknown exception."
-		          << std::endl;
-#endif
-	}
-	return false;
-}
-	
 template<typename T>
 JSContext JSContextGroup::CreateContext(const JSNativeClass<T>& global_object_class) const {
 	return JSContext(*this, global_object_class);

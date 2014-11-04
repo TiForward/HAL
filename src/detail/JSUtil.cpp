@@ -42,6 +42,12 @@ void ThrowRuntimeError(const std::string& internal_component_name, const JSValue
 	throw std::runtime_error(exception_message);
 }
 
+void ThrowInvalidArgument(const std::string& internal_component_name, const std::string& message) {
+	JAVASCRIPTCORECPP_LOG_ERROR(internal_component_name, ": ", message);
+	throw std::invalid_argument(message);
+}
+
+
 std::vector<JSValue> to_vector(const JSContext& js_context, size_t count, const JSValueRef js_value_ref_array[]) {
 	std::vector<JSValue> js_value_vector;
 	std::transform(js_value_ref_array,
@@ -88,16 +94,22 @@ JSPropertyAttributes ToJSPropertyAttributes(const std::unordered_set<JSPropertyA
 	return static_cast<property_attribute_underlying_type>(property_attributes.to_ulong());
 }
 
-// For interoperability with the JavaScriptCore C API.
-JSClassAttributes ToJSClassAttributes(const std::unordered_set<JSNativeClassAttribute>& attributes) {
-	using property_attribute_underlying_type = std::underlying_type<JSNativeClassAttribute>::type;
-	std::bitset<2> class_attributes;
-	for (auto class_attribute : attributes) {
-		const auto bit_position = static_cast<property_attribute_underlying_type>(class_attribute);
-		class_attributes.set(bit_position);
+unsigned ToJSClassAttribute(JSNativeClassAttribute attribute) {
+	JSClassAttributes attributes = kJSClassAttributeNone;
+	switch (attribute) {
+		case None:
+			attributes = kJSClassAttributeNone;
+			break;
+			
+		case NoAutomaticPrototype:
+			attributes = kJSClassAttributeNone;
+			break;
+
+		default:
+			attributes = kJSClassAttributeNone;
 	}
 	
-	return static_cast<property_attribute_underlying_type>(class_attributes.to_ulong());
+	return attributes;
 }
 
 // The bitwise_cast and to_int32_t code was copied from

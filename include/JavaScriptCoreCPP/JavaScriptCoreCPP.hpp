@@ -35,7 +35,6 @@
 
 #include "JavaScriptCoreCPP/JSNativeClassBuilder.hpp"
 #include "JavaScriptCoreCPP/JSNativeClass.hpp"
-#include "JavaScriptCoreCPP/JSNativeClassAttribute.hpp"
 #include "JavaScriptCoreCPP/JSNativeObject.hpp"
 
 #include "JavaScriptCoreCPP/JSLogger.hpp"

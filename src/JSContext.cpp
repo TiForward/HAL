@@ -31,13 +31,6 @@
 
 #include <JavaScriptCore/JavaScript.h>
 
-#undef JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD
-#ifdef JAVASCRIPTCORECPP_THREAD_SAFE
-#define JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD std::lock_guard<JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_TYPE> JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_NAME_PREFIX##_lock(JAVASCRIPTCORECPP_JSCONTEXT_MUTEX_NAME)
-#else
-#define JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD
-#endif  // JAVASCRIPTCORECPP_THREAD_SAFE
-
 namespace JavaScriptCoreCPP {
 
 JSContext::JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class)
@@ -66,7 +59,7 @@ JSContext::JSContext(const JSContext& rhs)
 	
 JSContext::JSContext(JSContext&& rhs)
 		: js_context_group__(std::move(rhs.js_context_group__))
-		, js_context_ref__(std::move(rhs.js_context_ref__)) {
+		, js_context_ref__(rhs.js_context_ref__) {
 	JSGlobalContextRetain(*this);
 }
 	

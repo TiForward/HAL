@@ -31,13 +31,6 @@
 
 #include <JavaScriptCore/JavaScript.h>
 
-#undef JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD
-#ifdef JAVASCRIPTCORECPP_THREAD_SAFE
-#define JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD std::lock_guard<JAVASCRIPTCORECPP_JSVALUE_MUTEX_TYPE> JAVASCRIPTCORECPP_JSVALUE_MUTEX_NAME_PREFIX##_lock(JAVASCRIPTCORECPP_JSVALUE_MUTEX_NAME);
-#else
-#define JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD
-#endif  // JAVASCRIPTCORECPP_THREAD_SAFE
-
 namespace JavaScriptCoreCPP {
 
 JSValue::JSValue(const JSContext& js_context, const JSString& js_string, bool parse_as_json) : js_context__(js_context) {
@@ -71,7 +64,7 @@ JSValue::JSValue(const JSValue& rhs)
 }
 
 JSValue::JSValue(JSValue&& rhs)
-		: js_context__(rhs.js_context__)
+		: js_context__(std::move(rhs.js_context__))
 		, js_value_ref__(rhs.js_value_ref__) {
 	JSValueProtect(js_context__, js_value_ref__);
 }

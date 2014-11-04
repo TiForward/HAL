@@ -10,6 +10,10 @@
 #ifndef _JAVASCRIPTCORECPP_JSSTRING_HPP_
 #define _JAVASCRIPTCORECPP_JSSTRING_HPP_
 
+#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
+#include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
+#endif
+
 #include <string>
 #include <locale>
 #include <codecvt>
@@ -18,10 +22,6 @@
 
 #ifdef JAVASCRIPTCORECPP_THREAD_SAFE
 #include <mutex>
-#endif
-
-#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
-#include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 #endif
 
 extern "C" struct JSStringRef;
@@ -43,9 +43,9 @@ namespace JavaScriptCoreCPP {
   function.
 */
 #ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
-class JSString final  : public detail::JSPerformanceCounter<JSString> {
+class JSString final : public detail::JSPerformanceCounter<JSString> {
 #else
-class JSString final  {
+class JSString final {
 #endif
   
  public:
@@ -191,26 +191,19 @@ private:
   
   JSStringRef js_string_ref__ { nullptr };
 
-#undef JAVASCRIPTCORECPP_JSSTRING_MUTEX_TYPE
-#undef JAVASCRIPTCORECPP_JSSTRING_MUTEX_NAME_PREFIX
-#undef JAVASCRIPTCORECPP_JSSTRING_MUTEX_NAME
-#undef JAVASCRIPTCORECPP_JSSTRING_MUTEX
-#ifdef JAVASCRIPTCORECPP_THREAD_SAFE
-#define JAVASCRIPTCORECPP_JSSTRING_MUTEX_TYPE        std::recursive_mutex
-#define JAVASCRIPTCORECPP_JSSTRING_MUTEX_NAME_PREFIX js_string
-#define JAVASCRIPTCORECPP_JSSTRING_MUTEX_NAME        JAVASCRIPTCORECPP_JSSTRING_MUTEX_NAME_PREFIX##_mutex_
-#define JAVASCRIPTCORECPP_JSSTRING_MUTEX             JAVASCRIPTCORECPP_JSSTRING_MUTEX_TYPE JAVASCRIPTCORECPP_JSSTRING_MUTEX_NAME
+#undef JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD
+#ifdef  JAVASCRIPTCORECPP_THREAD_SAFE
+                                                              std::recursive_mutex       mutex__;
+#define JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD std::lock_guard<std::recursive_mutex> lock(mutex__)
 #else
-#define JAVASCRIPTCORECPP_JSSTRING_MUTEX
+#define JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD
 #endif  // JAVASCRIPTCORECPP_THREAD_SAFE
-  
-  JAVASCRIPTCORECPP_JSSTRING_MUTEX;
 };
 
-inline
-std::string to_string(const JSString& js_string) {
-  return static_cast<std::string>(js_string);
-}
+// inline
+// std::string to_string(const JSString& js_string) {
+//   return static_cast<std::string>(js_string);
+// }
 
 // Return true if the two JSStrings are equal.
 bool operator==(const JSString& lhs, const JSString& rhs);
@@ -263,15 +256,15 @@ template<>
 struct hash<JSString> {
   using argument_type = JSString;
   using result_type   = std::size_t;
-  static const std::hash<std::string> string_hash;
+  static const std::hash<std::string> hash_function;
   
   result_type operator()(const argument_type& js_string) const {
-    return string_hash(js_string);
+    return hash_function(js_string);
   }
 };
 
 template<>
-std::hash<std::string> hash<JSString>::string_hash = std::hash<std::string>();
+std::hash<std::string> hash<JSString>::hash_function = std::hash<std::string>();
 
 }  // namespace std
 
