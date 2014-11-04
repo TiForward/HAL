@@ -17,8 +17,6 @@
 
 namespace JavaScriptCoreCPP { namespace detail {
 
-using JSNativeObjectStaticPropertyMap_t = std::unordered_map<std::string, JSPropertyAttribute>;
-
 /*!
   @class
 

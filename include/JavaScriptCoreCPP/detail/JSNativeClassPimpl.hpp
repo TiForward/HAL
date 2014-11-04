@@ -103,6 +103,6 @@ private:
 #endif  // JAVASCRIPTCORECPP_THREAD_SAFE
 };
 
-} // namespace JavaScriptCoreCPP { namespace detail {
+}} // namespace JavaScriptCoreCPP { namespace detail {
 
 #endif // _JAVASCRIPTCORECPP_DETAIL_JSNATIVECLASSPIMPL_HPP_

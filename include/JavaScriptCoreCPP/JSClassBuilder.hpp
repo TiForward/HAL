@@ -11,8 +11,7 @@
 #define _JAVASCRIPTCORECPP_JSCLASSBUILDER_HPP_
 
 #include "JavaScriptCoreCPP/JSLogger.hpp"
-#include "JavaScriptCoreCPP/detail/JSNativeClass.hpp"
-#include "JavaScriptCoreCPP/detail/JSNativeClassAttribute.hpp"
+#include "JavaScriptCoreCPP/JSClassAttribute.hpp"
 
 #ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 #include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"

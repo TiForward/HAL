@@ -10,6 +10,14 @@
 #ifndef _JAVASCRIPTCORECPP_JSCLASS_HPP_
 #define _JAVASCRIPTCORECPP_JSCLASS_HPP_
 
+#include "JavaScriptCoreCPP/JSString.hpp"
+#include "JavaScriptCoreCPP/JSObject.hpp"
+
+#include "JavaScriptCoreCPP/JSClassAttribute.hpp"
+#include "JavaScriptCoreCPP/JSObjectNamedValuePropertyCallback.hpp"
+#include "JavaScriptCoreCPP/JSObjectNamedFunctionPropertyCallback.hpp"
+#include "JavaScriptCoreCPP/JSObjectCallbacks.hpp"
+
 #ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 #include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 #endif
@@ -28,6 +36,9 @@ extern "C" {
 }
 
 namespace JavaScriptCoreCPP {
+
+using JSObjectNamedValuePropertyCallbackMap_t    = std::unordered_map<std::string, JSObjectNamedValuePropertyCallback>;
+using JSObjectNamedFunctionPropertyCallbackMap_t = std::unordered_map<std::string, JSObjectNamedFunctionPropertyCallback>;
 
 /*!
   @class
@@ -97,7 +108,7 @@ class JSClass {
     @param js_class_definition The JSClassDefinition that defines the
     JSClass.
   */
-  JSClass(const JSClassDefinition& js_class_definition);
+	JSClass(const JSClassBuilder& js_class_builder);
   
  private:
 
@@ -110,18 +121,6 @@ class JSClass {
     return js_class_ref__;
   }
 
-  /*!
-    @method
-    
-    @abstract Return the default JSClass that defines no properties or
-    callbacks. This is only used by JSContext to create empty
-    JSObjects.
-
-    @result The default JSClass that defines no properties or
-    callbacks
-  */
-  static JSClass EmptyJSClass();
-
   // Prevent heap based objects.
   static void * operator new(std::size_t);     // #1: To prevent allocation of scalar objects
   static void * operator new [] (std::size_t); // #2: To prevent allocation of array of objects
@@ -133,6 +132,23 @@ class JSClass {
   std::string name__         { "Default" };
   int         version__;
 
+	std::uint32_t                              version__         { 0 };
+	JSClassAttribute                           class_attribute__ { JSClassAttribute::None };
+
+	JSString                                   name__;
+	JSClass                                    parent__;
+
+	JSObjectNamedValuePropertyCallbackMap_t    named_value_property_callback_map__;
+	JSObjectNamedFunctionPropertyCallbackMap_t named_function_property_callback_map__;
+
+	InitializeCallback                          initialize_callback__             { nullptr };
+	FinalizeCallback                            finalize_callback__               { nullptr };
+	CallAsFunctionCallback                      call_as_function_callback__       { nullptr };
+	CallAsConstructorCallback                   call_as_constructor_callback__    { nullptr };
+	HasInstanceCallback                         has_instance_callback__           { nullptr };
+	ConvertToTypeCallback                       convert_to_type_callback__        { nullptr };
+	JSClassDefinition                           js_class_definition__;
+	
 #undef  JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD
 #undef  JAVASCRIPTCORECPP_JSCLASS_STATIC_LOCK_GUARD
 #ifdef  JAVASCRIPTCORECPP_THREAD_SAFE
@@ -153,7 +169,7 @@ class JSClass {
 namespace std {
 using JavaScriptCoreCPP::JSClass;
 template<>
-void swap<JSContextGroup>(JSClass& first, JSClass& second) noexcept {
+void swap<JSClass>(JSClass& first, JSClass& second) noexcept {
   first.swap(second);
 }
 }  // namespace std
