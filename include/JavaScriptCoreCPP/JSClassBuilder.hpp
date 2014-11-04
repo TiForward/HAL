@@ -22,6 +22,7 @@
 #include <cstdint>
 #include <unordered_set>
 #include <unordered_map>
+#include <memory>
 
 #ifdef JAVASCRIPTCORECPP_THREAD_SAFE
 #include <mutex>
@@ -641,7 +642,7 @@ static                                                                     std::
 template<typename T> std::recursive_mutex JSClassBuilder<T>::static_mutex__;
 
 template<typename T>
-detail::JSNativeClass<T> JSClassBuilder<T>::build() const {
+std::shared_ptr<detail::JSNativeClass<T>> JSClassBuilder<T>::build() const {
 	JAVASCRIPTCORECPP_JSCLASSBUILDER_LOCK_GUARD;
 	
 	// Create the JSNativeClassPimpl, which holds and initializes the
@@ -682,9 +683,10 @@ detail::JSNativeClass<T> JSClassBuilder<T>::build() const {
 	js_native_class_pimpl.js_class_definition_.callAsConstructor = call_as_constructor_callback__;
 	js_native_class_pimpl.js_class_definition_.hasInstance       = has_instance_callback__;
 	js_native_class_pimpl.js_class_definition_.convertToType     = convert_to_type_callback__;
-	
-	using detail::JSNativeClass<T>;
-	return JSNativeClass<T>(js_native_class_pimpl, native_value_property_callback_map__, native_function_property_callback_map__);
+
+	const auto js_native_class_shared_ptr = std::make_shared<detail::JSNativeClass<T>>(js_native_class_pimpl, native_value_property_callback_map__, native_function_property_callback_map__);
+	js_native_class_pimpl__.callback_handler__ = js_native_class_shared_ptr;
+	return js_native_class_shared_ptr;
 }
 
 template<typename T>

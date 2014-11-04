@@ -15,6 +15,7 @@
 #include "JavaScriptCoreCPP/detail/JSNativeClassAttribute.hpp"
 
 #include <vector>
+#include <memory>
 #include <cstddef>
 
 extern "C" {
@@ -51,11 +52,9 @@ private:
                               JSNativeObjectStaticPropertyMap_t native_value_property_map,
                               JSNativeObjectStaticPropertyMap_t native_function_property_map);
   
-  JSNativeObjectCallbackHandler get_callback_handler() const;
-  void                          set_callback_handler(const JSNativeObjectCallbackHandler& callback_handler);
-
-  // JSClassBuilder<T> needs access to call our constructor and take
-  // the address of our private static functions.
+  // JSClassBuilder<T> needs access to take the address of our private
+  // static functions, call our constructor and set our callback
+  // handler.
   template<typename T>
   friend class JSClassBuilder;
 
@@ -72,7 +71,7 @@ private:
   std::vector<JSStaticFunction>     js_static_functions__;
 	JSClassDefinition                 js_class_definition__;
 
-	JSNativeObjectCallbackHandler callback_handler__;
+	std::weak_ptr<JSNativeObjectCallbackHandler> callback_handler_weak_ptr__;
 
 	// Support for JSStaticValue
   static JSValueRef  JSStaticValueGetPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception);

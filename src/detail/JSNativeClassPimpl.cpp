@@ -88,14 +88,6 @@ JSNativeClassPimpl::JSNativeClassPimpl(const std::string                 js_clas
 	// convertToType
 }
 
-JSNativeObjectCallbackHandler JSNativeClassPimpl::get_callback_handler() const {
-	return callback_handler__;
-}
-
-void JSNativeClassPimpl::set_callback_handler(const JSNativeObjectCallbackHandler& callback_handler) {
-	callback_handler__ = callback_handler;
-}
-
 std::recursive_mutex JSNativeClassPimpl::static_mutex__;
 
 // Support for JSStaticValue: getter
