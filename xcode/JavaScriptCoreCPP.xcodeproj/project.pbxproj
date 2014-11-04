@@ -63,8 +63,6 @@
 		C97454981A07534700CB4CA9 /* JSString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97454971A07534700CB4CA9 /* JSString.cpp */; };
 		C974549B1A07537B00CB4CA9 /* JSNativeObjectPimpl.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C97454991A07537B00CB4CA9 /* JSNativeObjectPimpl.hpp */; };
 		C974549C1A07537B00CB4CA9 /* JSNativeObjectPimpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C974549A1A07537B00CB4CA9 /* JSNativeObjectPimpl.cpp */; };
-		C97454A41A08888A00CB4CA9 /* JSNativeClassPimpl.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C974549F1A08888A00CB4CA9 /* JSNativeClassPimpl.hpp */; };
-		C97454A61A08888A00CB4CA9 /* JSNativeClassPimpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97454A11A08888A00CB4CA9 /* JSNativeClassPimpl.cpp */; };
 		C97454B61A09454300CB4CA9 /* JSObjectPropertyAttribute.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C97454B51A09454300CB4CA9 /* JSObjectPropertyAttribute.hpp */; };
 		C97454BF1A09457700CB4CA9 /* JSObjectPropertyCallback.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C97454B71A09457700CB4CA9 /* JSObjectPropertyCallback.hpp */; };
 		C97454C01A09457700CB4CA9 /* JSObjectCallbacks.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C97454B81A09457700CB4CA9 /* JSObjectCallbacks.hpp */; };
@@ -74,6 +72,9 @@
 		C97454C41A09457700CB4CA9 /* JSObjectPropertyCallback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97454BC1A09457700CB4CA9 /* JSObjectPropertyCallback.cpp */; };
 		C97454C51A09457700CB4CA9 /* JSObjectNamedFunctionPropertyCallback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97454BD1A09457700CB4CA9 /* JSObjectNamedFunctionPropertyCallback.cpp */; };
 		C97454C61A09457700CB4CA9 /* JSObjectNamedValuePropertyCallback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97454BE1A09457700CB4CA9 /* JSObjectNamedValuePropertyCallback.cpp */; };
+		C97454C91A097E2700CB4CA9 /* JSClassPimpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97454C81A097E2700CB4CA9 /* JSClassPimpl.cpp */; };
+		C97454CB1A097E4400CB4CA9 /* JSPropertyNameArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97454CA1A097E4400CB4CA9 /* JSPropertyNameArray.cpp */; };
+		C97454CD1A097E6700CB4CA9 /* JSClassPimpl.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C97454CC1A097E6700CB4CA9 /* JSClassPimpl.hpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -148,8 +149,6 @@
 		C97454971A07534700CB4CA9 /* JSString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSString.cpp; path = src/JSString.cpp; sourceTree = "<group>"; };
 		C97454991A07537B00CB4CA9 /* JSNativeObjectPimpl.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSNativeObjectPimpl.hpp; path = include/JavaScriptCoreCPP/detail/JSNativeObjectPimpl.hpp; sourceTree = "<group>"; };
 		C974549A1A07537B00CB4CA9 /* JSNativeObjectPimpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSNativeObjectPimpl.cpp; path = src/detail/JSNativeObjectPimpl.cpp; sourceTree = "<group>"; };
-		C974549F1A08888A00CB4CA9 /* JSNativeClassPimpl.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSNativeClassPimpl.hpp; path = include/JavaScriptCoreCPP/detail/JSNativeClassPimpl.hpp; sourceTree = "<group>"; };
-		C97454A11A08888A00CB4CA9 /* JSNativeClassPimpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSNativeClassPimpl.cpp; path = src/detail/JSNativeClassPimpl.cpp; sourceTree = "<group>"; };
 		C97454B51A09454300CB4CA9 /* JSObjectPropertyAttribute.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSObjectPropertyAttribute.hpp; path = include/JavaScriptCoreCPP/JSObjectPropertyAttribute.hpp; sourceTree = "<group>"; };
 		C97454B71A09457700CB4CA9 /* JSObjectPropertyCallback.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSObjectPropertyCallback.hpp; path = include/JavaScriptCoreCPP/JSObjectPropertyCallback.hpp; sourceTree = "<group>"; };
 		C97454B81A09457700CB4CA9 /* JSObjectCallbacks.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSObjectCallbacks.hpp; path = include/JavaScriptCoreCPP/JSObjectCallbacks.hpp; sourceTree = "<group>"; };
@@ -159,6 +158,9 @@
 		C97454BC1A09457700CB4CA9 /* JSObjectPropertyCallback.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSObjectPropertyCallback.cpp; path = src/JSObjectPropertyCallback.cpp; sourceTree = "<group>"; };
 		C97454BD1A09457700CB4CA9 /* JSObjectNamedFunctionPropertyCallback.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSObjectNamedFunctionPropertyCallback.cpp; path = src/JSObjectNamedFunctionPropertyCallback.cpp; sourceTree = "<group>"; };
 		C97454BE1A09457700CB4CA9 /* JSObjectNamedValuePropertyCallback.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSObjectNamedValuePropertyCallback.cpp; path = src/JSObjectNamedValuePropertyCallback.cpp; sourceTree = "<group>"; };
+		C97454C81A097E2700CB4CA9 /* JSClassPimpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSClassPimpl.cpp; path = src/detail/JSClassPimpl.cpp; sourceTree = "<group>"; };
+		C97454CA1A097E4400CB4CA9 /* JSPropertyNameArray.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSPropertyNameArray.cpp; path = src/JSPropertyNameArray.cpp; sourceTree = "<group>"; };
+		C97454CC1A097E6700CB4CA9 /* JSClassPimpl.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSClassPimpl.hpp; path = include/JavaScriptCoreCPP/detail/JSClassPimpl.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -272,6 +274,7 @@
 			isa = PBXGroup;
 			children = (
 				C974547A1A02BAF200CB4CA9 /* JSPropertyNameArray.hpp */,
+				C97454CA1A097E4400CB4CA9 /* JSPropertyNameArray.cpp */,
 				C97453F71A027F6000CB4CA9 /* JSObject.hpp */,
 				C97453F91A027F6000CB4CA9 /* JSObject.cpp */,
 				C97453F31A027F6000CB4CA9 /* JSArray.hpp */,
@@ -301,9 +304,9 @@
 			children = (
 				C974547E1A05FBEE00CB4CA9 /* JSLoggerPimpl.hpp */,
 				C97454891A05FC3F00CB4CA9 /* JSLoggerPimpl.cpp */,
+				C97454CC1A097E6700CB4CA9 /* JSClassPimpl.hpp */,
+				C97454C81A097E2700CB4CA9 /* JSClassPimpl.cpp */,
 				C974548F1A06D01C00CB4CA9 /* JSNativeClass.hpp */,
-				C974549F1A08888A00CB4CA9 /* JSNativeClassPimpl.hpp */,
-				C97454A11A08888A00CB4CA9 /* JSNativeClassPimpl.cpp */,
 				C97454931A0752E100CB4CA9 /* JSPropertyNameAccumulator.hpp */,
 				C97454991A07537B00CB4CA9 /* JSNativeObjectPimpl.hpp */,
 				C974549A1A07537B00CB4CA9 /* JSNativeObjectPimpl.cpp */,
@@ -368,6 +371,7 @@
 				C974548E1A06D00A00CB4CA9 /* JSClassBuilder.hpp in Headers */,
 				C97453E01A027A1800CB4CA9 /* JSContextGroup.hpp in Headers */,
 				C97453DF1A027A1800CB4CA9 /* JSContext.hpp in Headers */,
+				C97454CD1A097E6700CB4CA9 /* JSClassPimpl.hpp in Headers */,
 				C97453EE1A027E3D00CB4CA9 /* JSValue.hpp in Headers */,
 				C97453ED1A027E3D00CB4CA9 /* JSUndefined.hpp in Headers */,
 				C97453EB1A027E3D00CB4CA9 /* JSNull.hpp in Headers */,
@@ -391,7 +395,6 @@
 				C97454901A06D01C00CB4CA9 /* JSNativeClass.hpp in Headers */,
 				C97454871A05FC1400CB4CA9 /* JSLoggerPolicyInterface.hpp in Headers */,
 				C97454181A02800200CB4CA9 /* JSNativeObject.hpp in Headers */,
-				C97454A41A08888A00CB4CA9 /* JSNativeClassPimpl.hpp in Headers */,
 				C97454221A02806300CB4CA9 /* JSPerformanceCounter.hpp in Headers */,
 				C97454211A02806300CB4CA9 /* JSPerformanceCounterPrinter.hpp in Headers */,
 				C974549B1A07537B00CB4CA9 /* JSNativeObjectPimpl.hpp in Headers */,
@@ -491,12 +494,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C97454C91A097E2700CB4CA9 /* JSClassPimpl.cpp in Sources */,
 				C97453E21A027A1800CB4CA9 /* JSContextGroup.cpp in Sources */,
 				C974549C1A07537B00CB4CA9 /* JSNativeObjectPimpl.cpp in Sources */,
 				C97453E11A027A1800CB4CA9 /* JSContext.cpp in Sources */,
-				C97454A61A08888A00CB4CA9 /* JSNativeClassPimpl.cpp in Sources */,
 				C97454C61A09457700CB4CA9 /* JSObjectNamedValuePropertyCallback.cpp in Sources */,
 				C974548A1A05FC3F00CB4CA9 /* JSLoggerPimpl.cpp in Sources */,
+				C97454CB1A097E4400CB4CA9 /* JSPropertyNameArray.cpp in Sources */,
 				C97453EF1A027E3D00CB4CA9 /* JSValue.cpp in Sources */,
 				C97454051A027F6000CB4CA9 /* JSObject.cpp in Sources */,
 				C97454071A027F6000CB4CA9 /* JSArray.cpp in Sources */,

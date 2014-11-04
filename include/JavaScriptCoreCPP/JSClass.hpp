@@ -10,35 +10,21 @@
 #ifndef _JAVASCRIPTCORECPP_JSCLASS_HPP_
 #define _JAVASCRIPTCORECPP_JSCLASS_HPP_
 
-#include "JavaScriptCoreCPP/JSString.hpp"
-#include "JavaScriptCoreCPP/JSObject.hpp"
-
-#include "JavaScriptCoreCPP/JSClassAttribute.hpp"
-#include "JavaScriptCoreCPP/JSObjectNamedValuePropertyCallback.hpp"
-#include "JavaScriptCoreCPP/JSObjectNamedFunctionPropertyCallback.hpp"
-#include "JavaScriptCoreCPP/JSObjectCallbacks.hpp"
-
 #ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 #include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 #endif
 
-#include <cstddef>
-#include <unordered_map>
-#include <utility>
+#include <cstdint>
+#include <memory>
 
 #ifdef JAVASCRIPTCORECPP_THREAD_SAFE
 #include <mutex>
 #endif
 
-extern "C" {
-  struct JSClassRef;
-  struct JSClassDefinition;
-}
 
 namespace JavaScriptCoreCPP {
 
-using JSObjectNamedValuePropertyCallbackMap_t    = std::unordered_map<std::string, JSObjectNamedValuePropertyCallback>;
-using JSObjectNamedFunctionPropertyCallbackMap_t = std::unordered_map<std::string, JSObjectNamedFunctionPropertyCallback>;
+class detail::JSClassPimpl;
 
 /*!
   @class
@@ -47,20 +33,19 @@ using JSObjectNamedFunctionPropertyCallbackMap_t = std::unordered_map<std::strin
   JavaScriptCore C API representation of a JavaScript class that
   defines JavaScript objects implemented in C.
 
-  JSClass is a base class for interoperability with the JavaScriptCore
-  C API. See JSClassBuilder to create a JSClass based on a C++ class.
-  
+  A JSClass wraps a C++ class and seamlessly integrates it into the
+  JavaScriptCore runtime.  The only way to create a JSClass is through
+  the use of a JSClassBuilder, so please see that class for more
+  details.
+
   An instance of JSClass may be passed to the JSContextGroup
   constructor to create a custom JavaScript global object for all
   contexts in that group.
-
-  JavaScript objects based on a JSClass may be created by the
-  JSContext::CreateObject member functions.
 */
 #ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
-class JSClass : public detail::JSPerformanceCounter<JSClass> {
+class JSClass final : public detail::JSPerformanceCounter<JSClass> {
 #else
-class JSClass {
+class JSClass final {
 #endif
   
  public:
@@ -72,9 +57,7 @@ class JSClass {
     
     @result The name of this JSClass.
   */
-  virtual std::string get_name() final {
-    return name__;
-  }
+	std::string get_name() const;
   
   /*!
     @method
@@ -83,85 +66,42 @@ class JSClass {
     
     @result The version number of this JSClass.
   */
-  virtual int get_version() final {
-    return version__;
-  }
+	std::uint32_t get_version() const;
 
-  virtual ~JSClass();
-  JSClass(const JSClass&);
-  JSClass(JSClass&&);
-  JSClass& JSClass::operator=(const JSClass&) = delete;
-  JSClass& JSClass::operator=(JSClass&&) = delete;
-  JSClass& operator=(JSClass);
-  void swap(JSClass& other) noexcept;
-  
- protected:
-
-  /*!
-    @method
-    
-    @abstract Create a JSClass that defines the behavior of JavaScript
-    objects based on this JSClass. This constructor is for
-    interoperability with the JavaScriptCore C API. See JSClassBuilder
-    to create a JSClass that is based on a C++ class.
-
-    @param js_class_definition The JSClassDefinition that defines the
-    JSClass.
-  */
-	JSClass(const JSClassBuilder& js_class_builder);
+	JSClass() = delete;
+	~JSClass() = default;
+	JSClass(const JSClass&) = default;
+	JSClass(JSClass&&) = default;
+	JSClass& JSClass::operator=(const JSClass&) = default;
+  JSClass& JSClass::operator=(JSClass&&) = default;
   
  private:
+  
+  // Only a JSClassBuilder can create a JSClass.
+  template<typename T>
+  friend class JSClassBuilder;
+
+  explicit JSClass(std::shared<detail::JSClassPimpl> js_class_pimpl_ptr);
 
   // These classes need access to operator JSClassRef().
   friend class JSContext;
   friend class JSValue;  // for IsObjectOfClass
+  friend class JSObject; // for constructor
 
   // For interoperability with the JavaScriptCore C API.
-  operator JSClassRef() const {
-    return js_class_ref__;
-  }
+  operator JSClassRef() const;
 
   // Prevent heap based objects.
   static void * operator new(std::size_t);     // #1: To prevent allocation of scalar objects
   static void * operator new [] (std::size_t); // #2: To prevent allocation of array of objects
   
-  // The JSObject constructor needs access to operator JSClassRef().
-  friend class JSObject;
-
-  JSClassRef  js_class_ref__ { nullptr };
-  std::string name__         { "Default" };
-  int         version__;
-
-	std::uint32_t                              version__         { 0 };
-	JSClassAttribute                           class_attribute__ { JSClassAttribute::None };
-
-	JSString                                   name__;
-	JSClass                                    parent__;
-
-	JSObjectNamedValuePropertyCallbackMap_t    named_value_property_callback_map__;
-	JSObjectNamedFunctionPropertyCallbackMap_t named_function_property_callback_map__;
-
-	InitializeCallback                          initialize_callback__             { nullptr };
-	FinalizeCallback                            finalize_callback__               { nullptr };
-	CallAsFunctionCallback                      call_as_function_callback__       { nullptr };
-	CallAsConstructorCallback                   call_as_constructor_callback__    { nullptr };
-	HasInstanceCallback                         has_instance_callback__           { nullptr };
-	ConvertToTypeCallback                       convert_to_type_callback__        { nullptr };
-	JSClassDefinition                           js_class_definition__;
-	
+  std::shared<detail::JSClassPimpl> js_class_pimpl_ptr__;
+		  
 #undef  JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD
-#undef  JAVASCRIPTCORECPP_JSCLASS_STATIC_LOCK_GUARD
 #ifdef  JAVASCRIPTCORECPP_THREAD_SAFE
-                                                                    std::recursive_mutex              mutex__;
-#define JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD        std::lock_guard<std::recursive_mutex>        lock(mutex__)
-  static                                                            std::recursive_mutex              static_mutex__;
-#define JAVASCRIPTCORECPP_JSCLASS_STATIC_LOCK_GUARD std::lock_guard<std::recursive_mutex> static_lock(static_mutex__);
+                                                             std::recursive_mutex       mutex__
+#define JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD std::lock_guard<std::recursive_mutex> lock(mutex__)
 #endif  // JAVASCRIPTCORECPP_THREAD_SAFE
-
-  static void ThrowRuntimeErrorIfJSClassAlreadyExists();
-
-  static JSClass                               empty_js_class_;
-  static std::unordered_map<JSString, JSClass> js_class_map_;
 };
 
 } // namespace JavaScriptCoreCPP {

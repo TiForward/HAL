@@ -7,36 +7,118 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/detail/JSNativeClassPimpl.hpp"
-#include "JavaScriptCoreCPP/detail/JSNativeClass.hpp"
+#include "JavaScriptCoreCPP/detail/JSClassPimpl.hpp"
 
+#include "JavaScriptCoreCPP/JSClass.hpp"
+#include "JavaScriptCoreCPP/JSString.hpp"
+#include "JavaScriptCoreCPP/JSObject.hpp"
 #include "JavaScriptCoreCPP/JSLogger.hpp"
 #include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 
+#include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP { namespace detail
 
-JSNativeClassPimpl::JSNativeClassPimpl(const std::string                 js_class_name,
-                                       uint32_t                          js_class_version,
-                                       JSClassAttribute                  js_class_attribute,
-                                       const JSClass&                    js_class_parent,
-                                       JSNativeObjectStaticPropertyMap_t native_value_property_map,
-                                       JSNativeObjectStaticPropertyMap_t native_function_property_map)
-    : js_class_name__(js_class_name)
-		, native_value_property_map__(native_value_property_map)
-		, native_function_property_map__(native_function_property_map) {
+std::string JSClassPimpl::get_name() const {
+	return name__;
+}
+
+std::uint32_t JSClassPimpl::get_version() const {
+	return version__;
+}
+
+JSClassPimpl::operator JSClassRef() const {
+	return js_class_ref__;
+}
+
+~JSClassPimpl::JSClassPimpl() {
+	JSClassRelease(js_class_ref__);
+}
+
+JSClassPimpl::JSClassPimpl(const JSClassPimpl& rhs)
+		: version__(rhs.version__)
+		, class_attribute__(rhs.class_attribute__)
+		, name__(rhs.name__)
+		, parent__(rhs.parent__)
+		, named_value_property_callback_map__(rhs.named_value_property_callback_map__)
+		, named_function_property_callback_map__(rhs.named_function_property_callback_map__)
+		, initialize_callback__(rhs.initialize_callback__)
+		, finalize_callback__(rhs.finalize_callback__)
+		, call_as_function_callback__(rhs.call_as_function_callback__)
+		, call_as_constructor_callback__(rhs.call_as_constructor_callback__)
+		, has_instance_callback__(rhs.has_instance_callback__)
+		, convert_to_type_callback__(rhs.convert_to_type_callback__) {
 	
-	js_class_definition__ = kJSClassDefinitionEmpty;
+	Initialize();
+}
 
-	js_class_definition__.version            = js_class_version;
-	js_class_definition__.attributes         = ToJSClassAttribute(js_class_attribute);
+JSClassPimpl::JSClassPimpl(JSClassPimpl&& rhs)
+		: version__(std::move(rhs.version__))
+		, class_attribute__(std::move(rhs.class_attribute__))
+		, name__(std::move(rhs.name__))
+		, parent__(std::move(rhs.parent__))
+		, named_value_property_callback_map__(std::move(rhs.named_value_property_callback_map__))
+		, named_function_property_callback_map__(std::move(rhs.named_function_property_callback_map__))
+		, initialize_callback__(std::move(rhs.initialize_callback__))
+		, finalize_callback__(std::move(rhs.finalize_callback__))
+		, call_as_function_callback__(std::move(rhs.call_as_function_callback__))
+		, call_as_constructor_callback__(std::move(rhs.call_as_constructor_callback__))
+		, has_instance_callback__(std::move(rhs.has_instance_callback__))
+		, convert_to_type_callback__(std::move(rhs.convert_to_type_callback__)) {
 
-	js_class_definition__.className          = js_class_name__.c_str();
-	js_class_definition__.parentClass        = js_class_parent;
+	Initialize();
+}
+
+// Create a copy of another JSClassPimpl by assignment. This is a unified
+// assignment operator that fuses the copy assignment operator
+//
+// X& X::operator=(const X&)
+//
+// and the move assignment operator
+//
+// X& X::operator=(X&&);
+JSClassPimpl& JSClassPimpl::operator=(JSClassPimpl rhs) {
+	JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD;
+	swap(rhs);
+	return *this;
+}
+
+void JSClassPimpl::swap(JSClassPimpl& other) noexcept {
+	JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD;
+	using std::swap;
+	
+	// By swapping the members of two classes, the two classes are
+	// effectively swapped.
+	swap(version__                             , other.version__);
+	swap(class_attribute__                     , other.class_attribute__);
+	swap(name__                                , other.name__);
+	swap(parent__                              , other.parent__);
+	swap(named_value_property_callback_map__   , other.named_value_property_callback_map__);
+	swap(named_function_property_callback_map__, other.named_function_property_callback_map__;);
+	swap(initialize_callback__                 , other.initialize_callback__);
+	swap(finalize_callback__                   , other.finalize_callback__);
+	swap(call_as_function_callback__           , other.call_as_function_callback__);
+	swap(call_as_constructor_callback__        , other.call_as_constructor_callback__);
+	swap(has_instance_callback__               , other.has_instance_callback__);
+	swap(convert_to_type_callback__            , other.convert_to_type_callback__);
+	swap(js_class_definition__                 , other.js_class_definition__);
+	swap(js_class_ref__                        , other.js_class_ref__);
+}
+
+void Initialize() {
+	JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD;
+
+	js_class_definition__             = kJSClassDefinitionEmpty;
+
+	js_class_definition__.version     = js_class_version__;
+	js_class_definition__.attributes  = ToJSClassAttribute(js_class_attribute__);
+
+	js_class_definition__.className   = name__.c_str();
+	js_class_definition__.parentClass = parent__;
 
 	// Initialize staticValues.
-	if (!native_value_property_map.empty()) {
-		for (const auto& entry : native_value_property_map) {
+	if (!named_value_property_callback_map__.empty()) {
+		for (const auto& entry : named_value_property_callback_map__) {
 			const auto& property_name       = entry.first;
 			const auto& property_attributes = entry.second;
 			JSStaticValue js_static_value;
@@ -45,7 +127,7 @@ JSNativeClassPimpl::JSNativeClassPimpl(const std::string                 js_clas
 			js_static_value.setProperty = JSStaticValueSetPropertyCallback;
 			js_static_value.attributes  = ToJSPropertyAttributes(property_attributes);
 			js_static_values__.push_back(js_static_value);
-			JAVASCRIPTCORECPP_LOG_DEBUG("JSNativeClass<", js_class_name__, "> added value property ", js_static_values_.back().name);
+			JAVASCRIPTCORECPP_LOG_DEBUG("JSClass<", name__, "> added value property ", js_static_values_.back().name);
 		}
 		js_static_values__.push_back({nullptr, nullptr, nullptr, 0});
 		js_class_definition__.staticValues = &js_static_values__[0];
@@ -61,16 +143,14 @@ JSNativeClassPimpl::JSNativeClassPimpl(const std::string                 js_clas
 			js_static_function.callAsFunction = JSStaticFunctionCallAsFunctionCallback;
 			js_static_function.attributes     = ToJSPropertyAttributes(function_property_callback.get_attributes());
 			js_static_functions__.push_back(js_static_function);
-			JAVASCRIPTCORECPP_LOG_DEBUG("JSNativeClass<", js_class_name__, "> added function property ", js_static_functions_.back().name);
+			JAVASCRIPTCORECPP_LOG_DEBUG("JSClass<", name__, "> added function property ", js_static_functions_.back().name);
 		}
 		js_static_functions__.push_back({nullptr, nullptr, 0});
 		js_class_definition__.staticFunctions = &js_static_functions__[0];
 	}
 
-	// We provide the following 5 callbacks by simply delegating to our
-	// JSNativeClass<T> instance's JSNativeObjectCallbackHandler
-	// interface, which itself just delegates to the equivalent JSObject
-	// methods.
+	// We provide the following 5 callbacks by simply delegating to the
+	// JSObject methods.
 	js_class_definition__.hasProperty      = JSObjectHasPropertyCallback;
 	js_class_definition__.getProperty      = JSObjectGetPropertyCallback;
 	js_class_definition__.setProperty      = JSObjectSetPropertyCallback;
@@ -86,6 +166,8 @@ JSNativeClassPimpl::JSNativeClassPimpl(const std::string                 js_clas
 	// callAsConstructor
 	// hasInstance
 	// convertToType
+
+	js_class_ref__ = JSClassCreate(&js_class_definition__);
 }
 
 std::recursive_mutex JSNativeClassPimpl::static_mutex__;
@@ -93,7 +175,7 @@ std::recursive_mutex JSNativeClassPimpl::static_mutex__;
 // Support for JSStaticValue: getter
 
 JSValueRef JSNativeClassPimpl::JSStaticValueGetPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception) try {
-	JAVASCRIPTCORECPP_DETAIL_JSNATIVECLASSPIMPL_STATIC_LOCK_GUARD;
+	JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC;
 	
 	JSString property_name(property_name_ref);
 	const auto callback_position = value_property_callback_map_.find(property_name);
@@ -125,7 +207,7 @@ JSValueRef JSNativeClassPimpl::JSStaticValueGetPropertyCallback(JSContextRef con
 // Support for JSStaticValue: setter
 
 bool JSNativeClassPimpl::JSStaticValueSetPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef value_ref, JSValueRef* exception) try {
-  JAVASCRIPTCORECPP_DETAIL_JSNATIVECLASSPIMPL_STATIC_LOCK_GUARD;
+  JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC;
 
   JSString property_name(property_name_ref);
   const auto callback_position = value_property_callback_map_.find(property_name);
@@ -159,7 +241,7 @@ bool JSNativeClassPimpl::JSStaticValueSetPropertyCallback(JSContextRef context_r
 // Support for JSStaticFunction
 
 JSValueRef JSNativeClassPimpl::JSStaticFunctionCallAsFunctionCallback(JSContextRef context_ref, JSObjectRef function_ref, JSObjectRef this_object_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception) try {
-  JAVASCRIPTCORECPP_DETAIL_JSNATIVECLASSPIMPL_STATIC_LOCK_GUARD;
+  JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC;
 
   JSContext js_context(context_ref);
   JSObject  js_object(js_context, function_ref);
@@ -199,7 +281,7 @@ JSValueRef JSNativeClassPimpl::JSStaticFunctionCallAsFunctionCallback(JSContextR
 
 
 void JSNativeClassPimpl::JSObjectInitializeCallback(JSContextRef context_ref, JSObjectRef object_ref) try {
-  JAVASCRIPTCORECPP_DETAIL_JSNATIVECLASSPIMPL_STATIC_LOCK_GUARD;
+  JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC;
   
   auto       callback       = initialize_callback_;
   const bool callback_found = callback != nullptr;
@@ -220,7 +302,7 @@ void JSNativeClassPimpl::JSObjectInitializeCallback(JSContextRef context_ref, JS
 
 
 void JSNativeClassPimpl::JSObjectFinalizeCallback(JSObjectRef object_ref) try {
-  JAVASCRIPTCORECPP_DETAIL_JSNATIVECLASSPIMPL_STATIC_LOCK_GUARD;
+  JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC;
   
   auto       callback       = finalize_callback_;
   const bool callback_found = callback != nullptr;
@@ -302,7 +384,7 @@ void JSNativeClassPimpl::JSObjectGetPropertyNamesCallback(JSContextRef context_r
 
 
 JSValueRef JSNativeClassPimpl::JSObjectCallAsFunctionCallback(JSContextRef context_ref, JSObjectRef function_ref, JSObjectRef this_object_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception) try {
-  JAVASCRIPTCORECPP_DETAIL_JSNATIVECLASSPIMPL_STATIC_LOCK_GUARD;
+  JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC;
 
   auto       callback       = call_as_function_callback_;
   const bool callback_found = callback != nullptr;
@@ -339,7 +421,7 @@ JSValueRef JSNativeClassPimpl::JSObjectCallAsFunctionCallback(JSContextRef conte
 
 
 JSObjectRef JSNativeClassPimpl::JSObjectCallAsConstructorCallback(JSContextRef context_ref, JSObjectRef constructor_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception) try {
-  JAVASCRIPTCORECPP_DETAIL_JSNATIVECLASSPIMPL_STATIC_LOCK_GUARD;
+  JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC;
   
   auto       callback       = call_as_constructor_callback_;
   const bool callback_found = callback != nullptr;
@@ -374,7 +456,7 @@ JSObjectRef JSNativeClassPimpl::JSObjectCallAsConstructorCallback(JSContextRef c
 
 
 bool JSNativeClassPimpl::JSObjectHasInstanceCallback(JSContextRef context_ref, JSObjectRef constructor_ref, JSValueRef possible_instance_ref, JSValueRef* exception) try {
-  JAVASCRIPTCORECPP_DETAIL_JSNATIVECLASSPIMPL_STATIC_LOCK_GUARD;
+  JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC;
   
   auto       callback       = has_instance_callback_;
   const bool callback_found = callback != nullptr;
@@ -406,7 +488,7 @@ bool JSNativeClassPimpl::JSObjectHasInstanceCallback(JSContextRef context_ref, J
 
 
 JSValueRef JSNativeClassPimpl::JSObjectConvertToTypeCallback(JSContextRef context_ref, JSObjectRef object_ref, JSType type, JSValueRef* exception) try {
-  JAVASCRIPTCORECPP_DETAIL_JSNATIVECLASSPIMPL_STATIC_LOCK_GUARD;
+  JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC;
   
   auto       callback       = convert_to_type_callback_;
   const bool callback_found = callback != nullptr;
