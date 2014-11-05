@@ -10,12 +10,20 @@
 #ifndef _JAVASCRIPTCORECPP_DETAIL_JSEXPORTPIMPL_HPP_
 #define _JAVASCRIPTCORECPP_DETAIL_JSEXPORTPIMPL_HPP_
 
+#include "JavaScriptCoreCPP/JSString.hpp"
+#include "JavaScriptCoreCPP/JSObject.hpp"
+
 #include "JavaScriptCoreCPP/detail/JSExportCallbackHandler.hpp"
+#include "JavaScriptCoreCPP/detail/JSExportNamedValuePropertyCallback.hpp"
+#include "JavaScriptCoreCPP/detail/JSExportNamedFunctionPropertyCallback.hpp"
+#include "JavaScriptCoreCPP/detail/JSExportCallbacks.hpp"
 #include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 
 #ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 #include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 #endif
+
+#include <memory>
 
 #ifdef JAVASCRIPTCORECPP_THREAD_SAFE
 #include <mutex>
@@ -25,44 +33,55 @@ namespace JavaScriptCoreCPP { namespace detail {
 
 template<typename T>
 #ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
-class JSExportPimpl : public JSExportCallbackHandler, public detail::JSPerformanceCounter<JSExportPimpl> {
+class JSExportPimpl final : public JSExportCallbackHandler, public detail::JSPerformanceCounter<JSExportPimpl> {
 #else
-class JSExportPimpl : public JSExportCallbackHandler {
+class JSExportPimpl final : public JSExportCallbackHandler {
 #endif
 
  public:
+
+	/* Implement the JSExportCallbackHandler interface. */
 	
-	virtual JSValue  GetNamedProperty(const JSObject& object, const JSString& property_name)                           const override final;
-	virtual bool     SetNamedProperty(JSObject object, const JSString& property_name, const JSValue& value)                  override final;
-	virtual JSValue  CallNamedFunction(JSObject function, JSObject this_object, const std::vector<JSValue>& arguments)       override final;
+	virtual JSValue  GetNamedProperty(JSObject&& object, JSString&& property_name)                                    const override;
+	virtual bool     SetNamedProperty(JSObject&& object, JSString&& property_name, JSValue&& value)                         override;
+	virtual JSValue  CallNamedFunction(JSObject&& function, JSObject&& this_object, std::vector<JSValue>&& arguments)       override;
 	
-	virtual void     Initialize(JSObject object)                                                                             override final;
-	virtual void     Finalize(JSObject object)                                                                               override final;
-	virtual JSValue  CallAsFunction(JSObject function, JSObject this_object, const std::vector<JSValue>& arguments)          override final;
-	virtual JSObject CallAsConstructor(JSObject constructor, const std::vector<JSValue>& arguments)                          override final;
-	virtual bool     HasInstance(const JSObject& constructor, const JSValue& possible_instance)                        const override final;
-	virtual JSValue  ConvertToType(const JSObject& object, const JSValue::JSType& type)                                const override final;
+	virtual void     Initialize(JSObject&& object)                                                                          override;
+	virtual void     Finalize(JSObject&& object)                                                                            override;
+	virtual JSValue  CallAsFunction(JSObject&& function, JSObject&& this_object, std::vector<JSValue>&& arguments)          override;
+	virtual JSObject CallAsConstructor(JSObject&& constructor, std::vector<JSValue>&& arguments)                            override;
+	virtual bool     HasInstance(JSObject&& constructor, JSValue&& possible_instance)                                 const override;
+	virtual JSValue  ConvertToType(JSObject&& object, JSValue::JSType&& type)                                         const override;
+
+	JSExportPimpl()                                = delete;
+	~JSExportPimpl()                               = default;
+	JSExportPimpl(const JSExportPimpl& rhs)        = delete;
+	JSExportPimpl(JSExportPimpl&& rhs)             = delete;
+	JSExportPimpl& operator=(const JSExportPimpl&) = delete;
+	JSExportPimpl& operator=(JSExportPimpl&&)      = delete;
 
  private:
 
-	template<typename T>
+	// Only a JSClassBuilder can create us.
+	template<typename U>
 	friend class JSClassBuilder;
 
-	JSExportPimpl(const JSExportCallbackHandler* js_native_object_callback_handler_ptr) {
-		js_native_object_ptr__ = js_native_object_ptr;
-	}
+	template<typename U>
+  JSExportPimpl(const JSClassBuilder<T>& builder);
 	
-	JSExportPimpl() = delete;
-	~JSExportPimpl() = default;
-	JSExportPimpl(const JSExportPimpl& rhs) = default;
-	JSExportPimpl(JSExportPimpl&& rhs) = default;
-	JSExportPimpl& operator=(const JSExportPimpl&) = default;
-	JSExportPimpl& operator=(JSExportPimpl&&) = default;
+	JSObjectNamedValuePropertyCallbackMap_t    named_value_property_callback_map__;
+	JSObjectNamedFunctionPropertyCallbackMap_t named_function_property_callback_map__;
 
+	InitializeCallback                         initialize_callback__             { nullptr };
+	FinalizeCallback                           finalize_callback__               { nullptr };
+	CallAsFunctionCallback                     call_as_function_callback__       { nullptr };
+	CallAsConstructorCallback                  call_as_constructor_callback__    { nullptr };
+	HasInstanceCallback                        has_instance_callback__           { nullptr };
+	ConvertToTypeCallback                      convert_to_type_callback__        { nullptr };
 };
 
 template<typename T>
-JSValue JSExportPimpl<T>::GetNamedProperty(const JSObject& object, const JSString& property_name) const {
+JSValue JSExportPimpl<T>::GetNamedProperty(JSObject&& object, JSString&& property_name) const {
   const auto callback_position = named_value_property_callback_map__.find(property_name);
   const bool callback_found    = callback_position != named_value_property_callback_map__.end();
   
@@ -80,7 +99,8 @@ JSValue JSExportPimpl<T>::GetNamedProperty(const JSObject& object, const JSStrin
   return result;
 };
   
-bool JSExportPimpl<T>::SetNamedProperty(JSObject object, const JSString& property_name, const JSValue& value) {
+template<typename T>
+bool JSExportPimpl<T>::SetNamedProperty(JSObject&& object, JSString&& property_name, JSValue&& value) {
   const auto callback_position = named_value_property_callback_map__.find(property_name);
   const bool callback_found    = callback_position != named_value_property_callback_map__.end();
   
@@ -98,7 +118,8 @@ bool JSExportPimpl<T>::SetNamedProperty(JSObject object, const JSString& propert
   return result;
 };
 
-JSValue JSExportPimpl<T>::CallNamedFunction(JSObject function, JSObject this_object, const std::vector<JSValue>& arguments) {
+template<typename T>
+JSValue JSExportPimpl<T>::CallNamedFunction(JSObject&& function, JSObject&& this_object, std::vector<JSValue>&& arguments) {
   // precondition
   assert(function.IsFunction());
   
@@ -120,7 +141,8 @@ JSValue JSExportPimpl<T>::CallNamedFunction(JSObject function, JSObject this_obj
   return result;
 };
   
-void JSExportPimpl<T>::Initialize(JSObject object) {
+template<typename T>
+void JSExportPimpl<T>::Initialize(JSObject&& object) {
   auto       callback       = initialize_callback__;
   const bool callback_found = callback != nullptr;
   
@@ -133,7 +155,8 @@ void JSExportPimpl<T>::Initialize(JSObject object) {
   callback(*native_object_ptr);
 };
   
-void JSExportPimpl<T>::Finalize(JSObject object) {
+template<typename T>
+void JSExportPimpl<T>::Finalize(JSObject&& object) {
   auto       callback       = finalize_callback__;
   const bool callback_found = callback != nullptr;
   
@@ -146,7 +169,8 @@ void JSExportPimpl<T>::Finalize(JSObject object) {
   callback(*native_object_ptr);
 };
   
-JSValue JSExportPimpl<T>::CallAsFunction(JSObject function, JSObject this_object, const std::vector<JSValue>& arguments) {
+template<typename T>
+JSValue JSExportPimpl<T>::CallAsFunction(JSObject&& function, JSObject&& this_object, std::vector<JSValue>&& arguments) {
   // precondition
   assert(function.IsFunction());
   
@@ -168,7 +192,8 @@ JSValue JSExportPimpl<T>::CallAsFunction(JSObject function, JSObject this_object
   return result;
 };
 
-JSObject JSExportPimpl<T>::CallAsConstructor(JSObject constructor, const std::vector<JSValue>& arguments) {
+template<typename T>
+JSObject JSExportPimpl<T>::CallAsConstructor(JSObject&& constructor, std::vector<JSValue>&& arguments) {
   auto       callback       = call_as_constructor_callback__;
   const bool callback_found = callback != nullptr;
   
@@ -188,8 +213,8 @@ JSObject JSExportPimpl<T>::CallAsConstructor(JSObject constructor, const std::ve
   return result;
 };
   
-bool JSExportPimpl<T>::HasInstance(const JSObject& constructor, const JSValue& possible_instance) const {
-bool JSExportCallbackDelegate::HasInstance(const JSValue& possible_instance) const {
+template<typename T>
+bool JSExportPimpl<T>::HasInstance(JSObject&& constructor, JSValue&& possible_instance) const {
 	// precondition
 	try {
 		static_cast<void>(dynamic_cast<const T&>(const));
@@ -221,7 +246,8 @@ bool JSExportCallbackDelegate::HasInstance(const JSValue& possible_instance) con
 	return result;
 };
 
-JSValue JSExportPimpl<T>::ConvertToType(const JSObject& object, const JSValue::JSType& type) const {
+template<typename T>
+JSValue JSExportPimpl<T>::ConvertToType(JSObject&& object, JSValue::JSType&& type) const {
   auto       callback       = convert_to_type_callback__;
   const bool callback_found = callback != nullptr;
   

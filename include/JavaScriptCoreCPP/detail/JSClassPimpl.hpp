@@ -11,18 +11,15 @@
 #define _JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_HPP_
 
 #include "JavaScriptCoreCPP/JSClassAttribute.hpp"
-#include "JavaScriptCoreCPP/detail/JSNativeObjectNamedValuePropertyCallback.hpp"
-#include "JavaScriptCoreCPP/detail/JSNativeObjectNamedFunctionPropertyCallback.hpp"
-#include "JavaScriptCoreCPP/detail/JSNativeObjectCallbacks.hpp"
 
 #ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 #include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 #endif
 
 #include <cstdint>
-//#include <cstddef>
 #include <unordered_map>
 #include <vector>
+#include <memory>
 #include <utility>
 
 #ifdef JAVASCRIPTCORECPP_THREAD_SAFE
@@ -55,23 +52,22 @@ class JSClassPimpl final {
 
 	JSClassPimpl()                               = delete;
 	~JSClassPimpl();
-	JSClassPimpl(const JSClassPimpl&);
-	JSClassPimpl(JSClassPimpl&&);
+	JSClassPimpl(const JSClassPimpl&)            = delete;
+	JSClassPimpl(JSClassPimpl&&)                 = delete;
 	JSClassPimpl& operator=(const JSClassPimpl&) = delete;
 	JSClassPimpl& operator=(JSClassPimpl&&)      = delete;
-  JSClassPimpl& operator=(JSClassPimpl);
-  void swap(JSClassPimpl&) noexcept;
   
-private:
+ private:
 
-  // Only a JSClassBuilder can create a JSClass.
+  // Only a JSClassBuilder can create us..
   template<typename T>
   friend class JSClassBuilder;
 
   template<typename T>
-  JSClass(const JSClassBuilder<T>& builder);
+  JSClassPimpl(const JSClassBuilder<T>& builder);
 
-  void Initialize();
+  void Initialize(const JSObjectNamedValuePropertyCallbackMap_t&    named_value_property_callback_map
+                  const JSObjectNamedFunctionPropertyCallbackMap_t& named_function_property_callback_map);
 
   // JSClass needs access to the following three methods.
   friend JSClass;
@@ -82,25 +78,15 @@ private:
   // For interoperability with the JavaScriptCore C API.
   operator JSClassRef() const;
 
-  std::uint32_t                              version__         { 0 };
-	JSClassAttribute                           class_attribute__ { JSClassAttribute::None };
-
-	JSString                                   name__;
-	JSClass                                    parent__;
-
-	JSObjectNamedValuePropertyCallbackMap_t    named_value_property_callback_map__;
-  std::vector<JSStaticValue>                 js_static_values__;
-	JSObjectNamedFunctionPropertyCallbackMap_t named_function_property_callback_map__;
-  std::vector<JSStaticFunction>              js_static_functions__;
-
-	InitializeCallback                         initialize_callback__             { nullptr };
-	FinalizeCallback                           finalize_callback__               { nullptr };
-	CallAsFunctionCallback                     call_as_function_callback__       { nullptr };
-	CallAsConstructorCallback                  call_as_constructor_callback__    { nullptr };
-	HasInstanceCallback                        has_instance_callback__           { nullptr };
-	ConvertToTypeCallback                      convert_to_type_callback__        { nullptr };
-	JSClassDefinition                          js_class_definition__;
-	JSClassRef                                 js_class_ref__                    { nullptr };
+  std::uint32_t                            version__         { 0 };
+	JSClassAttribute                         class_attribute__ { JSClassAttribute::None };
+	JSString                                 name__;
+	JSClass                                  parent__;
+  std::vector<JSStaticValue>               js_static_values__;
+  std::vector<JSStaticFunction>            js_static_functions__;
+  std::unique_ptr<JSExportCallbackHandler> js_export_callback_handler_ptr__;
+  JSClassDefinition                        js_class_definition__;
+	JSClassRef                               js_class_ref__ { nullptr };
 
 	// Support for JSStaticValue
   static JSValueRef  GetNamedValuePropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception);

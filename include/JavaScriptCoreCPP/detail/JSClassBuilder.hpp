@@ -11,8 +11,10 @@
 #define _JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_HPP_
 
 #include "JavaScriptCoreCPP/JSClass.hpp"
-#include "JavaScriptCoreCPP/detail/JSClassPimpl.hpp"
 #include "JavaScriptCoreCPP/JSLogger.hpp"
+#include "JavaScriptCoreCPP/detail/JSClassPimpl.hpp"
+#include "JavaScriptCoreCPP/detail/JSExportPimpl.hpp"
+#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 
 #ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 #include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
@@ -591,24 +593,33 @@ class JSClassBuilder final {
 
  private:
 
+	// The builder pattern requires friendship by these two
+	// collaborating classes.
+	template<typename U>
+	friend class JSExportPimpl;
+
+	friend JSClassPimpl;
+
 	void AddValuePropertyCallback(const JSObjectNamedValuePropertyCallback& value_property_callback);
 	void AddFunctionPropertyCallback(const JSObjectNamedFunctionPropertyCallback& function_property_callback);
 	
-	std::uint32_t                              version__         { 0 };
-	JSClassAttribute                           class_attribute__ { JSClassAttribute::None };
+	std::uint32_t                                   version__         { 0 };
+	JSClassAttribute                                class_attribute__ { JSClassAttribute::None };
 	
-	JSString                                   name__;
-	JSClass                                    parent__;
+	JSString                                        name__;
+	JSClass                                         parent__;
 	
-	JSObjectNamedValuePropertyCallbackMap_t    named_value_property_callback_map__;
-	JSObjectNamedFunctionPropertyCallbackMap_t named_function_property_callback_map__;
+	const std::unique_ptr<JSExportCallbackHandler>& js_export_callback_handler_ptr__;
 	
-	InitializeCallback                         initialize_callback__             { nullptr };
-	FinalizeCallback                           finalize_callback__               { nullptr };
-	CallAsFunctionCallback                     call_as_function_callback__       { nullptr };
-	CallAsConstructorCallback                  call_as_constructor_callback__    { nullptr };
-	HasInstanceCallback                        has_instance_callback__           { nullptr };
-	ConvertToTypeCallback                      convert_to_type_callback__        { nullptr };
+	JSObjectNamedValuePropertyCallbackMap_t         named_value_property_callback_map__;
+	JSObjectNamedFunctionPropertyCallbackMap_t      named_function_property_callback_map__;
+	
+	InitializeCallback                              initialize_callback__             { nullptr };
+	FinalizeCallback                                finalize_callback__               { nullptr };
+	CallAsFunctionCallback                          call_as_function_callback__       { nullptr };
+	CallAsConstructorCallback                       call_as_constructor_callback__    { nullptr };
+	HasInstanceCallback                             has_instance_callback__           { nullptr };
+	ConvertToTypeCallback                           convert_to_type_callback__        { nullptr };
 	JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_MUTEX;
 };
 
@@ -657,16 +668,13 @@ void JSClassBuilder<T>::AddFunctionPropertyCallback(const JSObjectNamedFunctionP
 template<typename T>
 JSClass JSClassBuilder<T>::build() const {
 	JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
+	js_export_callback_handler_ptr__ = make_unique<JSExportPimpl>(*this);
 	return JSClass(std::make_shared<JSClassPimpl>(*this));
 }
 
 template<typename T>
-JSClassPimpl(const JSClassBuilder<T>& builder)
-		: version__(builder.version__)
-		, class_attribute__(builder.class_attribute__)
-		, name__(builder.name__)
-		, parent__(builder.parent__)
-		, named_value_property_callback_map__(builder.named_value_property_callback_map__)
+JSExportPimpl<T>::JSExportPimpl(const JSClassBuilder<T>& builder)
+		: named_value_property_callback_map__(builder.named_value_property_callback_map__)
 		, named_function_property_callback_map__(builder.named_function_property_callback_map__)
 		, initialize_callback__(builder.initialize_callback__)
 		, finalize_callback__(builder.finalize_callback__)
@@ -674,7 +682,18 @@ JSClassPimpl(const JSClassBuilder<T>& builder)
 		, call_as_constructor_callback__(builder.call_as_constructor_callback__)
 		, has_instance_callback__(builder.has_instance_callback__)
 		, convert_to_type_callback__(builder.convert_to_type_callback__) {
-	Initialize();
+}
+
+template<typename T>
+		JSClassPimpl::JSClassPimpl(const JSClassBuilder<T>& builder)
+		: version__(builder.version__)
+		, class_attribute__(builder.class_attribute__)
+		, name__(builder.name__)
+		, parent__(builder.parent__)
+		, js_export_callback_handler_ptr__(builder.js_export_callback_handler_ptr__) {
+	
+	Initialize(builder.named_value_property_callback_map__,
+	           builder.named_function_property_callback_map__);
 }
 
 }} // namespace JavaScriptCoreCPP { namespace detail {
