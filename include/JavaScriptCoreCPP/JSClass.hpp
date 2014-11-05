@@ -21,10 +21,13 @@
 #include <mutex>
 #endif
 
+namespace JavaScriptCoreCPP { namespace detail {
+class JSClassPimpl;
+}}
+
+extern "C" struct JSClassRef;
 
 namespace JavaScriptCoreCPP {
-
-class detail::JSClassPimpl;
 
 /*!
   @class
@@ -50,6 +53,8 @@ class JSClass final {
   
  public:
 
+	static JSClass& EmptyJSClass();
+
   /*!
     @method
     
@@ -72,8 +77,8 @@ class JSClass final {
 	~JSClass() = default;
 	JSClass(const JSClass&) = default;
 	JSClass(JSClass&&) = default;
-	JSClass& JSClass::operator=(const JSClass&) = default;
-  JSClass& JSClass::operator=(JSClass&&) = default;
+	JSClass& operator=(const JSClass&) = default;
+  JSClass& operator=(JSClass&&) = default;
   
  private:
   
@@ -81,7 +86,7 @@ class JSClass final {
   template<typename T>
   friend class JSClassBuilder;
 
-  explicit JSClass(std::shared<detail::JSClassPimpl> js_class_pimpl_ptr);
+  explicit JSClass(std::shared_ptr<detail::JSClassPimpl> js_class_pimpl_ptr);
 
   // These classes need access to operator JSClassRef().
   friend class JSContext;
@@ -95,7 +100,9 @@ class JSClass final {
   static void * operator new(std::size_t);     // #1: To prevent allocation of scalar objects
   static void * operator new [] (std::size_t); // #2: To prevent allocation of array of objects
   
-  std::shared<detail::JSClassPimpl> js_class_pimpl_ptr__;
+  std::shared_ptr<detail::JSClassPimpl> js_class_pimpl_ptr__;
+
+  static const JSClass                  empty_js_class__;
 		  
 #undef  JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD
 #ifdef  JAVASCRIPTCORECPP_THREAD_SAFE
@@ -105,13 +112,5 @@ class JSClass final {
 };
 
 } // namespace JavaScriptCoreCPP {
-
-namespace std {
-using JavaScriptCoreCPP::JSClass;
-template<>
-void swap<JSClass>(JSClass& first, JSClass& second) noexcept {
-  first.swap(second);
-}
-}  // namespace std
 
 #endif // _JAVASCRIPTCORECPP_JSCLASS_HPP_

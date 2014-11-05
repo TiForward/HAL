@@ -89,14 +89,14 @@ class JSContextGroup final  {
     @param global_object_class An optional JSClass used to create the
     global object.
   */
-  JSContext CreateContext(const JSClass& global_object_class = {}) const;
+  JSContext CreateContext(const JSClass& global_object_class = JSClass::EmptyJSClass()) const;
 
 
   ~JSContextGroup();
   JSContextGroup(const JSContextGroup&);
   JSContextGroup(JSContextGroup&&);
-  JSContextGroup& JSContextGroup::operator=(const JSContextGroup&) = delete;
-  JSContextGroup& JSContextGroup::operator=(JSContextGroup&&) = delete;
+  JSContextGroup& operator=(const JSContextGroup&) = delete;
+  JSContextGroup& operator=(JSContextGroup&&) = delete;
   JSContextGroup& operator=(JSContextGroup);
   void swap(JSContextGroup&) noexcept;
 
@@ -108,9 +108,7 @@ class JSContextGroup final  {
   // JSContext needs access to operator JSContextGroupRef().
   friend class JSContext;
   
-  operator JSContextGroupRef() const {
-    return js_context_group_ref__;
-  }
+  operator JSContextGroupRef() const;
   
   // Prevent heap based objects.
   void* operator new(std::size_t)     = delete; // #1: To prevent allocation of scalar objects
@@ -119,7 +117,7 @@ class JSContextGroup final  {
   friend void swap(JSContextGroup& first, JSContextGroup& second) noexcept;
   friend bool operator==(const JSContextGroup& lhs, const JSContextGroup& rhs);
 
-  JSContextGroupRef js_context_group_ref__ { nullptr };
+  JSContextGroupRef js_context_group_ref__;
 
 #undef JAVASCRIPTCORECPP_JSCONTEXTGROUP_LOCK_GUARD
 #ifdef JAVASCRIPTCORECPP_THREAD_SAFE

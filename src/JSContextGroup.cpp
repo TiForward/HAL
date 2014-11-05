@@ -57,6 +57,10 @@ JSContextGroup& JSContextGroup::operator=(JSContextGroup rhs) {
 	return *this;
 }
   
+JSContextGroup::operator JSContextGroupRef() const {
+	return js_context_group_ref__;
+}
+
 void swap(JSContextGroup& other) noexcept {
 	JAVASCRIPTCORECPP_JSCONTEXTGROUP_LOCK_GUARD;
 	using std::swap;
