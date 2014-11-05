@@ -13,6 +13,10 @@
 #include "JavaScriptCoreCPP/JSContextGroup.hpp"
 #include "JavaScriptCoreCPP/JSContext.hpp"
 
+#include "JavaScriptCoreCPP/JSExport.hpp"
+#include "JavaScriptCoreCPP/JSClassAttribute.hpp"
+#include "JavaScriptCoreCPP/JSClass.hpp"
+
 #include "JavaScriptCoreCPP/JSString.hpp"
 
 #include "JavaScriptCoreCPP/JSValue.hpp"
@@ -28,14 +32,7 @@
 #include "JavaScriptCoreCPP/JSFunction.hpp"
 #include "JavaScriptCoreCPP/JSRegExp.hpp"
 
-#include "JavaScriptCoreCPP/JSPropertyNameAccumulator.hpp"
 #include "JavaScriptCoreCPP/JSPropertyNameArray.hpp"
-
-#include "JavaScriptCoreCPP/JSClass.hpp"
-
-#include "JavaScriptCoreCPP/JSNativeClassBuilder.hpp"
-#include "JavaScriptCoreCPP/JSNativeClass.hpp"
-#include "JavaScriptCoreCPP/JSNativeObject.hpp"
 
 #include "JavaScriptCoreCPP/JSLogger.hpp"
 #include "JavaScriptCoreCPP/JSLoggerPolicyConsole.hpp"

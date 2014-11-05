@@ -7,11 +7,11 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_JSCLASSBUILDER_HPP_
-#define _JAVASCRIPTCORECPP_JSCLASSBUILDER_HPP_
+#ifndef _JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_HPP_
+#define _JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_HPP_
 
 #include "JavaScriptCoreCPP/JSClass.hpp"
-#include "JavaScriptCoreCPP/JSClassPimpl.hpp"
+#include "JavaScriptCoreCPP/detail/JSClassPimpl.hpp"
 #include "JavaScriptCoreCPP/JSLogger.hpp"
 
 #ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
@@ -24,18 +24,16 @@
 #include <unordered_map>
 #include <memory>
 
-#undef JAVASCRIPTCORECPP_JSCLASSBUILDER_MUTEX
-#undef JAVASCRIPTCORECPP_JSCLASSBUILDER_LOCK_GUARD
+#undef JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_MUTEX
+#undef JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD
 #ifdef JAVASCRIPTCORECPP_THREAD_SAFE
 #include <mutex>
-#define JAVASCRIPTCORECPP_JSCLASSBUILDER_MUTEX                      std::recursive_mutex       mutex__
-#define JAVASCRIPTCORECPP_JSCLASSBUILDER_LOCK_GUARD std::lock_guard<std::recursive_mutex> lock(mutex__)
+#define JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_MUTEX                      std::recursive_mutex       mutex__
+#define JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD std::lock_guard<std::recursive_mutex> lock(mutex__)
 #endif  // JAVASCRIPTCORECPP_THREAD_SAFE
 
 
-namespace JavaScriptCoreCPP {
-
-//using namespace JavaScriptCoreCPP::detail;
+namespace JavaScriptCoreCPP { namespace detail {
 
 /*!
   @class
@@ -76,7 +74,7 @@ namespace JavaScriptCoreCPP {
 */
 #ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 template<typename T>
-class JSClassBuilder final : public detail::JSPerformanceCounter<JSClassBuilder<T>> {
+class JSClassBuilder final : public JSPerformanceCounter<JSClassBuilder<T>> {
 #else
 template<typename T>
 class JSClassBuilder final {
@@ -171,7 +169,7 @@ class JSClassBuilder final {
 		std::unordered_set<JSObjectPropertyAttribute> attributes { JSObjectPropertyAttribute::DontDelete };
 		static_cast<void>(!enumerable   && attributes.insert(JSObjectPropertyAttribute::DontEnum).second);
 		static_cast<void>(!set_callback && attributes.insert(JSObjectPropertyAttribute::ReadOnly).second);
-		JAVASCRIPTCORECPP_JSCLASSBUILDER_LOCK_GUARD;
+		JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
 		AddValuePropertyCallback(JSObjectNamedValuePropertyCallback(property_name, get_callback, set_callback, attributes));
 		return *this;
 	}
@@ -214,7 +212,7 @@ class JSClassBuilder final {
 	JSClassBuilder<T>& AddFunctionProperty(const JSString& function_name, CallAsFunctionCallback function_callback, bool enumerable = true) {
 		std::unordered_set<JSObjectPropertyAttribute> attributes { JSObjectPropertyAttribute::DontDelete, JSObjectPropertyAttribute::ReadOnly };
 		static_cast<void>(!enumerable && attributes.insert(JSObjectPropertyAttribute::DontEnum).second);
-		JAVASCRIPTCORECPP_JSCLASSBUILDER_LOCK_GUARD;
+		JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
 		AddFunctionPropertyCallback(JSObjectNamedValuePropertyCallback(function_name, function_callback, attributes));
 		return *this;
 	}
@@ -238,7 +236,7 @@ class JSClassBuilder final {
 	  @result A reference to the builder for chaining.
 	*/
 	JSClassBuilder<T>& Version(uint32_t class_version) {
-		JAVASCRIPTCORECPP_JSCLASSBUILDER_LOCK_GUARD;
+		JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
 		version__ = class_version;
 		return *this;
 	}
@@ -262,7 +260,7 @@ class JSClassBuilder final {
 	  @result A reference to the builder for chaining.
 	*/
 	JSClassBuilder<T>& ClassAttribute(JSClassAttribute class_attribute) {
-		JAVASCRIPTCORECPP_JSCLASSBUILDER_LOCK_GUARD;
+		JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
 		class_attribute__ = class_attribute;
 		return *this;
 	}
@@ -288,7 +286,7 @@ class JSClassBuilder final {
 	  @result A reference to the builder for chaining.
 	*/
 	JSClassBuilder<T>& Parent(const JSClass& parent) {
-		JAVASCRIPTCORECPP_JSCLASSBUILDER_LOCK_GUARD;
+		JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
 		parent__ = parent;
 		return *this;
 	}
@@ -329,7 +327,7 @@ class JSClassBuilder final {
 	  @result A reference to the builder for chaining.
 	*/
 	JSClassBuilder<T>& Initialize(const InitializeCallback<T>& initialize_callback) {
-		JAVASCRIPTCORECPP_JSCLASSBUILDER_LOCK_GUARD;
+		JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
 		initialize_callback__ = initialize_callback;
 		return *this;
 	}
@@ -381,7 +379,7 @@ class JSClassBuilder final {
 	  @result A reference to the builder for chaining.
 	*/
 	JSClassBuilder<T>& Finalize(const FinalizeCallback<T>& finalize_callback) {
-		JAVASCRIPTCORECPP_JSCLASSBUILDER_LOCK_GUARD;
+		JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
 		finalize_callback__ = finalize_callback;
 		return *this;
 	}
@@ -431,7 +429,7 @@ class JSClassBuilder final {
 	  @result A reference to the builder for chaining.
 	*/
 	JSClassBuilder<T>& Constructor(const CallAsConstructorCallback<T>& call_as_constructor_callback) {
-		JAVASCRIPTCORECPP_JSCLASSBUILDER_LOCK_GUARD;
+		JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
 		call_as_constructor_callback__ = call_as_constructor_callback;
 		return *this;
 	}
@@ -481,7 +479,7 @@ class JSClassBuilder final {
 	  @result A reference to the builder for chaining.
 	*/
 	JSClassBuilder<T>& HasInstance(const HasInstanceCallback<T>& has_instance_callback) {
-		JAVASCRIPTCORECPP_JSCLASSBUILDER_LOCK_GUARD;
+		JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
 		has_instance_callback__ = has_instance_callback;
 		return *this;
 	}
@@ -530,7 +528,7 @@ class JSClassBuilder final {
 	  @result A reference to the builder for chaining.
 	*/
 	JSClassBuilder<T>& Function(const CallAsFunctionCallback<T>& call_as_function_callback) {
-		JAVASCRIPTCORECPP_JSCLASSBUILDER_LOCK_GUARD;
+		JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
 		call_as_function_callback__ = call_as_function_callback;
 		return *this;
 	}
@@ -575,7 +573,7 @@ class JSClassBuilder final {
 	  @result A reference to the builder for chaining.
 	*/
 	JSClassBuilder<T>& ConvertToType(const ConvertToTypeCallback<T>& convert_to_type_callback) {
-		JAVASCRIPTCORECPP_JSCLASSBUILDER_LOCK_GUARD;
+		JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
 		convert_to_type_callback__ = convert_to_type_callback;
 		return *this;
 	}
@@ -611,7 +609,7 @@ class JSClassBuilder final {
 	CallAsConstructorCallback                  call_as_constructor_callback__    { nullptr };
 	HasInstanceCallback                        has_instance_callback__           { nullptr };
 	ConvertToTypeCallback                      convert_to_type_callback__        { nullptr };
-	JAVASCRIPTCORECPP_JSCLASSBUILDER_MUTEX;
+	JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_MUTEX;
 };
 
 template<typename T>
@@ -658,12 +656,12 @@ void JSClassBuilder<T>::AddFunctionPropertyCallback(const JSObjectNamedFunctionP
 
 template<typename T>
 JSClass JSClassBuilder<T>::build() const {
-	JAVASCRIPTCORECPP_JSCLASSBUILDER_LOCK_GUARD;
+	JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
 	return JSClass(std::make_shared<JSClassPimpl>(*this));
 }
 
 template<typename T>
-detail::JSClassPimpl(const JSClassBuilder<T>& builder)
+JSClassPimpl(const JSClassBuilder<T>& builder)
 		: version__(builder.version__)
 		, class_attribute__(builder.class_attribute__)
 		, name__(builder.name__)
@@ -679,6 +677,6 @@ detail::JSClassPimpl(const JSClassBuilder<T>& builder)
 	Initialize();
 }
 
-} // namespace JavaScriptCoreCPP {
+}} // namespace JavaScriptCoreCPP { namespace detail {
 
-#endif // _JAVASCRIPTCORECPP_JSCLASSBUILDER_HPP_
+#endif // _JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_HPP_

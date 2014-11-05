@@ -11,9 +11,9 @@
 #define _JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_HPP_
 
 #include "JavaScriptCoreCPP/JSClassAttribute.hpp"
-#include "JavaScriptCoreCPP/JSObjectNamedValuePropertyCallback.hpp"
-#include "JavaScriptCoreCPP/JSObjectNamedFunctionPropertyCallback.hpp"
-#include "JavaScriptCoreCPP/JSObjectCallbacks.hpp"
+#include "JavaScriptCoreCPP/detail/JSNativeObjectNamedValuePropertyCallback.hpp"
+#include "JavaScriptCoreCPP/detail/JSNativeObjectNamedFunctionPropertyCallback.hpp"
+#include "JavaScriptCoreCPP/detail/JSNativeObjectCallbacks.hpp"
 
 #ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 #include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
@@ -103,11 +103,11 @@ private:
 	JSClassRef                                 js_class_ref__                    { nullptr };
 
 	// Support for JSStaticValue
-  static JSValueRef  JSStaticValueGetPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception);
-  static bool        JSStaticValueSetPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef value_ref, JSValueRef* exception);
+  static JSValueRef  GetNamedValuePropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception);
+  static bool        SetNamedValuePropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef value_ref, JSValueRef* exception);
   
   // Support for JSStaticFunction
-  static JSValueRef  JSStaticFunctionCallAsFunctionCallback(JSContextRef context_ref, JSObjectRef function_ref, JSObjectRef this_object_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception);
+  static JSValueRef  CallNamedFunctionCallback(JSContextRef context_ref, JSObjectRef function_ref, JSObjectRef this_object_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception);
   
   // JavaScriptCore C API callback interface.
   static void        JSObjectInitializeCallback(JSContextRef context_ref, JSObjectRef object_ref);

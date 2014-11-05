@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_JSOBJECTPROPERTYATTRIBUTE_HPP_
-#define _JAVASCRIPTCORECPP_JSOBJECTPROPERTYATTRIBUTE_HPP_
+#ifndef _JAVASCRIPTCORECPP_JSPROPERTYATTRIBUTE_HPP_
+#define _JAVASCRIPTCORECPP_JSPROPERTYATTRIBUTE_HPP_
 
 #include <cstddef>
 #include <functional>
@@ -28,7 +28,7 @@ namespace JavaScriptCoreCPP {
   @constant DontDelete Specifies that the delete operation should fail
   on a property.
 */
-enum class JSObjectPropertyAttribute : unsigned /* typedef unsigned JSPropertyAttributes; */ {
+enum class JSPropertyAttribute : unsigned /* typedef unsigned JSPropertyAttributes; */ {
 	None,
 	ReadOnly,
 	DontEnum,
@@ -38,15 +38,15 @@ enum class JSObjectPropertyAttribute : unsigned /* typedef unsigned JSPropertyAt
 } // namespace JavaScriptCoreCPP {
 
 
-// Provide a hash function so that a JSObjectPropertyAttribute can be
+// Provide a hash function so that a JSPropertyAttribute can be
 // stored in an unordered container.
 namespace std {
 
-using JavaScriptCoreCPP::JSObjectPropertyAttribute;
+using JavaScriptCoreCPP::JSPropertyAttribute;
 
 template<>
-struct hash<JSObjectPropertyAttribute> {
-	using argument_type   = JSObjectPropertyAttribute;
+struct hash<JSPropertyAttribute> {
+	using argument_type   = JSPropertyAttribute;
 	using result_type     = std::size_t;
 	using underlying_type = std::underlying_type<argument_type>::type;
 	static const std::hash<underlying_type> hash_function;
@@ -57,8 +57,8 @@ struct hash<JSObjectPropertyAttribute> {
 };
 
 template<>
-std::hash<hash<JSObjectPropertyAttribute>::underlying_type> hash<JSObjectPropertyAttribute>::hash_function = std::hash<hash<JSObjectPropertyAttribute>::underlying_type>();
+std::hash<hash<JSPropertyAttribute>::underlying_type> hash<JSPropertyAttribute>::hash_function = std::hash<hash<JSPropertyAttribute>::underlying_type>();
 
 }  // namespace std {
 
-#endif // _JAVASCRIPTCORECPP_JSOBJECTPROPERTYATTRIBUTE_HPP_
+#endif // _JAVASCRIPTCORECPP_JSPROPERTYATTRIBUTE_HPP_
