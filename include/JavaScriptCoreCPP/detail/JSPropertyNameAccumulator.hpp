@@ -15,7 +15,8 @@
 #include <cassert>
 
 namespace JavaScriptCoreCPP { namespace detail {
-class JSClassPimpl;
+  template<typename T>
+  class JSExportPimpl;
 }}
 
 namespace JavaScriptCoreCPP {
@@ -62,10 +63,12 @@ private:
 	JSPropertyNameAccumulator& operator=(const JSPropertyNameAccumulator& rhs) = delete;
 	JSPropertyNameAccumulator& operator=(JSPropertyNameAccumulator&& rhs) = delete;
 
-	// Only a JSObject and a JSClassPimpl can create a
+	// Only a JSObject and a JSExportPimpl can create a
 	// JSPropertyNameAccumulator.
 	friend class JSObject;
-	friend class detail::JSClassPimpl;
+
+  template<typename T>
+  friend class detail::JSExportPimpl;
 
 	// For interoperability with the JavaScriptCore C API.
 	explicit JSPropertyNameAccumulator(const JSPropertyNameAccumulatorRef& js_property_name_accumulator_ref)

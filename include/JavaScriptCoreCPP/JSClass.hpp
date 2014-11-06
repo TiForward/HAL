@@ -24,8 +24,6 @@
 #include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP { namespace detail {
-class JSClassPimpl;
-
 template<typename T>
 class JSClassBuilder;
 }}
@@ -52,54 +50,43 @@ class JSExport;
   contexts in that group.
 */
 #ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
-class JSClass final : public detail::JSPerformanceCounter<JSClass> {
+class JSClass : public detail::JSPerformanceCounter<JSClass> {
 #else
-class JSClass final {
+class JSClass {
 #endif
   
  public:
 
-	static JSClass& EmptyJSClass();
+  JSClass();
 
-  /*!
-    @method
-    
-    @abstract Return the name of this JSClass.
-    
-    @result The name of this JSClass.
-  */
-	std::string get_name() const;
+  // FIXME: Make this private.
+  virtual operator JSClassRef() const;
   
   /*!
-    @method
-    
-    @abstract Return the version number of this JSClass.
-    
-    @result The version number of this JSClass.
-  */
-	std::uint32_t get_version() const;
+   @method
+   
+   @abstract Return the name of this JSClass.
+   
+   @result The name of this JSClass.
+   */
+  virtual std::string get_name() const;
+  
+  /*!
+   @method
+   
+   @abstract Return the version number of this JSClass.
+   
+   @result The version number of this JSClass.
+   */
+  virtual std::uint32_t get_version() const;
 
-	~JSClass()                         = default;
+  ~JSClass()                         = default;
 	JSClass(const JSClass&)            = default;
 	JSClass(JSClass&&)                 = default;
 	JSClass& operator=(const JSClass&) = default;
 	JSClass& operator=(JSClass&&)      = default;
 
-	// FIXME: Make these private.
-	JSClass() = default;
-	operator JSClassRef() const;
-  explicit JSClass(std::shared_ptr<detail::JSClassPimpl> js_class_pimpl_ptr);
-
  private:
-
-  // Private constructor only for implementing EmptyJSClass.
-	//JSClass() = default;
-
-	// Only a JSClassBuilder can create a JSClass.
-  template<typename T>
-  friend class JSClassBuilder;
-
-  // explicit JSClass(std::shared_ptr<detail::JSClassPimpl> js_class_pimpl_ptr);
 
   // These classes need access to operator JSClassRef().
   friend class JSContext;
@@ -108,13 +95,10 @@ class JSClass final {
 
   // For interoperability with the JavaScriptCore C API.
   //operator JSClassRef() const;
-
-  // JSExport needs access to js_class_pimpl_ptr.
-  template<typename T>
-  friend class JSExport;
   
-  std::shared_ptr<detail::JSClassPimpl> js_class_pimpl_ptr__;
-		  
+  JSClassDefinition js_class_definition__;
+  JSClassRef        js_class_ref__;
+
 #undef  JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD
 #ifdef  JAVASCRIPTCORECPP_THREAD_SAFE
                                                              std::recursive_mutex       mutex__;

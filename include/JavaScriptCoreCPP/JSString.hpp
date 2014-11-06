@@ -32,8 +32,10 @@ class JSString;
 }
 
 namespace JavaScriptCoreCPP { namespace detail {
-class JSClassPimpl;
-std::vector<JSStringRef> to_vector(const std::vector<JSString>& js_string_vector);
+  template<typename T>
+  class JSExportPimpl;
+  
+  std::vector<JSStringRef> to_vector(const std::vector<JSString>& js_string_vector);
 }}
 
 namespace JavaScriptCoreCPP {
@@ -166,7 +168,8 @@ class JSString final {
   JSString& operator=(JSString&&);
   void swap(JSString&) noexcept;
   
-private:
+  // FIXME
+//private:
   
   // These classes and functions need access to operator
   // JSStringRef().
@@ -185,7 +188,10 @@ private:
 
   // Only the following classes and functions can create a JSString.
   friend class JSValue;
-  friend class detail::JSClassPimpl;  //  static functions
+
+  template<typename T>
+  friend class JSExportPimpl; // static functions.
+
 
   // For interoperability with the JavaScriptCore C API.
   JSString(const JSStringRef& js_string_ref);

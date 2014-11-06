@@ -155,7 +155,7 @@ JSNumber JSContext::CreateNumber(uint32_t number) const {
 }
 
 JSObject JSContext::CreateObject() const {
-	return CreateObject(JSClass::EmptyJSClass());
+	return CreateObject(JSClass());
 }
 
 JSObject JSContext::CreateObject(const JSClass& js_class) const {

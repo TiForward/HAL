@@ -20,7 +20,7 @@ JSContextGroup::JSContextGroup()
 }
 
 JSContext JSContextGroup::CreateContext() const {
-	return JSContext(*this, JSClass::EmptyJSClass());
+	return JSContext(*this, JSClass());
 }
 
 JSContext JSContextGroup::CreateContext(const JSClass& global_object_class) const {

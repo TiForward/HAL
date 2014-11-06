@@ -25,7 +25,6 @@
 #include "JavaScriptCoreCPP/JSRegExp.hpp"
 
 #include "JavaScriptCoreCPP/JSClass.hpp"
-#include "JavaScriptCoreCPP/detail/JSClassPimpl.hpp"
 
 #include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 
@@ -265,7 +264,7 @@ bool JSValue::IsObject() const {
 
 bool JSValue::IsObjectOfClass(const JSClass& js_class) const {
 	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
-	return JSValueIsObjectOfClass(js_context__, js_value_ref__, *js_class.js_class_pimpl_ptr__);
+	return JSValueIsObjectOfClass(js_context__, js_value_ref__, js_class);
 }
 
 bool JSValue::IsInstanceOfConstructor(const JSObject& constructor) const {

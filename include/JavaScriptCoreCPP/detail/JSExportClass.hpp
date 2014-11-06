@@ -80,8 +80,9 @@ class JSNativeClass final : public JSClass, public JSNativeObjectCallbackHandler
       , native_function_property_callback_map__(native_function_property_callback_map)
       );
   
+
+
   JSNativeClass()                                = delete;
-  ~JSNativeClass()                               = default;
   JSNativeClass(const JSNativeClass& rhs)        = default;
   JSNativeClass(JSNativeClass&& rhs)             = default;
   JSNativeClass& operator=(const JSNativeClass&) = default;
@@ -101,7 +102,8 @@ class JSNativeClass final : public JSClass, public JSNativeObjectCallbackHandler
   virtual bool     HasInstance(const JSObject& constructor, const JSValue& possible_instance)                           const override final;
   virtual JSValue  ConvertToType(const JSObject& object, const JSValue::JSType& type)                                   const override final;
 
- private:
+
+private:
   
   JSNativeClassPimpl                             js_native_class_pimpl__;
   std::string                                    js_class_name__;
@@ -123,6 +125,7 @@ class JSNativeClass final : public JSClass, public JSNativeObjectCallbackHandler
   static CallAsConstructorCallback<T> call_as_constructor_callback__;
   static HasInstanceCallback<T>       has_instance_callback__;
   static ConvertToTypeCallback<T>     convert_to_type_callback__;
+
 };
 
 template<typename T> InitializeCallback<T>        JSNativeClass<T>::initialize_callback__          { nullptr };

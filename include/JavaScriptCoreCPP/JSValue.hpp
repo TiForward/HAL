@@ -26,7 +26,8 @@
 #include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP { namespace detail {
-class JSClassPimpl;
+  template<typename T>
+  class JSExportPimpl;
 }}
 
 namespace JavaScriptCoreCPP {
@@ -350,7 +351,8 @@ class JSValue {
   JSValue& operator=(JSValue&&);
   void swap(JSValue&) noexcept;
 
- protected:
+  // FIXME:
+// protected:
   
   // A JSContext can create a JSValue.
   friend class JSContext;
@@ -365,7 +367,8 @@ class JSValue {
     return js_value_ref__;
   }
 
- private:
+  // FIXME:
+// private:
 
   // JSObject needs access to the JSValue constructor for
   // GetPrototype() and for generating error messages, as well as
@@ -383,7 +386,9 @@ class JSValue {
   friend class JSFunction;            // for generating error messages
   friend class JSRegExp;              // for generating error messages
   friend class JSError;               // for generating error messages
-	friend class detail::JSClassPimpl;  // for static functions
+
+  template<typename T>
+  friend class JSExportPimpl;  // for static functions
   
   friend std::vector<JSValue>    detail::to_vector(const JSContext& js_context, size_t count, const JSValueRef js_value_ref_array[]);
   friend std::vector<JSValueRef> detail::to_vector(const std::vector<JSValue>& js_value_vector);
@@ -392,8 +397,8 @@ class JSValue {
   JSValue(const JSContext& js_context, JSValueRef js_value_ref);
   
   // Prevent heap based objects.
-  static void * operator new(std::size_t);     // #1: To prevent allocation of scalar objects
-  static void * operator new [] (std::size_t); // #2: To prevent allocation of array of objects
+//  static void * operator new(std::size_t);     // #1: To prevent allocation of scalar objects
+//  static void * operator new [] (std::size_t); // #2: To prevent allocation of array of objects
   
   JSContext  js_context__;
   JSValueRef js_value_ref__ { nullptr };

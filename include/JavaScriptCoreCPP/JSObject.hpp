@@ -16,13 +16,9 @@
 #include <unordered_set>
 
 namespace JavaScriptCoreCPP { namespace detail {
-
-class JSClassPimpl;
-
 template<typename T>
 class JSExportPimpl;
-
-}}  // namespace JavaScriptCoreCPP { namespace detail {
+}}
 
 namespace JavaScriptCoreCPP {
 
@@ -266,7 +262,10 @@ class JSObject : public JSValue {
 	// In addition to derived classes, these classes need access to the
 	// following JSObject constructor.
 	friend class JSValue;               // for operator JSObject()
-	friend class detail::JSClassPimpl;  // for static functions
+
+  // For GetPrivate, and SetPrivate and the static functions.
+  template<typename T>
+  friend class detail::JSExportPimpl;
 	
 	// For interoperability with the JavaScriptCore C API.
 	JSObject(const JSContext& js_context, JSObjectRef js_object_ref)
@@ -307,11 +306,6 @@ class JSObject : public JSValue {
 	// FIXME
 	//private:
  public:
-
-	// Only JSClassPimpl and JSExportPimpl can call GetPrivate and
-	// SetPrivate.
-	template<typename T>
-	friend class JSExportPimpl;
 
 	/*!
 	  @method

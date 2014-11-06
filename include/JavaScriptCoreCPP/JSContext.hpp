@@ -27,7 +27,8 @@
 #include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP { namespace detail {
-class JSClassPimpl;
+  template<typename T>
+  class JSExportPimpl;
 }}
 
 namespace JavaScriptCoreCPP {
@@ -424,7 +425,8 @@ class JSContext final {
   JSContext& operator=(JSContext&&);
   void swap(JSContext&) noexcept;
 
- private:
+  // FIXME
+// private:
   
   // Only a JSContextGroup create a JSContext using the following
   // constructor.
@@ -458,9 +460,10 @@ class JSContext final {
     return js_context_ref__;
   }
   
-  // Only the detail::JSClassPimpl static functions create a JSContext
+  // Only the detail::JSExportPimpl static functions create a JSContext
   // using the following constructor.
-  friend class detail::JSClassPimpl;
+  template<typename T>
+  friend class detail::JSExportPimpl;
 
   // For interoperability with the JavaScriptCore C API.
   explicit JSContext(JSContextRef js_context_ref);

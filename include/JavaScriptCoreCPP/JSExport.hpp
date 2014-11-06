@@ -307,35 +307,10 @@ std::shared_ptr<JSClass> JSExport<T>::get_js_class_ptr() {
 	return js_class_ptr;
 }
 	
-// template<typename T>
-// JSExport<T>::JSExport(const JSContext& js_context)
-// 		: JSObject(js_context, *get_js_class_ptr(), reinterpret_cast<void*>(get_js_class_ptr() -> js_class_pimpl_ptr__ -> get_callback_handler_key())) {
-// }
-
-// template<typename T>
-// JSExport<T>::JSExport(const JSContext& js_context)
-// 		: JSObject(js_context, *get_js_class_ptr()) {
-// }
-
-
 template<typename T>
 JSExport<T>::JSExport(const JSContext& js_context)
-		: JSObject(js_context, *get_js_class_ptr(), this) {
-
-	// auto callback_handler_key                 = reinterpret_cast<detail::JSExportCallbackHandlerMap_t::key_type>(this);
-	// auto callback_handler                     = std::static_pointer_cast<detail::JSExportCallbackHandler>(get_js_class_ptr() -> js_class_pimpl_ptr__);
-	// const auto callback_handler_insert_result = detail::JSClassPimpl::js_export_callback_handler_map__.emplace(callback_handler_key, callback_handler);
-	// const bool callback_handler_registered    = callback_handler_insert_result.second;
-
-	// JAVASCRIPTCORECPP_LOG_DEBUG("JSClassBuilder<", name__, ">:: callback handler registered = ", std::to_string(callback_handler_registered));
-	
-	// assert(callback_handler_registered);
+		: JSObject(js_context, *get_js_class_ptr(), 0) {
 }
-
-// Template<typename T>
-// JSExport<T>::JSExport(const JSContext& js_context)
-// 		: JSObject(js_context, *get_js_class_ptr()) {
-// }
 
 template<typename T, typename... Us>
 std::shared_ptr<T> JSContext::CreateObject(Us&&... constructor_arguments) const {
