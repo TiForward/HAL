@@ -122,12 +122,15 @@ JSString JSValue::ToJSONString(unsigned indent) {
 		assert(!js_string_ref);
 		detail::ThrowRuntimeError("JSValue", JSValue(js_context__, exception));
 	}
+
+	//assert(js_string_ref);
+	if (js_string_ref) {
+		JSString js_string(js_string_ref);
+		JSStringRelease(js_string_ref);
+		return js_string;
+	}
 	
-	assert(js_string_ref);
-	JSString js_string(js_string_ref);
-	JSStringRelease(js_string_ref);
-	
-	return js_string;
+	return JSString();
 }
 
 JSValue::operator JSString() const {

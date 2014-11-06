@@ -81,7 +81,7 @@ class JSExportNamedValuePropertyCallback final : public JSExportPropertyCallback
 		return set_callback__;
 	}
 
-	~JSExportNamedValuePropertyCallback();
+	~JSExportNamedValuePropertyCallback() = default;
 	JSExportNamedValuePropertyCallback(const JSExportNamedValuePropertyCallback&);
 	JSExportNamedValuePropertyCallback(JSExportNamedValuePropertyCallback&&);
 	JSExportNamedValuePropertyCallback& operator=(const JSExportNamedValuePropertyCallback&);

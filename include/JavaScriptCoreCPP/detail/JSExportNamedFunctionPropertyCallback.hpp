@@ -80,7 +80,7 @@ class JSExportNamedFunctionPropertyCallback final : public JSExportPropertyCallb
     return function_callback__;
   }
   
-  ~JSExportNamedFunctionPropertyCallback();
+  ~JSExportNamedFunctionPropertyCallback() = default;
   JSExportNamedFunctionPropertyCallback(const JSExportNamedFunctionPropertyCallback&);
   JSExportNamedFunctionPropertyCallback(JSExportNamedFunctionPropertyCallback&&);
   JSExportNamedFunctionPropertyCallback& operator=(const JSExportNamedFunctionPropertyCallback&);
@@ -106,10 +106,6 @@ JSExportNamedFunctionPropertyCallback<T>::JSExportNamedFunctionPropertyCallback(
 	if (!function_callback) {
 		ThrowInvalidArgument("JSExportNamedFunctionPropertyCallback", "function_callback is missing");
 	}
-}
-
-template<typename T>
-JSExportNamedFunctionPropertyCallback<T>::~JSExportNamedFunctionPropertyCallback() {
 }
 
 template<typename T>

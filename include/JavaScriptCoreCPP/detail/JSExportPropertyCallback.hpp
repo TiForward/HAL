@@ -64,7 +64,7 @@ class JSExportPropertyCallback {
     return attributes__;
   }
   
-  virtual ~JSExportPropertyCallback();
+	virtual ~JSExportPropertyCallback() = default;
   JSExportPropertyCallback(const JSExportPropertyCallback&);
   JSExportPropertyCallback(JSExportPropertyCallback&&);
   JSExportPropertyCallback& operator=(const JSExportPropertyCallback&);

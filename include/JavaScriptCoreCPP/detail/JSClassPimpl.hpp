@@ -72,14 +72,19 @@ class JSClassPimpl final {
 	  return version__;
   }
   
-  std::uint32_t get_callback_handler_key() const {
-	  return callback_handler_key__;
-  }
+  // std::uint32_t get_callback_handler_key() const {
+	//   return callback_handler_key__;
+  // }
 
   // For interoperability with the JavaScriptCore C API.
   operator JSClassRef() const {
 	  return js_class_ref__;
   }
+
+  // FIXME: Make these private.
+  template<typename T>
+  JSClassPimpl(const JSClassBuilder<T>& builder);
+  static JSExportCallbackHandlerMap_t js_export_callback_handler_map__;
 
  private:
 
@@ -87,8 +92,8 @@ class JSClassPimpl final {
   template<typename T>
   friend class JSClassBuilder;
 
-  template<typename T>
-  JSClassPimpl(const JSClassBuilder<T>& builder);
+  // template<typename T>
+  // JSClassPimpl(const JSClassBuilder<T>& builder);
 
   void Initialize(const JSExportNamedValuePropertyMap_t&    named_value_property_map,
                   const JSExportNamedFunctionPropertyMap_t& named_function_property_map);
@@ -101,7 +106,7 @@ class JSClassPimpl final {
   std::vector<JSStaticFunction>            js_static_functions__;
   JSClassDefinition                        js_class_definition__;
 	JSClassRef                               js_class_ref__ { nullptr };
-	JSExportCallbackHandlerMap_t::key_type   callback_handler_key__;
+	// JSExportCallbackHandlerMap_t::key_type   callback_handler_key__;
 
   // Support for JSStaticValue
   static JSValueRef  GetNamedValuePropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception);
@@ -137,7 +142,7 @@ class JSClassPimpl final {
   template<typename T>
 	friend class JSExportPimpl;
 
-  static JSExportCallbackHandlerMap_t js_export_callback_handler_map__;
+  // static JSExportCallbackHandlerMap_t js_export_callback_handler_map__;
 
 #undef JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD
 #undef JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC

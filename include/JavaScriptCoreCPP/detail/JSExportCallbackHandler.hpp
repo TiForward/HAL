@@ -43,8 +43,8 @@ class JSExportCallbackHandler {
 
 	virtual void     Initialize()                                                                                                                                 = 0;
 	virtual void     Finalize(void* native_object_ptr)                                                                                                            = 0;
-	virtual JSObject CallAsConstructor(JSObject&& constructor, const std::vector<JSValue>&& arguments)                                                            = 0;
-	virtual bool     HasInstance(JSObject&& constructor, const JSValue&& possible_instance)                                                                 const = 0;
+	// virtual JSObject CallAsConstructor(JSObject&& constructor, const std::vector<JSValue>&& arguments)                                                            = 0;
+	// virtual bool     HasInstance(JSObject&& constructor, const JSValue&& possible_instance)                                                                 const = 0;
 	virtual JSValue  GetNamedProperty(JSObject&& object, const JSString&& property_name)                                                                    const = 0;
 	virtual bool     SetNamedProperty(JSObject&& object, const JSString&& property_name, const JSValue&& value)                                                   = 0;
 	virtual JSValue  CallNamedFunction(JSObject&& function, const JSString&& property_name, const std::vector<JSValue>&& arguments, JSObject&& this_object)       = 0;

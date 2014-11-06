@@ -62,40 +62,65 @@ using namespace JavaScriptCoreCPP;
   detail::JSExportNamedFunctionPropertyCallback<Widget> sayHello_callback("sayHello", &Widget::sayHello, {JSPropertyAttribute::DontDelete});
 }
 
-// - (void)testJSNativeClassBuilder {
-//   detail::JSClassBuilder<Widget> builder("Widget");
-//   builder
-//       .AddValueProperty("name", &Widget::get_name, &Widget::set_name)
-//       .AddValueProperty("number", &Widget::get_number, &Widget::set_number)
-//       .AddValueProperty("pi", &Widget::pi)
-//       .AddFunctionProperty("sayhello", &Widget::sayHello)
-//       // .Function(&Widget::CallAsFunction)
-//       // .ConvertType(&Widget::ConvertToType);
-//       ;
+- (void)testJSNativeClassBuilder {
+  detail::JSClassBuilder<Widget> builder("Widget");
+  builder
+      .AddValueProperty("name", &Widget::get_name, &Widget::set_name)
+      .AddValueProperty("number", &Widget::get_number, &Widget::set_number)
+      .AddValueProperty("pi", &Widget::pi)
+      .AddFunctionProperty("sayhello", &Widget::sayHello)
+      // .Function(&Widget::CallAsFunction)
+      // .ConvertType(&Widget::ConvertToType);
+      ;
   
-//   auto native_class = builder.build();
-// }
+  auto native_class = builder.build();
+}
 
-// - (void)testJSExport {
-//   JSContext js_context = js_context_group.CreateContext();
-//   auto global_object = js_context.get_global_object();
+- (void)testJSExport {
+  JSContext js_context = js_context_group.CreateContext();
+  auto global_object = js_context.get_global_object();
 
-//   XCTAssertFalse(global_object.HasProperty("Widget"));
-//   auto widget = js_context.CreateObject(Widget::get_js_class());
-//   global_object.SetProperty("Widget", widget);
-//   XCTAssertTrue(global_object.HasProperty("Widget"));
+  XCTAssertFalse(global_object.HasProperty("Widget"));
+  auto widget_js_class_ptr = Widget::get_js_class_ptr();
+  auto widget              = js_context.CreateObject(*widget_js_class_ptr);
+  global_object.SetProperty("Widget", widget);
+  XCTAssertTrue(global_object.HasProperty("Widget"));
       
-//   for (const auto& property_name : static_cast<std::vector<JSString>>(global_object.CopyPropertyNames())) {
-//     //SetProperty(property_name, props.GetProperty(property_name));
-//     std::clog << "MDL: property_name = " << property_name << std::endl;
-//   }
+  for (const auto& property_name : static_cast<std::vector<JSString>>(global_object.CopyPropertyNames())) {
+    //SetProperty(property_name, props.GetProperty(property_name));
+    std::clog << "MDL: property_name = " << property_name << std::endl;
+  }
   
+  JSString script =
+      //"Widget;"
+      "typeof Widget;"
+      //"Widget.name;"
+      // "Widget();"
+      // "var widget = new Widget();"
+      // "widget.sayHello();"
+      ;
+  auto result = js_context.JSEvaluateScript(script);
+  std::clog << "MDL: result = " << static_cast<std::string>(result) << std::endl;
+}
+
+// - (void)testWidget {
+//   JSContext js_context = js_context_group.CreateContext();
+//   //Widget widget(js_context);
+
+//   auto widget_ptr = js_context.CreateObject<Widget>();
+
+//   auto global_object = js_context.get_global_object();
+//   XCTAssertFalse(global_object.HasProperty("Widget"));
+//   global_object.SetProperty("Widget", *widget_ptr);
+//   XCTAssertTrue(global_object.HasProperty("Widget"));
+
 //   JSString script =
 //       //"Widget;"
 //       //"typeof Widget;"
-//       // "Widget.name;"
-//       "var widget = new Widget();"
-//       "widget.sayHello();"
+//       "Widget.name;"
+//       // "Widget();"
+//       // "var widget = new Widget();"
+//       // "widget.sayHello();"
 //       ;
 //   auto result = js_context.JSEvaluateScript(script);
 //   std::clog << "MDL: result = " << static_cast<std::string>(result) << std::endl;

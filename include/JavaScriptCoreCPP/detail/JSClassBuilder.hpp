@@ -430,12 +430,12 @@ class JSClassBuilder final {
   void AddFunctionPropertyCallback(const JSExportNamedFunctionPropertyCallback<T>& function_property_callback);
   
   std::shared_ptr<JSExportPimpl<T>>               js_export_pimpl_ptr__;
-  JSExportCallbackHandlerMap_t::key_type          callback_handler_key__;
+  // JSExportCallbackHandlerMap_t::key_type          callback_handler_key__;
   std::uint32_t                                   version__         { 0 };
   JSClassAttribute                                class_attribute__ { JSClassAttribute::None };
   
   JSString                                        name__;
-  JSClass                                         parent__;
+  JSClass                                         parent__ { JSClass::EmptyJSClass() };
   
   JSExportNamedValuePropertyCallbackMap_t<T>      named_value_property_callback_map__;
   JSExportNamedValuePropertyMap_t                 named_value_property_map__;
@@ -529,13 +529,13 @@ std::shared_ptr<JSClass> JSClassBuilder<T>::build() {
 	// Insert the callback handler (i.e. JSExportPimpl) into the
 	// dispatch table (i.e. JSClassPimpl's callback map).
 	js_export_pimpl_ptr__                     = std::make_shared<JSExportPimpl<T>>(*this);
-	callback_handler_key__                    = reinterpret_cast<JSExportCallbackHandlerMap_t::key_type>(js_export_pimpl_ptr__.get());
-	const auto callback_handler_insert_result = JSClassPimpl::js_export_callback_handler_map__.emplace(callback_handler_key__, js_export_pimpl_ptr__);
-	const bool callback_handler_registered    = callback_handler_insert_result.second;
+	// callback_handler_key__                    = reinterpret_cast<JSExportCallbackHandlerMap_t::key_type>(js_export_pimpl_ptr__.get());
+	// const auto callback_handler_insert_result = JSClassPimpl::js_export_callback_handler_map__.emplace(callback_handler_key__, js_export_pimpl_ptr__);
+	// const bool callback_handler_registered    = callback_handler_insert_result.second;
 	
-	JAVASCRIPTCORECPP_LOG_DEBUG("JSClassBuilder<", name__, ">:: callback handler registered = ", std::to_string(callback_handler_registered));
+	// JAVASCRIPTCORECPP_LOG_DEBUG("JSClassBuilder<", name__, ">:: callback handler registered = ", std::to_string(callback_handler_registered));
 	
-	assert(callback_handler_registered);
+	// assert(callback_handler_registered);
 
 	auto js_class_pimpl_ptr = std::make_shared<JSClassPimpl>(*this);
 	auto js_class_ptr       = std::make_shared<JSClass>(js_class_pimpl_ptr);
@@ -555,9 +555,9 @@ JSExportPimpl<T>::JSExportPimpl(const JSClassBuilder<T>& builder)
 		: name__(builder.name__)
 		, named_value_property_callback_map__(builder.named_value_property_callback_map__)
 		, named_function_property_callback_map__(builder.named_function_property_callback_map__)
-		, call_as_function_callback__(builder.call_as_function_callback__)
+		, call_as_function_callback__(builder.call_as_function_callback__) {
 		// , convert_to_type_callback__(builder.convert_to_type_callback__)
-		, callback_handler_key__(builder.callback_handler_key__) {
+		// , callback_handler_key__(builder.callback_handler_key__) {
 }
 
 template<typename T>
@@ -565,8 +565,8 @@ template<typename T>
     : version__(builder.version__)
     , class_attribute__(builder.class_attribute__)
     , name__(builder.name__)
-		, parent__(builder.parent__)
-		, callback_handler_key__(builder.callback_handler_key__) {
+		, parent__(builder.parent__) {
+		// , js_export_pimpl_ptr__(builder.js_export_pimpl_ptr__) {
   
   Initialize(builder.named_value_property_map__,
              builder.named_function_property_map__);

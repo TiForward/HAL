@@ -79,15 +79,16 @@ class JSClass final {
   */
 	std::uint32_t get_version() const;
 
-	~JSClass();
-	JSClass(const JSClass&);
-	JSClass(JSClass&&);
-	JSClass& operator=(const JSClass&);
-	JSClass& operator=(JSClass&&);
+	~JSClass()                         = default;
+	JSClass(const JSClass&)            = default;
+	JSClass(JSClass&&)                 = default;
+	JSClass& operator=(const JSClass&) = default;
+	JSClass& operator=(JSClass&&)      = default;
 
 	// FIXME: Make these private.
 	JSClass() = default;
 	operator JSClassRef() const;
+  explicit JSClass(std::shared_ptr<detail::JSClassPimpl> js_class_pimpl_ptr);
 
  private:
 
@@ -98,7 +99,7 @@ class JSClass final {
   template<typename T>
   friend class JSClassBuilder;
 
-  explicit JSClass(std::shared_ptr<detail::JSClassPimpl> js_class_pimpl_ptr);
+  // explicit JSClass(std::shared_ptr<detail::JSClassPimpl> js_class_pimpl_ptr);
 
   // These classes need access to operator JSClassRef().
   friend class JSContext;

@@ -83,9 +83,9 @@ void JSClassPimpl::Initialize(const JSExportNamedValuePropertyMap_t&    named_va
 	js_class_definition__.initialize        = JSObjectInitializeCallback;
 	js_class_definition__.finalize          = JSObjectFinalizeCallback;
 	js_class_definition__.callAsFunction    = JSObjectCallAsFunctionCallback;
-	js_class_definition__.callAsConstructor = JSObjectCallAsConstructorCallback;
-	js_class_definition__.hasInstance       = JSObjectHasInstanceCallback;
-	js_class_definition__.convertToType     = JSObjectConvertToTypeCallback;
+	// js_class_definition__.callAsConstructor = JSObjectCallAsConstructorCallback;
+	// js_class_definition__.hasInstance       = JSObjectHasInstanceCallback;
+	// js_class_definition__.convertToType     = JSObjectConvertToTypeCallback;
 
 	js_class_ref__ = JSClassCreate(&js_class_definition__);
 }
@@ -111,9 +111,12 @@ JSExportCallbackHandler* JSClassPimpl::get_callback_handler_ptr(void* data) {
 
 	JAVASCRIPTCORECPP_LOG_DEBUG("JSClassPimpl<", name__, ">::get_callback_handler_ptr ", to_string(js_object), ", found = ", std::to_string(found));
 
-	assert(found);
+	//assert(found);
+	if (found) {
+		return (position -> second).get();
+	}
 
-	return (position -> second).get();
+	return nullptr;
 }
 
 JSExportCallbackHandler* JSClassPimpl::get_callback_handler_ptr(JSObject& js_object) {
@@ -125,7 +128,12 @@ JSExportCallbackHandler* JSClassPimpl::get_callback_handler_ptr(JSObject& js_obj
 
 void JSClassPimpl::JSObjectInitializeCallback(JSContextRef context_ref, JSObjectRef object_ref) {
   JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC;
-  return get_callback_handler_ptr(JSObject(JSContext(context_ref), object_ref)) -> Initialize();
+  //return get_callback_handler_ptr(JSObject(JSContext(context_ref), object_ref)) -> Initialize();
+  JSContext js_context(context_ref);
+  JSObject  js_object(js_context, object_ref);
+  if (js_object.GetPrivate()) {
+	  //return get_callback_handler_ptr(js_object) -> Initialize();
+  }
 }
 
 void JSClassPimpl::JSObjectFinalizeCallback(JSObjectRef object_ref) {
@@ -134,35 +142,35 @@ void JSClassPimpl::JSObjectFinalizeCallback(JSObjectRef object_ref) {
 	return get_callback_handler_ptr(native_object_ptr) -> Finalize(native_object_ptr);
 }
 
-JSObjectRef JSClassPimpl::JSObjectCallAsConstructorCallback(JSContextRef context_ref, JSObjectRef constructor_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception) try {
-  JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC;
-  JSContext js_context(context_ref);
-  JSObject  js_object(js_context, constructor_ref);
-  return get_callback_handler_ptr(js_object) -> CallAsConstructor(std::move(js_object), to_vector(js_context, argument_count, arguments_array));
-} catch (const std::exception& e) {
-  JSContext js_context(context_ref);
-  JSString message(LogStdException("JSObjectCallAsConstructorCallback", JSObject(js_context, constructor_ref), e));
-  *exception = JSValue(js_context, message);
-} catch (...) {
-  JSContext js_context(context_ref);
-  JSString message(LogUnknownException("JSObjectCallAsConstructorCallback", JSObject(js_context, constructor_ref)));
-  *exception = JSValue(js_context, message);
-}
+// JSObjectRef JSClassPimpl::JSObjectCallAsConstructorCallback(JSContextRef context_ref, JSObjectRef constructor_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception) try {
+//   JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC;
+//   JSContext js_context(context_ref);
+//   JSObject  js_object(js_context, constructor_ref);
+//   return get_callback_handler_ptr(js_object) -> CallAsConstructor(std::move(js_object), to_vector(js_context, argument_count, arguments_array));
+// } catch (const std::exception& e) {
+//   JSContext js_context(context_ref);
+//   JSString message(LogStdException("JSObjectCallAsConstructorCallback", JSObject(js_context, constructor_ref), e));
+//   *exception = JSValue(js_context, message);
+// } catch (...) {
+//   JSContext js_context(context_ref);
+//   JSString message(LogUnknownException("JSObjectCallAsConstructorCallback", JSObject(js_context, constructor_ref)));
+//   *exception = JSValue(js_context, message);
+// }
 
-bool JSClassPimpl::JSObjectHasInstanceCallback(JSContextRef context_ref, JSObjectRef constructor_ref, JSValueRef possible_instance_ref, JSValueRef* exception) try {
-  JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC;
-  JSContext js_context(context_ref);
-	JSObject  js_object(js_context, constructor_ref);
-	return get_callback_handler_ptr(js_object) -> HasInstance(std::move(js_object), JSValue(js_context, possible_instance_ref));
-} catch (const std::exception& e) {
-  JSContext js_context(context_ref);
-  JSString message(LogStdException("JSObjectHasInstanceCallback", JSObject(js_context, constructor_ref), e));
-  *exception = JSValue(js_context, message);
-} catch (...) {
-  JSContext js_context(context_ref);
-  JSString message(LogUnknownException("JSObjectHasInstanceCallback", JSObject(js_context, constructor_ref)));
-  *exception = JSValue(js_context, message);
-}
+// bool JSClassPimpl::JSObjectHasInstanceCallback(JSContextRef context_ref, JSObjectRef constructor_ref, JSValueRef possible_instance_ref, JSValueRef* exception) try {
+//   JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC;
+//   JSContext js_context(context_ref);
+// 	JSObject  js_object(js_context, constructor_ref);
+// 	return get_callback_handler_ptr(js_object) -> HasInstance(std::move(js_object), JSValue(js_context, possible_instance_ref));
+// } catch (const std::exception& e) {
+//   JSContext js_context(context_ref);
+//   JSString message(LogStdException("JSObjectHasInstanceCallback", JSObject(js_context, constructor_ref), e));
+//   *exception = JSValue(js_context, message);
+// } catch (...) {
+//   JSContext js_context(context_ref);
+//   JSString message(LogUnknownException("JSObjectHasInstanceCallback", JSObject(js_context, constructor_ref)));
+//   *exception = JSValue(js_context, message);
+// }
 
 JSValueRef JSClassPimpl::GetNamedValuePropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception) try {
 	JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC;
@@ -249,7 +257,8 @@ JSValueRef JSClassPimpl::JSObjectCallAsFunctionCallback(JSContextRef context_ref
 bool JSClassPimpl::JSObjectHasPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref) try {
   JSContext js_context(context_ref);
   JSObject  js_object(js_context, object_ref);
-  return js_object.HasProperty(property_name_ref);
+  //return js_object.HasProperty(property_name_ref);
+  return false;
 } catch (const std::exception& e) {
   LogStdException("JSObjectHasPropertyCallback", JSObject(JSContext(context_ref), object_ref), e);
 } catch (...) {

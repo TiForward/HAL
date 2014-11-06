@@ -52,8 +52,8 @@ class JSExportPimpl final : public JSExportCallbackHandler {
 	
 	virtual void     Initialize()                                                                                                                                 override;
 	virtual void     Finalize(void* native_object_ptr)                                                                                                            override;
-	virtual JSObject CallAsConstructor(JSObject&& constructor, const std::vector<JSValue>&& arguments)                                                            override;
-	virtual bool     HasInstance(JSObject&& constructor, const JSValue&& possible_instance)                                                                 const override;
+	// virtual JSObject CallAsConstructor(JSObject&& constructor, const std::vector<JSValue>&& arguments)                                                            override;
+	// virtual bool     HasInstance(JSObject&& constructor, const JSValue&& possible_instance)                                                                 const override;
 	virtual JSValue  GetNamedProperty(JSObject&& object, const JSString&& property_name)                                                                    const override;
 	virtual bool     SetNamedProperty(JSObject&& object, const JSString&& property_name, const JSValue&& value)                                                   override;
 	virtual JSValue  CallNamedFunction(JSObject&& function, const JSString&& function_name, const std::vector<JSValue>&& arguments, JSObject&& this_object)       override;
@@ -84,7 +84,7 @@ class JSExportPimpl final : public JSExportCallbackHandler {
 	JSExportNamedFunctionPropertyCallbackMap_t<T> named_function_property_callback_map__;
 	CallAsFunctionCallback<T>                     call_as_function_callback__    { nullptr };
 	// ConvertToTypeCallback<T>                      convert_to_type_callback__     { nullptr };
-	JSExportCallbackHandlerMap_t::key_type        callback_handler_key__;
+	// JSExportCallbackHandlerMap_t::key_type        callback_handler_key__;
 
 #undef JAVASCRIPTCORECPP_DETAIL_JSEXPORTPIMPL_LOCK_GUARD
 #ifdef JAVASCRIPTCORECPP_THREAD_SAFE
@@ -97,7 +97,8 @@ class JSExportPimpl final : public JSExportCallbackHandler {
 
 template<typename T>
 void JSExportPimpl<T>::Initialize() {
-JAVASCRIPTCORECPP_LOG_DEBUG("JSExport<", name__, ">::Initialize callback handler ", std::to_string(callback_handler_key__));
+// JAVASCRIPTCORECPP_LOG_DEBUG("JSExport<", name__, ">::Initialize callback handler ", std::to_string(callback_handler_key__));
+	JAVASCRIPTCORECPP_LOG_DEBUG("JSExport<", name__, ">::Initialize");
 }
 
 template<typename T>
@@ -114,34 +115,34 @@ void JSExportPimpl<T>::Finalize(void* native_object_ptr) {
 	delete reinterpret_cast<T*>(native_object_ptr);
 }
 
-template<typename T>
-JSObject JSExportPimpl<T>::CallAsConstructor(JSObject&& constructor, const std::vector<JSValue>&& arguments) {
-	JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC;
+// template<typename T>
+// JSObject JSExportPimpl<T>::CallAsConstructor(JSObject&& constructor, const std::vector<JSValue>&& arguments) {
+// 	JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC;
 	
-	JAVASCRIPTCORECPP_LOG_DEBUG("JSExport<", name__, ">::CallAsConstructor for ", to_string(constructor), "(", std::to_string(arguments.size()), "arguments)");
-	auto native_object_ptr = new T(arguments);
-	constructor.SetPrivate(static_cast<void*>(native_object_ptr));
-	return *native_object_ptr;
-};
+// 	JAVASCRIPTCORECPP_LOG_DEBUG("JSExport<", name__, ">::CallAsConstructor for ", to_string(constructor), "(", std::to_string(arguments.size()), "arguments)");
+// 	auto native_object_ptr = new T(arguments);
+// 	constructor.SetPrivate(static_cast<void*>(native_object_ptr));
+// 	return *native_object_ptr;
+// };
   
-template<typename T>
-bool JSExportPimpl<T>::HasInstance(JSObject&& constructor, const JSValue&& possible_instance) const {
-	if (possible_instance.IsObject()) {
-		return false;
-	}
+// template<typename T>
+// bool JSExportPimpl<T>::HasInstance(JSObject&& constructor, const JSValue&& possible_instance) const {
+// 	if (possible_instance.IsObject()) {
+// 		return false;
+// 	}
 	
-	bool result = false;
-	try {
-		auto native_object_ptr = dynamic_cast<T*>(reinterpret_cast<T*>(constructor.GetPrivate()));
-		static_cast<void>(native_object_ptr);
-		result = true;
-	} catch (...) {
-	}
+// 	bool result = false;
+// 	try {
+// 		auto native_object_ptr = dynamic_cast<T*>(reinterpret_cast<T*>(constructor.GetPrivate()));
+// 		static_cast<void>(native_object_ptr);
+// 		result = true;
+// 	} catch (...) {
+// 	}
 	
-	JAVASCRIPTCORECPP_LOG_DEBUG("JSExport<", name__, ">::HasInstance: result = ", std::to_string(result), " for ", to_string(possible_instance), " instanceof ", to_string(constructor));
+// 	JAVASCRIPTCORECPP_LOG_DEBUG("JSExport<", name__, ">::HasInstance: result = ", std::to_string(result), " for ", to_string(possible_instance), " instanceof ", to_string(constructor));
 
-	return result;
-};
+// 	return result;
+// };
 
 template<typename T>
 JSValue JSExportPimpl<T>::GetNamedProperty(JSObject&& object, const JSString&& property_name) const {
