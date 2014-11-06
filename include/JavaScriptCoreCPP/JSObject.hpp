@@ -304,7 +304,9 @@ class JSObject : public JSValue {
 	*/
 	virtual JSValue CallAsFunction(const std::vector<JSValue>&  arguments, JSObject this_object);
 
- private:
+	// FIXME
+	//private:
+ public:
 
 	// Only JSClassPimpl and JSExportPimpl can call GetPrivate and
 	// SetPrivate.

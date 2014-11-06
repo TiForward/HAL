@@ -48,12 +48,12 @@ class JSExportNamedFunctionPropertyCallback final : public JSExportPropertyCallb
     For example, given this class definition:
     
     class Foo {
-      JSValue CallAsFunction(const std::vector<JSValue>& arguments, JSObject& this_object);
+      JSValue sayHello(const std::vector<JSValue>& arguments, JSObject& this_object);
     };
     
     You would define the callback like this:
     
-    CallNamedFunctionCallback callback(&Foo::CallAsFunction);
+    CallNamedFunctionCallback callback(&Foo::sayHello);
     
     @param function_name A JSString containing the function's name.
     

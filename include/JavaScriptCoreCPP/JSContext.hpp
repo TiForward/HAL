@@ -222,8 +222,8 @@ class JSContext final {
     @result A JavaScript object running in this execution context that
     is implemented by a C++ class.
   */
-  template<typename T, typename... Us>
-  std::shared_ptr<T> CreateObject(Us&&... constructor_arguments) const;
+  // template<typename T, typename... Us>
+  // std::shared_ptr<T> CreateObject(Us&&... constructor_arguments) const;
 
   /*!
     @method

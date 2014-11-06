@@ -33,9 +33,7 @@
 #include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP {
-// class JSString;
 class JSClass;
-// class JSObject;
 }
 
 namespace JavaScriptCoreCPP { namespace detail {
@@ -74,6 +72,10 @@ class JSClassPimpl final {
 	  return version__;
   }
   
+  std::uint32_t get_callback_handler_key() const {
+	  return callback_handler_key__;
+  }
+
   // For interoperability with the JavaScriptCore C API.
   operator JSClassRef() const {
 	  return js_class_ref__;

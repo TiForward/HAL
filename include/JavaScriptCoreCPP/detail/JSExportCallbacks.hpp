@@ -10,9 +10,16 @@
 #ifndef _JAVASCRIPTCORECPP_DETAIL_JSEXPORTCALLBACKS_HPP_
 #define _JAVASCRIPTCORECPP_DETAIL_JSEXPORTCALLBACKS_HPP_
 
-#include "JavaScriptCoreCPP/JSString.hpp"
-#include "JavaScriptCoreCPP/JSObject.hpp"
+// #include "JavaScriptCoreCPP/JSString.hpp"
+// #include "JavaScriptCoreCPP/JSObject.hpp"
 #include <vector>
+
+namespace JavaScriptCoreCPP {
+class JSString;
+class JSValue;
+class JSObject;
+}
+
 
 namespace JavaScriptCoreCPP { namespace detail {
 
@@ -25,7 +32,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   @discussion For example, given this class definition:
   
   class Foo {
-    JSValue GetBar(JSString&& property_name) const;
+    JSValue GetBar() const;
   };
 
   You would define the callback like this:
@@ -35,12 +42,10 @@ namespace JavaScriptCoreCPP { namespace detail {
   @param 1 A const reference to the C++ object that returns the
   property's value.
 
-  @param 2 An rvalue reference to the property's name.
-
   @result Return the named property's value.
 */
 template<typename T>
-using GetNamedValuePropertyCallback = std::function<JSValue(const T&, const JSString&&)>;
+using GetNamedValuePropertyCallback = std::function<JSValue(const T&)>;
 	
 /*! 
   @typedef SetNamedValuePropertyCallback
@@ -51,7 +56,7 @@ using GetNamedValuePropertyCallback = std::function<JSValue(const T&, const JSSt
   @discussion For example, given this class definition:
   
   class Foo {
-    bool SetBar(JSObject object, JSString&& property_name, JSValue&& value);
+    bool SetBar(JSObject object, const JSValue&& value);
   };
 
   You would define the callback like this:
@@ -61,14 +66,12 @@ using GetNamedValuePropertyCallback = std::function<JSValue(const T&, const JSSt
   @param 1 A non-const reference to the C++ object that sets the
   property's value.
 
-  @param 2 An rvalue reference to the property's name.
-
-  @param 3 An rvalue reference to the property's value.
+  @param 2 A const rvalue reference to the property's value.
 
   @result Return true to indicate that the property was set.
 */
 template<typename T>
-using SetNamedValuePropertyCallback = std::function<JSValue(T&, const JSString&&, const JSValue&&)>;
+using SetNamedValuePropertyCallback = std::function<bool(T&, const JSValue&&)>;
 
 /*! 
   @typedef CallNamedFunctionCallback
@@ -79,7 +82,7 @@ using SetNamedValuePropertyCallback = std::function<JSValue(T&, const JSString&&
   @discussion For example, given this class definition:
   
   class Foo {
-    JSValue Hello(JSString&& function_name, std::vector<JSValue>&& arguments, JSObject&& this_object);
+    JSValue Hello(const std::vector<JSValue>&& arguments, JSObject&& this_object);
   };
 
   You would define the callback like this:
@@ -93,17 +96,15 @@ using SetNamedValuePropertyCallback = std::function<JSValue(T&, const JSString&&
   @param 1 A non-const reference to the C++ object that provides the
   JavaScript function call behavior.
 
-  @param 2 An rvalue reference to the function's name.
+  @param 2 A const rvalue reference to the JSValue array of arguments
+  to pass to the function.
 
-  @param 3 An rvalue reference to the JSValue array of arguments to
-  pass to the function.
-
-  @param 4 An rvalue reference to the "this" JavaScript object.
+  @param 3 An rvalue reference to the "this" JavaScript object.
 
   @result Return the function's value.
 */
 template<typename T>
-using CallNamedFunctionCallback = std::function<JSValue(T&, JSString&&, std::vector<JSValue>&&, JSObject&&)>;
+using CallNamedFunctionCallback = std::function<JSValue(T&, const std::vector<JSValue>&&, JSObject&&)>;
 	
 /*! 
   @typedef InitializeCallback
@@ -151,7 +152,7 @@ using InitializeCallback = std::function<void(T&)>;
   For example, given this class definition:
 
   class Foo {
-    void Finalize();
+    void Finalize(void* native_object_ptr);
   };
 
   You would define the callback like this:
@@ -159,9 +160,11 @@ using InitializeCallback = std::function<void(T&)>;
   FinalizeCallback callback(&Foo::Finalize);
 
   @param 1 A non-const reference to the C++ object being finalized.
+
+  @param 2 A pointer to the native object being finalized.
 */
 template<typename T>
-using FinalizeCallback = std::function<void(T&)>;
+using FinalizeCallback = std::function<void(T&, void*)>;
 	
 /*! 
   @typedef CallAsFunctionCallback
@@ -173,7 +176,7 @@ using FinalizeCallback = std::function<void(T&)>;
   @discussion For example, given this class definition:
   
   class Foo {
-    JSValue CallAsFunction(std::vector<JSValue>&& arguments, JSObject&& this_object);
+    JSValue CallAsFunction(const std::vector<JSValue>&& arguments, JSObject&& this_object);
   };
 
   You would define the callback like this:
@@ -187,15 +190,15 @@ using FinalizeCallback = std::function<void(T&)>;
   @param 1 A non-const reference to the C++ object that provides the
   JavaScript function call behavior.
 
-  @param 2 An rvalue reference to the JSValue array of arguments to
-  pass to the function.
+  @param 2 A const rvalue reference to the JSValue array of arguments
+  to pass to the function.
 
   @param 3 An rvalue reference to the "this" JavaScript object.
 
   @result Return the function's value.
 */
 template<typename T>
-using CallAsFunctionCallback = std::function<JSValue(T&, std::vector<JSValue>&&, JSObject&&)>;
+using CallAsFunctionCallback = std::function<JSValue(T&, const std::vector<JSValue>&&, JSObject&&)>;
 
 /*! 
   @typedef CallAsConstructorCallback
@@ -211,7 +214,7 @@ using CallAsFunctionCallback = std::function<JSValue(T&, std::vector<JSValue>&&,
   For example, given this class definition:
   
   class Foo {
-    JSObject CallAsConstructor(std::vector<JSValue>&& arguments);
+    JSObject CallAsConstructor(const std::vector<JSValue>&& arguments);
   };
   
   You would define the callback like this:
@@ -225,13 +228,13 @@ using CallAsFunctionCallback = std::function<JSValue(T&, std::vector<JSValue>&&,
   @param 1 A non-const reference to the C++ object that provides the
   JavaScript constructor 'new' behavior.
 
-  @param 2 An rvalue reference to the JSValue array of arguments to
-  pass to the constructor.
+  @param 2 A const rvalue reference to the JSValue array of arguments
+  to pass to the constructor.
 
   @result Return a JSObject that is the constructor's return value.
 */
 template<typename T>
-using CallAsConstructorCallback = std::function<JSObject(T&, std::vector<JSValue>&&)>;
+using CallAsConstructorCallback = std::function<JSObject(T&, const std::vector<JSValue>&&)>;
 
 /*! 
   @typedef HasInstanceCallback
@@ -247,7 +250,7 @@ using CallAsConstructorCallback = std::function<JSObject(T&, std::vector<JSValue
   For example, given this class definition:
   
   class Foo {
-    bool HasInstance(JSValue&& possible_instance) const;
+    bool HasInstance(const JSValue&& possible_instance) const;
   };
 
   You would define the callback like this:
@@ -261,14 +264,14 @@ using CallAsConstructorCallback = std::function<JSObject(T&, std::vector<JSValue
   @param 1 A non-const reference to the C++ object that provides the
   JavaScript 'instanceof' behavior.
 
-  @param 2 An rvalue reference to the JSValue being tested to
+  @param 2 A const rvalue reference to the JSValue being tested to
   determine if it is an instance of parameter 1.
 
   @result Return true to indicate parameter 2 is an 'instanceof'
   parameter 1.
 */
 template<typename T>
-using HasInstanceCallback = std::function<bool(const T&, JSValue&&)>;
+using HasInstanceCallback = std::function<bool(const T&, const JSValue&&)>;
 
 /*! 
   @typedef ConvertToTypeCallback
@@ -282,7 +285,7 @@ using HasInstanceCallback = std::function<bool(const T&, JSValue&&)>;
   @discussion For example, given this class definition:
   
   class Foo {
-    JSValue ConvertToType(JSValue::Type&& type) const;
+    JSValue ConvertToType(const JSValue::Type&& type) const;
   };
 
   You would define the callback like this:
@@ -292,15 +295,15 @@ using HasInstanceCallback = std::function<bool(const T&, JSValue&&)>;
   @param 1 A non-const reference to the C++ object that provides the
   JavaScript conversion behavior.
 
-  @param 2 An rvalue reference to the JSValue::Type specifying the
-  JavaScript type to convert to.
+  @param 2 A const rvalue reference to the JSValue::Type specifying
+  the JavaScript type to convert to.
 
   @result Return the objects's converted value. Return JSUndefined to
   forward the reqeust to the class' parent class chain, then the
   JavaScript object's prototype chain.
 */
-template<typename T>
-using ConvertToTypeCallback = std::function<JSValue(const T&, ::JavaScriptCoreCPP::JSValue::Type&&)>;
+// template<typename T>
+// using ConvertToTypeCallback = std::function<JSValue(const T&, ::JavaScriptCoreCPP::JSValue::Type&&)>;
 
 }} // namespace JavaScriptCoreCPP { namespace detail {
 

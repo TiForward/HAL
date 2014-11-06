@@ -41,15 +41,15 @@ class JSExportCallbackHandler {
   JSExportCallbackHandler& operator=(const JSExportCallbackHandler&) = default;
   JSExportCallbackHandler& operator=(JSExportCallbackHandler&&)      = default;
 
-	virtual void     Initialize()                                                                                           = 0;
-	virtual void     Finalize(void* native_object_ptr)                                                                      = 0;
-	virtual JSObject CallAsConstructor(JSObject&& constructor, std::vector<JSValue>&& arguments)                            = 0;
-	virtual bool     HasInstance(JSObject&& constructor, JSValue&& possible_instance)                                 const = 0;
-	virtual JSValue  GetNamedProperty(JSObject&& object, JSString&& property_name)                                    const = 0;
-	virtual bool     SetNamedProperty(JSObject&& object, JSString&& property_name, JSValue&& value)                         = 0;
-	virtual JSValue  CallNamedFunction(JSObject&& function, JSObject&& this_object, std::vector<JSValue>&& arguments)       = 0;
-	virtual JSValue  CallAsFunction(JSObject&& function, JSObject&& this_object, std::vector<JSValue>&& arguments)          = 0;
-	virtual JSValue  ConvertToType(JSObject&& object, JSValue::Type&& type)                                           const = 0;
+	virtual void     Initialize()                                                                                                                                 = 0;
+	virtual void     Finalize(void* native_object_ptr)                                                                                                            = 0;
+	virtual JSObject CallAsConstructor(JSObject&& constructor, const std::vector<JSValue>&& arguments)                                                            = 0;
+	virtual bool     HasInstance(JSObject&& constructor, const JSValue&& possible_instance)                                                                 const = 0;
+	virtual JSValue  GetNamedProperty(JSObject&& object, const JSString&& property_name)                                                                    const = 0;
+	virtual bool     SetNamedProperty(JSObject&& object, const JSString&& property_name, const JSValue&& value)                                                   = 0;
+	virtual JSValue  CallNamedFunction(JSObject&& function, const JSString&& property_name, const std::vector<JSValue>&& arguments, JSObject&& this_object)       = 0;
+	virtual JSValue  CallAsFunction(JSObject&& function, const std::vector<JSValue>&& arguments, JSObject&& this_object)                                          = 0;
+	// virtual JSValue  ConvertToType(JSObject&& object, const JSValue::Type&& type)                                                                           const = 0;
 };
 
 }} // namespace JavaScriptCoreCPP { namespace detail {

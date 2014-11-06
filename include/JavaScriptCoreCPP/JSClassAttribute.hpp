@@ -32,4 +32,24 @@ enum class JSClassAttribute : std::uint32_t /* typedef unsigned JSClassAttribute
 
 } // JavaScriptCoreCPP
 
+// Provide a hash function so that a JSClassAttributes can be stored
+// in an unordered container.
+namespace std {
+
+using JavaScriptCoreCPP::JSClassAttribute;
+
+template<>
+struct hash<JSClassAttribute> {
+	using argument_type   = JSClassAttribute;
+	using result_type     = std::size_t;
+	using underlying_type = std::underlying_type<argument_type>::type;
+	std::hash<underlying_type> hash_function = std::hash<underlying_type>();
+	
+	result_type operator()(const argument_type& class_attribute) const {
+		return hash_function(static_cast<underlying_type>(class_attribute));
+	}
+};
+
+}  // namespace std {
+
 #endif // _JAVASCRIPTCORECPP_JSCLASSATTRIBUTE_HPP_

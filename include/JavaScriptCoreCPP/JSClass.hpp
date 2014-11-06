@@ -25,9 +25,15 @@
 
 namespace JavaScriptCoreCPP { namespace detail {
 class JSClassPimpl;
+
+template<typename T>
+class JSClassBuilder;
 }}
 
 namespace JavaScriptCoreCPP {
+
+template<typename T>
+class JSExport;
 
 /*!
   @class
@@ -78,11 +84,15 @@ class JSClass final {
 	JSClass(JSClass&&);
 	JSClass& operator=(const JSClass&);
 	JSClass& operator=(JSClass&&);
-  
+
+	// FIXME: Make these private.
+	JSClass() = default;
+	operator JSClassRef() const;
+
  private:
 
   // Private constructor only for implementing EmptyJSClass.
-	JSClass() = default;
+	//JSClass() = default;
 
 	// Only a JSClassBuilder can create a JSClass.
   template<typename T>
@@ -96,8 +106,12 @@ class JSClass final {
   friend class JSObject; // for constructor
 
   // For interoperability with the JavaScriptCore C API.
-  operator JSClassRef() const;
+  //operator JSClassRef() const;
 
+  // JSExport needs access to js_class_pimpl_ptr.
+  template<typename T>
+  friend class JSExport;
+  
   std::shared_ptr<detail::JSClassPimpl> js_class_pimpl_ptr__;
 		  
 #undef  JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD

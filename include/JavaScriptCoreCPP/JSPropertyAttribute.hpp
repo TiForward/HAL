@@ -49,7 +49,7 @@ struct hash<JSPropertyAttribute> {
 	using argument_type   = JSPropertyAttribute;
 	using result_type     = std::size_t;
 	using underlying_type = std::underlying_type<argument_type>::type;
-	const std::hash<underlying_type> hash_function = std::hash<underlying_type>();
+	std::hash<underlying_type> hash_function = std::hash<underlying_type>();
 	
 	result_type operator()(const argument_type& property_attribute) const {
 		return hash_function(static_cast<underlying_type>(property_attribute));

@@ -8,6 +8,7 @@
  */
 
 #include "JavaScriptCoreCPP/detail/JSUtil.hpp"
+#include "JavaScriptCoreCPP/JSString.hpp"
 #include "JavaScriptCoreCPP/JSValue.hpp"
 #include "JavaScriptCoreCPP/JSLogger.hpp"
 
@@ -63,6 +64,7 @@ std::vector<JSValue> to_vector(const JSContext& js_context, const std::vector<JS
 	               js_string_vector.end(),
 	               std::back_inserter(js_value_vector),
 	               [&js_context](const JSString& js_string) { return js_context.CreateString(js_string); });
+	return js_value_vector;
 }
 
 std::vector<JSValueRef> to_vector(const std::vector<JSValue>& js_value_vector) {
@@ -94,14 +96,14 @@ JSPropertyAttributes ToJSPropertyAttributes(const std::unordered_set<JSPropertyA
 	return static_cast<property_attribute_underlying_type>(property_attributes.to_ulong());
 }
 
-unsigned ToJSClassAttribute(JSNativeClassAttribute attribute) {
+unsigned ToJSClassAttribute(JSClassAttribute attribute) {
 	JSClassAttributes attributes = kJSClassAttributeNone;
 	switch (attribute) {
-		case None:
+		case JSClassAttribute::None:
 			attributes = kJSClassAttributeNone;
 			break;
 			
-		case NoAutomaticPrototype:
+		case JSClassAttribute::NoAutomaticPrototype:
 			attributes = kJSClassAttributeNone;
 			break;
 

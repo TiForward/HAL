@@ -11,8 +11,6 @@
 
 #include "JavaScriptCoreCPP/JSClass.hpp"
 #include "JavaScriptCoreCPP/JSPropertyNameAccumulator.hpp"
-// #include "JavaScriptCoreCPP/JSString.hpp"
-// #include "JavaScriptCoreCPP/JSObject.hpp"
 #include "JavaScriptCoreCPP/JSLogger.hpp"
 #include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 
@@ -200,7 +198,11 @@ JSValueRef JSClassPimpl::CallNamedFunctionCallback(JSContextRef context_ref, JSO
   JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC;
   JSContext js_context(context_ref);
 	JSObject  js_object(js_context, function_ref);
-	return get_callback_handler_ptr(js_object) -> CallNamedFunction(std::move(js_object), JSObject(js_context, this_object_ref), to_vector(js_context, argument_count, arguments_array));
+
+	// TODO: Get function's name.
+	//return get_callback_handler_ptr(js_object) -> CallNamedFunction(std::move(js_object), to_vector(js_context, argument_count, arguments_array), JSObject(js_context, this_object_ref));
+	return nullptr;
+	
 } catch (const std::exception& e) {
   JSContext js_context(context_ref);
   JSString message(LogStdException("CallNamedFunctionCallback", JSObject(js_context, function_ref), e));
@@ -215,7 +217,7 @@ JSValueRef JSClassPimpl::JSObjectCallAsFunctionCallback(JSContextRef context_ref
   JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC;
   JSContext js_context(context_ref);
 	JSObject  js_object(js_context, function_ref);
-	return get_callback_handler_ptr(js_object) -> CallAsFunction(std::move(js_object), JSObject(js_context, this_object_ref), to_vector(js_context, argument_count, arguments_array));
+	return get_callback_handler_ptr(js_object) -> CallAsFunction(std::move(js_object), to_vector(js_context, argument_count, arguments_array), JSObject(js_context, this_object_ref));
 } catch (const std::exception& e) {
   JSContext js_context(context_ref);
   JSString message(LogStdException("JSObjectCallAsFunctionCallback", JSObject(js_context, function_ref), e));
@@ -226,20 +228,20 @@ JSValueRef JSClassPimpl::JSObjectCallAsFunctionCallback(JSContextRef context_ref
   *exception = JSValue(js_context, message);
 }
 
-JSValueRef JSClassPimpl::JSObjectConvertToTypeCallback(JSContextRef context_ref, JSObjectRef object_ref, JSType type, JSValueRef* exception) try {
-  JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC;
-  JSContext js_context(context_ref);
-  JSObject  js_object(js_context, object_ref);
-  return get_callback_handler_ptr(js_object) -> ConvertToType(std::move(js_object), ToJSValueType(type));
-} catch (const std::exception& e) {
-  JSContext js_context(context_ref);
-  JSString message(LogStdException("JSObjectConvertToTypeCallback", JSObject(js_context, object_ref), e));
-  *exception = JSValue(js_context, message);
-} catch (...) {
-  JSContext js_context(context_ref);
-  JSString message(LogUnknownException("JSObjectConvertToTypeCallback", JSObject(js_context, object_ref)));
-  *exception = JSValue(js_context, message);
-}
+// JSValueRef JSClassPimpl::JSObjectConvertToTypeCallback(JSContextRef context_ref, JSObjectRef object_ref, JSType type, JSValueRef* exception) try {
+//   JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC;
+//   JSContext js_context(context_ref);
+//   JSObject  js_object(js_context, object_ref);
+//   return get_callback_handler_ptr(js_object) -> ConvertToType(std::move(js_object), ToJSValueType(type));
+// } catch (const std::exception& e) {
+//   JSContext js_context(context_ref);
+//   JSString message(LogStdException("JSObjectConvertToTypeCallback", JSObject(js_context, object_ref), e));
+//   *exception = JSValue(js_context, message);
+// } catch (...) {
+//   JSContext js_context(context_ref);
+//   JSString message(LogUnknownException("JSObjectConvertToTypeCallback", JSObject(js_context, object_ref)));
+//   *exception = JSValue(js_context, message);
+// }
 
 
 /* All of the following callbacks are simply delegated to JSObject.  */

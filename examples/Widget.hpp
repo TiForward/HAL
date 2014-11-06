@@ -22,7 +22,7 @@ using namespace JavaScriptCoreCPP;
   @discussion This is an example of how to create JavaScript objects
   implemented by a C++ class.
 */
-class Widget final : public JSExport<Widget> {
+class Widget : public JSExport<Widget> {
 	
 public:
 	
@@ -46,7 +46,9 @@ public:
 	  function.
 	*/
 	Widget(const JSContext& js_context)
-			: JSExport<Widget>(js_context) {
+			: JSExport<Widget>(js_context)
+			, name_ (js_context.CreateString("world"))
+			, number_ (js_context.CreateNumber(42)) {
 	}
 
 	/*!
@@ -63,7 +65,9 @@ public:
 	  arguments from the JavaScript 'new' expression.
 	*/
 	Widget(const JSContext& js_context, std::vector<JSValue>&& arguments)
-			: JSExport<Widget>(js_context) {
+			: JSExport<Widget>(js_context)
+			, name_ (js_context.CreateString("world"))
+			, number_ (js_context.CreateNumber(42)) {
 	}
 	
 	/*!
@@ -90,7 +94,7 @@ public:
 	  @abstract This is callback is invoked when your JavaScript object
 	  is used as a constructor in a 'new' expression.
 	*/
-	JSObject Constructor(std::vector<JSValue>&& arguments) {
+	JSObject Constructor(const std::vector<JSValue>&& arguments) {
 		// Use the arguments to initialize yourself as required.
 		return *this;
 	}
@@ -99,7 +103,7 @@ public:
 		return name_;
 	}
 
-	bool set_name(JSValue&& value) {
+	bool set_name(const JSValue&& value) {
 		name_ = value;
 		return true;
 	}
@@ -108,7 +112,7 @@ public:
 		return number_;
 	}
 
-	bool set_number(JSValue&& value) {
+	bool set_number(const JSValue&& value) {
 		number_ = value;
 		return true;
 	}
@@ -117,12 +121,13 @@ public:
 		return pi_;
 	}
 
-	JSValue sayHello(std::vector<JSValue>&& arguments, JSObject&& this_object) {
+	JSValue sayHello(const std::vector<JSValue>&& arguments, JSObject&& this_object) {
 		std::ostringstream os;
 		os << "Hello";
 
-		if (!name_.empty()) {
-			os << ", " << name_;
+		JSString name = static_cast<JSString>(name_);
+		if (!name.empty()) {
+			os << ", " << name;
 		}
 
 		os << ". Your number is " << number_ << ".";

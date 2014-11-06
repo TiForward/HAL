@@ -309,7 +309,7 @@ class JSClassBuilder final {
     std::unordered_set<JSPropertyAttribute> attributes { JSPropertyAttribute::DontDelete, JSPropertyAttribute::ReadOnly };
     static_cast<void>(!enumerable && attributes.insert(JSPropertyAttribute::DontEnum).second);
     JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
-    AddFunctionPropertyCallback(JSExportNamedValuePropertyCallback<T>(function_name, function_callback, attributes));
+    AddFunctionPropertyCallback(JSExportNamedFunctionPropertyCallback<T>(function_name, function_callback, attributes));
     return *this;
   }
   
@@ -370,9 +370,9 @@ class JSClassBuilder final {
     @result The callback to invoke when converting a JavaScript object
     to another JavaScript type.
   */
-  ConvertToTypeCallback<T> ConvertToType() const {
-    return convert_to_type_callback__;
-  }
+  // ConvertToTypeCallback<T> ConvertToType() const {
+  //   return convert_to_type_callback__;
+  // }
 
   /*!
     @method
@@ -400,11 +400,11 @@ class JSClassBuilder final {
 
     @result A reference to the builder for chaining.
   */
-  JSClassBuilder<T>& ConvertToType(const ConvertToTypeCallback<T>& convert_to_type_callback) {
-    JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
-    convert_to_type_callback__ = convert_to_type_callback;
-    return *this;
-  }
+  // JSClassBuilder<T>& ConvertToType(const ConvertToTypeCallback<T>& convert_to_type_callback) {
+  //   JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
+  //   convert_to_type_callback__ = convert_to_type_callback;
+  //   return *this;
+  // }
   
   /*!
     @method
@@ -415,7 +415,7 @@ class JSClassBuilder final {
     @result A JSClass instance with all of the properties and
     callbacks specified in this builder.
   */
-  std::shared_ptr<JSClass> build() const;
+  std::shared_ptr<JSClass> build();
 
  private:
 
@@ -444,7 +444,7 @@ class JSClassBuilder final {
   JSExportNamedFunctionPropertyMap_t              named_function_property_map__;
   
   CallAsFunctionCallback<T>                       call_as_function_callback__ { nullptr };
-  ConvertToTypeCallback<T>                        convert_to_type_callback__  { nullptr };
+  // ConvertToTypeCallback<T>                        convert_to_type_callback__  { nullptr };
   JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_MUTEX;
 
   static JSClassMap_t<T> js_class_map__;
@@ -460,20 +460,20 @@ void JSClassBuilder<T>::AddValuePropertyCallback(const JSExportNamedValuePropert
   const bool found         = position != named_value_property_callback_map__.end();
   
   if (found) {
-    const std::string message = "Value property " + property_name + " already added.";
-    JAVASCRIPTCORECPP_LOG_ERROR("JSClassBuilder<", js_class_name__, ">: ", message);
+	  const std::string message = "Value property " + static_cast<std::string>(property_name) + " already added.";
+    JAVASCRIPTCORECPP_LOG_ERROR("JSClassBuilder<", name__, ">: ", message);
     ThrowInvalidArgument("JSClassBuilder", message);
   }
   
   const auto callback_insert_result = named_value_property_callback_map__.emplace(property_name, value_property_callback);
   const bool callback_inserted      = callback_insert_result.second;
   
-  JAVASCRIPTCORECPP_LOG_DEBUG("JSClassBuilder<", js_class_name__, ">: AddValuePropertyCallback: callback ", property_name, ", inserted = ", std::to_string(callback_inserted));
+  JAVASCRIPTCORECPP_LOG_DEBUG("JSClassBuilder<", name__, ">: AddValuePropertyCallback: callback ", property_name, ", inserted = ", std::to_string(callback_inserted));
 
   const auto attributes_insert_result = named_value_property_map__.emplace(property_name, value_property_callback.get_attributes());
   const bool attributes_inserted      = attributes_insert_result.second;
 
-  JAVASCRIPTCORECPP_LOG_DEBUG("JSClassBuilder<", js_class_name__, ">: AddValuePropertyCallback: attributes ", property_name, ", inserted = ", std::to_string(attributes_inserted));
+  JAVASCRIPTCORECPP_LOG_DEBUG("JSClassBuilder<", name__, ">: AddValuePropertyCallback: attributes ", property_name, ", inserted = ", std::to_string(attributes_inserted));
 
   // postcondition: The callback and attributes were added to their
   // respective maps.
@@ -488,20 +488,20 @@ void JSClassBuilder<T>::AddFunctionPropertyCallback(const JSExportNamedFunctionP
   const bool found         = position != named_function_property_callback_map__.end();
   
   if (found) {
-    const std::string message = "Function property " + property_name + " already added.";
-    JAVASCRIPTCORECPP_LOG_ERROR("JSClassBuilder<", js_class_name__, ">: ", message);
+	  const std::string message = "Function property " + static_cast<std::string>(property_name) + " already added.";
+    JAVASCRIPTCORECPP_LOG_ERROR("JSClassBuilder<", name__, ">: ", message);
     ThrowInvalidArgument("JSClassBuilder", message);
   }
 
   const auto callback_insert_result = named_function_property_callback_map__.emplace(property_name, function_property_callback);
   const bool callback_inserted      = callback_insert_result.second;
   
-  JAVASCRIPTCORECPP_LOG_DEBUG("JSClassBuilder<", js_class_name__, ">: AddFunctionPropertyCallback: callback ", property_name, ", inserted = ", std::to_string(callback_inserted));
+  JAVASCRIPTCORECPP_LOG_DEBUG("JSClassBuilder<", name__, ">: AddFunctionPropertyCallback: callback ", property_name, ", inserted = ", std::to_string(callback_inserted));
 
   const auto attributes_insert_result = named_function_property_map__.emplace(property_name, function_property_callback.get_attributes());
   const bool attributes_inserted      = attributes_insert_result.second;
 
-  JAVASCRIPTCORECPP_LOG_DEBUG("JSClassBuilder<", js_class_name__, ">: AddFunctionPropertyCallback: attributes ", property_name, ", inserted = ", std::to_string(attributes_inserted));
+  JAVASCRIPTCORECPP_LOG_DEBUG("JSClassBuilder<", name__, ">: AddFunctionPropertyCallback: attributes ", property_name, ", inserted = ", std::to_string(attributes_inserted));
 
   // postcondition: The callback and attributes were added to their
   // respective maps.
@@ -510,7 +510,7 @@ void JSClassBuilder<T>::AddFunctionPropertyCallback(const JSExportNamedFunctionP
 }
 
 template<typename T>
-std::shared_ptr<JSClass> JSClassBuilder<T>::build() const {
+std::shared_ptr<JSClass> JSClassBuilder<T>::build() {
 	JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
 	JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC;
 
@@ -528,8 +528,8 @@ std::shared_ptr<JSClass> JSClassBuilder<T>::build() const {
 	
 	// Insert the callback handler (i.e. JSExportPimpl) into the
 	// dispatch table (i.e. JSClassPimpl's callback map).
-	auto js_export_pimpl_ptr___               = std::make_shared<JSExportPimpl>(*this);
-	callback_handler_key__                    = reinterpret_cast<JSExportCallbackHandlerMap_t::key_type>(js_export_pimpl_ptr___.get());
+	js_export_pimpl_ptr__                     = std::make_shared<JSExportPimpl<T>>(*this);
+	callback_handler_key__                    = reinterpret_cast<JSExportCallbackHandlerMap_t::key_type>(js_export_pimpl_ptr__.get());
 	const auto callback_handler_insert_result = JSClassPimpl::js_export_callback_handler_map__.emplace(callback_handler_key__, js_export_pimpl_ptr__);
 	const bool callback_handler_registered    = callback_handler_insert_result.second;
 	
@@ -537,7 +537,17 @@ std::shared_ptr<JSClass> JSClassBuilder<T>::build() const {
 	
 	assert(callback_handler_registered);
 
-	return std::make_shared<JSClassPimpl>(*this);
+	auto js_class_pimpl_ptr = std::make_shared<JSClassPimpl>(*this);
+	auto js_class_ptr       = std::make_shared<JSClass>(js_class_pimpl_ptr);
+
+	const auto js_class_ptr_insert_result = js_class_map__.emplace(name__, js_class_ptr);
+	const bool js_class_ptr_inserted      = js_class_ptr_insert_result.second;
+	
+	JAVASCRIPTCORECPP_LOG_DEBUG("JSClassBuilder<", name__, ">: Created JSClass = ", std::to_string(js_class_ptr_inserted));
+
+	assert(js_class_ptr_inserted);
+
+	return js_class_ptr;
 }
 
 template<typename T>
@@ -546,7 +556,7 @@ JSExportPimpl<T>::JSExportPimpl(const JSClassBuilder<T>& builder)
 		, named_value_property_callback_map__(builder.named_value_property_callback_map__)
 		, named_function_property_callback_map__(builder.named_function_property_callback_map__)
 		, call_as_function_callback__(builder.call_as_function_callback__)
-		, convert_to_type_callback__(builder.convert_to_type_callback__)
+		// , convert_to_type_callback__(builder.convert_to_type_callback__)
 		, callback_handler_key__(builder.callback_handler_key__) {
 }
 

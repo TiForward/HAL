@@ -36,7 +36,7 @@ using JSExportNamedValuePropertyCallbackMap_t    = std::unordered_map<std::strin
 template<typename T>
 using JSExportNamedFunctionPropertyCallbackMap_t = std::unordered_map<std::string, JSExportNamedFunctionPropertyCallback<T>>;
 
-template<typename U>
+template<typename T>
 class JSClassBuilder;
 
 template<typename T>
@@ -50,15 +50,15 @@ class JSExportPimpl final : public JSExportCallbackHandler {
 
 	/* Implement the JSExportCallbackHandler interface. */
 	
-	virtual void     Initialize()                                                                                           override;
-	virtual void     Finalize(void* native_object_ptr)                                                                      override;
-	virtual JSObject CallAsConstructor(JSObject&& constructor, std::vector<JSValue>&& arguments)                            override;
-	virtual bool     HasInstance(JSObject&& constructor, JSValue&& possible_instance)                                 const override;
-	virtual JSValue  GetNamedProperty(JSObject&& object, JSString&& property_name)                                    const override;
-	virtual bool     SetNamedProperty(JSObject&& object, JSString&& property_name, JSValue&& value)                         override;
-	virtual JSValue  CallNamedFunction(JSObject&& function, JSObject&& this_object, std::vector<JSValue>&& arguments)       override;
-	virtual JSValue  CallAsFunction(JSObject&& function, JSObject&& this_object, std::vector<JSValue>&& arguments)          override;
-	virtual JSValue  ConvertToType(JSObject&& object, JSValue::Type&& type)                                           const override;
+	virtual void     Initialize()                                                                                                                                 override;
+	virtual void     Finalize(void* native_object_ptr)                                                                                                            override;
+	virtual JSObject CallAsConstructor(JSObject&& constructor, const std::vector<JSValue>&& arguments)                                                            override;
+	virtual bool     HasInstance(JSObject&& constructor, const JSValue&& possible_instance)                                                                 const override;
+	virtual JSValue  GetNamedProperty(JSObject&& object, const JSString&& property_name)                                                                    const override;
+	virtual bool     SetNamedProperty(JSObject&& object, const JSString&& property_name, const JSValue&& value)                                                   override;
+	virtual JSValue  CallNamedFunction(JSObject&& function, const JSString&& function_name, const std::vector<JSValue>&& arguments, JSObject&& this_object)       override;
+	virtual JSValue  CallAsFunction(JSObject&& function, const std::vector<JSValue>&& arguments, JSObject&& this_object)                                          override;
+	// virtual JSValue  ConvertToType(JSObject&& object, const JSValue::Type&& type)                                                                           const override;
 	
 
 	JSExportPimpl()                                = delete;
@@ -68,19 +68,22 @@ class JSExportPimpl final : public JSExportCallbackHandler {
 	JSExportPimpl& operator=(const JSExportPimpl&) = delete;
 	JSExportPimpl& operator=(JSExportPimpl&&)      = delete;
 
+	// FIXME: Make this private.
+	JSExportPimpl(const JSClassBuilder<T>& builder);
+
  private:
 
 	// Only a JSClassBuilder can create us.
 	template<typename U>
 	friend class JSClassBuilder;
 
-  JSExportPimpl(const JSClassBuilder<T>& builder);
+	//JSExportPimpl(const JSClassBuilder<T>& builder);
 	
 	std::string                                   name__;
 	JSExportNamedValuePropertyCallbackMap_t<T>    named_value_property_callback_map__;
 	JSExportNamedFunctionPropertyCallbackMap_t<T> named_function_property_callback_map__;
 	CallAsFunctionCallback<T>                     call_as_function_callback__    { nullptr };
-	ConvertToTypeCallback<T>                      convert_to_type_callback__     { nullptr };
+	// ConvertToTypeCallback<T>                      convert_to_type_callback__     { nullptr };
 	JSExportCallbackHandlerMap_t::key_type        callback_handler_key__;
 
 #undef JAVASCRIPTCORECPP_DETAIL_JSEXPORTPIMPL_LOCK_GUARD
@@ -112,7 +115,7 @@ void JSExportPimpl<T>::Finalize(void* native_object_ptr) {
 }
 
 template<typename T>
-JSObject JSExportPimpl<T>::CallAsConstructor(JSObject&& constructor, std::vector<JSValue>&& arguments) {
+JSObject JSExportPimpl<T>::CallAsConstructor(JSObject&& constructor, const std::vector<JSValue>&& arguments) {
 	JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC;
 	
 	JAVASCRIPTCORECPP_LOG_DEBUG("JSExport<", name__, ">::CallAsConstructor for ", to_string(constructor), "(", std::to_string(arguments.size()), "arguments)");
@@ -122,14 +125,15 @@ JSObject JSExportPimpl<T>::CallAsConstructor(JSObject&& constructor, std::vector
 };
   
 template<typename T>
-bool JSExportPimpl<T>::HasInstance(JSObject&& constructor, JSValue&& possible_instance) const {
+bool JSExportPimpl<T>::HasInstance(JSObject&& constructor, const JSValue&& possible_instance) const {
 	if (possible_instance.IsObject()) {
 		return false;
 	}
 	
 	bool result = false;
 	try {
-		static_cast<void>(dynamic_cast<T*>(constructor.GetPrivate()));
+		auto native_object_ptr = dynamic_cast<T*>(reinterpret_cast<T*>(constructor.GetPrivate()));
+		static_cast<void>(native_object_ptr);
 		result = true;
 	} catch (...) {
 	}
@@ -140,7 +144,7 @@ bool JSExportPimpl<T>::HasInstance(JSObject&& constructor, JSValue&& possible_in
 };
 
 template<typename T>
-JSValue JSExportPimpl<T>::GetNamedProperty(JSObject&& object, JSString&& property_name) const {
+JSValue JSExportPimpl<T>::GetNamedProperty(JSObject&& object, const JSString&& property_name) const {
   const auto callback_position = named_value_property_callback_map__.find(property_name);
   const bool callback_found    = callback_position != named_value_property_callback_map__.end();
   
@@ -150,7 +154,7 @@ JSValue JSExportPimpl<T>::GetNamedProperty(JSObject&& object, JSString&& propert
   assert(callback_found);
 
   auto native_object_ptr = reinterpret_cast<T*>(object.GetPrivate());
-  const auto callback    = (callback_position -> second).get_get_property_callback();
+  const auto callback    = (callback_position -> second).get_callback();
   const auto result      = callback(*native_object_ptr);
   
   JAVASCRIPTCORECPP_LOG_DEBUG("JSExport<", name__, ">::GetNamedProperty: result = ", to_string(result), " for ", to_string(object), ".", to_string(property_name));
@@ -159,7 +163,7 @@ JSValue JSExportPimpl<T>::GetNamedProperty(JSObject&& object, JSString&& propert
 };
   
 template<typename T>
-bool JSExportPimpl<T>::SetNamedProperty(JSObject&& object, JSString&& property_name, JSValue&& value) {
+bool JSExportPimpl<T>::SetNamedProperty(JSObject&& object, const JSString&& property_name, const JSValue&& value) {
   const auto callback_position = named_value_property_callback_map__.find(property_name);
   const bool callback_found    = callback_position != named_value_property_callback_map__.end();
   
@@ -169,8 +173,8 @@ bool JSExportPimpl<T>::SetNamedProperty(JSObject&& object, JSString&& property_n
   assert(callback_found);
   
   auto native_object_ptr = reinterpret_cast<T*>(object.GetPrivate());
-  const auto callback    = (callback_position -> second).get_set_property_callback();
-  const auto result      = callback(*native_object_ptr, value);
+  const auto callback    = (callback_position -> second).set_callback();
+  const auto result      = callback(*native_object_ptr, std::move(value));
   
   JAVASCRIPTCORECPP_LOG_DEBUG("JSExport<", name__, ">::SetNamedProperty: result = ", std::to_string(result), " for ", to_string(object), ".", to_string(property_name), " = ", to_string(value));
   
@@ -178,12 +182,11 @@ bool JSExportPimpl<T>::SetNamedProperty(JSObject&& object, JSString&& property_n
 };
 
 template<typename T>
-JSValue JSExportPimpl<T>::CallNamedFunction(JSObject&& function, JSObject&& this_object, std::vector<JSValue>&& arguments) {
+		JSValue JSExportPimpl<T>::CallNamedFunction(JSObject&& function, const JSString&& function_name, const std::vector<JSValue>&& arguments, JSObject&& this_object) {
   // precondition
   assert(function.IsFunction());
   
-  // Will this work?
-  const auto callback_position = named_function_property_callback_map__.find(static_cast<JSString>(function));
+  const auto callback_position = named_function_property_callback_map__.find(static_cast<JSString>(function_name));
   const bool callback_found    = callback_position != named_function_property_callback_map__.end();
   
   JAVASCRIPTCORECPP_LOG_DEBUG("JSExport<", name__, ">::CallNamedFunction: callback found = ", std::to_string(callback_found), " for ", to_string(function), "(", std::to_string(arguments.size()), "arguments)");
@@ -192,8 +195,8 @@ JSValue JSExportPimpl<T>::CallNamedFunction(JSObject&& function, JSObject&& this
   assert(callback_found);
 
   auto native_object_ptr = reinterpret_cast<T*>(function.GetPrivate());
-  const auto callback    = (callback_position -> second).get_call_as_function_callback();
-  const auto result      = callback(*native_object_ptr, arguments, this_object);
+  const auto callback    = (callback_position -> second).function_callback();
+  const auto result      = callback(*native_object_ptr, std::move(arguments), std::move(this_object));
   
   JAVASCRIPTCORECPP_LOG_DEBUG("JSExport<", name__, ">::CallNamedFunction: result = ", to_string(result), " for ", to_string(this_object), ".", to_string(function), "(", std::to_string(arguments.size()), "arguments)");
 
@@ -201,13 +204,12 @@ JSValue JSExportPimpl<T>::CallNamedFunction(JSObject&& function, JSObject&& this
 };
   
 template<typename T>
-JSValue JSExportPimpl<T>::CallAsFunction(JSObject&& function, JSObject&& this_object, std::vector<JSValue>&& arguments) {
+JSValue JSExportPimpl<T>::CallAsFunction(JSObject&& function, const std::vector<JSValue>&& arguments, JSObject&& this_object) {
   // precondition
   assert(function.IsFunction());
   
-  // Will this work?
-  auto       callback          = call_as_function_callback__;
-  const bool callback_found    = callback != nullptr;
+  auto       callback       = call_as_function_callback__;
+  const bool callback_found = callback != nullptr;
   
   JAVASCRIPTCORECPP_LOG_DEBUG("JSExport<", name__, ">::CallAsFunction: callback found = ", std::to_string(callback_found), " for ", to_string(function), "(", std::to_string(arguments.size()), "arguments)");
 
@@ -215,30 +217,30 @@ JSValue JSExportPimpl<T>::CallAsFunction(JSObject&& function, JSObject&& this_ob
   assert(callback_found);
 
   auto native_object_ptr = reinterpret_cast<T*>(function.GetPrivate());
-  const auto result      = callback(*native_object_ptr, arguments, this_object);
+  const auto result      = callback(*native_object_ptr, std::move(arguments), std::move(this_object));
   
   JAVASCRIPTCORECPP_LOG_DEBUG("JSExport<", name__, ">::CallAsFunction: result = ", to_string(result), " for ", to_string(this_object), ".", to_string(function), "(", std::to_string(arguments.size()), "arguments)");
 
   return result;
 };
 
-template<typename T>
-JSValue JSExportPimpl<T>::ConvertToType(JSObject&& object, JSValue::Type&& type) const {
-  auto       callback       = convert_to_type_callback__;
-  const bool callback_found = callback != nullptr;
+// template<typename T>
+// JSValue JSExportPimpl<T>::ConvertToType(JSObject&& object, const JSValue::Type&& type) const {
+//   auto       callback       = convert_to_type_callback__;
+//   const bool callback_found = callback != nullptr;
   
-  JAVASCRIPTCORECPP_LOG_DEBUG("JSExport<", name__, ">::ConvertToType: callback found = ", std::to_string(callback_found), " for ", to_string(object));
+//   JAVASCRIPTCORECPP_LOG_DEBUG("JSExport<", name__, ">::ConvertToType: callback found = ", std::to_string(callback_found), " for ", to_string(object));
 
-  // precondition
-  assert(callback_found);
+//   // precondition
+//   assert(callback_found);
   
-  auto native_object_ptr = reinterpret_cast<T*>(object.GetPrivate());
-  const auto result      = callback(*native_object_ptr, type);
+//   auto native_object_ptr = reinterpret_cast<T*>(object.GetPrivate());
+//   const auto result      = callback(*native_object_ptr, type);
   
-  JAVASCRIPTCORECPP_LOG_DEBUG("JSExport<", name__, ">::ConvertToType: result = ", to_string(result), " for converting ", to_string(object), " to ", to_string(type));
+//   JAVASCRIPTCORECPP_LOG_DEBUG("JSExport<", name__, ">::ConvertToType: result = ", to_string(result), " for converting ", to_string(object), " to ", to_string(type));
 
-  return result;
-};
+//   return result;
+// };
 	
 }} // namespace JavaScriptCoreCPP { namespace detail {
 

@@ -47,7 +47,7 @@ class JSExport : public JSObject, public detail::JSExportCallbackHandler {
 	  @throws std::invalid_argument if the C++ class T didn't at least
 	  provide a name for the JSClass.
 	*/
-	static JSClass get_js_class();
+	static std::shared_ptr<JSClass> get_js_class_ptr();
 
 	virtual ~JSExport()                  = default;
 	JSExport(const JSExport&)            = default;
@@ -64,7 +64,7 @@ class JSExport : public JSObject, public detail::JSExportCallbackHandler {
 	  
 	  @abstract Set the name of your JSClass.
 	*/
-	static void SetClassName(const std::string& class_name);
+	static void SetClassName(const JSString& class_name);
 
 	/*!
 	  @method
@@ -240,7 +240,7 @@ class JSExport : public JSObject, public detail::JSExportCallbackHandler {
 	  
 	  ConvertToTypeCallback(&Foo::ConvertToType);
 	*/
-	static void ConvertToTypeCallback(const detail::ConvertToTypeCallback<T>& convert_to_type_callback);
+	// static void ConvertToTypeCallback(const detail::ConvertToTypeCallback<T>& convert_to_type_callback);
 
  private:
 
@@ -249,11 +249,11 @@ class JSExport : public JSObject, public detail::JSExportCallbackHandler {
 
 template<typename T>
 JSExport<T>::JSExport(const JSContext& js_context)
-		: JSObject(js_context, get_js_class(), get_js_class().js_class_pimpl_ptr__ -> callback_handler_key__) {
+		: JSObject(js_context, *get_js_class_ptr(), reinterpret_cast<void*>(get_js_class_ptr() -> js_class_pimpl_ptr__ -> get_callback_handler_key())) {
 }
 
 template<typename T>
-void JSExport<T>::SetClassName(const std::string& class_name) {
+void JSExport<T>::SetClassName(const JSString& class_name) {
 	builder__.ClassName(class_name);
 }
 
@@ -287,29 +287,29 @@ void JSExport<T>::FunctionCallback(const detail::CallAsFunctionCallback<T>& call
 	builder__.Function(call_as_function_callback);
 }
 
-template<typename T>
-void JSExport<T>::ConvertToTypeCallback(const detail::ConvertToTypeCallback<T>& convert_to_type_callback) {
-	builder__.ConvertToType(convert_to_type_callback);
-}
+// template<typename T>
+// void JSExport<T>::ConvertToTypeCallback(const detail::ConvertToTypeCallback<T>& convert_to_type_callback) {
+// 	builder__.ConvertToType(convert_to_type_callback);
+// }
 
 
 template<typename T>
 detail::JSClassBuilder<T> JSExport<T>::builder__ = detail::JSClassBuilder<T>("NotSet");
 
 template<typename T>
-JSClass JSExport<T>::get_js_class() {
-	static JSClass js_class = JSClass::EmptyJSClass();
+std::shared_ptr<JSClass> JSExport<T>::get_js_class_ptr() {
+	static std::shared_ptr<JSClass> js_class_ptr;
 	std::once_flag of;
 	std::call_once(of, [] {
 			T::JSExportInitialize();
-			const std::string class_name = builder__.ClassName();
+			const JSString class_name = builder__.ClassName();
 			if (class_name.empty() || class_name == "NotSet") {
 				detail::ThrowInvalidArgument("JSExport", "You must provide a JSClass name");
 			}
-			js_class = builder__.build();
+			js_class_ptr = builder__.build();
 		});
 	
-	return js_class;
+	return js_class_ptr;
 }
 	
 } // namespace JavaScriptCoreCPP {

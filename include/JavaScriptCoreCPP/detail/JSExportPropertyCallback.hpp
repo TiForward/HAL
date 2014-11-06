@@ -54,7 +54,7 @@ class JSExportPropertyCallback {
     
     @throws std::invalid_argument if property_name is empty.
   */
-  JSExportPropertyCallback(const JSString& property_name, const std::unordered_set<JSPropertyAttribute>& attributes);
+	JSExportPropertyCallback(const JSString& property_name, const std::unordered_set<JSPropertyAttribute, std::hash<JSPropertyAttribute>>& attributes);
 
   virtual JSString get_property_name() const final {
     return property_name__;
