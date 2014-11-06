@@ -34,7 +34,7 @@ class JSArray final : public JSObject {
 	// Only a JSContext can create a JSArray.
 	friend JSContext;
 	
-	JSArray(const JSContext& js_context, const std::vector<JSValue>& arguments);
+	JSArray(const JSContext& js_context, const std::vector<JSValue>& arguments = {});
 
 	static JSObjectRef MakeArray(const JSContext& js_context, const std::vector<JSValue>& arguments);
 };

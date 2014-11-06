@@ -9,7 +9,7 @@
 
 #include "JavaScriptCoreCPP/JSContext.hpp"
 
-#include "JavaScriptCoreCPP/JSContextGroup.hpp"
+#include "JavaScriptCoreCPP/JSClass.hpp"
 #include "JavaScriptCoreCPP/JSString.hpp"
 
 #include "JavaScriptCoreCPP/JSValue.hpp"
@@ -28,8 +28,6 @@
 #include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 
 #include <cassert>
-
-#include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP {
 
@@ -63,20 +61,26 @@ JSContext::JSContext(JSContext&& rhs)
 	JSGlobalContextRetain(*this);
 }
 	
-// Create a copy of another JSContext by assignment. This is a unified
-// assignment operator that fuses the copy assignment operator
-//
-// X& X::operator=(const X&)
-//
-// and the move assignment operator
-//
-// X& X::operator=(X&&);
-JSContext& JSContext::operator=(JSContext rhs) {
-	  JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-	  swap(rhs);
-	  return *this;
+JSContext& JSContext::operator=(const JSContext& rhs) {
+	JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+	
+	JSGlobalContextRelease(*this);
+	js_context_group__ = rhs.js_context_group__;
+	js_context_ref__   = rhs.js_context_ref__;
+	JSGlobalContextRetain(*this);
+	return *this;
 }
-  
+
+JSContext& JSContext::operator=(JSContext&& rhs) {
+	JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+	
+	JSGlobalContextRelease(*this);
+	js_context_group__ = std::move(rhs.js_context_group__);
+	js_context_ref__   = rhs.js_context_ref__;
+	JSGlobalContextRetain(*this);
+	return *this;
+}
+
 void JSContext::swap(JSContext& other) noexcept {
 	  JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
 	  using std::swap;
@@ -100,6 +104,11 @@ JSObject JSContext::get_global_object() const {
 JSValue JSContext::CreateValueFromJSON(const JSString& js_string) const {
 	JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
 	return JSValue(*this, js_string, true);
+}
+
+JSValue JSContext::CreateString() const {
+	JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+	return JSValue(*this, JSString(), false);
 }
 
 JSValue JSContext::CreateString(const JSString& js_string) const {
@@ -145,9 +154,18 @@ JSNumber JSContext::CreateNumber(uint32_t number) const {
 	return JSNumber(*this, number);
 }
 
-JSObject JSContext::CreateObject(const JSClass& js_class, void* private_data) const {
+JSObject JSContext::CreateObject() const {
+	return CreateObject(JSClass::EmptyJSClass());
+}
+
+JSObject JSContext::CreateObject(const JSClass& js_class) const {
 	JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-	return JSObject(*this, js_class, private_data);
+	return JSObject(*this, js_class);
+}
+
+JSArray JSContext::CreateArray() const {
+	JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+	return JSArray(*this);
 }
 
 JSArray JSContext::CreateArray(const std::vector<JSValue>& arguments) const {
@@ -155,9 +173,19 @@ JSArray JSContext::CreateArray(const std::vector<JSValue>& arguments) const {
 	return JSArray(*this, arguments);
 }
 
+JSDate JSContext::CreateDate() const {
+	JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+	return JSDate(*this);
+}
+
 JSDate JSContext::CreateDate(const std::vector<JSValue>& arguments) const {
 	JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
 	return JSDate(*this, arguments);
+}
+
+JSError JSContext::CreateError() const {
+	JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+	return JSError(*this);
 }
 
 JSError JSContext::CreateError(const std::vector<JSValue>& arguments) const {
@@ -165,9 +193,26 @@ JSError JSContext::CreateError(const std::vector<JSValue>& arguments) const {
 	return JSError(*this, arguments);
 }
 
+JSRegExp JSContext::CreateRegExp() const {
+	JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+	return JSRegExp(*this);
+}
+
 JSRegExp JSContext::CreateRegExp(const std::vector<JSValue>& arguments) const {
 	JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
 	return JSRegExp(*this, arguments);
+}
+
+JSFunction JSContext::CreateFunction(const JSString& body) const {
+	return CreateFunction(body, std::vector<JSString>(), JSString(), JSString());
+}
+
+JSFunction JSContext::CreateFunction(const JSString& body, const std::vector<JSString>& parameter_names) const {
+	return CreateFunction(body, parameter_names, JSString(), JSString());
+}
+
+JSFunction JSContext::CreateFunction(const JSString& body, const std::vector<JSString>& parameter_names, const JSString& function_name) const {
+	return CreateFunction(body, parameter_names, function_name, JSString());
 }
 
 JSFunction JSContext::CreateFunction(const JSString& body, const std::vector<JSString>& parameter_names, const JSString& function_name, const JSString& source_url, int starting_line_number) const {
@@ -175,9 +220,17 @@ JSFunction JSContext::CreateFunction(const JSString& body, const std::vector<JSS
 	return JSFunction(*this, body, parameter_names, function_name, source_url, starting_line_number);
 }
 
+JSValue JSContext::JSEvaluateScript(const JSString& script) const {
+	return JSEvaluateScript(script, get_global_object(), JSString());
+}
+
 JSValue JSContext::JSEvaluateScript(const JSString& script, const JSString& source_url, int starting_line_number) const {
 	JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
 	return JSEvaluateScript(script, get_global_object(), source_url, starting_line_number);
+}
+
+JSValue JSContext::JSEvaluateScript(const JSString& script, JSObject this_object) const {
+	return JSEvaluateScript(script, this_object, JSString());
 }
 
 JSValue JSContext::JSEvaluateScript(const JSString& script, JSObject this_object, const JSString& source_url, int starting_line_number) const {
@@ -195,6 +248,10 @@ JSValue JSContext::JSEvaluateScript(const JSString& script, JSObject this_object
 	}
 
 	return JSValue(*this, js_value_ref);
+}
+
+bool JSContext::JSCheckScriptSyntax(const JSString& script) const {
+	return JSCheckScriptSyntax(script, JSString());
 }
 
 bool JSContext::JSCheckScriptSyntax(const JSString& script, const JSString& source_url, int starting_line_number) const {

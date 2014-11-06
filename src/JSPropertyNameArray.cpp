@@ -27,7 +27,7 @@ JSString JSPropertyNameArray::GetNameAtIndex(std::size_t index) const {
 	return JSPropertyNameArrayGetNameAtIndex(js_property_name_array_ref__, index);
 }
 
-explicit JSPropertyNameArray::operator std::vector<JSString>() const {
+JSPropertyNameArray::operator std::vector<JSString>() const {
 	JAVASCRIPTCORECPP_JSPROPERTYNAMEARRAY_LOCK_GUARD;
 	std::vector<JSString> property_names;
 	for (std::size_t i = 0, count = GetCount(); i < count; ++i) {
@@ -37,7 +37,7 @@ explicit JSPropertyNameArray::operator std::vector<JSString>() const {
 	return property_names;
 }
 
-JSPropertyNameArray::(const JSObject& js_object)
+JSPropertyNameArray::JSPropertyNameArray(const JSObject& js_object)
 : js_property_name_array_ref__(JSObjectCopyPropertyNames(js_object.get_context(), js_object)) {
 }
 

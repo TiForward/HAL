@@ -15,7 +15,7 @@
 
 namespace JavaScriptCoreCPP {
 
-class JSLoggerPolicyFile final : public JSLogPolicyInterface {
+class JSLoggerPolicyFile final : public JSLoggerPolicyInterface {
  public:
   
 	JSLoggerPolicyFile(const std::string& name) {

@@ -8,10 +8,6 @@
  */
 
 #include "JavaScriptCoreCPP/JSString.hpp"
-//#include "JavaScriptCoreCPP/JSLogger.hpp"
-//#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
-
-#include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP {
 
@@ -35,10 +31,10 @@ const std::size_t JSString::length() const {
 	return JSStringGetLength(js_string_ref__);
 }
 
-operator JSString::std::u16string() const {
+JSString::operator std::u16string() const {
 	JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD;
 	const JSChar* string_ptr = JSStringGetCharactersPtr(js_string_ref__);
-	return std::u16string(string_ptr, string_ptr + length);
+	return std::u16string(string_ptr, string_ptr + length());
 }
 
 JSString::~JSString() {
@@ -55,21 +51,23 @@ JSString::JSString(JSString&& rhs)
 	JSStringRetain(js_string_ref__);
 }
 
-// Create a copy of another JSString by assignment. This is a unified
-// assignment operator that fuses the copy assignment operator
-//
-// X& X::operator=(const X&)
-//
-// and the move assignment operator
-//
-// X& X::operator=(X&&);
-JSString& JSString::operator=(JSString rhs) {
+JSString& JSString::operator=(const JSString& rhs) {
 	JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD;
-	swap(rhs);
+	JSStringRelease(js_string_ref__);
+	js_string_ref__ = rhs.js_string_ref__;
+	JSStringRetain(js_string_ref__);
 	return *this;
 }
 
-void JSString(JSString& other) noexcept {
+JSString& JSString::operator=(JSString&& rhs) {
+	JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD;
+	JSStringRelease(js_string_ref__);
+	js_string_ref__ = rhs.js_string_ref__;
+	JSStringRetain(js_string_ref__);
+	return *this;
+}
+
+void JSString::swap(JSString& other) noexcept {
 	JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD;
 	using std::swap;
 	

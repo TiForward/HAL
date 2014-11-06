@@ -10,14 +10,18 @@
 #ifndef _JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_HPP_
 #define _JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_HPP_
 
+#include "JavaScriptCoreCPP/JSPropertyAttribute.hpp"
 #include "JavaScriptCoreCPP/JSClassAttribute.hpp"
+#include "JavaScriptCoreCPP/detail/JSExportCallbackHandler.hpp"
 
 #ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 #include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 #endif
 
+#include <string>
 #include <cstdint>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 #include <memory>
 #include <utility>
@@ -26,69 +30,78 @@
 #include <mutex>
 #endif
 
-extern "C" {
-  struct JSClassDefinition;
-	struct JSStaticValue;
-	struct JSStaticFunction;
-	struct JSContextRef;
-	struct JSObjectRef;
-	struct JSStringRef;
-	struct JSValueRef;
-	struct JSPropertyNameAccumulatorRef;
-	// JSType
+#include <JavaScriptCore/JavaScript.h>
+
+namespace JavaScriptCoreCPP {
+// class JSString;
+class JSClass;
+// class JSObject;
 }
 
 namespace JavaScriptCoreCPP { namespace detail {
 
-using JSObjectNamedValuePropertyCallbackMap_t    = std::unordered_map<std::string, JSObjectNamedValuePropertyCallback>;
-using JSObjectNamedFunctionPropertyCallbackMap_t = std::unordered_map<std::string, JSObjectNamedFunctionPropertyCallback>;
+using JSExportNamedValuePropertyMap_t    = std::unordered_map<std::string, std::unordered_set<JSPropertyAttribute>>;
+using JSExportNamedFunctionPropertyMap_t = std::unordered_map<std::string, std::unordered_set<JSPropertyAttribute>>;
+using JSExportCallbackHandlerMap_t       = std::unordered_map<std::intptr_t, std::shared_ptr<JSExportCallbackHandler>>;
 
-class JSString;
-class Object;
+template<typename T>
+class JSClassBuilder;
+
+template<typename T>
+class JSExportPimpl;
 
 class JSClassPimpl final {
   
  public:
 
-	JSClassPimpl()                               = delete;
-	~JSClassPimpl();
+  // Default constructor for implementing JSClass::EmptyJSClass.
+  JSClassPimpl();
+
+  ~JSClassPimpl() {
+		JSClassRelease(js_class_ref__);
+	}
+	
 	JSClassPimpl(const JSClassPimpl&)            = delete;
 	JSClassPimpl(JSClassPimpl&&)                 = delete;
 	JSClassPimpl& operator=(const JSClassPimpl&) = delete;
 	JSClassPimpl& operator=(JSClassPimpl&&)      = delete;
   
+  std::string get_name() const {
+	  return name__;
+  }
+  
+  std::uint32_t get_version() const {
+	  return version__;
+  }
+  
+  // For interoperability with the JavaScriptCore C API.
+  operator JSClassRef() const {
+	  return js_class_ref__;
+  }
+
  private:
 
-  // Only a JSClassBuilder can create us..
+	// Only a JSClassBuilder can create us.
   template<typename T>
   friend class JSClassBuilder;
 
   template<typename T>
   JSClassPimpl(const JSClassBuilder<T>& builder);
 
-  void Initialize(const JSObjectNamedValuePropertyCallbackMap_t&    named_value_property_callback_map
-                  const JSObjectNamedFunctionPropertyCallbackMap_t& named_function_property_callback_map);
-
-  // JSClass needs access to the following three methods.
-  friend JSClass;
-  
-  std::string get_name() const;
-	std::uint32_t get_version() const;
-
-  // For interoperability with the JavaScriptCore C API.
-  operator JSClassRef() const;
+  void Initialize(const JSExportNamedValuePropertyMap_t&    named_value_property_map,
+                  const JSExportNamedFunctionPropertyMap_t& named_function_property_map);
 
   std::uint32_t                            version__         { 0 };
 	JSClassAttribute                         class_attribute__ { JSClassAttribute::None };
-	JSString                                 name__;
-	JSClass                                  parent__;
+ 	std::string                              name__;
+	JSClassRef                               parent__;
   std::vector<JSStaticValue>               js_static_values__;
   std::vector<JSStaticFunction>            js_static_functions__;
-  std::unique_ptr<JSExportCallbackHandler> js_export_callback_handler_ptr__;
   JSClassDefinition                        js_class_definition__;
 	JSClassRef                               js_class_ref__ { nullptr };
+	JSExportCallbackHandlerMap_t::key_type   callback_handler_key__;
 
-	// Support for JSStaticValue
+  // Support for JSStaticValue
   static JSValueRef  GetNamedValuePropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception);
   static bool        SetNamedValuePropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef value_ref, JSValueRef* exception);
   
@@ -110,30 +123,33 @@ class JSClassPimpl final {
 
   // Helper functions.
   static JSValue::Type ToJSValueType(JSType type);
+  static std::string   LogStdException(const std::string& function_name, const JSObject& js_object, const std::exception& exception);
+  static std::string   LogUnknownException(const std::string& function_name, const JSObject& js_object);
 
-  static JSClass                                  default_js_class_;
-  static std::unordered_map<std::string, JSClass> js_class_map_;
+  static JSExportCallbackHandlerMap_t::key_type get_js_export_callback_handler_map_key(void* data);
+  static JSExportCallbackHandler*               get_callback_handler_ptr(void* data);
+  static JSExportCallbackHandler*               get_callback_handler_ptr(JSObject& js_object);
 
+  // JSExportPimpl needs access to the
+  // js_export_callback_handler_map__.
+  template<typename T>
+	friend class JSExportPimpl;
 
-  
+  static JSExportCallbackHandlerMap_t js_export_callback_handler_map__;
+
 #undef JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD
 #undef JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC
 #ifdef JAVASCRIPTCORECPP_THREAD_SAFE
-                                                                                std::recursive_mutex       mutex__
+                                                                                std::recursive_mutex       mutex__;
 #define JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD        std::lock_guard<std::recursive_mutex> lock(mutex__)
-static                                                                          std::recursive_mutex              mutex_static__;
-#define JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC std::lock_guard<std::recursive_mutex> lock_static(mutex_static__);
+static                                                                          std::recursive_mutex                            mutex_static__;
+#define JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC std::lock_guard<std::recursive_mutex> lock_static(JSClassPimpl::mutex_static__)
+#else
+#define JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD
+#define JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC
 #endif  // JAVASCRIPTCORECPP_THREAD_SAFE
 };
 
 }} // namespace JavaScriptCoreCPP { namespace detail {
-
-namespace std {
-using JavaScriptCoreCPP::detail::JSClassPimpl;
-template<>
-void swap<JSClassPimpl>(JSClassPimpl& first, JSClassPimpl& second) noexcept {
-  first.swap(second);
-}
-}  // namespace std
 
 #endif // _JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_HPP_

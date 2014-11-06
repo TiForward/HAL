@@ -20,7 +20,7 @@
 #include <mutex>
 #endif
 
-extern "C" struct JSPropertyNameArrayRef;
+#include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP {
 
@@ -68,10 +68,10 @@ class JSPropertyNameArray final {
   explicit operator std::vector<JSString>() const;
 
   ~JSPropertyNameArray();
-  JSPropertyNameArray(const JSPropertyNameArray& rhs);
-  JSPropertyNameArray(JSPropertyNameArray&& rhs);
-  JSPropertyNameArray& operator=(JSPropertyNameArray rhs);
-  void swap(JSPropertyNameArray& other) noexcept;
+  JSPropertyNameArray(const JSPropertyNameArray&);
+  JSPropertyNameArray(JSPropertyNameArray&&);
+  JSPropertyNameArray& operator=(JSPropertyNameArray);
+  void swap(JSPropertyNameArray&) noexcept;
   
 private:
 
@@ -105,17 +105,16 @@ private:
 #ifdef  JAVASCRIPTCORECPP_THREAD_SAFE
                                                                         std::recursive_mutex        mutex__;
 #define JAVASCRIPTCORECPP_JSPROPERTYNAMEARRAY_LOCK_GUARD std::lock_guard<std::recursive_mutex> lock(mutex__)
+#else
+#define JAVASCRIPTCORECPP_JSPROPERTYNAMEARRAY_LOCK_GUARD
 #endif  // JAVASCRIPTCORECPP_THREAD_SAFE
 };
 
-} // namespace JavaScriptCoreCPP {
-
-namespace std {
-using JavaScriptCoreCPP::JSPropertyNameArray;
-template<>
-void swap<JSPropertyNameArray>(JSPropertyNameArray& first, JSPropertyNameArray& second) noexcept {
+inline
+void swap(JSPropertyNameArray& first, JSPropertyNameArray& second) noexcept {
   first.swap(second);
 }
-}  // namespace std
+
+} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_DETAIL_JSPROPERTYNAMEARRAY_HPP_

@@ -24,12 +24,13 @@
 #include "JavaScriptCoreCPP/JSFunction.hpp"
 #include "JavaScriptCoreCPP/JSRegExp.hpp"
 
+#include "JavaScriptCoreCPP/JSClass.hpp"
+#include "JavaScriptCoreCPP/detail/JSClassPimpl.hpp"
+
 #include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 
 #include <sstream>
 #include <cassert>
-
-#include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP {
 
@@ -69,26 +70,38 @@ JSValue::JSValue(JSValue&& rhs)
 	JSValueProtect(js_context__, js_value_ref__);
 }
 
-// Create a copy of another JSValue by assignment. This is a unified
-// assignment operator that fuses the copy assignment operator
-//
-// X& X::operator=(const X&)
-//
-// and the move assignment operator
-//
-// X& X::operator=(X&&);
-JSValue& JSValue::operator=(JSValue rhs) {
+JSValue& JSValue::operator=(const JSValue& rhs) {
 	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
 	// JSValues can only be copied between contexts within the same
 	// context group.
-	if (js_context_group__ != rhs.js_context_group__) {
+	if (js_context__.get_context_group() != rhs.js_context__.get_context_group()) {
 		detail::ThrowRuntimeError("JSValue", "JSValues must belong to JSContexts within the same JSContextGroup to be shared and exchanged.");
 	}
 	
-	swap(rhs);
+	JSValueUnprotect(js_context__, js_value_ref__);
+	js_context__   = rhs.js_context__;
+	js_value_ref__ = rhs.js_value_ref__;
+	JSValueProtect(js_context__, js_value_ref__);
+
 	return *this;
 }
-  
+
+JSValue& JSValue::operator=(JSValue&& rhs) {
+	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
+	// JSValues can only be copied between contexts within the same
+	// context group.
+	if (js_context__.get_context_group() != rhs.js_context__.get_context_group()) {
+		detail::ThrowRuntimeError("JSValue", "JSValues must belong to JSContexts within the same JSContextGroup to be shared and exchanged.");
+	}
+	
+	JSValueUnprotect(js_context__, js_value_ref__);
+	js_context__   = std::move(rhs.js_context__);
+	js_value_ref__ = rhs.js_value_ref__;
+	JSValueProtect(js_context__, js_value_ref__);
+
+	return *this;
+}
+
 void JSValue::swap(JSValue& other) noexcept {
 	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
 	using std::swap;
@@ -130,6 +143,10 @@ JSValue::operator JSString() const {
 	JSStringRelease(js_string_ref);
 	
 	return js_string;
+}
+
+JSValue::operator std::string() const {
+	return operator JSString();
 }
 
 JSValue::operator bool() const {
@@ -218,34 +235,34 @@ bool JSValue::IsUndefined() const {
 	return JSValueIsUndefined(js_context__, js_value_ref__);
 }
 
-bool IsNull() const {
+bool JSValue::IsNull() const {
 	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
 	return JSValueIsNull(js_context__, js_value_ref__);
 }
 
-bool IsBoolean() const {
+bool JSValue::IsBoolean() const {
 	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
 	return JSValueIsBoolean(js_context__, js_value_ref__);
 }
 
-bool IsNumber() const {
+bool JSValue::IsNumber() const {
 	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
 	return JSValueIsNumber(js_context__, js_value_ref__);
 }
 
-bool IsString() const {
+bool JSValue::IsString() const {
 	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
 	return JSValueIsString(js_context__, js_value_ref__);
 }
 
-bool IsObject() const {
+bool JSValue::IsObject() const {
 	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
 	return JSValueIsObject(js_context__, js_value_ref__);
 }
 
-bool IsObjectOfClass(const JSClass& js_class) const {
+bool JSValue::IsObjectOfClass(const JSClass& js_class) const {
 	JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
-	return JSValueIsObjectOfClass(js_context__, js_value_ref__, js_class);
+	return JSValueIsObjectOfClass(js_context__, js_value_ref__, *js_class.js_class_pimpl_ptr__);
 }
 
 bool JSValue::IsInstanceOfConstructor(const JSObject& constructor) const {

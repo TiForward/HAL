@@ -13,7 +13,7 @@
 #include <cstddef>
 #include <functional>
 
-namespace JavaScriptCoreCPP
+namespace JavaScriptCoreCPP {
 
 /*!
   @enum
@@ -25,7 +25,7 @@ namespace JavaScriptCoreCPP
   objects. Use NoAutomaticPrototype in combination with
   JSObject::SetPrototype to manage prototypes manually.
 */
-enum class JSClassAttribute : unsigned /* typedef unsigned JSClassAttributes */ {
+enum class JSClassAttribute : std::uint32_t /* typedef unsigned JSClassAttributes */ {
 	None,
 	NoAutomaticPrototype
 };

@@ -24,7 +24,7 @@ JSObjectRef JSArray::MakeArray(const JSContext& js_context, const std::vector<JS
 	JSValueRef exception { nullptr };
 	JSObjectRef js_object_ref = nullptr;
 	if (!arguments.empty()) {
-		std::vector<JSValueRef> arguments_array = detail::ToJSValueRefVector(arguments);
+		std::vector<JSValueRef> arguments_array = detail::to_vector(arguments);
 		js_object_ref = JSObjectMakeArray(js_context, arguments_array.size(), &arguments_array[0], &exception);
 	} else {
 		js_object_ref = JSObjectMakeArray(js_context, 0, nullptr, &exception);

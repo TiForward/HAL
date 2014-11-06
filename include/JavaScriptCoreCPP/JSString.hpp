@@ -18,13 +18,23 @@
 #include <locale>
 #include <codecvt>
 #include <cstddef>
+#include <vector>
 #include <utility>
 
 #ifdef JAVASCRIPTCORECPP_THREAD_SAFE
 #include <mutex>
 #endif
 
-extern "C" struct JSStringRef;
+#include <JavaScriptCore/JavaScript.h>
+
+namespace JavaScriptCoreCPP {
+class JSString;
+}
+
+namespace JavaScriptCoreCPP { namespace detail {
+class JSClassPimpl;
+std::vector<JSStringRef> to_vector(const std::vector<JSString>& js_string_vector);
+}}
 
 namespace JavaScriptCoreCPP {
 
@@ -152,9 +162,8 @@ class JSString final {
   ~JSString();
   JSString(const JSString&);
   JSString(JSString&&);
-  JSString& JSString::operator=(const JSString&) = delete;
-  JSString& JSString::operator=(JSString&&) = delete;
-  JSString& operator=(JSString);
+  JSString& operator=(const JSString&);
+  JSString& operator=(JSString&&);
   void swap(JSString&) noexcept;
   
 private:
@@ -165,8 +174,9 @@ private:
   friend class JSObject;                  // HasProperty
   friend class JSPropertyNameArray;       // GetNameAtIndex
   friend class JSPropertyNameAccumulator; // AddName
+  friend class JSFunction;
 
-  friend std::vector<JSStringRef> detail::ToJSStringRefVector(const std::vector<JSString>& js_string_vector);
+  friend std::vector<JSStringRef> detail::to_vector(const std::vector<JSString>& js_string_vector);
 
   // For interoperability with the JavaScriptCore C API.
   operator JSStringRef() const {
@@ -175,9 +185,7 @@ private:
 
   // Only the following classes and functions can create a JSString.
   friend class JSValue;
-  template<typename T>
-  friend class detail::JSNativeClass;  //  static functions
-  friend std::vector<JSStringRef> detail::ToJSStringRefVector(const std::vector<JSString>& js_string_vector);
+  friend class detail::JSClassPimpl;  //  static functions
 
   // For interoperability with the JavaScriptCore C API.
   JSString(const JSStringRef& js_string_ref);
@@ -200,10 +208,10 @@ private:
 #endif  // JAVASCRIPTCORECPP_THREAD_SAFE
 };
 
-// inline
-// std::string to_string(const JSString& js_string) {
-//   return static_cast<std::string>(js_string);
-// }
+inline
+std::string to_string(const JSString& js_string) {
+	return static_cast<std::string>(js_string);
+}
 
 // Return true if the two JSStrings are equal.
 bool operator==(const JSString& lhs, const JSString& rhs);
@@ -217,7 +225,7 @@ bool operator!=(const JSString& lhs, const JSString& rhs) {
 // Define a strict weak ordering for two JSStrings.
 inline
 bool operator<(const JSString& lhs, const JSString& rhs) {
-  return to_string(lhs) < to_string(rhs);
+	return to_string(lhs) < to_string(rhs);
 }
 
 inline
@@ -237,8 +245,13 @@ bool operator>=(const JSString& lhs, const JSString& rhs) {
 
 inline
 std::ostream& operator << (std::ostream& ostream, const JSString& js_string) {
-  ostream << to_string(js_string);
+	ostream << to_string(js_string);
   return ostream;
+}
+
+inline
+void swap(JSString& first, JSString& second) noexcept {
+	first.swap(second);
 }
 
 } // namespace JavaScriptCoreCPP {
@@ -248,23 +261,15 @@ namespace std {
 using JavaScriptCoreCPP::JSString;
 
 template<>
-void swap<JSString>(JSString& first, JSString& second) noexcept {
-  first.swap(second);
-}
-
-template<>
 struct hash<JSString> {
   using argument_type = JSString;
   using result_type   = std::size_t;
-  static const std::hash<std::string> hash_function;
+	const std::hash<std::string> hash_function = std::hash<std::string>();
   
   result_type operator()(const argument_type& js_string) const {
     return hash_function(js_string);
   }
 };
-
-template<>
-std::hash<std::string> hash<JSString>::hash_function = std::hash<std::string>();
 
 }  // namespace std
 

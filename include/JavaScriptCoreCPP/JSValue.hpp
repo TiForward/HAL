@@ -10,6 +10,9 @@
 #ifndef _JAVASCRIPTCORECPP_JSVALUE_HPP_
 #define _JAVASCRIPTCORECPP_JSVALUE_HPP_
 
+#include "JavaScriptCoreCPP/JSContext.hpp"
+#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
+
 #ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 #include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 #endif
@@ -20,12 +23,18 @@
 #include <mutex>
 #endif
 
-extern "C" struct JSValueRef;
+#include <JavaScriptCore/JavaScript.h>
+
+namespace JavaScriptCoreCPP { namespace detail {
+class JSClassPimpl;
+}}
 
 namespace JavaScriptCoreCPP {
 
 class JSContext;
 class JSString;
+class JSBoolean;
+class JSNumber;
 class JSObject;
 class JSFunction;
 class JSArray;
@@ -133,9 +142,7 @@ class JSValue {
     
     @result A std::string with the result of conversion.
   */
-  virtual explicit operator std::string() const final {
-    return operator JSString();
-  }
+	virtual explicit operator std::string() const final;
 
   /*!
     @method
@@ -339,9 +346,8 @@ class JSValue {
   virtual ~JSValue();
   JSValue(const JSValue&);
   JSValue(JSValue&&);
-  JSValue& JSValue::operator=(const JSValue&) = delete;
-  JSValue& JSValue::operator=(JSValue&&) = delete;
-  JSValue& operator=(JSValue);
+  JSValue& operator=(const JSValue&);
+  JSValue& operator=(JSValue&&);
   void swap(JSValue&) noexcept;
 
  protected:
@@ -352,8 +358,7 @@ class JSValue {
   JSValue(const JSContext& js_context, const JSString& js_string, bool parse_as_json = false);
 
   // These classes and functions need access to operator JSValueRef().
-  //friend class JSPropertyNameArray;
-  friend bool operator==(const JSValue& lhs, const JSValue& rhs);
+	friend bool operator==(const JSValue& lhs, const JSValue& rhs);
 
   // For interoperability with the JavaScriptCore C API.
   virtual operator JSValueRef() const final {
@@ -369,16 +374,19 @@ class JSValue {
 
   // These classes and functions create a JSValue using the following
   // constructor.
-  friend class JSArray;        // for generating error messages
-  friend class JSDate;         // for generating error messages
-  friend class JSFunction;     // for generating error messages
-  friend class JSRegExp;       // for generating error messages
-  friend class JSError;        // for generating error messages
-  template<typename T>
-  friend class JSNativeClass;  // for static functions
+	friend class JSUndefined;
+	friend class JSNull;
+	friend class JSBoolean;
+	friend class JSNumber;
+  friend class JSArray;               // for generating error messages
+  friend class JSDate;                // for generating error messages
+  friend class JSFunction;            // for generating error messages
+  friend class JSRegExp;              // for generating error messages
+  friend class JSError;               // for generating error messages
+	friend class detail::JSClassPimpl;  // for static functions
   
-  friend std::vector<JSValue>    detail::ToJSValueVector(const JSContext& js_context, size_t count, const JSValueRef js_value_ref_array[]);
-  friend std::vector<JSValueRef> detail::ToJSValueRefVector(const std::vector<JSValue>& js_value_vector);
+  friend std::vector<JSValue>    detail::to_vector(const JSContext& js_context, size_t count, const JSValueRef js_value_ref_array[]);
+  friend std::vector<JSValueRef> detail::to_vector(const std::vector<JSValue>& js_value_vector);
   
   // For interoperability with the JavaScriptCore C API.
   JSValue(const JSContext& js_context, JSValueRef js_value_ref);
@@ -394,12 +402,14 @@ class JSValue {
 #ifdef  JAVASCRIPTCORECPP_THREAD_SAFE
                                                              std::recursive_mutex       mutex__;
 #define JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD std::lock_guard<std::recursive_mutex> lock(mutex__)
+#else
+#define JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD
 #endif  // JAVASCRIPTCORECPP_THREAD_SAFE
 };
 
 inline
-to_string(const JSValue& js_value) {
-  return static_cast<std::string>(js_value);
+std::string to_string(const JSValue& js_value) {
+	return static_cast<std::string>(js_value);
 }
 
 std::string to_string(const JSValue::Type& js_value_type);
@@ -452,6 +462,11 @@ std::ostream& operator << (std::ostream& ostream, const JSValue::Type& js_value_
   return ostream;
 }
 
+inline
+void swap(JSValue& first, JSValue& second) noexcept {
+	first.swap(second);
+}
+	
 } // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSVALUE_HPP_

@@ -10,12 +10,18 @@
 #ifndef _JAVASCRIPTCORECPP_DETAIL_JSEXPORTCALLBACKHANDLER_HPP_
 #define _JAVASCRIPTCORECPP_DETAIL_JSEXPORTCALLBACKHANDLER_HPP_
 
+#include "JavaScriptCoreCPP/JSString.hpp"
+#include "JavaScriptCoreCPP/JSObject.hpp"
+
 #include <vector>
 
-namespace JavaScriptCoreCPP { namespace detail {
+// namespace JavaScriptCoreCPP {
+// class JSString;
+// class JSValue;
+// class JSObject;
+// }
 
-class JSString;
-class JSObject;
+namespace JavaScriptCoreCPP { namespace detail {
 
 /*!
   @class
@@ -35,18 +41,17 @@ class JSExportCallbackHandler {
   JSExportCallbackHandler& operator=(const JSExportCallbackHandler&) = default;
   JSExportCallbackHandler& operator=(JSExportCallbackHandler&&)      = default;
 
+	virtual void     Initialize()                                                                                           = 0;
+	virtual void     Finalize(void* native_object_ptr)                                                                      = 0;
+	virtual JSObject CallAsConstructor(JSObject&& constructor, std::vector<JSValue>&& arguments)                            = 0;
+	virtual bool     HasInstance(JSObject&& constructor, JSValue&& possible_instance)                                 const = 0;
 	virtual JSValue  GetNamedProperty(JSObject&& object, JSString&& property_name)                                    const = 0;
 	virtual bool     SetNamedProperty(JSObject&& object, JSString&& property_name, JSValue&& value)                         = 0;
 	virtual JSValue  CallNamedFunction(JSObject&& function, JSObject&& this_object, std::vector<JSValue>&& arguments)       = 0;
-	
-	virtual void     Initialize(JSObject&& object)                                                                          = 0;
-  virtual void     Finalize(JSObject&& object)                                                                            = 0;
-  virtual JSValue  CallAsFunction(JSObject&& function, JSObject&& this_object, std::vector<JSValue>&& arguments)          = 0;
-  virtual JSObject CallAsConstructor(JSObject&& constructor, std::vector<JSValue>&& arguments)                            = 0;
-  virtual bool     HasInstance(const JSObject&& constructor, JSValue&& possible_instance)                           const = 0;
-  virtual JSValue  ConvertToType(const JSObject&& object, JSValue::JSType&& type)                                   const = 0;
+	virtual JSValue  CallAsFunction(JSObject&& function, JSObject&& this_object, std::vector<JSValue>&& arguments)          = 0;
+	virtual JSValue  ConvertToType(JSObject&& object, JSValue::Type&& type)                                           const = 0;
 };
 
-} // namespace JavaScriptCoreCPP { namespace detail {
+}} // namespace JavaScriptCoreCPP { namespace detail {
 
 #endif // _JAVASCRIPTCORECPP_DETAIL_JSEXPORTCALLBACKHANDLER_HPP_

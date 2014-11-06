@@ -9,6 +9,7 @@
 
 #include "JavaScriptCoreCPP/detail/JSLoggerPimpl.hpp"
 
+#include <chrono>
 #include <sstream>
 #include <iomanip>
 #include <ctime>
@@ -17,7 +18,7 @@
 namespace JavaScriptCoreCPP { namespace detail {
 
 inline
-std::string ToString(const std::chrono::system_clock::time_point& tp) {
+std::string to_string(const std::chrono::system_clock::time_point& tp) {
 	// Convert to system time.
   std::time_t t = std::chrono::system_clock::to_time_t(tp);
     
@@ -37,13 +38,13 @@ std::string JSLoggerPimpl::GetLoglineHeader(uint32_t log_line_number) {
 
 	os.str("");
 	os << std::setfill('0')
-	   << setw(std::numeric_limits<uint32_t>::digits10)
+	   << std::setw(std::numeric_limits<uint32_t>::digits10)
 	   << log_line_number
 	   << " <"
-	   << ToString(std::chrono::system_clock::now())
+	   << to_string(std::chrono::system_clock::now())
 	   <<" - "
-	   << setfill('0')
-	   << setw(std::numeric_limits<std::clock_t>::digits10)
+	   << std::setfill('0')
+	   << std::setw(std::numeric_limits<std::clock_t>::digits10)
 	   << std::clock()
 	   <<" ";
 	

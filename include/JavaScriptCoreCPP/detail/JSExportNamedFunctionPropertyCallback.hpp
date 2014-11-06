@@ -12,12 +12,13 @@
 
 #include "JavaScriptCoreCPP/detail/JSExportPropertyCallback.hpp"
 #include "JavaScriptCoreCPP/detail/JSExportCallbacks.hpp"
+#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 
 #ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 #include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 #endif
 
-namespace JavaScriptCoreCPP { namespace detail
+namespace JavaScriptCoreCPP { namespace detail {
 
 /*!
   @class
@@ -26,8 +27,8 @@ namespace JavaScriptCoreCPP { namespace detail
   wrapper around the JavaScriptCore C API JSStaticFunction, which
   describes a function property of a JavaScript object.
 */
-#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 template<typename T>
+#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 class JSExportNamedFunctionPropertyCallback final : public JSExportPropertyCallback, public detail::JSPerformanceCounter<JSExportNamedFunctionPropertyCallback<T>> {
 #else
 class JSExportNamedFunctionPropertyCallback final : public JSExportPropertyCallback {
@@ -72,38 +73,34 @@ class JSExportNamedFunctionPropertyCallback final : public JSExportPropertyCallb
     2. If the function_callback is not provided.
   */
 	JSExportNamedFunctionPropertyCallback(const JSString& function_name,
-	                                      CallNamedFunctionCallback function_callback,
+	                                      CallNamedFunctionCallback<T> function_callback,
 	                                      const std::unordered_set<JSPropertyAttribute>& attributes);
 
-	CallNamedFunctionCallback function_callback() const {
+	CallNamedFunctionCallback<T> function_callback() const {
     return function_callback__;
   }
   
   ~JSExportNamedFunctionPropertyCallback();
-  JSExportNamedFunctionPropertyCallback(const JSExportNamedFunctionPropertyCallback& rhs);
-  JSExportNamedFunctionPropertyCallback(JSExportNamedFunctionPropertyCallback&& rhs);
-  JSExportNamedFunctionPropertyCallback& JSExportNamedFunctionPropertyCallback::operator=(const JSExportNamedFunctionPropertyCallback&) = delete;
-	JSExportNamedFunctionPropertyCallback& JSExportNamedFunctionPropertyCallback::operator=(JSExportNamedFunctionPropertyCallback&&) = delete;
-  JSExportNamedFunctionPropertyCallback& operator=(JSExportNamedFunctionPropertyCallback rhs);
-  void swap(JSExportNamedFunctionPropertyCallback& other) noexcept;
+  JSExportNamedFunctionPropertyCallback(const JSExportNamedFunctionPropertyCallback&);
+  JSExportNamedFunctionPropertyCallback(JSExportNamedFunctionPropertyCallback&&);
+  JSExportNamedFunctionPropertyCallback& operator=(const JSExportNamedFunctionPropertyCallback&);
+	JSExportNamedFunctionPropertyCallback& operator=(JSExportNamedFunctionPropertyCallback&&);
+  void swap(JSExportNamedFunctionPropertyCallback&) noexcept;
 
  private:
   
 	template<typename U>
   friend bool operator==(const JSExportNamedFunctionPropertyCallback<U>& lhs, const JSExportNamedFunctionPropertyCallback<U>& rhs);
 
-	template<typename U>
-  friend bool operator<(const JSExportNamedFunctionPropertyCallback<U>& lhs, const JSExportNamedFunctionPropertyCallback<U>& rhs);
-
-  CallNamedFunctionCallback function_callback__ { nullptr };
+	CallNamedFunctionCallback<T> function_callback__ { nullptr };
 };
 
 template<typename T>
 JSExportNamedFunctionPropertyCallback<T>::JSExportNamedFunctionPropertyCallback(
     const JSString& function_name,
-    CallNamedFunctionCallback function_callback,
+    CallNamedFunctionCallback<T> function_callback,
     const std::unordered_set<JSPropertyAttribute>& attributes)
-		: JSExportPropertyCallback(property_name, attributes)
+		: JSExportPropertyCallback(function_name, attributes)
 		, function_callback__(function_callback) {
 	
 	if (!function_callback) {
@@ -127,25 +124,24 @@ JSExportNamedFunctionPropertyCallback<T>::JSExportNamedFunctionPropertyCallback(
 		, function_callback__(std::move(rhs.function_callback__)) {
 }
 
-// Create a copy of another JSExportNamedFunctionPropertyCallback by
-// assignment. This is a unified assignment operator that fuses the
-// copy assignment operator
-//
-// X& X::operator=(const X&)
-//
-// and the move assignment operator
-//
-// X& X::operator=(X&&);
 template<typename T>
-JSExportNamedFunctionPropertyCallback& JSExportNamedFunctionPropertyCallback<T>::operator=(JSExportNamedFunctionPropertyCallback rhs) {
+JSExportNamedFunctionPropertyCallback<T>& JSExportNamedFunctionPropertyCallback<T>::JSExportNamedFunctionPropertyCallback::operator=(const JSExportNamedFunctionPropertyCallback<T>& rhs) {
 	JAVASCRIPTCORECPP_DETAIL_JSEXPORTPROPERTYCALLBACK_LOCK_GUARD;
 	JSExportPropertyCallback::operator=(rhs);
-	swap(rhs);
+	function_callback__ = rhs.function_callback__;
 	return *this;
 }
 
 template<typename T>
-void JSExportNamedFunctionPropertyCallback<T>::swap(JSExportNamedFunctionPropertyCallback& other) noexcept {
+JSExportNamedFunctionPropertyCallback<T>& JSExportNamedFunctionPropertyCallback<T>::JSExportNamedFunctionPropertyCallback::operator=(JSExportNamedFunctionPropertyCallback<T>&& rhs) {
+	JAVASCRIPTCORECPP_DETAIL_JSEXPORTPROPERTYCALLBACK_LOCK_GUARD;
+	JSExportPropertyCallback::operator=(rhs);
+	function_callback__ = std::move(rhs.function_callback__);
+	return *this;
+}
+
+template<typename T>
+void JSExportNamedFunctionPropertyCallback<T>::swap(JSExportNamedFunctionPropertyCallback<T>& other) noexcept {
 	JAVASCRIPTCORECPP_DETAIL_JSEXPORTPROPERTYCALLBACK_LOCK_GUARD;
 	using std::swap;
 	
@@ -162,7 +158,7 @@ void swap(JSExportNamedFunctionPropertyCallback<T>& first, JSExportNamedFunction
 // Return true if the two JSExportNamedFunctionPropertyCallbacks are
 // equal.
 template<typename T>
-bool operator==(const JSExportNamedFunctionPropertyCallback& lhs, const JSExportNamedFunctionPropertyCallback& rhs) {
+bool operator==(const JSExportNamedFunctionPropertyCallback<T>& lhs, const JSExportNamedFunctionPropertyCallback<T>& rhs) {
 	if (lhs.function_callback__ && !rhs.function_callback__) {
 		return false;
 	}
@@ -179,28 +175,6 @@ bool operator==(const JSExportNamedFunctionPropertyCallback& lhs, const JSExport
 template<typename T>
 bool operator!=(const JSExportNamedFunctionPropertyCallback<T>& lhs, const JSExportNamedFunctionPropertyCallback<T>& rhs) {
   return ! (lhs == rhs);
-}
-
-// Define a strict weak ordering for two
-// JSExportNamedFunctionPropertyCallbacks.
-template<typename T>
-bool operator<(const JSExportNamedFunctionPropertyCallback<T>& lhs, const JSExportNamedFunctionPropertyCallback<T>& rhs) {
-	return static_cast<JSExportPropertyCallback>(lhs) < static_cast<JSExportPropertyCallback>(rhs);
-}
-
-template<typename T>
-bool operator>(const JSExportNamedFunctionPropertyCallback<T>& lhs, const JSExportNamedFunctionPropertyCallback<T>& rhs) {
-  return rhs < lhs;
-}
-
-template<typename T>
-bool operator<=(const JSExportNamedFunctionPropertyCallback<T>& lhs, const JSExportNamedFunctionPropertyCallback<T>& rhs) {
-  return ! (lhs > rhs);
-}
-
-template<typename T>
-bool operator>=(const JSExportNamedFunctionPropertyCallback<T>& lhs, const JSExportNamedFunctionPropertyCallback<T>& rhs) {
-  return ! (lhs < rhs);
 }
 
 }} // namespace JavaScriptCoreCPP { namespace detail

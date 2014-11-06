@@ -119,7 +119,6 @@
 		C97454231A02807900CB4CA9 /* JSUtil.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSUtil.hpp; path = include/JavaScriptCoreCPP/detail/JSUtil.hpp; sourceTree = "<group>"; };
 		C97454241A02807900CB4CA9 /* HashUtilities.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = HashUtilities.hpp; path = include/JavaScriptCoreCPP/detail/HashUtilities.hpp; sourceTree = "<group>"; };
 		C97454251A02807900CB4CA9 /* JSUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSUtil.cpp; path = src/detail/JSUtil.cpp; sourceTree = "<group>"; };
-		C97454291A0280A400CB4CA9 /* Widget.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Widget.hpp; sourceTree = "<group>"; };
 		C974542A1A0280A400CB4CA9 /* JSContextGroupTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = JSContextGroupTests.mm; sourceTree = "<group>"; };
 		C974542B1A0280A400CB4CA9 /* JSContextTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = JSContextTests.mm; sourceTree = "<group>"; };
 		C974542C1A0280A400CB4CA9 /* JSNativeObjectTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = JSNativeObjectTests.mm; sourceTree = "<group>"; };
@@ -157,6 +156,7 @@
 		C97454E31A09C6F200CB4CA9 /* JSPropertyAttribute.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSPropertyAttribute.hpp; path = include/JavaScriptCoreCPP/JSPropertyAttribute.hpp; sourceTree = "<group>"; };
 		C97454E51A09C71200CB4CA9 /* JSClassBuilder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSClassBuilder.hpp; path = include/JavaScriptCoreCPP/detail/JSClassBuilder.hpp; sourceTree = "<group>"; };
 		C97454E71A09C79600CB4CA9 /* JSExportPropertyCallback.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSExportPropertyCallback.cpp; path = src/detail/JSExportPropertyCallback.cpp; sourceTree = "<group>"; };
+		C97454ED1A0B66E500CB4CA9 /* Widget.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Widget.hpp; path = ../../examples/Widget.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -219,6 +219,7 @@
 		C936FD4E19CB961A0082CB08 /* JavaScriptCoreCPPTests */ = {
 			isa = PBXGroup;
 			children = (
+				C97454ED1A0B66E500CB4CA9 /* Widget.hpp */,
 				C974548B1A05FC5D00CB4CA9 /* JSLoggerTests.m */,
 				C974542A1A0280A400CB4CA9 /* JSContextGroupTests.mm */,
 				C974542B1A0280A400CB4CA9 /* JSContextTests.mm */,
@@ -226,7 +227,6 @@
 				C974542F1A0280A400CB4CA9 /* JSValueTests.mm */,
 				C974542D1A0280A400CB4CA9 /* JSObjectTests.mm */,
 				C974542C1A0280A400CB4CA9 /* JSNativeObjectTests.mm */,
-				C97454291A0280A400CB4CA9 /* Widget.hpp */,
 				C97454301A0280A400CB4CA9 /* HashUtilitiesTests.mm */,
 				C9A4E62F19F2ED2A00CF25BF /* detail */,
 				C936FD4F19CB961A0082CB08 /* Supporting Files */,

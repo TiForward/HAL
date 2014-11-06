@@ -12,7 +12,7 @@
 
 namespace JavaScriptCoreCPP { namespace detail {
 
-JSExportPropertyCallback::JSExportPropertyCallback(const JSString& property_name, const std::unordered_set<JSObjectPropertyAttribute>& attributes)
+JSExportPropertyCallback::JSExportPropertyCallback(const JSString& property_name, const std::unordered_set<JSPropertyAttribute>& attributes)
     : property_name__(property_name)
     , attributes__(attributes) {
   
@@ -21,33 +21,32 @@ JSExportPropertyCallback::JSExportPropertyCallback(const JSString& property_name
   }
 }
 
-JSExportPropertyCallback::(const JSExportPropertyCallback& rhs)
-: property_name__(rhs.property_name__)
-    , attributes__(rhs.attributes__) {
+JSExportPropertyCallback::JSExportPropertyCallback(const JSExportPropertyCallback& rhs)
+		: property_name__(rhs.property_name__)
+		, attributes__(rhs.attributes__) {
 }
 
-JSExportPropertyCallback::(JSExportPropertyCallback&& rhs)
-: property_name__(std::move(rhs.property_name__))
-    , attributes__(std::move(rhs.attributes__)) {
+JSExportPropertyCallback::JSExportPropertyCallback(JSExportPropertyCallback&& rhs)
+		: property_name__(std::move(rhs.property_name__))
+		, attributes__(std::move(rhs.attributes__)) {
 }
 
-// Create a copy of another JSExportPropertyCallback by
-// assignment. This is a unified assignment operator that fuses the
-// copy assignment operator
-//
-// X& X::operator=(const X&)
-//
-// and the move assignment operator
-//
-// X& X::operator=(X&&);
-JSExportPropertyCallback& JSExportPropertyCallback::operator=(JSExportPropertyCallback rhs) {
-  JAVASCRIPTCORECPP_DETAIL_JSNATIVEOBJECTPROPERTYCALLBACK_LOCK_GUARD;
-  swap(rhs);
-  return *this;
+JSExportPropertyCallback& JSExportPropertyCallback::operator=(const JSExportPropertyCallback& rhs) {
+	JAVASCRIPTCORECPP_DETAIL_JSEXPORTPROPERTYCALLBACK_LOCK_GUARD;
+	property_name__ = rhs.property_name__;
+	attributes__    = rhs.attributes__;
+	return *this;
 }
 
-void JSExportFunctionPropertyCallback::swap(JSExportFunctionPropertyCallback& other) noexcept {
-  JAVASCRIPTCORECPP_DETAIL_JSNATIVEOBJECTPROPERTYCALLBACK_LOCK_GUARD;
+JSExportPropertyCallback& JSExportPropertyCallback::operator=(JSExportPropertyCallback&& rhs) {
+	JAVASCRIPTCORECPP_DETAIL_JSEXPORTPROPERTYCALLBACK_LOCK_GUARD;
+	property_name__ = std::move(rhs.property_name__);
+	attributes__    = std::move(rhs.attributes__);
+	return *this;
+}
+
+void JSExportPropertyCallback::swap(JSExportPropertyCallback& other) noexcept {
+	JAVASCRIPTCORECPP_DETAIL_JSEXPORTPROPERTYCALLBACK_LOCK_GUARD;
   using std::swap;
   
   // By swapping the members of two classes, the two classes are

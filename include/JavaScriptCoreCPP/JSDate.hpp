@@ -33,7 +33,7 @@ class JSDate final : public JSObject {
 	// Only a JSContext can create a JSDate.
 	friend JSContext;
 	
-	JSDate(const JSContext& js_context, const std::vector<JSValue>& arguments);
+	JSDate(const JSContext& js_context, const std::vector<JSValue>& arguments = {});
 
 	static JSObjectRef MakeDate(const JSContext& js_context, const std::vector<JSValue>& arguments);
 };

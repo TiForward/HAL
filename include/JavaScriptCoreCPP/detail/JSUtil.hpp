@@ -11,16 +11,14 @@
 #define _JAVASCRIPTCORECPP_JSUTIL_HPP_
 
 #include "JavaScriptCoreCPP/JSPropertyAttribute.hpp"
+#include "JavaScriptCoreCPP/JSClassAttribute.hpp"
 
 #include <cstdint>
 #include <memory>
 #include <vector>
 #include <unordered_set>
 
-extern "C" {
-  struct JSStringRef;
-  struct JSValueRef;
-}
+#include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP {
 class JSString;
@@ -52,7 +50,7 @@ std::vector<JSStringRef> to_vector(const std::vector<JSString>&);
 /* typedef unsigned JSPropertyAttributes */ unsigned ToJSPropertyAttributes(const std::unordered_set<JSPropertyAttribute>& attributes);
 
 // For interoperability with the JavaScriptCore C API.
-/* typedef unsigned JSClassAttributes */ unsigned ToJSClassAttribute(JSNativeClassAttribute attribute);
+/* typedef unsigned JSClassAttributes */ unsigned ToJSClassAttribute(JSClassAttribute attribute);
 
 // This in the ToInt32 operation as defined in section 9.5 of the
 // ECMA-262 spec. Note that this operation is identical to ToUInt32

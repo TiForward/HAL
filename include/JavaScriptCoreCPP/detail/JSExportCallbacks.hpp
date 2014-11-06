@@ -10,13 +10,11 @@
 #ifndef _JAVASCRIPTCORECPP_DETAIL_JSEXPORTCALLBACKS_HPP_
 #define _JAVASCRIPTCORECPP_DETAIL_JSEXPORTCALLBACKS_HPP_
 
+#include "JavaScriptCoreCPP/JSString.hpp"
+#include "JavaScriptCoreCPP/JSObject.hpp"
 #include <vector>
 
 namespace JavaScriptCoreCPP { namespace detail {
-
-class JSString;
-class JSValue;
-class JSObject;
 
 /*! 
   @typedef GetNamedValuePropertyCallback
@@ -163,10 +161,10 @@ using InitializeCallback = std::function<void(T&)>;
   @param 1 A non-const reference to the C++ object being finalized.
 */
 template<typename T>
-using FinalizeCallback = std::function<void(gT&)>;
+using FinalizeCallback = std::function<void(T&)>;
 	
 /*! 
-  @typedef CallAsFunction
+  @typedef CallAsFunctionCallback
 
   @abstract The callback to invoke when a JavaScript object is called
   as a function. If this callback does not exist, then calling your
@@ -180,7 +178,7 @@ using FinalizeCallback = std::function<void(gT&)>;
 
   You would define the callback like this:
 
-  CallNamedFunctionCallback callback(&Foo::CallAsFunction);
+  CallAsFunctionCallback callback(&Foo::CallAsFunction);
   
   In the JavaScript expression 'myObject.myFunction()', then
   'myFunction' is the instance of Foo being called, and this_object
@@ -197,7 +195,7 @@ using FinalizeCallback = std::function<void(gT&)>;
   @result Return the function's value.
 */
 template<typename T>
-using CallAsFunction = std::function<JSValue(T&, JSString&&, std::vector<JSValue>&&, JSObject&&)>;
+using CallAsFunctionCallback = std::function<JSValue(T&, std::vector<JSValue>&&, JSObject&&)>;
 
 /*! 
   @typedef CallAsConstructorCallback
@@ -302,7 +300,7 @@ using HasInstanceCallback = std::function<bool(const T&, JSValue&&)>;
   JavaScript object's prototype chain.
 */
 template<typename T>
-using ConvertToTypeCallback = std::function<JSValue(const T&, JSValue::Type&&)>;
+using ConvertToTypeCallback = std::function<JSValue(const T&, ::JavaScriptCoreCPP::JSValue::Type&&)>;
 
 }} // namespace JavaScriptCoreCPP { namespace detail {
 

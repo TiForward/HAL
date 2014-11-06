@@ -14,6 +14,7 @@
 #include "JavaScriptCoreCPP/JSLoggerPolicyConsole.hpp"
 #include "JavaScriptCoreCPP/JSLoggerPolicyFile.hpp"
 #include <sstream>
+#include <iomanip>
 #include <cstdint>
 #include <mutex>
 
@@ -42,34 +43,35 @@ namespace JavaScriptCoreCPP {
   JAVASCRIPTCORECPP_LOG_WARN("After loop.");
   JAVASCRIPTCORECPP_LOG_ERROR("All good things come to an end.");
  */
-template<typename JSLogPolicy>
+
+
+enum class JSLoggerSeverityType {
+	JSLogger_DEBUG,
+	JSLogger_INFO,
+	JSLogger_WARN,
+	JSLogger_ERROR
+};
+
+
+template<typename JSLoggerPolicy>
 class JSLogger final {
   
  public:
   
-  enum class SeverityType {
-    DEBUG,
-	  INFO,
-    WARN,
-    ERROR
-  };
-
   JSLogger(const std::string& name) 
 		  : js_log_policy__(name) {
   }
   
-  JSLogger() = delete;
-  ~JSLogger() = default;
-  
-  JSLogger(const JSLogger& rhs) = default;
-  JSLogger(JSLogger&& rhs) = default;
-  
+  JSLogger()                           = delete;
+  ~JSLogger()                          = default;
+  JSLogger(const JSLogger&)            = default;
+  JSLogger(JSLogger&&)                 = default;
   JSLogger& operator=(const JSLogger&) = default;
-  JSLogger& operator=(JSLogger&&) = default;
+  JSLogger& operator=(JSLogger&&)      = default;
   
  private:
   
-  template<SeverityType severity, typename...Args>
+  template<JSLoggerSeverityType severity, typename...Args>
   void Print(Args...args);
   
   // Core printing functionality.
@@ -78,16 +80,16 @@ class JSLogger final {
   template<typename First, typename...Rest>
   void PrintImpl(First first_parameter, Rest...rest);
 
-  JSLogPolicy        js_log_policy__;
+  JSLoggerPolicy     js_log_policy__;
   uint32_t           log_line_number__ { 0 };
   std::ostringstream log_stream__;
   std::mutex         js_logger_mutex__;
 };
 
-template<typename JSLogPolicy>
-template<JSLogger::SeverityType severity, typename...Args>
-void JSLogger<JSLogPolicy>::Print(Args...args)  {
-  std::lock_guard<std::mutex>(js_logger_mutex__);
+template<typename JSLoggerPolicy>
+template<JSLoggerSeverityType severity, typename...Args>
+void JSLogger<JSLoggerPolicy>::Print(Args...args)  {
+	std::lock_guard<std::mutex> lock(js_logger_mutex__);
 
   // The Debug and Error severity strings (i.e. "DEBUG" and "ERROR")
   // are the longest of the three severity strings, and each is 5
@@ -96,16 +98,16 @@ void JSLogger<JSLogPolicy>::Print(Args...args)  {
   log_stream__ << std::setw(5) << std::left;
   
   switch(severity) {
-    case SeverityType::DEBUG:
+	  case JSLoggerSeverityType::JSLogger_DEBUG:
       log_stream__ << "DEBUG";
       break;
-    case SeverityType::INFO:
+    case JSLoggerSeverityType::JSLogger_INFO:
       log_stream__ << "INFO";
       break;
-    case SeverityType::ERROR:
+    case JSLoggerSeverityType::JSLogger_ERROR:
       log_stream__ << "ERROR";
       break;
-    case SeverityType::WARN:
+    case JSLoggerSeverityType::JSLogger_WARN:
       log_stream__ << "WARN";
       break;
   };
@@ -113,15 +115,15 @@ void JSLogger<JSLogPolicy>::Print(Args...args)  {
   PrintImpl(args...);
 }
 
-template<typename JSLogPolicy>
-void JSLogger<JSLogPolicy>::PrintImpl() {
-  js_log_policy__.Write(JSLoggerPimpl::GetLoglineHeader(log_line_number__++) + ":" + log_stream__.str());
+template<typename JSLoggerPolicy>
+void JSLogger<JSLoggerPolicy>::PrintImpl() {
+	js_log_policy__.Write(detail::JSLoggerPimpl::GetLoglineHeader(log_line_number__++) + ":" + log_stream__.str());
   log_stream__.str("");
 }
 
-template<typename JSLogPolicy>
+template<typename JSLoggerPolicy>
 template<typename First, typename...Rest >
-void JSLogger<JSLogPolicy>::PrintImpl(First first_parameter, Rest...rest) {
+void JSLogger<JSLoggerPolicy>::PrintImpl(First first_parameter, Rest...rest) {
   log_stream__ << first_parameter;
   PrintImpl(rest...); 
 }

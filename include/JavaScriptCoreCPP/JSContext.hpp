@@ -10,27 +10,29 @@
 #ifndef _JAVASCRIPTCORECPP_JSCONTEXT_HPP_
 #define _JAVASCRIPTCORECPP_JSCONTEXT_HPP_
 
-#include "JavaScriptCoreCPP/JSClass.hpp"
+#include "JavaScriptCoreCPP/JSContextGroup.hpp"
 
 #ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 #include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 #endif
 
 #include <vector>
+#include <memory>
 #include <utility>
 
 #ifdef JAVASCRIPTCORECPP_THREAD_SAFE
 #include <mutex>
 #endif
 
-extern "C" {
-  struct JSContextRef;
-  struct JSGlobalContextRef;
-}
+#include <JavaScriptCore/JavaScript.h>
+
+namespace JavaScriptCoreCPP { namespace detail {
+class JSClassPimpl;
+}}
 
 namespace JavaScriptCoreCPP {
 
-class JSContextGroup;
+class JSClass;
 class JSString;
 class JSValue;
 class JSUndefined;
@@ -118,9 +120,10 @@ class JSContext final {
     @result A JSValue of the string type that represents the value of
     string.
   */
-  JSValue CreateString(const JSString& js_string = {}) const;
-  JSValue CreateString(const char*        string     ) const;
-  JSValue CreateString(const std::string& string     ) const;
+  JSValue CreateString()                          const;
+  JSValue CreateString(const JSString& js_string) const;
+  JSValue CreateString(const char*        string) const;
+  JSValue CreateString(const std::string& string) const;
 
   /*!
     @method
@@ -194,32 +197,16 @@ class JSContext final {
     @method
     
     @abstract Create a JavaScript object in this execution context. An
-    empty JavaScript object is returned if you do not provide any
-    arguments.
+    empty JavaScript object is returned if you do not provide a
+    JSClass.
     
-    @discussion The default object class does not allocate storage for
-    private data, so you cannot use the GetPrivate and SetPrivate
-    methods unless you provide a custom JSClass.
-
-    Providing a custom JSClass allocates storage in the returned
-    JSObject for private data so that you can use its GetPrivate and
-    SetPrivate methods to store private data for callbacks.
-    
-    The private data is set on the created object before its intialize
-    callback is called. This enables the initialize callback to
-    retrieve and manipulate the private data through the GetPrivate
-    method.
-
     @param js_class An optional custom JSClass to pass to the JSObject
     constructor.
     
-    @param private_data An optional void* to set as the object's
-    private data.
-    
-    @result A JavaScript object created from the given JSClass and
-    private data.
+    @result A JavaScript object.
   */
-  JSObject CreateObject(const JSClass& js_class = JSClass::EmptyJSClass(), void* private_data = nullptr) const;
+  JSObject CreateObject() const;
+  JSObject CreateObject(const JSClass& js_class) const;
 
   /*!
     @method
@@ -236,7 +223,7 @@ class JSContext final {
     is implemented by a C++ class.
   */
   template<typename T, typename... Us>
-  T CreateObject(Us&&... constructor_arguments) const;
+  std::shared_ptr<T> CreateObject(Us&&... constructor_arguments) const;
 
   /*!
     @method
@@ -254,7 +241,8 @@ class JSContext final {
     @result A JavaScript object that is an Array, populated with the
     given JavaScript values.
   */
-  JSArray CreateArray(const std::vector<JSValue>& arguments = {}) const;
+  JSArray CreateArray() const;
+  JSArray CreateArray(const std::vector<JSValue>& arguments) const;
 
   /*!
     @method
@@ -267,7 +255,8 @@ class JSContext final {
     
     @result A JSObject that is a Date.
   */
-  JSDate CreateDate(const std::vector<JSValue>& arguments = {}) const;
+  JSDate CreateDate() const;
+  JSDate CreateDate(const std::vector<JSValue>& arguments) const;
 
   /*!
     @method
@@ -280,7 +269,8 @@ class JSContext final {
     
     @result A JSObject that is a Error.
   */
-  JSError CreateError(const std::vector<JSValue>& arguments = {}) const;
+  JSError CreateError() const;
+  JSError CreateError(const std::vector<JSValue>& arguments) const;
 
   /*!
     @method
@@ -293,7 +283,8 @@ class JSContext final {
     
     @result A JSObject that is a RegExp.
   */
-  JSRegExp CreateRegExp(const std::vector<JSValue>& arguments = {}) const;
+  JSRegExp CreateRegExp() const;
+  JSRegExp CreateRegExp(const std::vector<JSValue>& arguments) const;
 
   /*!
     @method
@@ -328,7 +319,10 @@ class JSContext final {
     @throws std::invalid_argument if either body, function_name or
     parameter_names contains a syntax error.
   */
-  JSFunction CreateFunction(const JSString& body, const std::vector<JSString>& parameter_names = {}, const JSString& function_name = {}, const JSString& source_url = {}, int starting_line_number = 1) const;
+  JSFunction CreateFunction(const JSString& body) const;
+  JSFunction CreateFunction(const JSString& body, const std::vector<JSString>& parameter_names) const;
+  JSFunction CreateFunction(const JSString& body, const std::vector<JSString>& parameter_names, const JSString& function_name) const;
+  JSFunction CreateFunction(const JSString& body, const std::vector<JSString>& parameter_names, const JSString& function_name, const JSString& source_url, int starting_line_number = 1) const;
 
 
   /* Script Evaluation */
@@ -359,8 +353,10 @@ class JSContext final {
     an exception.
     
   */
-  JSValue JSEvaluateScript(const JSString& script,                       const JSString& source_url = {}, int starting_line_number = 1) const;
-  JSValue JSEvaluateScript(const JSString& script, JSObject this_object, const JSString& source_url = {}, int starting_line_number = 1) const;
+  JSValue JSEvaluateScript(const JSString& script                                                                                ) const;
+  JSValue JSEvaluateScript(const JSString& script, JSObject this_object                                                          ) const;
+  JSValue JSEvaluateScript(const JSString& script,                       const JSString& source_url, int starting_line_number = 1) const;
+  JSValue JSEvaluateScript(const JSString& script, JSObject this_object, const JSString& source_url, int starting_line_number = 1) const;
 
   /*!
     @method
@@ -383,7 +379,8 @@ class JSContext final {
     @result true if the script is syntactically correct, otherwise
     false.
   */
-  bool JSCheckScriptSyntax(const JSString& script, const JSString& source_url = {}, int starting_line_number = 1) const;
+  bool JSCheckScriptSyntax(const JSString& script) const;
+  bool JSCheckScriptSyntax(const JSString& script, const JSString& source_url, int starting_line_number = 1) const;
   
 
   /*!
@@ -419,12 +416,12 @@ class JSContext final {
   void SynchronousGarbageCollectForDebugging() const;
 #endif
 
+  JSContext() = delete;
   ~JSContext();
   JSContext(const JSContext&);
   JSContext(JSContext&&);
-  JSContext& JSContext::operator=(const JSContext&) = delete;
-  JSContext& JSContext::operator=(JSContext&&) = delete;
-  JSContext& operator=(JSContext);
+  JSContext& operator=(const JSContext&);
+  JSContext& operator=(JSContext&&);
   void swap(JSContext&) noexcept;
 
  private:
@@ -433,7 +430,7 @@ class JSContext final {
   // constructor.
   friend class JSContextGroup;
 
-  explicit JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class = {});
+  JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class);
   
   // These classes and functions need access to operator
   // JSContextRef().
@@ -461,10 +458,9 @@ class JSContext final {
     return js_context_ref__;
   }
   
-  // Only the JSNativeClass static functions create a JSContext using
-  // the following constructor.
-  template<typename T>
-  friend class JSNativeClass;
+  // Only the detail::JSClassPimpl static functions create a JSContext
+  // using the following constructor.
+  friend class detail::JSClassPimpl;
 
   // For interoperability with the JavaScriptCore C API.
   explicit JSContext(JSContextRef js_context_ref);
@@ -484,6 +480,8 @@ class JSContext final {
 #ifdef  JAVASCRIPTCORECPP_THREAD_SAFE
                                                                std::recursive_mutex       mutex__;
 #define JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD std::lock_guard<std::recursive_mutex> lock(mutex__)
+#else
+#define JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD
 #endif  // JAVASCRIPTCORECPP_THREAD_SAFE
 };
 
@@ -499,14 +497,11 @@ bool operator!=(const JSContext& lhs, const JSContext& rhs) {
   return ! (lhs == rhs);
 }
 
-} // namespace JavaScriptCoreCPP {
-
-namespace std {
-using JavaScriptCoreCPP::JSContext;
-template<>
-void swap<JSContextGroup>(JSContext& first, JSContext& second) noexcept {
-  first.swap(second);
+inline
+void swap(JSContext& first, JSContext& second) noexcept {
+	first.swap(second);
 }
-}  // namespace std
+
+} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSCONTEXT_HPP_

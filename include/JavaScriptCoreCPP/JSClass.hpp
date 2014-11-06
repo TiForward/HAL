@@ -21,11 +21,11 @@
 #include <mutex>
 #endif
 
+#include <JavaScriptCore/JavaScript.h>
+
 namespace JavaScriptCoreCPP { namespace detail {
 class JSClassPimpl;
 }}
-
-extern "C" struct JSClassRef;
 
 namespace JavaScriptCoreCPP {
 
@@ -73,16 +73,18 @@ class JSClass final {
   */
 	std::uint32_t get_version() const;
 
-	JSClass() = delete;
-	~JSClass() = default;
-	JSClass(const JSClass&) = default;
-	JSClass(JSClass&&) = default;
-	JSClass& operator=(const JSClass&) = default;
-  JSClass& operator=(JSClass&&) = default;
+	~JSClass();
+	JSClass(const JSClass&);
+	JSClass(JSClass&&);
+	JSClass& operator=(const JSClass&);
+	JSClass& operator=(JSClass&&);
   
  private:
-  
-  // Only a JSClassBuilder can create a JSClass.
+
+  // Private constructor only for implementing EmptyJSClass.
+	JSClass() = default;
+
+	// Only a JSClassBuilder can create a JSClass.
   template<typename T>
   friend class JSClassBuilder;
 
@@ -96,18 +98,14 @@ class JSClass final {
   // For interoperability with the JavaScriptCore C API.
   operator JSClassRef() const;
 
-  // Prevent heap based objects.
-  static void * operator new(std::size_t);     // #1: To prevent allocation of scalar objects
-  static void * operator new [] (std::size_t); // #2: To prevent allocation of array of objects
-  
   std::shared_ptr<detail::JSClassPimpl> js_class_pimpl_ptr__;
-
-  static const JSClass                  empty_js_class__;
 		  
 #undef  JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD
 #ifdef  JAVASCRIPTCORECPP_THREAD_SAFE
-                                                             std::recursive_mutex       mutex__
+                                                             std::recursive_mutex       mutex__;
 #define JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD std::lock_guard<std::recursive_mutex> lock(mutex__)
+#else
+#define JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD
 #endif  // JAVASCRIPTCORECPP_THREAD_SAFE
 };
 

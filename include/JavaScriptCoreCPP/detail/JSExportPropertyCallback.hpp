@@ -17,6 +17,8 @@
 #include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 #endif
 
+#include <unordered_set>
+
 #ifdef JAVASCRIPTCORECPP_THREAD_SAFE
 #include <mutex>
 #endif
@@ -63,27 +65,28 @@ class JSExportPropertyCallback {
   }
   
   virtual ~JSExportPropertyCallback();
-  JSExportPropertyCallback(const JSExportPropertyCallback& rhs);
-  JSExportPropertyCallback(JSExportPropertyCallback&& rhs);
-  JSExportPropertyCallback& JSExportPropertyCallback::operator=(const JSExportPropertyCallback&) = delete;
-  JSExportPropertyCallback& JSExportPropertyCallback::operator=(JSExportPropertyCallback&&) = delete;
-  JSExportPropertyCallback& operator=(JSExportPropertyCallback rhs);
-  void swap(JSExportFunctionPropertyCallback& other) noexcept;
+  JSExportPropertyCallback(const JSExportPropertyCallback&);
+  JSExportPropertyCallback(JSExportPropertyCallback&&);
+  JSExportPropertyCallback& operator=(const JSExportPropertyCallback&);
+  JSExportPropertyCallback& operator=(JSExportPropertyCallback&&);
+  void swap(JSExportPropertyCallback&) noexcept;
   
  private:
   
   friend bool operator==(const JSExportPropertyCallback& lhs, const JSExportPropertyCallback& rhs);
-  friend bool operator<(const JSExportPropertyCallback& lhs, const JSExportPropertyCallback& rhs);
   
+  JSString property_name__;
+
  protected:
   
-  const JSString                          property_name__;
   std::unordered_set<JSPropertyAttribute> attributes__;
 
 #undef JAVASCRIPTCORECPP_DETAIL_JSEXPORTPROPERTYCALLBACK_LOCK_GUARD
 #ifdef JAVASCRIPTCORECPP_THREAD_SAFE
-                                                                                           std::recursive_mutex             mutex__
+                                                                                     std::recursive_mutex             mutex__;
 #define JAVASCRIPTCORECPP_DETAIL_JSEXPORTPROPERTYCALLBACK_LOCK_GUARD std::lock_guard<std::recursive_mutex> lock_guard(mutex__)
+#else
+#define JAVASCRIPTCORECPP_DETAIL_JSEXPORTPROPERTYCALLBACK_LOCK_GUARD
 #endif  // JAVASCRIPTCORECPP_THREAD_SAFE
 };
 
@@ -99,35 +102,11 @@ bool operator!=(const JSExportPropertyCallback& lhs, const JSExportPropertyCallb
   return ! (lhs == rhs);
 }
   
-// Define a strict weak ordering for two JSExportPropertyCallbacks.
 inline
-bool operator<(const JSExportPropertyCallback& lhs, const JSExportPropertyCallback& rhs) {
-  return (lhs.property_name__ < rhs.property_name__) && (lhs.attributes__ < rhs.attributes__);
-}
-
-inline
-bool operator>(const JSExportPropertyCallback& lhs, const JSExportPropertyCallback& rhs) {
-  return rhs < lhs;
-}
-
-inline
-bool operator<=(const JSExportPropertyCallback& lhs, const JSExportPropertyCallback& rhs) {
-  return ! (lhs > rhs);
-}
-
-inline
-bool operator>=(const JSExportPropertyCallback& lhs, const JSExportPropertyCallback& rhs) {
-  return ! (lhs < rhs);
+void swap(JSExportPropertyCallback& first, JSExportPropertyCallback& second) noexcept {
+  first.swap(second);
 }
 
 }} // JavaScriptCoreCPP { namespace detail {
-
-namespace std {
-using JavaScriptCoreCPP::JSExportPropertyCallback;
-template<>
-void swap<JSExportPropertyCallback>(JSExportPropertyCallback& first, JSExportPropertyCallback& second) noexcept {
-  first.swap(second);
-}
-}  // namespace std
 
 #endif // _JAVASCRIPTCORECPP_DETAIL_JSEXPORTPROPERTYCALLBACK_HPP_

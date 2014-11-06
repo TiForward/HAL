@@ -8,6 +8,7 @@
  */
 
 #include "JavaScriptCoreCPP/JSFunction.hpp"
+#include "JavaScriptCoreCPP/JSString.hpp"
 #include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 #include <vector>
 #include <algorithm>
@@ -22,10 +23,10 @@ JSFunction::JSFunction(const JSContext& js_context, const JSString& body, const 
 
 JSObjectRef JSFunction::MakeFunction(const JSContext& js_context, const JSString& body, const std::vector<JSString>& parameter_names, const JSString& function_name, const JSString& source_url, int starting_line_number) {
 	JSValueRef exception { nullptr };
-	const JSStringRef source_url_ref = (source_url.length() > 0) ? static_cast<JSStringRef>(source_url) : nullptr;
+	JSStringRef source_url_ref = (source_url.length() > 0) ? static_cast<JSStringRef>(source_url) : nullptr;
 	JSObjectRef js_object_ref = nullptr;
 	if (!parameter_names.empty()) {
-		std::vector<JSStringRef> parameter_name_array = detail::ToJSStringRefVector(parameter_names);
+		std::vector<JSStringRef> parameter_name_array = detail::to_vector(parameter_names);
 		js_object_ref = JSObjectMakeFunction(js_context, function_name, static_cast<unsigned>(parameter_name_array.size()), &parameter_name_array[0], body, source_url_ref, starting_line_number, &exception);
 	} else {
 		js_object_ref = JSObjectMakeFunction(js_context, function_name, 0, nullptr, body, source_url_ref, starting_line_number, &exception);

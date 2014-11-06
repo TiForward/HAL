@@ -33,7 +33,7 @@ class JSRegExp final : public JSObject {
 	// Only a JSContext can create a JSRegExp.
 	friend JSContext;
 
-	JSRegExp(const JSContext& js_context, const std::vector<JSValue>& arguments);
+	JSRegExp(const JSContext& js_context, const std::vector<JSValue>& arguments = {});
 
 	static JSObjectRef MakeRegExp(const JSContext& js_context, const std::vector<JSValue>& arguments);
 };

@@ -10,8 +10,6 @@
 #ifndef _JAVASCRIPTCORECPP_JSCONTEXTGROUP_HPP_
 #define _JAVASCRIPTCORECPP_JSCONTEXTGROUP_HPP_
 
-#include "JavaScriptCoreCPP/JSClass.hpp"
-
 #ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 #include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 #endif
@@ -22,7 +20,7 @@
 #include <mutex>
 #endif
 
-extern "C" struct JSContextGroupRef;
+#include <JavaScriptCore/JavaScript.h>
 
 namespace JavaScriptCoreCPP {
 
@@ -81,23 +79,22 @@ class JSContextGroup final  {
     multiple threads, explicit synchronization is required.
 
     Providing an optional custom JSClass allows you to create a custom
-    global object for this execution context. The default JSClass will
-    create the global object populated with all of the standard
+    global object for this execution context. Not providing a JSClass
+    will create the global object populated with all of the standard
     built-in JavaScript objects, such as Object, Function, String, and
     Array
 
     @param global_object_class An optional JSClass used to create the
     global object.
   */
-  JSContext CreateContext(const JSClass& global_object_class = JSClass::EmptyJSClass()) const;
-
+  JSContext CreateContext() const;
+  JSContext CreateContext(const JSClass& global_object_class) const;
 
   ~JSContextGroup();
   JSContextGroup(const JSContextGroup&);
   JSContextGroup(JSContextGroup&&);
-  JSContextGroup& operator=(const JSContextGroup&) = delete;
-  JSContextGroup& operator=(JSContextGroup&&) = delete;
-  JSContextGroup& operator=(JSContextGroup);
+  JSContextGroup& operator=(const JSContextGroup&);
+  JSContextGroup& operator=(JSContextGroup&&);
   void swap(JSContextGroup&) noexcept;
 
  private:
@@ -123,6 +120,8 @@ class JSContextGroup final  {
 #ifdef JAVASCRIPTCORECPP_THREAD_SAFE
                                                                     std::recursive_mutex       mutex__;
 #define JAVASCRIPTCORECPP_JSCONTEXTGROUP_LOCK_GUARD std::lock_guard<std::recursive_mutex> lock(mutex__)
+#else
+#define JAVASCRIPTCORECPP_JSCONTEXTGROUP_LOCK_GUARD
 #endif  // JAVASCRIPTCORECPP_THREAD_SAFE
 };
 
@@ -138,14 +137,11 @@ bool operator!=(const JSContextGroup& lhs, const JSContextGroup& rhs) {
   return ! (lhs == rhs);
 }
 
-} // namespace JavaScriptCoreCPP {
-
-namespace std {
-using JavaScriptCoreCPP::JSContextGroup;
-template<>
-void swap<JSContextGroup>(JSContextGroup& first, JSContextGroup& second) noexcept {
-  first.swap(second);
+inline
+void swap(JSContextGroup& first, JSContextGroup& second) noexcept {
+	first.swap(second);
 }
-}  // namespace std
+
+} // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSCONTEXTGROUP_HPP_

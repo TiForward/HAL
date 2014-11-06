@@ -44,12 +44,12 @@ class JSBoolean final : public JSValue {
 	  not be converted to a boolean.
 	*/
 	JSBoolean& operator=(const JSValue& js_value) {
-		JSValue::operator=(static_cast<JSBoolean>(js_value));
+		JSValue::operator=(js_value);
 		return *this;
   }
 
 	JSBoolean& operator=(JSValue&& js_value) {
-		JSValue::operator=(static_cast<JSBoolean>(js_value));
+		JSValue::operator=(js_value);
 		return *this;
   }
 

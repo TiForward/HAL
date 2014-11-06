@@ -15,13 +15,21 @@
 #include <vector>
 #include <unordered_set>
 
-extern "C" struct JSObjectRef;
+namespace JavaScriptCoreCPP { namespace detail {
+
+class JSClassPimpl;
+
+template<typename T>
+class JSExportPimpl;
+
+}}  // namespace JavaScriptCoreCPP { namespace detail {
 
 namespace JavaScriptCoreCPP {
 
+class JSString;
+class JSClass;
 class JSPropertyNameAccumulator;
 class JSPropertyNameArray;
-class JSClass;
 
 /*!
   @class
@@ -171,11 +179,11 @@ class JSObject : public JSValue {
 	  be called as a constructor, or calling the constructor itself
 	  threw a JavaScript exception.
 	*/
-	virtual JSObject CallAsConstructor(const std::vector<JSValue>&  arguments);
 	virtual JSObject CallAsConstructor(                                      ) final;
-	virtual JSObject CallAsConstructor(JSValue                      argument ) final;
-	virtual JSObject CallAsConstructor(JSString                     argument ) final;
+	virtual JSObject CallAsConstructor(const JSValue&               argument ) final;
+	virtual JSObject CallAsConstructor(const JSString&              argument ) final;
 	virtual JSObject CallAsConstructor(const std::vector<JSString>& arguments) final;
+	virtual JSObject CallAsConstructor(const std::vector<JSValue>&  arguments);
 
 	/*!
 	  @method
@@ -210,17 +218,17 @@ class JSObject : public JSValue {
 	  JavaScript exception.
 	*/
 
-	virtual JSValue operator()(                                                            ) final { return CallAsFunction(                      ); }
-	virtual JSValue operator()(JSValue                      argument                       ) final { return CallAsFunction(argument              ); }
-	virtual JSValue operator()(JSString                     argument                       ) final { return CallAsFunction(argument              ); }
-	virtual JSValue operator()(const std::vector<JSValue>&  arguments                      ) final { return CallAsFunction(arguments             ); }
-	virtual JSValue operator()(const std::vector<JSString>& arguments                      ) final { return CallAsFunction(arguments             ); }
+	virtual JSValue operator()(                                                            ) final;
+	virtual JSValue operator()(const JSValue&               argument                       ) final;
+	virtual JSValue operator()(const JSString&              argument                       ) final;
+	virtual JSValue operator()(const std::vector<JSValue>&  arguments                      ) final;
+	virtual JSValue operator()(const std::vector<JSString>& arguments                      ) final;
 
-	virtual JSValue operator()(                                        JSObject this_object) final { return CallAsFunction(           this_object); }
-	virtual JSValue operator()(JSValue                      argument , JSObject this_object) final { return CallAsFunction(argument , this_object); }
-	virtual JSValue operator()(JSString                     argument , JSObject this_object) final { return CallAsFunction(argument , this_object); }
-	virtual JSValue operator()(const std::vector<JSValue>&  arguments, JSObject this_object) final { return CallAsFunction(arguments, this_object); }
-	virtual JSValue operator()(const std::vector<JSString>& arguments, JSObject this_object) final { return CallAsFunction(arguments, this_object); }
+	virtual JSValue operator()(                                        JSObject this_object) final;
+	virtual JSValue operator()(const JSValue&               argument , JSObject this_object) final;
+	virtual JSValue operator()(const JSString&              argument , JSObject this_object) final;
+	virtual JSValue operator()(const std::vector<JSValue>&  arguments, JSObject this_object) final;
+	virtual JSValue operator()(const std::vector<JSString>& arguments, JSObject this_object) final;
 
 	/*!
 	  @method
@@ -241,12 +249,12 @@ class JSObject : public JSValue {
 	*/
 	virtual void SetPrototype(const JSValue& js_value) final;
 	
-	JSObject() = delete;
-	~JSObject() = default;
-	JSObject(const JSObject&) = default;
-	JSObject(JSObject&&) = default;
+	JSObject()                           = delete;
+	~JSObject()                          = default;
+	JSObject(const JSObject&)            = default;
+	JSObject(JSObject&&)                 = default;
 	JSObject& operator=(const JSObject&) = default;
-	JSObject& operator=(JSObject&&) = default;
+	JSObject& operator=(JSObject&&)      = default;
 	
  protected:
 	
@@ -257,9 +265,8 @@ class JSObject : public JSValue {
 	
 	// In addition to derived classes, these classes need access to the
 	// following JSObject constructor.
-	friend JSValue;              // for operator JSObject()
-	template<typename T>
-	friend class JSNativeClass;  // for static functions
+	friend class JSValue;               // for operator JSObject()
+	friend class detail::JSClassPimpl;  // for static functions
 	
 	// For interoperability with the JavaScriptCore C API.
 	JSObject(const JSContext& js_context, JSObjectRef js_object_ref)
@@ -287,8 +294,7 @@ class JSObject : public JSValue {
 
 	  @param arguments The JSValue argument(s) to pass to the function.
 	  
-	  @param this_object An optional JavaScript object to use as
-	  "this". The default value is this JavaScript object.
+	  @param this_object The JavaScript object to use as "this".
 	  
 	  @result Return the function's return value.
 
@@ -297,16 +303,13 @@ class JSObject : public JSValue {
 	  JavaScript exception.
 	*/
 	virtual JSValue CallAsFunction(const std::vector<JSValue>&  arguments, JSObject this_object);
-	virtual JSValue CallAsFunction(                                                            ) final;
-	virtual JSValue CallAsFunction(JSValue                      argument                       ) final;
-	virtual JSValue CallAsFunction(JSString                     argument                       ) final;
-	virtual JSValue CallAsFunction(const std::vector<JSValue>&  arguments                      ) final;
-	virtual JSValue CallAsFunction(const std::vector<JSString>& arguments                      ) final;
 
-	virtual JSValue CallAsFunction(                                        JSObject this_object) final;
-	virtual JSValue CallAsFunction(JSValue                      argument , JSObject this_object) final;
-	virtual JSValue CallAsFunction(JSString                     argument , JSObject this_object) final;
-	virtual JSValue CallAsFunction(const std::vector<JSString>& arguments, JSObject this_object) final;
+ private:
+
+	// Only JSClassPimpl and JSExportPimpl can call GetPrivate and
+	// SetPrivate.
+	template<typename T>
+	friend class JSExportPimpl;
 
 	/*!
 	  @method
@@ -316,7 +319,7 @@ class JSObject : public JSValue {
 	  @result A void* that is this object's private data, if the object
 	  has private data, otherwise nullptr.
 	*/
-	virtual void* GetPrivate() const;
+	virtual void* GetPrivate() final;
 	
 	/*!
 	  @method
@@ -330,9 +333,7 @@ class JSObject : public JSValue {
 	  
 	  @result true if this object can store private data.
 	*/
-	virtual bool SetPrivate(void* data);
-
- private:
+	virtual bool SetPrivate(void* data) final;
 
 	/*!
 	  @method

@@ -10,28 +10,32 @@
 #ifndef _JAVASCRIPTCORECPP_DETAIL_JSLOGGERPIMPL_HPP_
 #define _JAVASCRIPTCORECPP_DETAIL_JSLOGGERPIMPL_HPP_
 
-#include "JavaScriptCoreCPP/JavaScriptCoreCPP.hpp"
+#include <string>
 #include <cstdint>
-#include <chrono>
+
+namespace JavaScriptCoreCPP {
+template<typename JSLoggerPolicy>
+class JSLogger;
+}
 
 namespace JavaScriptCoreCPP { namespace detail {
 
 class JSLoggerPimpl final {
 	
- private:
-	
-	// We are exclusively owned by the JSLogger<T> that constructs us.
-	template<typename JSLogPolicy>
-	friend class JSLogger;
+ public:
 
-	JSLoggerPimpl() = delete;
-	~JSLoggerPimpl() = delete;
+ // private:
 	
-	JSLoggerPimpl(const JSLoggerPimpl& rhs) = delete;
-	JSLoggerPimpl(JSLoggerPimpl&& rhs) = delete;
-	
+ //  // We are used exclusively JSLogger<T>.
+ //  template<typename JSLoggerPolicy>
+ //  friend class JSLogger;
+
+	JSLoggerPimpl()                                = delete;
+	~JSLoggerPimpl()                               = delete;
+	JSLoggerPimpl(const JSLoggerPimpl&)            = delete;
+	JSLoggerPimpl(JSLoggerPimpl&&)                 = delete;
 	JSLoggerPimpl& operator=(const JSLoggerPimpl&) = delete;
-	JSLoggerPimpl& operator=(JSLoggerPimpl&&) = delete;
+	JSLoggerPimpl& operator=(JSLoggerPimpl&&)      = delete;
 
 	static std::string GetLoglineHeader(uint32_t log_line_number);
 };

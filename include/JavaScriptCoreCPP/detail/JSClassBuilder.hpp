@@ -32,6 +32,9 @@
 #include <mutex>
 #define JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_MUTEX                      std::recursive_mutex       mutex__
 #define JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD std::lock_guard<std::recursive_mutex> lock(mutex__)
+#else
+#define JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_MUTEX
+#define JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD
 #endif  // JAVASCRIPTCORECPP_THREAD_SAFE
 
 
@@ -74,6 +77,10 @@ namespace JavaScriptCoreCPP { namespace detail {
   callback should substitute, except in the case of HasProperty, where
   it specifies that GetProperty should substitute.
 */
+
+template<typename T>
+using JSClassMap_t = std::unordered_map<std::string, std::shared_ptr<JSClass>>;
+
 #ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 template<typename T>
 class JSClassBuilder final : public JSPerformanceCounter<JSClassBuilder<T>> {
@@ -83,617 +90,476 @@ class JSClassBuilder final {
 #endif
 
  public:
-	
-	/*!
-	  @method
-	  
-	  @abstract Create a builder with the given JSClass name. The
-	  JSClassVersion number is initialized to 0, the Parent is
-	  initialized to the default JavaScript object class, the
-	  JSClassAttribute defaults to 'AutomaticPrototype' and all
-	  callbacks are initialized to nullptr.
-	*/
+  
+  /*!
+    @method
+    
+    @abstract Create a builder with the given JSClass name. The
+    JSClassVersion number is initialized to 0, the Parent is
+    initialized to the default JavaScript object class, the
+    JSClassAttribute defaults to 'AutomaticPrototype' and all
+    callbacks are initialized to nullptr.
+  */
 	explicit JSClassBuilder(const JSString& class_name)
 			: name__(class_name) {
 	}
-	
-	JSClassBuilder() = delete;
-	~JSClassBuilder() = default;
-	
-	JSClassBuilder(const JSClassBuilder<T>& rhs) = default;
-	JSClassBuilder(JSClassBuilder<T>&& rhs) = default;
-	
-	JSClassBuilder<T>& operator=(const JSClassBuilder<T>& rhs) = default;
-	JSClassBuilder<T>& operator=(JSClassBuilder<T>&& rhs) = default;
-
-	/*!
-	  @method
-	  
-	  @abstract Return the JSClass's name.
-	  
-	  @result The JSClass's name.
-	*/
-	JSString ClassName() const {
-		return name__;
-	}
-	
-	/*!
-	  @method
-	  
-	  @abstract Add callbacks to invoke when getting and/or setting a
-	  value property on a JavaScript object. The property will always
-	  have the 'DontDelete' attribute. If a setter callback is not
-	  provided then the property will also have the 'ReadOnly'
-	  attribute. By default the property is enumerable unless you
-	  specify otherwise.
-	  
-	  @discussion For example, given this class definition:
-	  
-	  class Foo {
-	    JSValue GetName() const;
-	    bool SetName(const JSValue& value);
-	  };
-
-	  You would call the builer like this:
-	  
-	  JSClassBuilder<Foo> builder("Foo");
-	  builder.AddValueProperty("name", &Foo::GetName, &Foo::SetName);
-
-	  If you wanted the property ReadOnly, then you would call the
-	  builder like this:
-
-	  builder.AddValueProperty("name", &Foo::GetName);
-
-	  @param property_name A JSString containing the property's name.
-	  
-	  @param get_callback The callback to invoke when getting a
-	  property's value from a JavaScript object.
-	  
-	  @param set_callback The callback to invoke when setting a
-	  property's value on a JavaScript object. This may be nullptr, in
-	  which case the 'ReadOnly' attribute for this property is
-	  automatically set. If this callback returns false, then this
-	  indicates that the value was not set.
-	  
-	  @param enumerable An optional property attribute that specifies
-	  whether the property is enumerable. The default value is true,
-	  which means the property is enumerable.
-
-	  @throws std::invalid_argument exception under these preconditions:
-
-	  1. If property_name is empty.
-	  
-    4. If both get_callback and set_callback are missing.
-
-	  @result A reference to the builder for chaining.
-	*/
-	JSClassBuilder<T>& AddValueProperty(const JSString& property_name, GetNamedPropertyCallback get_callback, SetNamedPropertyCallback set_callback = nullptr, bool enumerable = true) {
-		std::unordered_set<JSObjectPropertyAttribute> attributes { JSObjectPropertyAttribute::DontDelete };
-		static_cast<void>(!enumerable   && attributes.insert(JSObjectPropertyAttribute::DontEnum).second);
-		static_cast<void>(!set_callback && attributes.insert(JSObjectPropertyAttribute::ReadOnly).second);
-		JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
-		AddValuePropertyCallback(JSObjectNamedValuePropertyCallback(property_name, get_callback, set_callback, attributes));
-		return *this;
-	}
-	
-	/*!
-	  @method
-
-	  @abstract Add a function property to a JavaScript object with the
-	  'DontDelete' and 'ReadOnly' attributes. By default the property is
-	  enumerable unless you specify otherwise.
-
-	  @discussion For example, given this class definition:
-	  
-	  class Foo {
-	    JSValue Hello(const std::vector<JSValue>& arguments, JSObject& this_object);
-	  };
-
-	  You would call the builer like this:
-	  
-	  JSClassBuilder<Foo> builder("Foo");
-	  builder.AddFunctionProperty("hello", &Foo::Hello);
-
-	  @param function_name A JSString containing the function's name.
-	  
-	  @param function_callback The callback to invoke when calling the
-	  JavaScript object as a function.
-	  
-	  @param enumerable An optional property attribute that specifies
-	  whether the property is enumerable. The default value is true,
-	  which means the property is enumerable.
-	  
-	  @throws std::invalid_argument exception under these preconditions:
-
-	  1. If function_name is empty.
-	  
-	  2. If function_callback is not provided.
-
-	  @result A reference to the builder for chaining.
-	*/
-	JSClassBuilder<T>& AddFunctionProperty(const JSString& function_name, CallAsFunctionCallback function_callback, bool enumerable = true) {
-		std::unordered_set<JSObjectPropertyAttribute> attributes { JSObjectPropertyAttribute::DontDelete, JSObjectPropertyAttribute::ReadOnly };
-		static_cast<void>(!enumerable && attributes.insert(JSObjectPropertyAttribute::DontEnum).second);
-		JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
-		AddFunctionPropertyCallback(JSObjectNamedValuePropertyCallback(function_name, function_callback, attributes));
-		return *this;
-	}
-	
-	/*!
-	  @method
-	  
-	  @abstract Return the JSClass's version.
-	  
-	  @result The JSClass's version.
-	*/
-	uint32_t Version() const {
-		return version__;
-	}
-	
-	/*!
-	  @method
-	  
-	  @abstract Set the JSClass's version.
-	  
-	  @result A reference to the builder for chaining.
-	*/
-	JSClassBuilder<T>& Version(uint32_t class_version) {
-		JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
-		version__ = class_version;
-		return *this;
-	}
-
-	/*!
-	  @method
-	  
-	  @abstract Return the JSClass's JSClassAttribute.
-	  
-	  @result The JSClass's JSClassAttribute.
-	*/
-	JSClassAttribute ClassAttribute() const {
-		return class_attribute__;
-	}
-	
-	/*!
-	  @method
-	  
-	  @abstract Set the JSClass's JSClassAttribute.
-	  
-	  @result A reference to the builder for chaining.
-	*/
-	JSClassBuilder<T>& ClassAttribute(JSClassAttribute class_attribute) {
-		JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
-		class_attribute__ = class_attribute;
-		return *this;
-	}
-
-	/*!
-	  @method
-	  
-	  @abstract Return the parent of the JSClass created by this
-	  builder.
-	  
-	  @result The parent of the JSClass created by this builder.
-	*/
-	JSClass Parent() const {
-		return parent__;
-	}
-
-	/*!
-	  @method
-	  
-	  @abstract Set the parent of the JSClass created by this builder.
-	  The default value is the default JavaScript object class.
-	  
-	  @result A reference to the builder for chaining.
-	*/
-	JSClassBuilder<T>& Parent(const JSClass& parent) {
-		JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
-		parent__ = parent;
-		return *this;
-	}
-
-	/*!
-	  @method
-
-	  @abstract Return the callback to invoke when a JavaScript object
-	  is first created.
-	  
-	  @result The callback to invoke when a JavaScript object is first
-	  created.
-	*/
-	InitializeCallback<T> Initialize() const {
-		return initialize_callback__;
-	}
-
-	/*!
-	  @method
-
-	  @abstract Set the callback to invoke when a JavaScript object is
-	  first created. Unlike the other object callbacks, the initialize
-	  callback is called on the least derived object (the parent object)
-	  first, and the most derived object last, analogous to the way C++
-	  constructors work in a class hierarchy.
-
-	  @discussion For example, given this class definition:
-
-	  class Foo {
-	    void Initialize();
-	  };
-
-	  You would call the builer like this:
-
-	  JSClassBuilder<Foo> builder("Foo");
-	  builder.Initialize(&Foo::Initialize);
   
-	  @result A reference to the builder for chaining.
-	*/
-	JSClassBuilder<T>& Initialize(const InitializeCallback<T>& initialize_callback) {
-		JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
-		initialize_callback__ = initialize_callback;
-		return *this;
-	}
-
-	/*!
-	  @method
-
-	  @abstract Return the callback to invoke when a JavaScript object
-	  is finalized (prepared for garbage collection).
-  	  
-	  @result The callback to invoke when a JavaScript object is
-	  finalized (prepared for garbage collection).
-	*/
-	FinalizeCallback<T> Finalize() const {
-		return finalize_callback__;
-	}
-
-	/*!
-	  @method
-
-	  @abstract Set the callback to invoke when a JavaScript object is
-	  finalized (prepared for garbage collection). This callback is
-	  invoked immediately before your C++ class destructor. An object
-	  may be finalized on any thread.
-
-	  @discussion The finalize callback is called on the most derived
-	  object first, and the least derived object (the parent object)
-	  last, analogous to that way C++ destructors work in a class
-	  hierarchy.
-	  
-	  You must not call any function that may cause a garbage collection
-	  or an allocation of a garbage collected object from within a
-	  FinalizeCallback. This basically means don't create any object
-	  whose class name begins with JS (e.g. JSString, JSValue, JSObject,
-	  etc.)  and don't call any methods on such objects that you may
-	  already have a reference to.
-	  
-	  For example, given this class definition:
-
-	  class Foo {
-	    void Finalize();
-	  };
-
-	  You would call the builer like this:
-
-	  JSClassBuilder<Foo> builder("Foo");
-	  builder.Finalize(&Foo::Finalize);
-
-	  @result A reference to the builder for chaining.
-	*/
-	JSClassBuilder<T>& Finalize(const FinalizeCallback<T>& finalize_callback) {
-		JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
-		finalize_callback__ = finalize_callback;
-		return *this;
-	}
-
-	/*!
-	  @method
-	  
-	  @abstract Return the callback to invoke when a JavaScript object
-	  is used as a constructor in a 'new' expression. If you provide
-	  this callback then you must also provide the HasInstanceCallback
-	  as well.
+  JSClassBuilder() = delete;
+  ~JSClassBuilder() = default;
   
-	  @result The callback to invoke when an object is used as a
-	  constructor in a 'new' expression.
-	*/
-	CallAsConstructorCallback<T> Constructor() const {
-		return call_as_constructor_callback__;
-	}
-
-	/*!
-	  @method
-
-	  @abstract Set the callback to invoke when a JavaScript object is
-	  used as a constructor in a 'new' expression. If you provide this
-	  callback then you must also provide the HasInstanceCallback as
-	  well.
-
-	  @discussion If this callback doest not exist, then using your
-	  object as a constructor in a 'new' expression will throw a
-	  JavaScript exception.
-	  
-	  For example, given this class definition:
-	  
-	  class Foo {
-	    JSObject Constructor(const std::vector<JSValue>& arguments);
-	  };
-	  
-	  You would call the builer like this:
-	  
-	  JSClassBuilder<Foo> builder("Foo");
-	  builder.ConstructorCallback(&Foo::Constructor);
-
-	  If your callback were invoked by the JavaScript expression
-	  'new myConstructor()', then 'myConstructor' is the instance of Foo
-	  being called.
-
-	  @result A reference to the builder for chaining.
-	*/
-	JSClassBuilder<T>& Constructor(const CallAsConstructorCallback<T>& call_as_constructor_callback) {
-		JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
-		call_as_constructor_callback__ = call_as_constructor_callback;
-		return *this;
-	}
-	
-	/*!
-	  @method
-	  
-	  @abstract Return the callback to invoke when a JavaScript object
-	  is used as the target of an 'instanceof' expression. If you
-	  provide this callback then you must also provide the
-	  CallAsConstructorCallback as well.
-
-	  @result The callback to invoke when an object is used as the
-	  target of an 'instanceof' expression.
-	*/
-	HasInstanceCallback<T> HasInstance() const {
-		return has_instance_callback__;
-	}
-
-	/*!
-	  @method
-
-	  @abstract Set the callback to invoke when a JavaScript object is
-	  used as the target of an 'instanceof' expression. If you provide
-	  this callback then you must also provide the
-	  CallAsConstructorCallback as well.
-
-	  @discussion If this callback does not exist, then 'instanceof'
-	  expressions that target your object will return false.
-
-	  For example, given this class definition:
-	  
-	  class Foo {
-	    bool HasInstance(const JSValue& possible_instance) const;
-	  };
-
-	  You would call the builer like this:
-	  
-	  JSClassBuilder<Foo> builder("Foo");
-	  builder.HasInstance(&Foo::HasInstance);
-
-	  If your callback were invoked by the JavaScript expression
-	  'someValue instanceof myObject', then 'myObject' is the instanceof
-	  of Foo being called and 'someValue' is the possible_instance
-	  parameter.
-	  
-	  @result A reference to the builder for chaining.
-	*/
-	JSClassBuilder<T>& HasInstance(const HasInstanceCallback<T>& has_instance_callback) {
-		JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
-		has_instance_callback__ = has_instance_callback;
-		return *this;
-	}
-	
-	/*!
-	  @method
-
-	  @abstract Return the callback to invoke when a JavaScript object
-	  is called as a function.
+  JSClassBuilder(const JSClassBuilder<T>& rhs) = default;
+  JSClassBuilder(JSClassBuilder<T>&& rhs) = default;
   
-	  @result The callback to invoke when a JavaScript object is called
-	  as a function.
-	*/
-	CallAsFunctionCallback<T> Function() const {
-		return call_as_function_callback__;
-	}
+  JSClassBuilder<T>& operator=(const JSClassBuilder<T>& rhs) = default;
+  JSClassBuilder<T>& operator=(JSClassBuilder<T>&& rhs) = default;
 
-	/*!
-	  @method
+  /*!
+    @method
+    
+    @abstract Return the JSClass's name.
+    
+    @result The JSClass's name.
+  */
+  JSString ClassName() const {
+    return name__;
+  }
+  
+  /*!
+    @method
+    
+    @abstract Set the JSClass's name.
+    
+    @result A reference to the builder for chaining.
+  */
+  JSClassBuilder<T>& ClassName(const JSString& class_name) {
+    JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
+    name__ = class_name;
+    return *this;
+  }
 
-	  @abstract Set the callback to invoke when a JavaScript object is
-	  called as a function.
+  /*!
+    @method
+    
+    @abstract Return the JSClass's version.
+    
+    @result The JSClass's version.
+  */
+  std::uint32_t Version() const {
+    return version__;
+  }
+  
+  /*!
+    @method
+    
+    @abstract Set the JSClass's version.
+    
+    @result A reference to the builder for chaining.
+  */
+  JSClassBuilder<T>& Version(std::uint32_t class_version) {
+    JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
+    version__ = class_version;
+    return *this;
+  }
 
-	  @discussion If this callback does not exist, then calling your
-	  object as a function will throw a JavaScript exception.
+  /*!
+    @method
+    
+    @abstract Return the JSClass's JSClassAttribute.
+    
+    @result The JSClass's JSClassAttribute.
+  */
+  JSClassAttribute ClassAttribute() const {
+    return class_attribute__;
+  }
+  
+  /*!
+    @method
+    
+    @abstract Set the JSClass's JSClassAttribute.
+    
+    @result A reference to the builder for chaining.
+  */
+  JSClassBuilder<T>& ClassAttribute(JSClassAttribute class_attribute) {
+    JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
+    class_attribute__ = class_attribute;
+    return *this;
+  }
 
-	  For example, given this class definition:
-	  
-	  class Foo {
-	    JSValue DoSomething(const std::vector<JSValue>& arguments, JSObject& this_object);
-	  };
+  /*!
+    @method
+    
+    @abstract Return the parent of the JSClass created by this
+    builder.
+    
+    @result The parent of the JSClass created by this builder.
+  */
+  JSClass Parent() const {
+    return parent__;
+  }
 
-	  You would call the builer like this:
-	  
-	  JSClassBuilder<Foo> builder("Foo");
-	  builder.Function(&Foo::DoSomething);
-	  
-	  In the JavaScript expression 'myObject.myFunction()', then
-	  'myFunction' is the instance of Foo being called, and this_object
-	  would be set to 'myObject'.
-	  
-	  In the JavaScript expression 'myFunction()', then 'myFunction' is
-	  the instance of Foo being called, and this_object would be set to
-	  the global object.
+  /*!
+    @method
+    
+    @abstract Set the parent of the JSClass created by this builder.
+    The default value is the default JavaScript object class.
+    
+    @result A reference to the builder for chaining.
+  */
+  JSClassBuilder<T>& Parent(const JSClass& parent) {
+    JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
+    parent__ = parent;
+    return *this;
+  }
 
-	  @result A reference to the builder for chaining.
-	*/
-	JSClassBuilder<T>& Function(const CallAsFunctionCallback<T>& call_as_function_callback) {
-		JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
-		call_as_function_callback__ = call_as_function_callback;
-		return *this;
-	}
+  /*!
+    @method
+    
+    @abstract Add callbacks to invoke when getting and/or setting a
+    value property on a JavaScript object. The property will always
+    have the 'DontDelete' attribute. If a setter callback is not
+    provided then the property will also have the 'ReadOnly'
+    attribute. By default the property is enumerable unless you
+    specify otherwise.
+    
+    @discussion For example, given this class definition:
+    
+    class Foo {
+      JSValue GetName() const;
+      bool SetName(JSValue&& value);
+    };
 
-	/*!
-	  @method
+    You would call the builer like this:
+    
+    JSClassBuilder<Foo> builder("Foo");
+    builder.AddValueProperty("name", &Foo::GetName, &Foo::SetName);
 
-	  @abstract Return the callback to invoke when converting a
-	  JavaScript object another JavaScript type.
+    If you wanted the property ReadOnly, then you would call the
+    builder like this:
 
-	  @result The callback to invoke when converting a JavaScript object
-	  to another JavaScript type.
-	*/
-	ConvertToTypeCallback<T> ConvertToType() const {
-		return convert_to_type_callback__;
-	}
+    builder.AddValueProperty("name", &Foo::GetName);
 
-	/*!
-	  @method
+    @param property_name A JSString containing the property's name.
+    
+    @param get_callback The callback to invoke when getting a
+    property's value from a JavaScript object.
+    
+    @param set_callback The callback to invoke when setting a
+    property's value on a JavaScript object. This may be nullptr, in
+    which case the 'ReadOnly' attribute for this property is
+    automatically set. If this callback returns false, then this
+    indicates that the value was not set.
+    
+    @param enumerable An optional property attribute that specifies
+    whether the property is enumerable. The default value is true,
+    which means the property is enumerable.
 
-	  @abstract Set the callback to invoke when converting a JavaScript
-	  object to another JavaScript type. This function is only invoked
-	  when converting an object to a number or a string. An object
-	  converted to boolean is 'true.' An object converted to object is
-	  itself.
+    @throws std::invalid_argument exception under these preconditions:
 
-	  @discussion If this function returns JSUndefined, then the
-	  conversion request forwards the reqeust to the class' parent class
-	  chain, then the JavaScript object's prototype chain.
+    1. If property_name is empty.
+    
+    2. If both get_callback and set_callback are missing.
 
-	  For example, given this class definition:
-	  
-	  class Foo {
-	    JSValue ConvertToType(const JSValue::Type& type) const;
-	  };
+    @result A reference to the builder for chaining.
+  */
+  JSClassBuilder<T>& AddValueProperty(const JSString& property_name, GetNamedValuePropertyCallback<T> get_callback, SetNamedValuePropertyCallback<T> set_callback = nullptr, bool enumerable = true) {
+    std::unordered_set<JSPropertyAttribute> attributes { JSPropertyAttribute::DontDelete };
+    static_cast<void>(!enumerable   && attributes.insert(JSPropertyAttribute::DontEnum).second);
+    static_cast<void>(!set_callback && attributes.insert(JSPropertyAttribute::ReadOnly).second);
+    JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
+    AddValuePropertyCallback(JSExportNamedValuePropertyCallback<T>(property_name, get_callback, set_callback, attributes));
+    return *this;
+  }
+  
+  /*!
+    @method
 
-	  You would call the builer like this:
-	  
-	  JSClassBuilder<Foo> builder("Foo");
-	  builder.ConvertToType(&Foo::ConvertToType);
+    @abstract Add a function property to a JavaScript object with the
+    'DontDelete' and 'ReadOnly' attributes. By default the property is
+    enumerable unless you specify otherwise.
 
-	  @result A reference to the builder for chaining.
-	*/
-	JSClassBuilder<T>& ConvertToType(const ConvertToTypeCallback<T>& convert_to_type_callback) {
-		JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
-		convert_to_type_callback__ = convert_to_type_callback;
-		return *this;
-	}
-	
-	/*!
-	  @method
+    @discussion For example, given this class definition:
+    
+    class Foo {
+      JSValue Hello(std::vector<JSValue>&& arguments, JSObject&& this_object);
+    };
 
-	  @abstract Create and return a JSClass instance with all of the
-	  properties and callbacks specified in this builder.
+    You would call the builer like this:
+    
+    JSClassBuilder<Foo> builder("Foo");
+    builder.AddFunctionProperty("hello", &Foo::Hello);
 
-	  @result A JSClass instance with all of the properties and
-	  callbacks specified in this builder.
-	*/
-	JSClass build() const;
+    @param function_name A JSString containing the function's name.
+    
+    @param function_callback The callback to invoke when calling the
+    JavaScript object as a function.
+    
+    @param enumerable An optional property attribute that specifies
+    whether the property is enumerable. The default value is true,
+    which means the property is enumerable.
+    
+    @throws std::invalid_argument exception under these preconditions:
+
+    1. If function_name is empty.
+    
+    2. If function_callback is not provided.
+
+    @result A reference to the builder for chaining.
+  */
+  JSClassBuilder<T>& AddFunctionProperty(const JSString& function_name, CallNamedFunctionCallback<T> function_callback, bool enumerable = true) {
+    std::unordered_set<JSPropertyAttribute> attributes { JSPropertyAttribute::DontDelete, JSPropertyAttribute::ReadOnly };
+    static_cast<void>(!enumerable && attributes.insert(JSPropertyAttribute::DontEnum).second);
+    JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
+    AddFunctionPropertyCallback(JSExportNamedValuePropertyCallback<T>(function_name, function_callback, attributes));
+    return *this;
+  }
+  
+  /*!
+    @method
+
+    @abstract Return the callback to invoke when a JavaScript object
+    is called as a function.
+  
+    @result The callback to invoke when a JavaScript object is called
+    as a function.
+  */
+  CallAsFunctionCallback<T> Function() const {
+    return call_as_function_callback__;
+  }
+
+  /*!
+    @method
+
+    @abstract Set the callback to invoke when a JavaScript object is
+    called as a function.
+
+    @discussion If this callback does not exist, then calling your
+    object as a function will throw a JavaScript exception.
+
+    For example, given this class definition:
+    
+    class Foo {
+      JSValue DoSomething(std::vector<JSValue>&& arguments, JSObject&& this_object);
+    };
+
+    You would call the builer like this:
+    
+    JSClassBuilder<Foo> builder("Foo");
+    builder.Function(&Foo::DoSomething);
+    
+    In the JavaScript expression 'myObject.myFunction()', then
+    'myFunction' is the instance of Foo being called, and this_object
+    would be set to 'myObject'.
+    
+    In the JavaScript expression 'myFunction()', then both
+    'myFunction' and 'myObject' is the instance of Foo being called.
+
+    @result A reference to the builder for chaining.
+  */
+  JSClassBuilder<T>& Function(const CallAsFunctionCallback<T>& call_as_function_callback) {
+    JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
+    call_as_function_callback__ = call_as_function_callback;
+    return *this;
+  }
+
+  /*!
+    @method
+
+    @abstract Return the callback to invoke when converting a
+    JavaScript object another JavaScript type.
+
+    @result The callback to invoke when converting a JavaScript object
+    to another JavaScript type.
+  */
+  ConvertToTypeCallback<T> ConvertToType() const {
+    return convert_to_type_callback__;
+  }
+
+  /*!
+    @method
+
+    @abstract Set the callback to invoke when converting a JavaScript
+    object to another JavaScript type. This function is only invoked
+    when converting an object to a number or a string. An object
+    converted to boolean is 'true.' An object converted to object is
+    itself.
+
+    @discussion If this function returns JSUndefined, then the
+    conversion request forwards the reqeust to the JSClass' parent
+    class chain, then the JavaScript object's prototype chain.
+
+    For example, given this class definition:
+    
+    class Foo {
+      JSValue ConvertToType(JSValue::Type&& type) const;
+    };
+
+    You would call the builer like this:
+    
+    JSClassBuilder<Foo> builder("Foo");
+    builder.ConvertToType(&Foo::ConvertToType);
+
+    @result A reference to the builder for chaining.
+  */
+  JSClassBuilder<T>& ConvertToType(const ConvertToTypeCallback<T>& convert_to_type_callback) {
+    JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
+    convert_to_type_callback__ = convert_to_type_callback;
+    return *this;
+  }
+  
+  /*!
+    @method
+
+    @abstract Create and return a JSClass instance with all of the
+    properties and callbacks specified in this builder.
+
+    @result A JSClass instance with all of the properties and
+    callbacks specified in this builder.
+  */
+  std::shared_ptr<JSClass> build() const;
 
  private:
 
-	// The builder pattern requires friendship by these two
-	// collaborating classes.
-	template<typename U>
-	friend class JSExportPimpl;
+  // The builder pattern requires friendship by these two
+  // collaborating classes.
+  template<typename U>
+  friend class JSExportPimpl;
 
-	friend JSClassPimpl;
+  friend JSClassPimpl;
 
-	void AddValuePropertyCallback(const JSObjectNamedValuePropertyCallback& value_property_callback);
-	void AddFunctionPropertyCallback(const JSObjectNamedFunctionPropertyCallback& function_property_callback);
-	
-	std::uint32_t                                   version__         { 0 };
-	JSClassAttribute                                class_attribute__ { JSClassAttribute::None };
-	
-	JSString                                        name__;
-	JSClass                                         parent__;
-	
-	const std::unique_ptr<JSExportCallbackHandler>& js_export_callback_handler_ptr__;
-	
-	JSObjectNamedValuePropertyCallbackMap_t         named_value_property_callback_map__;
-	JSObjectNamedFunctionPropertyCallbackMap_t      named_function_property_callback_map__;
-	
-	InitializeCallback                              initialize_callback__             { nullptr };
-	FinalizeCallback                                finalize_callback__               { nullptr };
-	CallAsFunctionCallback                          call_as_function_callback__       { nullptr };
-	CallAsConstructorCallback                       call_as_constructor_callback__    { nullptr };
-	HasInstanceCallback                             has_instance_callback__           { nullptr };
-	ConvertToTypeCallback                           convert_to_type_callback__        { nullptr };
-	JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_MUTEX;
+  void AddValuePropertyCallback(const JSExportNamedValuePropertyCallback<T>& value_property_callback);
+  void AddFunctionPropertyCallback(const JSExportNamedFunctionPropertyCallback<T>& function_property_callback);
+  
+  std::shared_ptr<JSExportPimpl<T>>               js_export_pimpl_ptr__;
+  JSExportCallbackHandlerMap_t::key_type          callback_handler_key__;
+  std::uint32_t                                   version__         { 0 };
+  JSClassAttribute                                class_attribute__ { JSClassAttribute::None };
+  
+  JSString                                        name__;
+  JSClass                                         parent__;
+  
+  JSExportNamedValuePropertyCallbackMap_t<T>      named_value_property_callback_map__;
+  JSExportNamedValuePropertyMap_t                 named_value_property_map__;
+
+  JSExportNamedFunctionPropertyCallbackMap_t<T>   named_function_property_callback_map__;
+  JSExportNamedFunctionPropertyMap_t              named_function_property_map__;
+  
+  CallAsFunctionCallback<T>                       call_as_function_callback__ { nullptr };
+  ConvertToTypeCallback<T>                        convert_to_type_callback__  { nullptr };
+  JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_MUTEX;
+
+  static JSClassMap_t<T> js_class_map__;
 };
 
 template<typename T>
-void JSClassBuilder<T>::AddValuePropertyCallback(const JSObjectNamedValuePropertyCallback& value_property_callback) {
-	const auto property_name = value_property_callback.get_property_name();
-	const auto position      = native_value_property_callback_map__.find(property_name);
-	const bool found         = position != native_value_property_callback_map__.end();
-	
-	if (found) {
-		const std::string message = "Value property " + property_name + " already added.";
-		JAVASCRIPTCORECPP_LOG_ERROR("JSClassBuilder<", js_class_name__, ">: ", message);
-		ThrowRuntimeError("JSClassBuilder", message);
-	}
-	
-	const auto insert_result = native_value_property_callback_map__.emplace(property_name, value_property_callback);
-	const bool inserted      = insert_result.second;
-	
-	JAVASCRIPTCORECPP_LOG_DEBUG("JSClassBuilder<", js_class_name__, ">: insert property ", property_name, ", inserted = ", std::to_string(inserted));
+JSClassMap_t<T> JSClassBuilder<T>::js_class_map__;
 
-	// postcondition: The callbak was added to the map.
-	assert(inserted);
+template<typename T>
+void JSClassBuilder<T>::AddValuePropertyCallback(const JSExportNamedValuePropertyCallback<T>& value_property_callback) {
+  const auto property_name = value_property_callback.get_property_name();
+  const auto position      = named_value_property_callback_map__.find(property_name);
+  const bool found         = position != named_value_property_callback_map__.end();
+  
+  if (found) {
+    const std::string message = "Value property " + property_name + " already added.";
+    JAVASCRIPTCORECPP_LOG_ERROR("JSClassBuilder<", js_class_name__, ">: ", message);
+    ThrowInvalidArgument("JSClassBuilder", message);
+  }
+  
+  const auto callback_insert_result = named_value_property_callback_map__.emplace(property_name, value_property_callback);
+  const bool callback_inserted      = callback_insert_result.second;
+  
+  JAVASCRIPTCORECPP_LOG_DEBUG("JSClassBuilder<", js_class_name__, ">: AddValuePropertyCallback: callback ", property_name, ", inserted = ", std::to_string(callback_inserted));
+
+  const auto attributes_insert_result = named_value_property_map__.emplace(property_name, value_property_callback.get_attributes());
+  const bool attributes_inserted      = attributes_insert_result.second;
+
+  JAVASCRIPTCORECPP_LOG_DEBUG("JSClassBuilder<", js_class_name__, ">: AddValuePropertyCallback: attributes ", property_name, ", inserted = ", std::to_string(attributes_inserted));
+
+  // postcondition: The callback and attributes were added to their
+  // respective maps.
+  assert(callback_inserted);
+  assert(attributes_inserted);
 }
 
 template<typename T>
-void JSClassBuilder<T>::AddFunctionPropertyCallback(const JSObjectNamedFunctionPropertyCallback& function_property_callback) {
-	const auto function_name = function_property_callback.get_function_name();
-	const auto position      = native_function_property_callback_map__.find(function_name);
-	const bool found         = position != native_function_property_callback_map__.end();
-	
-	if (found) {
-		const std::string message = "Function property " + function_name + " already added.";
-		JAVASCRIPTCORECPP_LOG_ERROR("JSClassBuilder<", js_class_name__, ">: ", message);
-		ThrowRuntimeError("JSClassBuilder", message);
-	}
-	
-	const auto insert_result = native_function_property_callback_map__.emplace(function_name, function_property_callback);
-	const bool inserted      = insert_result.second;
-	
-	JAVASCRIPTCORECPP_LOG_DEBUG("JSClassBuilder<", js_class_name__, ">: insert function property ", function_name, ", inserted = ", std::to_string(inserted));
+void JSClassBuilder<T>::AddFunctionPropertyCallback(const JSExportNamedFunctionPropertyCallback<T>& function_property_callback) {
+  const auto property_name = function_property_callback.get_property_name();
+  const auto position      = named_function_property_callback_map__.find(property_name);
+  const bool found         = position != named_function_property_callback_map__.end();
+  
+  if (found) {
+    const std::string message = "Function property " + property_name + " already added.";
+    JAVASCRIPTCORECPP_LOG_ERROR("JSClassBuilder<", js_class_name__, ">: ", message);
+    ThrowInvalidArgument("JSClassBuilder", message);
+  }
 
-	// postcondition: The callbak was added to the map.
-	assert(inserted);
+  const auto callback_insert_result = named_function_property_callback_map__.emplace(property_name, function_property_callback);
+  const bool callback_inserted      = callback_insert_result.second;
+  
+  JAVASCRIPTCORECPP_LOG_DEBUG("JSClassBuilder<", js_class_name__, ">: AddFunctionPropertyCallback: callback ", property_name, ", inserted = ", std::to_string(callback_inserted));
+
+  const auto attributes_insert_result = named_function_property_map__.emplace(property_name, function_property_callback.get_attributes());
+  const bool attributes_inserted      = attributes_insert_result.second;
+
+  JAVASCRIPTCORECPP_LOG_DEBUG("JSClassBuilder<", js_class_name__, ">: AddFunctionPropertyCallback: attributes ", property_name, ", inserted = ", std::to_string(attributes_inserted));
+
+  // postcondition: The callback and attributes were added to their
+  // respective maps.
+  assert(callback_inserted);
+  assert(attributes_inserted);
 }
 
 template<typename T>
-JSClass JSClassBuilder<T>::build() const {
+std::shared_ptr<JSClass> JSClassBuilder<T>::build() const {
 	JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
-	js_export_callback_handler_ptr__ = make_unique<JSExportPimpl>(*this);
-	return JSClass(std::make_shared<JSClassPimpl>(*this));
+	JAVASCRIPTCORECPP_DETAIL_JSCLASSPIMPL_LOCK_GUARD_STATIC;
+
+
+	// Check to see if we already exist in the JSClass map. If we do
+	// then the only thing we need to do is create the callback handler.
+	const auto position = js_class_map__.find(name__);
+	const bool found    = (position != js_class_map__.end());
+
+	JAVASCRIPTCORECPP_LOG_DEBUG("JSClassBuilder<", name__, ">:: found = ", std::to_string(found));
+
+	if (found) {
+		return position -> second;
+	}
+	
+	// Insert the callback handler (i.e. JSExportPimpl) into the
+	// dispatch table (i.e. JSClassPimpl's callback map).
+	auto js_export_pimpl_ptr___               = std::make_shared<JSExportPimpl>(*this);
+	callback_handler_key__                    = reinterpret_cast<JSExportCallbackHandlerMap_t::key_type>(js_export_pimpl_ptr___.get());
+	const auto callback_handler_insert_result = JSClassPimpl::js_export_callback_handler_map__.emplace(callback_handler_key__, js_export_pimpl_ptr__);
+	const bool callback_handler_registered    = callback_handler_insert_result.second;
+	
+	JAVASCRIPTCORECPP_LOG_DEBUG("JSClassBuilder<", name__, ">:: callback handler registered = ", std::to_string(callback_handler_registered));
+	
+	assert(callback_handler_registered);
+
+	return std::make_shared<JSClassPimpl>(*this);
 }
 
 template<typename T>
 JSExportPimpl<T>::JSExportPimpl(const JSClassBuilder<T>& builder)
-		: named_value_property_callback_map__(builder.named_value_property_callback_map__)
+		: name__(builder.name__)
+		, named_value_property_callback_map__(builder.named_value_property_callback_map__)
 		, named_function_property_callback_map__(builder.named_function_property_callback_map__)
-		, initialize_callback__(builder.initialize_callback__)
-		, finalize_callback__(builder.finalize_callback__)
 		, call_as_function_callback__(builder.call_as_function_callback__)
-		, call_as_constructor_callback__(builder.call_as_constructor_callback__)
-		, has_instance_callback__(builder.has_instance_callback__)
-		, convert_to_type_callback__(builder.convert_to_type_callback__) {
+		, convert_to_type_callback__(builder.convert_to_type_callback__)
+		, callback_handler_key__(builder.callback_handler_key__) {
 }
 
 template<typename T>
-		JSClassPimpl::JSClassPimpl(const JSClassBuilder<T>& builder)
-		: version__(builder.version__)
-		, class_attribute__(builder.class_attribute__)
-		, name__(builder.name__)
+    JSClassPimpl::JSClassPimpl(const JSClassBuilder<T>& builder)
+    : version__(builder.version__)
+    , class_attribute__(builder.class_attribute__)
+    , name__(builder.name__)
 		, parent__(builder.parent__)
-		, js_export_callback_handler_ptr__(builder.js_export_callback_handler_ptr__) {
-	
-	Initialize(builder.named_value_property_callback_map__,
-	           builder.named_function_property_callback_map__);
+		, callback_handler_key__(builder.callback_handler_key__) {
+  
+  Initialize(builder.named_value_property_map__,
+             builder.named_function_property_map__);
 }
 
 }} // namespace JavaScriptCoreCPP { namespace detail {
