@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_JSLOGGERPOLICYFILE_HPP_
-#define _JAVASCRIPTCORECPP_JSLOGGERPOLICYFILE_HPP_
+#ifndef _JAVASCRIPTCORECPP_JSLOGGERPOLICYCONSOLE_HPP_
+#define _JAVASCRIPTCORECPP_JSLOGGERPOLICYCONSOLE_HPP_
 
 #include "JavaScriptCoreCPP/JSLoggerPolicyInterface.hpp"
 #include <iostream>
@@ -37,4 +37,4 @@ class JSLoggerPolicyConsole final : public JSLoggerPolicyInterface {
 
 } // namespace JavaScriptCoreCPP {
 
-#endif // _JAVASCRIPTCORECPP_JSLOGGERPOLICYFILE_HPP_
+#endif // _JAVASCRIPTCORECPP_JSLOGGERPOLICYCONSOLE_HPP_
