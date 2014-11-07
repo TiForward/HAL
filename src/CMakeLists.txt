@@ -7,9 +7,12 @@ add_library(JavaScriptCoreCPP
 	JSError.cpp
 	JSFunction.cpp
 	JSObject.cpp
+	JSPropertyNameArray.cpp
 	JSRegExp.cpp
+	JSString.cpp
 	JSValue.cpp
-	#detail/HashUtilities.cpp
+	detail/JSExportPropertyCallback.cpp
+	detail/JSLoggerPimpl.cpp
 	detail/JSUtil.cpp
   )
 

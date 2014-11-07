@@ -9,6 +9,8 @@
 
 #include "JavaScriptCoreCPP/JSString.hpp"
 
+#include <cassert>
+
 namespace JavaScriptCoreCPP {
 
 // For interoperability with the JavaScriptCore C API.
