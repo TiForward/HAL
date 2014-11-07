@@ -10,7 +10,6 @@
 #include "JavaScriptCoreCPP/JSObject.hpp"
 
 #include "JavaScriptCoreCPP/JSClass.hpp"
-#include "JavaScriptCoreCPP/JSPropertyNameAccumulator.hpp"
 #include "JavaScriptCoreCPP/JSPropertyNameArray.hpp"
 
 #include "JavaScriptCoreCPP/JSUndefined.hpp"
@@ -18,6 +17,7 @@
 #include "JavaScriptCoreCPP/JSBoolean.hpp"
 #include "JavaScriptCoreCPP/JSNumber.hpp"
 
+#include "JavaScriptCoreCPP/detail/JSPropertyNameAccumulator.hpp"
 #include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 
 #include <algorithm>
