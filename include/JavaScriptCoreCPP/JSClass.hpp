@@ -55,15 +55,6 @@ namespace JavaScriptCoreCPP {
      
      @result An empty JSClass.
      */
-    virtual std::string get_name() const noexcept final;
-
-    /*!
-     @method
-     
-     @abstract Return an empty JSClass.
-     
-     @result An empty JSClass.
-     */
     JSClass() noexcept;
     
     /*!
@@ -86,16 +77,12 @@ namespace JavaScriptCoreCPP {
       return js_class_definition__;
     }
     
-    ~JSClass() noexcept;
+    virtual ~JSClass() noexcept;
     JSClass(const JSClass&) noexcept;
     JSClass(JSClass&&) noexcept;
     JSClass& operator=(const JSClass&) noexcept;
     JSClass& operator=(JSClass&&) noexcept;
     void swap(JSClass&) noexcept;
-    
-  protected:
-    
-    JSClassDefinition js_class_definition__;
     
   private:
     
@@ -119,7 +106,8 @@ namespace JavaScriptCoreCPP {
       return js_class_ref__;
     }
     
-    JSClassRef js_class_ref__ { nullptr };
+    JSClassDefinition js_class_definition__;
+    JSClassRef        js_class_ref__ { nullptr };
     
 #undef  JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD
 #ifdef  JAVASCRIPTCORECPP_THREAD_SAFE

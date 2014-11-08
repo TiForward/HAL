@@ -21,9 +21,10 @@ namespace JavaScriptCoreCPP {
   
   JSClassDefinition::JSClassDefinition(const ::JSClassDefinition& js_class_definition)
   : name__(js_class_definition.className) {
-    
+
     Initialize(js_class_definition);
-    
+
+    js_class_definition__.className       = name__.c_str();
     js_class_definition__.staticValues    = nullptr;
     js_class_definition__.staticFunctions = nullptr;
     
@@ -53,7 +54,7 @@ namespace JavaScriptCoreCPP {
     Initialize(rhs.js_class_definition__);
     js_class_definition__.className = name__.c_str();
     InitializePropertyCallbacks();
-  }
+ }
   
   JSClassDefinition::JSClassDefinition(JSClassDefinition&& rhs) noexcept
   : name__(std::move(rhs.name__))
@@ -81,7 +82,6 @@ namespace JavaScriptCoreCPP {
   
   JSClassDefinition& JSClassDefinition::operator=(JSClassDefinition&& rhs) noexcept {
     JAVASCRIPTCORECPP_JSCLASSDEFINITION_LOCK_GUARD;
-
     swap(rhs);
     return *this;
   }
@@ -102,7 +102,7 @@ namespace JavaScriptCoreCPP {
     js_class_definition__.version           = other.version;
     js_class_definition__.attributes        = other.attributes;
     
-    js_class_definition__.className         = other.className;
+    js_class_definition__.className         = nullptr;
     js_class_definition__.parentClass       = other.parentClass;
     
     js_class_definition__.initialize        = other.initialize;
@@ -136,6 +136,7 @@ namespace JavaScriptCoreCPP {
                        return static_value;
                      });
       
+      JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition<", name__, "> added value property ", static_values__.back().name);
       static_values__.push_back({nullptr, nullptr, nullptr, kJSPropertyAttributeNone});
       js_class_definition__.staticValues = &static_values__[0];
     }
@@ -154,6 +155,7 @@ namespace JavaScriptCoreCPP {
                        return static_function;
                      });
       
+      JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition<", name__, "> added function property ", static_functions__.back().name);
       static_functions__.push_back({nullptr, nullptr, kJSPropertyAttributeNone});
       js_class_definition__.staticFunctions = &static_functions__[0];
     }
@@ -165,6 +167,37 @@ namespace JavaScriptCoreCPP {
   
   std::uint32_t JSClassDefinition::get_version() const noexcept {
     return js_class_definition__.version;
+  }
+  
+  void JSClassDefinition::Print() const noexcept {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: version           = ", js_class_definition__.version);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: attributes        = ", detail::to_string_JSClassAttributes(js_class_definition__.attributes));
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: className         = ", js_class_definition__.className);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: parentClass       = ", js_class_definition__.parentClass);
+
+    auto static_value_ptr = const_cast<::JSStaticValue*>(js_class_definition__.staticValues);
+    while (static_value_ptr && static_value_ptr -> name) {
+      JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: value property ", static_value_ptr -> name, ": ", detail::to_string_JSPropertyAttributes(static_value_ptr -> attributes));
+      ++static_value_ptr;
+    }
+    
+    auto static_function_ptr = const_cast<::JSStaticFunction*>(js_class_definition__.staticFunctions);
+    while (static_function_ptr && static_function_ptr -> name) {
+      JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: function property ", static_function_ptr -> name, ": ", detail::to_string_JSPropertyAttributes(static_function_ptr -> attributes));
+      ++static_function_ptr;
+    }
+
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: initialize        = ", js_class_definition__.initialize);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: finalize          = ", js_class_definition__.finalize);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: hasProperty       = ", js_class_definition__.hasProperty);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: getProperty       = ", js_class_definition__.getProperty);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: setProperty       = ", js_class_definition__.setProperty);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: deleteProperty    = ", js_class_definition__.deleteProperty);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: getPropertyNames  = ", js_class_definition__.getPropertyNames);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: callAsFunction    = ", js_class_definition__.callAsFunction);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: callAsConstructor = ", js_class_definition__.callAsConstructor);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: hasInstance       = ", js_class_definition__.hasInstance);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: convertToType     = ", js_class_definition__.convertToType);
   }
   
 } // namespace JavaScriptCoreCPP {

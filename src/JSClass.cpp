@@ -16,10 +16,6 @@
 
 namespace JavaScriptCoreCPP {
   
-  std::string JSClass::get_name() const noexcept {
-    return js_class_definition__.get_name();
-  }
-  
   JSClass::JSClass() noexcept
   : js_class_ref__(JSClassCreate(&js_class_definition__.js_class_definition__)) {
   }
@@ -27,6 +23,7 @@ namespace JavaScriptCoreCPP {
   JSClass::JSClass(const JSClassDefinition& js_class_definition) noexcept
   : js_class_definition__(js_class_definition)
   , js_class_ref__(JSClassCreate(&js_class_definition__.js_class_definition__)) {
+    js_class_definition__.Print();
   }
   
   JSClass::JSClass(JSClassRef js_class_ref) noexcept

@@ -57,7 +57,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     JSExportNamedFunctionPropertyCallbackMap_t<T> get_named_function_property_callback_map() const {
       return named_function_property_callback_map__;
     }
-
+    
     JSExportClassDefinition()                                          = default;
     ~JSExportClassDefinition()                                         = default;
     JSExportClassDefinition(const JSExportClassDefinition&)            = default;
@@ -67,9 +67,52 @@ namespace JavaScriptCoreCPP { namespace detail {
     
   private:
     
+    void InitializeNamedPropertyCallbacks() noexcept;
+    
     JSExportNamedValuePropertyCallbackMap_t<T>    named_value_property_callback_map__;
     JSExportNamedFunctionPropertyCallbackMap_t<T> named_function_property_callback_map__;
   };
+  
+  template<typename T>
+  void JSExportClassDefinition<T>::InitializeNamedPropertyCallbacks() noexcept {
+    
+    // Initialize staticValues.
+    static_values__.clear();
+    js_class_definition__.staticValues = nullptr;
+    if (!named_value_property_callback_map__.empty()) {
+      for (const auto& entry : named_value_property_callback_map__) {
+        const auto& property_name       = entry.first;
+        const auto& property_attributes = entry.second.get_attributes();
+        ::JSStaticValue static_value;
+        static_value.name        = property_name.c_str();
+        static_value.getProperty = JSExportClass<T>::GetNamedValuePropertyCallback;
+        static_value.setProperty = JSExportClass<T>::SetNamedValuePropertyCallback;
+        static_value.attributes  = ToJSPropertyAttributes(property_attributes);
+        static_values__.push_back(static_value);
+        JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClassDefinition<", name__, "> added value property ", static_values__.back().name);
+      }
+      static_values__.push_back({nullptr, nullptr, nullptr, kJSPropertyAttributeNone});
+      js_class_definition__.staticValues = &static_values__[0];
+    }
+    
+    // Initialize staticFunctions.
+    static_functions__.clear();
+    js_class_definition__.staticFunctions = nullptr;
+    if (!named_function_property_callback_map__.empty()) {
+      for (const auto& entry : named_function_property_callback_map__) {
+        const auto& function_name = entry.first;
+        const auto& property_attributes = entry.second.get_attributes();
+        ::JSStaticFunction static_function;
+        static_function.name           = function_name.c_str();
+        static_function.callAsFunction = JSExportClass<T>::CallNamedFunctionCallback;
+        static_function.attributes     = ToJSPropertyAttributes(property_attributes);
+        static_functions__.push_back(static_function);
+        JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClassDefinition<", name__, "> added function property ", static_functions__.back().name);
+      }
+      static_functions__.push_back({nullptr, nullptr, kJSPropertyAttributeNone});
+      js_class_definition__.staticFunctions = &static_functions__[0];
+    }
+  }
   
 }} // namespace JavaScriptCoreCPP { namespace detail {
 

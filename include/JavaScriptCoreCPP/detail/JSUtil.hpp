@@ -13,6 +13,7 @@
 #include "JavaScriptCoreCPP/detail/JSBase.hpp"
 #include "JavaScriptCoreCPP/JSPropertyAttribute.hpp"
 #include "JavaScriptCoreCPP/JSClassAttribute.hpp"
+#include "JavaScriptCoreCPP/JSValue.hpp"
 
 #include <cstdint>
 #include <memory>
@@ -50,10 +51,19 @@ namespace JavaScriptCoreCPP { namespace detail {
   // For interoperability with the JavaScriptCore C API.
   
   // typedef unsigned JSPropertyAttributes
-  unsigned ToJSPropertyAttributes(const std::unordered_set<JSPropertyAttribute>& attributes);
-  std::unordered_set<JSPropertyAttribute> FromJSPropertyAttributes(::JSPropertyAttributes attributes);
-  unsigned ToJSClassAttribute(JSClassAttribute attribute);
-  std::unordered_set<JSClassAttribute> FromJSClassAttributes(::JSClassAttributes attributes);
+  unsigned ToJSPropertyAttributes(const std::unordered_set<JSPropertyAttribute>& attributes) noexcept;
+  std::unordered_set<JSPropertyAttribute> FromJSPropertyAttributes(::JSPropertyAttributes attributes) noexcept;
+  std::string to_string(JSPropertyAttribute) noexcept;
+  std::string to_string(const std::unordered_set<JSPropertyAttribute>& attributes) noexcept;
+  std::string to_string_JSPropertyAttributes(::JSPropertyAttributes attributes) noexcept;
+  
+  unsigned ToJSClassAttribute(JSClassAttribute attribute) noexcept;
+  std::unordered_set<JSClassAttribute> FromJSClassAttributes(::JSClassAttributes attributes) noexcept;
+  std::string to_string(JSClassAttribute) noexcept;
+  std::string to_string(const std::unordered_set<JSClassAttribute>& attributes) noexcept;
+  std::string to_string_JSClassAttributes(::JSClassAttributes attributes) noexcept;
+
+  JSValue::Type ToJSValueType(JSType type) noexcept;
   
   // This in the ToInt32 operation as defined in section 9.5 of the
   // ECMA-262 spec. Note that this operation is identical to ToUInt32

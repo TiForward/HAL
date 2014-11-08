@@ -84,36 +84,80 @@ namespace JavaScriptCoreCPP { namespace detail {
     return js_string_ref_vector;
   }
   
-  JSPropertyAttributes ToJSPropertyAttributes(const std::unordered_set<JSPropertyAttribute>& attributes) {
-    using property_attribute_underlying_type = std::underlying_type<JSPropertyAttribute>::type;
-    std::bitset<4> property_attributes;
-    for (auto property_attribute : attributes) {
-      const auto bit_position = static_cast<property_attribute_underlying_type>(property_attribute);
-      property_attributes.set(bit_position);
+  JSPropertyAttributes ToJSPropertyAttributes(const std::unordered_set<JSPropertyAttribute>& attributes) noexcept {
+    JSPropertyAttributes result = kJSPropertyAttributeNone;
+    for (auto attribute : attributes) {
+      switch (attribute) {
+        case JSPropertyAttribute::None:
+          result |= kJSPropertyAttributeNone;
+          break;
+          
+        case JSPropertyAttribute::ReadOnly:
+          result |= kJSPropertyAttributeReadOnly;
+          break;
+          
+        case JSPropertyAttribute::DontEnum:
+          result |= kJSPropertyAttributeDontEnum;
+          break;
+          
+        case JSPropertyAttribute::DontDelete:
+          result |= kJSPropertyAttributeDontDelete;
+          break;
+      }
     }
     
-    return static_cast<property_attribute_underlying_type>(property_attributes.to_ulong());
+    return result;
   }
   
-  std::unordered_set<JSPropertyAttribute> FromJSPropertyAttributes(::JSPropertyAttributes attributes) {
-    std::bitset<4> bitset(attributes);
+  std::unordered_set<JSPropertyAttribute> FromJSPropertyAttributes(::JSPropertyAttributes attributes) noexcept {
     std::unordered_set<JSPropertyAttribute> attribute_set;
-    bitset.test(kJSPropertyAttributeNone)       && attribute_set.emplace(JSPropertyAttribute::None).second;
-    bitset.test(kJSPropertyAttributeReadOnly)   && attribute_set.emplace(JSPropertyAttribute::ReadOnly).second;
-    bitset.test(kJSPropertyAttributeDontEnum)   && attribute_set.emplace(JSPropertyAttribute::DontEnum).second;
-    bitset.test(kJSPropertyAttributeDontDelete) && attribute_set.emplace(JSPropertyAttribute::DontDelete).second;
+    static_cast<void>(attributes == kJSPropertyAttributeNone       && attribute_set.emplace(JSPropertyAttribute::None).second);
+    static_cast<void>(attributes &  kJSPropertyAttributeReadOnly   && attribute_set.emplace(JSPropertyAttribute::ReadOnly).second);
+    static_cast<void>(attributes &  kJSPropertyAttributeDontEnum   && attribute_set.emplace(JSPropertyAttribute::DontEnum).second);
+    static_cast<void>(attributes &  kJSPropertyAttributeDontDelete && attribute_set.emplace(JSPropertyAttribute::DontDelete).second);
     return attribute_set;
   }
   
-  std::unordered_set<JSClassAttribute> FromJSClassAttributes(::JSClassAttributes attributes) {
-    std::bitset<2> bitset(attributes);
-    std::unordered_set<JSClassAttribute> attribute_set;
-    bitset.test(kJSClassAttributeNone)                 && attribute_set.emplace(JSClassAttribute::None).second;
-    bitset.test(kJSClassAttributeNoAutomaticPrototype) && attribute_set.emplace(JSClassAttribute::NoAutomaticPrototype).second;
-    return attribute_set;
+  std::string to_string(JSPropertyAttribute attribute) noexcept {
+    switch (attribute) {
+      case JSPropertyAttribute::None:
+        return "None";
+        break;
+        
+      case JSPropertyAttribute::ReadOnly:
+        return "ReadOnly";
+        break;
+        
+      case JSPropertyAttribute::DontEnum:
+        return "DontEnum";
+        break;
+        
+      case JSPropertyAttribute::DontDelete:
+        return "DontDelete";
+        break;
+    }
   }
   
-  unsigned ToJSClassAttribute(JSClassAttribute attribute) {
+  std::string to_string(const std::unordered_set<JSPropertyAttribute>& attributes) noexcept {
+    std::string result;
+    for (auto attribute : {JSPropertyAttribute::None, JSPropertyAttribute::ReadOnly, JSPropertyAttribute::DontEnum, JSPropertyAttribute::DontDelete}) {
+      auto position = attributes.find(attribute);
+      if (!result.empty()) {
+        result += ", ";
+      }
+      if (position != attributes.end()) {
+        result += to_string(*position);
+      }
+    }
+    
+    return result;
+  }
+  
+  std::string to_string_JSPropertyAttributes(::JSPropertyAttributes attributes) noexcept {
+    return to_string(FromJSPropertyAttributes(attributes));
+  }
+  
+  unsigned ToJSClassAttribute(JSClassAttribute attribute) noexcept {
     JSClassAttributes attributes = kJSClassAttributeNone;
     switch (attribute) {
       case JSClassAttribute::None:
@@ -123,12 +167,65 @@ namespace JavaScriptCoreCPP { namespace detail {
       case JSClassAttribute::NoAutomaticPrototype:
         attributes = kJSClassAttributeNone;
         break;
-        
-      default:
-        attributes = kJSClassAttributeNone;
     }
     
     return attributes;
+  }
+  
+  std::unordered_set<JSClassAttribute> FromJSClassAttributes(::JSClassAttributes attributes) noexcept {
+    std::unordered_set<JSClassAttribute> attribute_set;
+    static_cast<void>(attributes == kJSClassAttributeNone                 && attribute_set.emplace(JSClassAttribute::None).second);
+    static_cast<void>(attributes &  kJSClassAttributeNoAutomaticPrototype && attribute_set.emplace(JSClassAttribute::NoAutomaticPrototype).second);
+    return attribute_set;
+  }
+  
+  
+  std::string to_string(JSClassAttribute attribute) noexcept {
+    switch (attribute) {
+      case JSClassAttribute::None:
+        return "None";
+        break;
+        
+      case JSClassAttribute::NoAutomaticPrototype:
+        return "NoAutomaticPrototype";
+        break;
+    }
+  }
+  
+  std::string to_string(const std::unordered_set<JSClassAttribute>& attributes) noexcept {
+    std::string result;
+    for (auto attribute : {JSClassAttribute::None, JSClassAttribute::NoAutomaticPrototype}) {
+      auto position = attributes.find(attribute);
+      if (!result.empty()) {
+        result += ", ";
+      }
+      if (position != attributes.end()) {
+        result += to_string(*position);
+      }
+    }
+    
+    return result;
+  }
+  
+  std::string to_string_JSClassAttributes(::JSClassAttributes attributes) noexcept {
+    return to_string(FromJSClassAttributes(attributes));
+  }
+  
+  JSValue::Type ToJSValueType(JSType type) noexcept {
+    switch (type) {
+      case kJSTypeUndefined:
+        return JSValue::Type::Undefined;
+      case kJSTypeNull:
+        return JSValue::Type::Null;
+      case kJSTypeBoolean:
+        return JSValue::Type::Boolean;
+      case kJSTypeNumber:
+        return JSValue::Type::Number;
+      case kJSTypeString:
+        return JSValue::Type::String;
+      case kJSTypeObject:
+        return JSValue::Type::Object;
+    }
   }
   
   // The bitwise_cast and to_int32_t code was copied from

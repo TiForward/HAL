@@ -198,7 +198,7 @@ namespace JavaScriptCoreCPP {
      */
     JSObject CreateObject() const noexcept;
     JSObject CreateObject(const JSClass& js_class) const noexcept;
-    
+
     /*!
      @method
      

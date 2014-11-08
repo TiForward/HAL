@@ -69,11 +69,12 @@ namespace JavaScriptCoreCPP {
     
   private:
     
+    virtual void Initialize(const ::JSClassDefinition& other) noexcept final;
     virtual void InitializePropertyCallbacks() noexcept final;
+    std::vector<detail::JSStaticValue>    js_value_properties__;
+    std::vector<detail::JSStaticFunction> js_function_properties__;
     
   protected:
-    
-    virtual void Initialize(const ::JSClassDefinition& other) noexcept final;
     
     // JSClass and JSExportClass need access to js_class_definition__.
     friend class JSClass;
@@ -81,13 +82,12 @@ namespace JavaScriptCoreCPP {
     template<typename T>
     friend class detail::JSExportClass;
     
+    virtual void Print() const noexcept final;
+    
     std::string                           name__ { "Empty" };
-    std::vector<detail::JSStaticValue>    js_value_properties__;
-    std::vector<detail::JSStaticFunction> js_function_properties__;
     std::vector<::JSStaticValue>          static_values__;
     std::vector<::JSStaticFunction>       static_functions__;
     ::JSClassDefinition                   js_class_definition__;
-
 
 #undef  JAVASCRIPTCORECPP_JSCLASSDEFINITION_LOCK_GUARD
 #ifdef  JAVASCRIPTCORECPP_THREAD_SAFE

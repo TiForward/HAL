@@ -12,9 +12,8 @@
 
 #include "JavaScriptCoreCPP/detail/JSBase.hpp"
 #include "JavaScriptCoreCPP/JSContext.hpp"
-#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
-
 #include "JavaScriptCoreCPP/detail/JSExportClassDefinitionBuilder.hpp"
+#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 
 #include <string>
 #include <memory>
@@ -41,7 +40,7 @@ namespace JavaScriptCoreCPP {
      @throws std::invalid_argument if the C++ class T didn't at least
      provide a name for the JSClass.
      */
-    static JSClass Class();
+    static detail::JSExportClass<T> Class();
     
     JSExport()                           = delete;
     virtual ~JSExport()                  = default;
@@ -295,7 +294,7 @@ namespace JavaScriptCoreCPP {
   detail::JSExportClassDefinitionBuilder<T> JSExport<T>::builder__ = detail::JSExportClassDefinitionBuilder<T>("NotSet");
   
   template<typename T>
-  JSClass JSExport<T>::Class() {
+  detail::JSExportClass<T> JSExport<T>::Class() {
     static detail::JSExportClassDefinition<T> js_export_class_definition;
     static detail::JSExportClass<T>           js_export_class;
     std::once_flag of;
@@ -306,6 +305,7 @@ namespace JavaScriptCoreCPP {
         detail::ThrowInvalidArgument("JSExport", "You must provide a JSClass name");
       }
       js_export_class_definition = builder__.build();
+      std::clog << "MDL: js_export_class_definition.name = " << js_export_class_definition.get_name() << std::endl;
       js_export_class            = detail::JSExportClass<T>(js_export_class_definition);
     });
     

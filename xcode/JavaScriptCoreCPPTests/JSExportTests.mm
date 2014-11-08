@@ -7,7 +7,7 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP.hpp"
+#include "JavaScriptCoreCPP/JavaScriptCoreCPP.hpp"
 #include "Widget.hpp"
 #import <XCTest/XCTest.h>
 
@@ -92,8 +92,8 @@ using namespace JavaScriptCoreCPP;
   
   JSString script =
       //"Widget;"
-      "typeof Widget;"
-      //"Widget.name;"
+      //"typeof Widget;"
+      "Widget.name;"
       // "Widget();"
       // "var widget = new Widget();"
       // "widget.sayHello();"

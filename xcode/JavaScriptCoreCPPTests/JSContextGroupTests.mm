@@ -7,7 +7,7 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP.hpp"
+#include "JavaScriptCoreCPP/JavaScriptCoreCPP.hpp"
 #import <XCTest/XCTest.h>
 
 #ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
