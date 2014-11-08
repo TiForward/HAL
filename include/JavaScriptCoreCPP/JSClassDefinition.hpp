@@ -26,8 +26,6 @@ namespace JavaScriptCoreCPP { namespace detail {
 
 namespace JavaScriptCoreCPP {
   
-  class JSClass;
-  
   /*!
    @class
    
@@ -85,7 +83,6 @@ namespace JavaScriptCoreCPP {
     friend class detail::JSExportClass;
     
     std::string                           name__ { "Empty" };
-    std::shared_ptr<JSClass>              parent_class_ptr__;
     std::vector<detail::JSStaticValue>    js_value_properties__;
     std::vector<detail::JSStaticFunction> js_function_properties__;
     std::vector<::JSStaticValue>          static_values__;

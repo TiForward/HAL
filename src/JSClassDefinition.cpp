@@ -8,7 +8,6 @@
  */
 
 #include "JavaScriptCoreCPP/JSClassDefinition.hpp"
-#include "JavaScriptCoreCPP/JSClass.hpp"
 #include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 
 #include <string>
@@ -25,10 +24,6 @@ namespace JavaScriptCoreCPP {
     
     Initialize(js_class_definition);
     
-    if (js_class_definition__.parentClass) {
-      parent_class_ptr__ = std::make_shared<JSClass>(js_class_definition__.parentClass);
-    }
-
     js_class_definition__.staticValues    = nullptr;
     js_class_definition__.staticFunctions = nullptr;
     
@@ -52,7 +47,6 @@ namespace JavaScriptCoreCPP {
   
   JSClassDefinition::JSClassDefinition(const JSClassDefinition& rhs) noexcept
   : name__(rhs.name__)
-  , parent_class_ptr__(rhs.parent_class_ptr__)
   , js_value_properties__(rhs.js_value_properties__)
   , js_function_properties__(rhs.js_function_properties__) {
 
@@ -63,7 +57,6 @@ namespace JavaScriptCoreCPP {
   
   JSClassDefinition::JSClassDefinition(JSClassDefinition&& rhs) noexcept
   : name__(std::move(rhs.name__))
-  , parent_class_ptr__(std::move(rhs.parent_class_ptr__))
   , js_value_properties__(std::move(rhs.js_value_properties__))
   , js_function_properties__(std::move(rhs.js_function_properties__)) {
     
@@ -76,7 +69,6 @@ namespace JavaScriptCoreCPP {
     JAVASCRIPTCORECPP_JSCLASSDEFINITION_LOCK_GUARD;
 
     name__                   = rhs.name__;
-    parent_class_ptr__       = rhs.parent_class_ptr__;
     js_value_properties__    = rhs.js_value_properties__;
     js_function_properties__ = rhs.js_function_properties__;
     
@@ -99,7 +91,6 @@ namespace JavaScriptCoreCPP {
     using std::swap;
 
     swap(name__                  , other.name__);
-    swap(parent_class_ptr__      , other.parent_class_ptr__);
     swap(js_value_properties__   , other.js_value_properties__);
     swap(js_function_properties__, other.js_function_properties__);
     swap(static_values__         , other.static_values__);

@@ -27,35 +27,39 @@ namespace JavaScriptCoreCPP {
     return JSContext(*this, global_object_class);
   }
   
-  // For interoperability with the JavaScriptCore C API.
-  JSContextGroup::JSContextGroup(JSContextGroupRef js_context_group_ref) noexcept {
+  JSContextGroup::JSContextGroup(JSContextGroupRef js_context_group_ref) noexcept
+  : js_context_group_ref__(js_context_group_ref) {
     assert(js_context_group_ref__);
-    js_context_group_ref__ = JSContextGroupRetain(js_context_group_ref__);
+    JSContextGroupRetain(js_context_group_ref__);
   }
   
   JSContextGroup::~JSContextGroup() noexcept {
     JSContextGroupRelease(js_context_group_ref__);
   }
   
-  JSContextGroup::JSContextGroup(const JSContextGroup& rhs) noexcept {
-    js_context_group_ref__ = JSContextGroupRetain(rhs.js_context_group_ref__);
+  JSContextGroup::JSContextGroup(const JSContextGroup& rhs) noexcept
+  : js_context_group_ref__(rhs.js_context_group_ref__) {
+    JSContextGroupRetain(js_context_group_ref__);
   }
   
-  JSContextGroup::JSContextGroup(JSContextGroup&& rhs) noexcept {
-    js_context_group_ref__ = JSContextGroupRetain(rhs.js_context_group_ref__);
+  JSContextGroup::JSContextGroup(JSContextGroup&& rhs) noexcept
+  : js_context_group_ref__(rhs.js_context_group_ref__) {
+    JSContextGroupRetain(js_context_group_ref__);
   }
   
   JSContextGroup& JSContextGroup::operator=(const JSContextGroup& rhs) noexcept {
     JAVASCRIPTCORECPP_JSCONTEXTGROUP_LOCK_GUARD;
     JSContextGroupRelease(js_context_group_ref__);
-    js_context_group_ref__ = JSContextGroupRetain(rhs.js_context_group_ref__);
+    js_context_group_ref__ = rhs.js_context_group_ref__;
+    JSContextGroupRetain(js_context_group_ref__);
     return *this;
   }
   
   JSContextGroup& JSContextGroup::operator=(JSContextGroup&& rhs) noexcept {
     JAVASCRIPTCORECPP_JSCONTEXTGROUP_LOCK_GUARD;
     JSContextGroupRelease(js_context_group_ref__);
-    js_context_group_ref__ = JSContextGroupRetain(rhs.js_context_group_ref__);
+    js_context_group_ref__ = rhs.js_context_group_ref__;
+    JSContextGroupRetain(js_context_group_ref__);
     return *this;
   }
   

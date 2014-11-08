@@ -468,9 +468,8 @@ namespace JavaScriptCoreCPP { namespace detail {
   JSExportClassDefinition<T> JSExportClassDefinitionBuilder<T>::build() {
     JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASSDEFINITIONBUILDER_LOCK_GUARD;
     
-    js_class_definition__.parentClass = parent__;
-    
-    
+    js_class_definition__.className          = name__.c_str();
+    js_class_definition__.parentClass        = parent__;
     js_class_definition__.initialize         = JSExportClass<T>::JSObjectInitializeCallback;
     js_class_definition__.finalize           = JSExportClass<T>::JSObjectFinalizeCallback;
     // js_class_definition__.hasProperty       = JSExportClass<T>::JSObjectHasPropertyCallback;

@@ -13,13 +13,6 @@
 #include "JavaScriptCoreCPP/JSContextGroup.hpp"
 
 #include <vector>
-//#include <memory>
-//#include <utility>
-
-namespace JavaScriptCoreCPP { namespace detail {
-  template<typename T>
-  class JSExportClass;
-}}
 
 namespace JavaScriptCoreCPP {
   
@@ -36,6 +29,16 @@ namespace JavaScriptCoreCPP {
   class JSError;
   class JSRegExp;
   class JSFunction;
+  
+  namespace detail {
+    template<typename T>
+    class JSExportClass;
+    
+    std::vector<JSValue> to_vector(const JSContext& js_context, size_t count, const JSValueRef js_value_ref_array[]);
+    
+  }}
+
+namespace JavaScriptCoreCPP {
   
   /*!
    @class
@@ -435,24 +438,25 @@ namespace JavaScriptCoreCPP {
     friend class JSRegExp;
     friend class JSFunction;
     friend class JSPropertyNameArray;
-
+    
     friend bool operator==(const JSValue& lhs, const JSValue& rhs) noexcept;
-
-    //    template<typename T>
-    //    friend class JSNativeObject;
+    
+    friend std::vector<JSValue> detail::to_vector(const JSContext& js_context, size_t count, const JSValueRef js_value_ref_array[]);
     
     // For interoperability with the JavaScriptCore C API.
     operator JSContextRef() const noexcept {
-      return js_context_ref__;
+      return js_global_context_ref__;
     }
     
-    // Only the detail::typename static functions create a
+    // Only the JSExportClass static functions create a
     // JSContext using the following constructor.
     template<typename T>
     friend class detail::JSExportClass;
     
+    explicit JSContext(JSContextRef js_context_ref) noexcept;
+    
     // For interoperability with the JavaScriptCore C API.
-    JSContext(JSContextRef js_context_ref) noexcept;
+    explicit JSContext(JSGlobalContextRef js_global_context_ref__) noexcept;
     
     // Prevent heap based objects.
     static void * operator new(std::size_t);       // #1: To prevent allocation of scalar objects
@@ -460,8 +464,8 @@ namespace JavaScriptCoreCPP {
     
     friend bool operator==(const JSContext& lhs, const JSContext& rhs);
     
-    JSContextGroup js_context_group__;
-    JSContextRef   js_context_ref__ { nullptr };
+    JSContextGroup     js_context_group__;
+    JSGlobalContextRef js_global_context_ref__ { nullptr };
     
 #undef  JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD
 #ifdef  JAVASCRIPTCORECPP_THREAD_SAFE
@@ -480,7 +484,7 @@ namespace JavaScriptCoreCPP {
   // Return true if the two JSContexts are equal.
   inline
   bool operator==(const JSContext& lhs, const JSContext& rhs) {
-    return (lhs.js_context_ref__ == rhs.js_context_ref__);
+    return (lhs.js_global_context_ref__ == rhs.js_global_context_ref__);
   }
   
   // Return true if the two JSContextGroups are not equal.

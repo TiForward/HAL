@@ -22,7 +22,7 @@
 namespace JavaScriptCoreCPP { namespace detail {
   template<typename T>
   class JSExportClassDefinition;
-
+  
   template<typename T>
   class JSExportClassDefinitionBuilder;
 }}
@@ -87,37 +87,33 @@ namespace JavaScriptCoreCPP {
     JSClass& operator=(JSClass&&) noexcept;
     void swap(JSClass&) noexcept;
     
-    // FIXME:
-    JSClass(JSClassRef js_class_ref) noexcept;
+  protected:
+    
+    JSClassDefinition js_class_definition__;
+    
+  private:
+    
+    // For interoperability with the JavaScriptCore C API.
+    explicit JSClass(JSClassRef js_class_ref) noexcept;
+    
+    // These five classes need access to operator JSClassRef().
+    friend class JSContext; // for constructor
+    friend class JSValue;   // for IsObjectOfClass
+    friend class JSObject;  // for constructor
+
+    // For setting JSClassDefinition.parentClass
+    template<typename T>
+    friend class detail::JSExportClassDefinition;
+    
+    // For setting JSClassDefinition.parentClass
+    template<typename T>
+    friend class detail::JSExportClassDefinitionBuilder;
+    
     operator JSClassRef() const noexcept {
       return js_class_ref__;
     }
     
-  protected:
-    
-    JSClassDefinition js_class_definition__;
-
-  private:
-    
-    // JSClassDefinition needs access to the following constructor.
-    friend class JSClassDefinition;
-    
-    template<typename T>
-    friend class JSExportClassDefinitionBuilder;
-    
-    // For interoperability with the JavaScriptCore C API.
-    // JSClass(JSClassRef js_class_ref) noexcept;
-    
-    // These classes need access to operator JSClassRef().
-    friend class JSContext;
-    friend class JSValue;           // for IsObjectOfClass
-    friend class JSObject;          // for constructor
-    
-//    operator JSClassRef() const noexcept {
-//      return js_class_ref__;
-//    }
-
-    JSClassRef        js_class_ref__ { nullptr };
+    JSClassRef js_class_ref__ { nullptr };
     
 #undef  JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD
 #ifdef  JAVASCRIPTCORECPP_THREAD_SAFE

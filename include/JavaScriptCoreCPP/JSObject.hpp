@@ -267,9 +267,7 @@ namespace JavaScriptCoreCPP {
     friend class detail::JSExportClass;
     
     // For interoperability with the JavaScriptCore C API.
-    JSObject(const JSContext& js_context, JSObjectRef js_object_ref)
-    : JSValue(js_context, js_object_ref) {
-    }
+    JSObject(const JSContext& js_context, JSObjectRef js_object_ref);
     
     // These classes need access to operator JSObjectRef().
     friend class JSPropertyNameArray;

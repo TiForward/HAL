@@ -24,7 +24,7 @@ namespace JavaScriptCoreCPP {
   
   JSString JSPropertyNameArray::GetNameAtIndex(std::size_t index) const noexcept {
     JAVASCRIPTCORECPP_JSPROPERTYNAMEARRAY_LOCK_GUARD;
-    return JSPropertyNameArrayGetNameAtIndex(js_property_name_array_ref__, index);
+    return JSString(JSPropertyNameArrayGetNameAtIndex(js_property_name_array_ref__, index));
   }
   
   JSPropertyNameArray::operator std::vector<JSString>() const noexcept {
@@ -41,25 +41,29 @@ namespace JavaScriptCoreCPP {
     JSPropertyNameArrayRelease(js_property_name_array_ref__);
   }
   
-  JSPropertyNameArray::JSPropertyNameArray(const JSPropertyNameArray& rhs) noexcept {
-    js_property_name_array_ref__ = JSPropertyNameArrayRetain(rhs.js_property_name_array_ref__);
+  JSPropertyNameArray::JSPropertyNameArray(const JSPropertyNameArray& rhs) noexcept
+  : js_property_name_array_ref__(rhs.js_property_name_array_ref__) {
+    JSPropertyNameArrayRetain(js_property_name_array_ref__);
   }
   
-  JSPropertyNameArray::JSPropertyNameArray(JSPropertyNameArray&& rhs) noexcept {
-    js_property_name_array_ref__ = JSPropertyNameArrayRetain(rhs.js_property_name_array_ref__);
+  JSPropertyNameArray::JSPropertyNameArray(JSPropertyNameArray&& rhs) noexcept
+    : js_property_name_array_ref__(rhs.js_property_name_array_ref__) {
+      JSPropertyNameArrayRetain(js_property_name_array_ref__);
   }
   
   JSPropertyNameArray& JSPropertyNameArray::operator=(const JSPropertyNameArray& rhs) noexcept {
     JAVASCRIPTCORECPP_JSPROPERTYNAMEARRAY_LOCK_GUARD;
     JSPropertyNameArrayRelease(js_property_name_array_ref__);
-    js_property_name_array_ref__ = JSPropertyNameArrayRetain(rhs.js_property_name_array_ref__);
+    js_property_name_array_ref__ = rhs.js_property_name_array_ref__;
+    JSPropertyNameArrayRetain(js_property_name_array_ref__);
     return *this;
   }
   
   JSPropertyNameArray& JSPropertyNameArray::operator=(JSPropertyNameArray&& rhs) noexcept {
     JAVASCRIPTCORECPP_JSPROPERTYNAMEARRAY_LOCK_GUARD;
     JSPropertyNameArrayRelease(js_property_name_array_ref__);
-    js_property_name_array_ref__ = JSPropertyNameArrayRetain(rhs.js_property_name_array_ref__);
+    js_property_name_array_ref__ = rhs.js_property_name_array_ref__;
+    JSPropertyNameArrayRetain(js_property_name_array_ref__);
     return *this;
   }
   

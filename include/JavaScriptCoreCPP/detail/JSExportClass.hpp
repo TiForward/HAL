@@ -445,7 +445,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     JSContext js_context(context_ref);
     JSObject  js_object(js_context, object_ref);
     
-    return js_object.HasProperty(property_name_ref);
+    return js_object.HasProperty(JSString(property_name_ref));
     return false;
     
   } catch (const std::exception& e) {
@@ -459,7 +459,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
     JSContext js_context(context_ref);
     JSObject  js_object(js_context, object_ref);
-    return js_object.GetProperty(property_name_ref);
+    return js_object.GetProperty(JSString(property_name_ref));
   } catch (const std::exception& e) {
     JSContext js_context(context_ref);
     JSString message(LogStdException("JSObjectGetPropertyCallback", JSObject(js_context, object_ref), e));
@@ -475,7 +475,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
     JSContext js_context(context_ref);
     JSObject  js_object(js_context, object_ref);
-    js_object.SetProperty(property_name_ref, JSValue(js_context, value_ref));
+    js_object.SetProperty(JSString(property_name_ref), JSValue(js_context, value_ref));
     return true;
   } catch (const std::exception& e) {
     JSContext js_context(context_ref);
@@ -492,7 +492,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
     JSContext js_context(context_ref);
     JSObject  js_object(js_context, object_ref);
-    return js_object.DeleteProperty(property_name_ref);
+    return js_object.DeleteProperty(JSString(property_name_ref));
   } catch (const std::exception& e) {
     JSContext js_context(context_ref);
     JSString message(LogStdException("JSObjectDeletePropertyCallback", JSObject(js_context, object_ref), e));

@@ -33,22 +33,22 @@ namespace JavaScriptCoreCPP {
   
   JSObject JSContext::get_global_object() const noexcept {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    return JSObject(js_context_ref__, JSContextGetGlobalObject(js_context_ref__));
+    return JSObject(JSContext(js_global_context_ref__), JSContextGetGlobalObject(js_global_context_ref__));
   }
   
   JSValue JSContext::CreateValueFromJSON(const JSString& js_string) const {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    return JSValue(js_context_ref__, js_string, true);
+    return JSValue(JSContext(js_global_context_ref__), js_string, true);
   }
   
   JSValue JSContext::CreateString() const noexcept {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    return JSValue(js_context_ref__, JSString(), false);
+    return JSValue(JSContext(js_global_context_ref__), JSString(), false);
   }
   
   JSValue JSContext::CreateString(const JSString& js_string) const noexcept {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    return JSValue(js_context_ref__, js_string, false);
+    return JSValue(JSContext(js_global_context_ref__), js_string, false);
   }
   
   JSValue JSContext::CreateString(const char* string) const noexcept {
@@ -61,32 +61,32 @@ namespace JavaScriptCoreCPP {
   
   JSUndefined JSContext::CreateUndefined() const noexcept {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    return JSUndefined(js_context_ref__);
+    return JSUndefined(JSContext(js_global_context_ref__));
   }
   
   JSNull JSContext::CreateNull() const noexcept {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    return JSNull(js_context_ref__);
+    return JSNull(JSContext(js_global_context_ref__));
   }
   
   JSBoolean JSContext::CreateBoolean(bool boolean) const noexcept {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    return JSBoolean(js_context_ref__, boolean);
+    return JSBoolean(JSContext(js_global_context_ref__), boolean);
   }
   
   JSNumber JSContext::CreateNumber(double number) const noexcept {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    return JSNumber(js_context_ref__, number);
+    return JSNumber(JSContext(js_global_context_ref__), number);
   }
   
   JSNumber JSContext::CreateNumber(int32_t number) const noexcept {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    return JSNumber(js_context_ref__, number);
+    return JSNumber(JSContext(js_global_context_ref__), number);
   }
   
   JSNumber JSContext::CreateNumber(uint32_t number) const noexcept {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    return JSNumber(js_context_ref__, number);
+    return JSNumber(JSContext(js_global_context_ref__), number);
   }
   
   JSObject JSContext::CreateObject() const noexcept {
@@ -95,47 +95,47 @@ namespace JavaScriptCoreCPP {
   
   JSObject JSContext::CreateObject(const JSClass& js_class) const noexcept {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    return JSObject(js_context_ref__, js_class);
+    return JSObject(JSContext(js_global_context_ref__), js_class);
   }
   
   JSArray JSContext::CreateArray() const noexcept {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    return JSArray(js_context_ref__);
+    return JSArray(JSContext(js_global_context_ref__));
   }
   
   JSArray JSContext::CreateArray(const std::vector<JSValue>& arguments) const {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    return JSArray(js_context_ref__, arguments);
+    return JSArray(JSContext(js_global_context_ref__), arguments);
   }
   
   JSDate JSContext::CreateDate() const noexcept {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    return JSDate(js_context_ref__);
+    return JSDate(JSContext(js_global_context_ref__));
   }
   
   JSDate JSContext::CreateDate(const std::vector<JSValue>& arguments) const {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    return JSDate(js_context_ref__, arguments);
+    return JSDate(JSContext(js_global_context_ref__), arguments);
   }
   
   JSError JSContext::CreateError() const noexcept {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    return JSError(js_context_ref__);
+    return JSError(JSContext(js_global_context_ref__));
   }
   
   JSError JSContext::CreateError(const std::vector<JSValue>& arguments) const {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    return JSError(js_context_ref__, arguments);
+    return JSError(JSContext(js_global_context_ref__), arguments);
   }
   
   JSRegExp JSContext::CreateRegExp() const noexcept {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    return JSRegExp(js_context_ref__);
+    return JSRegExp(JSContext(js_global_context_ref__));
   }
   
   JSRegExp JSContext::CreateRegExp(const std::vector<JSValue>& arguments) const {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    return JSRegExp(js_context_ref__, arguments);
+    return JSRegExp(JSContext(js_global_context_ref__), arguments);
   }
   
   JSFunction JSContext::CreateFunction(const JSString& body) const {
@@ -152,7 +152,7 @@ namespace JavaScriptCoreCPP {
   
   JSFunction JSContext::CreateFunction(const JSString& body, const std::vector<JSString>& parameter_names, const JSString& function_name, const JSString& source_url, int starting_line_number) const {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    return JSFunction(js_context_ref__, body, parameter_names, function_name, source_url, starting_line_number);
+    return JSFunction(JSContext(js_global_context_ref__), body, parameter_names, function_name, source_url, starting_line_number);
   }
   
   JSValue JSContext::JSEvaluateScript(const JSString& script) const {
@@ -173,16 +173,16 @@ namespace JavaScriptCoreCPP {
     JSValueRef js_value_ref { nullptr };
     const JSStringRef source_url_ref = (source_url.length() > 0) ? static_cast<JSStringRef>(source_url) : nullptr;
     JSValueRef exception { nullptr };
-    js_value_ref = ::JSEvaluateScript(js_context_ref__, script, this_object, source_url_ref, starting_line_number, &exception);
+    js_value_ref = ::JSEvaluateScript(js_global_context_ref__, script, this_object, source_url_ref, starting_line_number, &exception);
     
     if (exception) {
       // If this assert fails then we need to JSValueUnprotect
       // js_value_ref.
       assert(!js_value_ref);
-      detail::ThrowRuntimeError("JSContext", JSValue(js_context_ref__, exception));
+      detail::ThrowRuntimeError("JSContext", JSValue(JSContext(js_global_context_ref__), exception));
     }
     
-    return JSValue(js_context_ref__, js_value_ref);
+    return JSValue(JSContext(js_global_context_ref__), js_value_ref);
   }
   
   bool JSContext::JSCheckScriptSyntax(const JSString& script) const noexcept {
@@ -193,10 +193,10 @@ namespace JavaScriptCoreCPP {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
     const JSStringRef source_url_ref = (source_url.length() > 0) ? static_cast<JSStringRef>(source_url) : nullptr;
     JSValueRef exception { nullptr };
-    bool result = ::JSCheckScriptSyntax(js_context_ref__, script, source_url_ref, starting_line_number, &exception);
+    bool result = ::JSCheckScriptSyntax(js_global_context_ref__, script, source_url_ref, starting_line_number, &exception);
     
     if (exception) {
-      detail::ThrowRuntimeError("JSContext", JSValue(js_context_ref__, exception));
+      detail::ThrowRuntimeError("JSContext", JSValue(JSContext(js_global_context_ref__), exception));
     }
     
     return result;
@@ -204,7 +204,7 @@ namespace JavaScriptCoreCPP {
   
   void JSContext::GarbageCollect() const noexcept {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    JSGarbageCollect(js_context_ref__);
+    JSGarbageCollect(js_global_context_ref__);
   }
   
 #ifdef DEBUG
@@ -212,39 +212,41 @@ namespace JavaScriptCoreCPP {
   
   void JSContext::SynchronousGarbageCollectForDebugging() const {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    JSSynchronousGarbageCollectForDebugging(js_context_ref__);
+    JSSynchronousGarbageCollectForDebugging(js_global_context_ref__);
   }
 #endif
   
   JSContext::~JSContext() noexcept {
-    JSGlobalContextRelease(const_cast<JSGlobalContextRef>(js_context_ref__));
+    JSGlobalContextRelease(const_cast<JSGlobalContextRef>(js_global_context_ref__));
   }
   
   JSContext::JSContext(const JSContext& rhs) noexcept
-  : js_context_group__(rhs.js_context_group__) {
-    js_context_ref__ = JSGlobalContextRetain(const_cast<JSGlobalContextRef>(rhs.js_context_ref__));
+  : js_context_group__(rhs.js_context_group__)
+  , js_global_context_ref__(rhs.js_global_context_ref__) {
+    JSGlobalContextRetain(js_global_context_ref__);
   }
   
   JSContext::JSContext(JSContext&& rhs) noexcept
-  : js_context_group__(std::move(rhs.js_context_group__)) {
-    js_context_ref__ = JSGlobalContextRetain(const_cast<JSGlobalContextRef>(rhs.js_context_ref__));
+  : js_context_group__(std::move(rhs.js_context_group__))
+  , js_global_context_ref__(rhs.js_global_context_ref__) {
+    JSGlobalContextRetain(js_global_context_ref__);
   }
   
   JSContext& JSContext::operator=(const JSContext& rhs) noexcept {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    JSGlobalContextRelease(const_cast<JSGlobalContextRef>(rhs.js_context_ref__));
     js_context_group__ = rhs.js_context_group__;
-    js_context_ref__ = JSGlobalContextRetain(const_cast<JSGlobalContextRef>(rhs.js_context_ref__));
-    
+    JSGlobalContextRelease(js_global_context_ref__);
+    js_global_context_ref__ = rhs.js_global_context_ref__;
+    JSGlobalContextRetain(js_global_context_ref__);
     return *this;
   }
   
   JSContext& JSContext::operator=(JSContext&& rhs) noexcept {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    JSGlobalContextRelease(const_cast<JSGlobalContextRef>(js_context_ref__));
     js_context_group__ = std::move(rhs.js_context_group__);
-    js_context_ref__   = JSGlobalContextRetain(const_cast<JSGlobalContextRef>(rhs.js_context_ref__));
-    
+    JSGlobalContextRelease(js_global_context_ref__);
+    js_global_context_ref__ = rhs.js_global_context_ref__;
+    JSGlobalContextRetain(js_global_context_ref__);
     return *this;
   }
   
@@ -254,19 +256,26 @@ namespace JavaScriptCoreCPP {
     
     // By swapping the members of two classes, the two classes are
     // effectively swapped.
-    swap(js_context_group__, other.js_context_group__);
-    swap(js_context_ref__  , other.js_context_ref__);
+    swap(js_context_group__     , other.js_context_group__);
+    swap(js_global_context_ref__, other.js_global_context_ref__);
   }
   
   JSContext::JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class) noexcept
-  : js_context_group__(js_context_group) {
-    js_context_ref__ = JSGlobalContextRetain(JSGlobalContextCreateInGroup(js_context_group, global_object_class));
+  : js_context_group__(js_context_group)
+  , js_global_context_ref__(JSGlobalContextCreateInGroup(js_context_group, global_object_class)) {
+    JSGlobalContextRetain(js_global_context_ref__);
+  }
+  
+  JSContext::JSContext(JSContextRef js_context_ref) noexcept
+  : JSContext(const_cast<JSGlobalContextRef>(js_context_ref)) {
   }
   
   // For interoperability with the JavaScriptCore C API.
-  JSContext::JSContext(JSContextRef js_context_ref) noexcept
-  : js_context_group__(JSContextGetGroup(js_context_ref)) {
-    js_context_ref__ = JSGlobalContextRetain(const_cast<JSGlobalContextRef>(js_context_ref));
+  JSContext::JSContext(JSGlobalContextRef js_global_context_ref) noexcept
+  : js_context_group__(JSContextGetGroup(js_global_context_ref))
+  , js_global_context_ref__(js_global_context_ref) {
+    assert(js_global_context_ref__);
+    JSGlobalContextRetain(js_global_context_ref__);
   }
   
 } // namespace JavaScriptCoreCPP {

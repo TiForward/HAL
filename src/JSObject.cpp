@@ -170,6 +170,11 @@ namespace JavaScriptCoreCPP {
   : JSObject(js_context, JSObjectMake(js_context, js_class, private_data)) {
   }
   
+  // For interoperability with the JavaScriptCore C API.
+  JSObject::JSObject(const JSContext& js_context, JSObjectRef js_object_ref)
+  : JSValue(js_context, js_object_ref) {
+  }
+  
   JSValue JSObject::CallAsFunction(const std::vector<JSValue>&  arguments, JSObject this_object) {
     JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
     
