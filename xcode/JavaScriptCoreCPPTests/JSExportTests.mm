@@ -76,13 +76,12 @@ using namespace JavaScriptCoreCPP;
   auto native_class = builder.build();
 }
 
-- (void)xtestJSExport {
+- (void)testJSExport {
   JSContext js_context = js_context_group.CreateContext();
-  auto global_object = js_context.get_global_object();
+  auto global_object   = js_context.get_global_object();
 
   XCTAssertFalse(global_object.HasProperty("Widget"));
-  auto widget_class = Widget::get_js_class();
-  auto widget              = js_context.CreateObject(widget_class);
+  auto widget = js_context.CreateObject(Widget::Class());
   global_object.SetProperty("Widget", widget);
   XCTAssertTrue(global_object.HasProperty("Widget"));
       

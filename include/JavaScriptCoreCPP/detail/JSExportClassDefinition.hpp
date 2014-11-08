@@ -50,15 +50,15 @@ namespace JavaScriptCoreCPP { namespace detail {
     
     JSExportClassDefinition(const JSExportClassDefinitionBuilder<T>& builder);
     
-    JSExportNamedValuePropertyCallbackMap_t<T> get_named_value_property_callback_map() {
+    JSExportNamedValuePropertyCallbackMap_t<T> get_named_value_property_callback_map() const {
       return named_value_property_callback_map__;
     }
     
-    JSExportNamedFunctionPropertyCallbackMap_t<T> get_named_function_property_callback_map() {
+    JSExportNamedFunctionPropertyCallbackMap_t<T> get_named_function_property_callback_map() const {
       return named_function_property_callback_map__;
     }
 
-    JSExportClassDefinition()                                          = delete;
+    JSExportClassDefinition()                                          = default;
     ~JSExportClassDefinition()                                         = default;
     JSExportClassDefinition(const JSExportClassDefinition&)            = default;
     JSExportClassDefinition(JSExportClassDefinition&&)                 = default;

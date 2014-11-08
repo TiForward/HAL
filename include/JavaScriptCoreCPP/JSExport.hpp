@@ -41,8 +41,8 @@ namespace JavaScriptCoreCPP {
      @throws std::invalid_argument if the C++ class T didn't at least
      provide a name for the JSClass.
      */
-    static JSClass get_js_class();
-
+    static JSClass Class();
+    
     JSExport()                           = delete;
     virtual ~JSExport()                  = default;
     JSExport(const JSExport&)            = default;
@@ -295,8 +295,9 @@ namespace JavaScriptCoreCPP {
   detail::JSExportClassDefinitionBuilder<T> JSExport<T>::builder__ = detail::JSExportClassDefinitionBuilder<T>("NotSet");
   
   template<typename T>
-  JSClass JSExport<T>::get_js_class() {
-    static JSClass js_class;
+  JSClass JSExport<T>::Class() {
+    static detail::JSExportClassDefinition<T> js_export_class_definition;
+    static detail::JSExportClass<T>           js_export_class;
     std::once_flag of;
     std::call_once(of, [] {
       T::JSExportInitialize();
@@ -304,10 +305,11 @@ namespace JavaScriptCoreCPP {
       if (class_name.empty() || class_name == "NotSet") {
         detail::ThrowInvalidArgument("JSExport", "You must provide a JSClass name");
       }
-      js_class = builder__.build();
+      js_export_class_definition = builder__.build();
+      js_export_class            = detail::JSExportClass<T>(js_export_class_definition);
     });
     
-    return js_class;
+    return js_export_class;
   }
   
   template<typename T>
@@ -319,7 +321,7 @@ namespace JavaScriptCoreCPP {
   JSContext JSExport<T>::get_context() const noexcept {
     return js_context__;
   }
-
+  
   template<typename T, typename... Us>
   std::shared_ptr<T> JSContext::CreateObject(Us&&... constructor_arguments) const {
     auto native_object_ptr = std::make_shared<T>(*this);

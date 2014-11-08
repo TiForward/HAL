@@ -42,11 +42,11 @@ std::string JSLoggerPimpl::GetLoglineHeader(uint32_t log_line_number) {
 	   << log_line_number
 	   << " <"
 	   << to_string(std::chrono::system_clock::now())
-	   <<" - "
-	   << std::setfill('0')
-	   << std::setw(std::numeric_limits<std::clock_t>::digits10)
-	   << std::clock()
-	   <<" ";
+//	   <<" - "
+//	   << std::setfill('0')
+//	   << std::setw(std::numeric_limits<std::clock_t>::digits10)
+//	   << std::clock()
+	   <<"> ";
 	
 	return os.str();
 }

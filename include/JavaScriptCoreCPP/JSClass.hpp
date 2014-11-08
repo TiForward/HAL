@@ -55,6 +55,15 @@ namespace JavaScriptCoreCPP {
      
      @result An empty JSClass.
      */
+    virtual std::string get_name() const noexcept final;
+
+    /*!
+     @method
+     
+     @abstract Return an empty JSClass.
+     
+     @result An empty JSClass.
+     */
     JSClass() noexcept;
     
     /*!

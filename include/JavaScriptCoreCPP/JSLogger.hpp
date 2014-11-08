@@ -44,21 +44,19 @@ namespace JavaScriptCoreCPP {
   JAVASCRIPTCORECPP_LOG_ERROR("All good things come to an end.");
  */
 
-
-enum class JSLoggerSeverityType {
-	JSLogger_DEBUG,
-	JSLogger_INFO,
-	JSLogger_WARN,
-	JSLogger_ERROR
-};
-
-
+  enum class JSLoggerSeverityType {
+    JS_DEBUG,
+    JS_INFO,
+    JS_WARN,
+    JS_ERROR
+  };
+  
 template<typename JSLoggerPolicy>
 class JSLogger final {
   
  public:
   
-  JSLogger(const std::string& name) 
+  JSLogger(const std::string& name)
 		  : js_log_policy__(name) {
   }
   
@@ -69,10 +67,10 @@ class JSLogger final {
   JSLogger& operator=(const JSLogger&) = default;
   JSLogger& operator=(JSLogger&&)      = default;
   
- private:
-  
   template<JSLoggerSeverityType severity, typename...Args>
   void Print(Args...args);
+  
+ private:
   
   // Core printing functionality.
   void PrintImpl();
@@ -98,17 +96,17 @@ void JSLogger<JSLoggerPolicy>::Print(Args...args)  {
   log_stream__ << std::setw(5) << std::left;
   
   switch(severity) {
-	  case JSLoggerSeverityType::JSLogger_DEBUG:
-      log_stream__ << "DEBUG";
+	  case JSLoggerSeverityType::JS_DEBUG:
+      log_stream__ << "DEBUG: ";
       break;
-    case JSLoggerSeverityType::JSLogger_INFO:
-      log_stream__ << "INFO";
+    case JSLoggerSeverityType::JS_INFO:
+      log_stream__ << "INFO: ";
       break;
-    case JSLoggerSeverityType::JSLogger_ERROR:
-      log_stream__ << "ERROR";
+    case JSLoggerSeverityType::JS_WARN:
+      log_stream__ << "WARN: ";
       break;
-    case JSLoggerSeverityType::JSLogger_WARN:
-      log_stream__ << "WARN";
+    case JSLoggerSeverityType::JS_ERROR:
+      log_stream__ << "ERROR: ";
       break;
   };
   
@@ -117,7 +115,7 @@ void JSLogger<JSLoggerPolicy>::Print(Args...args)  {
 
 template<typename JSLoggerPolicy>
 void JSLogger<JSLoggerPolicy>::PrintImpl() {
-	js_log_policy__.Write(detail::JSLoggerPimpl::GetLoglineHeader(log_line_number__++) + ":" + log_stream__.str());
+	js_log_policy__.Write(detail::JSLoggerPimpl::GetLoglineHeader(log_line_number__++) + log_stream__.str());
   log_stream__.str("");
 }
 
@@ -128,7 +126,7 @@ void JSLogger<JSLoggerPolicy>::PrintImpl(First first_parameter, Rest...rest) {
   PrintImpl(rest...); 
 }
 
-//#define JAVASCRIPTCORECPP_LOGGING_ENABLE
+#define JAVASCRIPTCORECPP_LOGGING_ENABLE
 #ifdef JAVASCRIPTCORECPP_LOGGING_ENABLE
 
 // TODO: Add a more flexible way to specify the logging policy.
@@ -136,10 +134,10 @@ void JSLogger<JSLoggerPolicy>::PrintImpl(First first_parameter, Rest...rest) {
 //static JSLogger<JSLoggerPolicyFile>    js_logger_instance("JavaScriptCoreCPP.log");
 static JSLogger<JSLoggerPolicyConsole> js_logger_instance("JavaScriptCoreCPP.log");
 
-#define JAVASCRIPTCORECPP_LOG_DEBUG js_logger_instance.Print<JSLogger::Severitytype::DEBUG>
-#define JAVASCRIPTCORECPP_LOG_INFO  js_logger_instance.Print<JSLogger::Severitytype::INFO>
-#define JAVASCRIPTCORECPP_LOG_WARN  js_logger_instance.Print<JSLogger::Severitytype::WARN>
-#define JAVASCRIPTCORECPP_LOG_ERROR js_logger_instance.Print<JSLogger::Severitytype::ERROR>
+#define JAVASCRIPTCORECPP_LOG_DEBUG JavaScriptCoreCPP::js_logger_instance.Print<JavaScriptCoreCPP::JSLoggerSeverityType::JS_DEBUG>
+#define JAVASCRIPTCORECPP_LOG_INFO  JavaScriptCoreCPP::js_logger_instance.Print<JavaScriptCoreCPP::JSLoggerSeverityType::JS_INFO>
+#define JAVASCRIPTCORECPP_LOG_ERROR JavaScriptCoreCPP::js_logger_instance.Print<JavaScriptCoreCPP::JSLoggerSeverityType::JS_WARN>
+#define JAVASCRIPTCORECPP_LOG_WARN  JavaScriptCoreCPP::js_logger_instance.Print<JavaScriptCoreCPP::JSLoggerSeverityType::JS_ERROR>
 #else
 #define JAVASCRIPTCORECPP_LOG_DEBUG(...) 
 #define JAVASCRIPTCORECPP_LOG_INFO(...)
