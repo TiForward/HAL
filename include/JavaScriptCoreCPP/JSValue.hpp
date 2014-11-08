@@ -10,19 +10,15 @@
 #ifndef _JAVASCRIPTCORECPP_JSVALUE_HPP_
 #define _JAVASCRIPTCORECPP_JSVALUE_HPP_
 
+#include "JavaScriptCoreCPP/detail/JSBase.hpp"
 #include "JavaScriptCoreCPP/JSContext.hpp"
-#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 
+#include <vector>
 #include <ostream>
 
-namespace JavaScriptCoreCPP { namespace detail {
-  template<typename T>
-  class JSExportClass;
-}}
-
 namespace JavaScriptCoreCPP {
-  
   class JSString;
+  class JSValue;
   class JSBoolean;
   class JSNumber;
   class JSObject;
@@ -31,6 +27,16 @@ namespace JavaScriptCoreCPP {
   class JSDate;
   class JSError;
   class JSRegExp;
+  
+  namespace detail {
+    template<typename T>
+    class JSExportClass;
+    
+    std::vector<JSValue>    to_vector(const JSContext&, size_t, const JSValueRef[]);
+    std::vector<JSValueRef> to_vector(const std::vector<JSValue>&);
+  }}
+
+namespace JavaScriptCoreCPP {
   
   /*!
    @class
@@ -376,8 +382,8 @@ namespace JavaScriptCoreCPP {
     // JSValueRef().
     friend bool operator==(const JSValue& lhs, const JSValue& rhs) noexcept;
     
-    friend std::vector<JSValue>    detail::to_vector(const JSContext& js_context, size_t count, const JSValueRef js_value_ref_array[]);
-    friend std::vector<JSValueRef> detail::to_vector(const std::vector<JSValue>& js_value_vector);
+    friend std::vector<JSValue>    detail::to_vector(const JSContext&, size_t, const JSValueRef[]);
+    friend std::vector<JSValueRef> detail::to_vector(const std::vector<JSValue>&);
     
   private:
     

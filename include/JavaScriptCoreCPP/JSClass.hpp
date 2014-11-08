@@ -29,9 +29,6 @@ namespace JavaScriptCoreCPP { namespace detail {
 
 namespace JavaScriptCoreCPP {
   
-  //  template<typename T>
-  //  class JSExport;
-  
   /*!
    @class
    

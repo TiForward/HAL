@@ -26,6 +26,8 @@
 
 #include "JavaScriptCoreCPP/JSClass.hpp"
 
+#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
+
 #include <sstream>
 #include <cassert>
 

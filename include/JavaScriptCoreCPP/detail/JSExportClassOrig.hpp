@@ -14,7 +14,6 @@
 #include "JavaScriptCoreCPP/JSNativeObjectCallbacks.hpp"
 #include "JavaScriptCoreCPP/JSString.hpp"
 #include "JavaScriptCoreCPP/JSObject.hpp"
-#include "JavaScriptCoreCPP/JSLogger.hpp"
 
 #include "JavaScriptCoreCPP/detail/JSNativeClassPimpl.hpp"
 #include "JavaScriptCoreCPP/detail/JSNativeObjectCallbackHandler.hpp"

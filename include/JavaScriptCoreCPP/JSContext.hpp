@@ -10,6 +10,7 @@
 #ifndef _JAVASCRIPTCORECPP_JSCONTEXT_HPP_
 #define _JAVASCRIPTCORECPP_JSCONTEXT_HPP_
 
+#include "JavaScriptCoreCPP/detail/JSBase.hpp"
 #include "JavaScriptCoreCPP/JSContextGroup.hpp"
 
 #include <vector>
@@ -34,8 +35,7 @@ namespace JavaScriptCoreCPP {
     template<typename T>
     class JSExportClass;
     
-    std::vector<JSValue> to_vector(const JSContext& js_context, size_t count, const JSValueRef js_value_ref_array[]);
-    
+    std::vector<JSValue> to_vector(const JSContext&, size_t, const JSValueRef[]);
   }}
 
 namespace JavaScriptCoreCPP {
@@ -441,7 +441,7 @@ namespace JavaScriptCoreCPP {
     
     friend bool operator==(const JSValue& lhs, const JSValue& rhs) noexcept;
     
-    friend std::vector<JSValue> detail::to_vector(const JSContext& js_context, size_t count, const JSValueRef js_value_ref_array[]);
+    friend std::vector<JSValue> detail::to_vector(const JSContext&, size_t, const JSValueRef[]);
     
     // For interoperability with the JavaScriptCore C API.
     operator JSContextRef() const noexcept {

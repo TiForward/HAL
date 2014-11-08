@@ -15,17 +15,18 @@
 #include <vector>
 #include <unordered_set>
 
-namespace JavaScriptCoreCPP { namespace detail {
-  template<typename T>
-  class JSExportClass;
-}}
-
 namespace JavaScriptCoreCPP {
-  
   class JSString;
   class JSClass;
   class JSPropertyNameAccumulator;
   class JSPropertyNameArray;
+  
+  namespace detail {
+    template<typename T>
+    class JSExportClass;
+  }}
+
+namespace JavaScriptCoreCPP {
   
   /*!
    @class

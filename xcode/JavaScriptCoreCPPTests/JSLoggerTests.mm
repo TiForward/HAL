@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Appcelerator. All rights reserved.
 //
 
-#include "JavaScriptCoreCPP.hpp"
+#include "JavaScriptCoreCPP/JSLogger.hpp"
 #import <XCTest/XCTest.h>
 
 @interface JSLoggerTests : XCTestCase
@@ -25,7 +25,7 @@
 }
 
 - (void)testJSLogger {
-  JAVASCRIPTCORECPP_LOG_DEBUG("Hello, world");
+  JAVASCRIPTCORECPP_LOG_DEBUG("MDL: Hello, world");
 }
 
 // As of 2014.09.20 Travis CI only supports Xcode 5.1 which lacks support for

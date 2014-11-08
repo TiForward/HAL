@@ -12,7 +12,6 @@
 
 #include "JavaScriptCoreCPP/JSValue.hpp"
 #include <cstdint>
-#include <stdexcept>
 
 namespace JavaScriptCoreCPP {
 

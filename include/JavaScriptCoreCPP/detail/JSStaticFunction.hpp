@@ -10,6 +10,7 @@
 #ifndef _JAVASCRIPTCORECPP_DETAIL_JSSTATICFUNCTION_HPP_
 #define _JAVASCRIPTCORECPP_DETAIL_JSSTATICFUNCTION_HPP_
 
+#include "JavaScriptCoreCPP/detail/JSBase.hpp"
 #include "JavaScriptCoreCPP/detail/JSPropertyCallback.hpp"
 
 namespace JavaScriptCoreCPP { namespace detail {

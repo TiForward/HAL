@@ -23,7 +23,6 @@ namespace JavaScriptCoreCPP { namespace detail {
   class JSExportClass;
 }}
 
-
 namespace JavaScriptCoreCPP {
   
   /*!

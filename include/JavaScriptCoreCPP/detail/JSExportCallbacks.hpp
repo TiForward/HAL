@@ -10,8 +10,8 @@
 #ifndef _JAVASCRIPTCORECPP_DETAIL_JSEXPORTCALLBACKS_HPP_
 #define _JAVASCRIPTCORECPP_DETAIL_JSEXPORTCALLBACKS_HPP_
 
-// #include "JavaScriptCoreCPP/JSString.hpp"
-// #include "JavaScriptCoreCPP/JSObject.hpp"
+#include "JavaScriptCoreCPP/detail/JSBase.hpp"
+
 #include <vector>
 
 namespace JavaScriptCoreCPP {

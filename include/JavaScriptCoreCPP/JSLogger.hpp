@@ -128,7 +128,8 @@ void JSLogger<JSLoggerPolicy>::PrintImpl(First first_parameter, Rest...rest) {
   PrintImpl(rest...); 
 }
 
-#ifdef JAVASCRIPTCORECPP_LOGGING
+//#define JAVASCRIPTCORECPP_LOGGING_ENABLE
+#ifdef JAVASCRIPTCORECPP_LOGGING_ENABLE
 
 // TODO: Add a more flexible way to specify the logging policy.
 

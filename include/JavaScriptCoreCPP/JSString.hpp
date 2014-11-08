@@ -27,7 +27,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   template<typename T>
   class JSExportClass;
   
-  std::vector<JSStringRef> to_vector(const std::vector<JSString>& js_string_vector);
+  std::vector<JSStringRef> to_vector(const std::vector<JSString>&);
 }}
 
 namespace JavaScriptCoreCPP {
@@ -158,7 +158,7 @@ namespace JavaScriptCoreCPP {
       friend class JSPropertyNameAccumulator; // AddName
       friend class JSFunction;
       
-      friend std::vector<JSStringRef> detail::to_vector(const std::vector<JSString>& js_string_vector);
+      friend std::vector<JSStringRef> detail::to_vector(const std::vector<JSString>&);
       
       // For interoperability with the JavaScriptCore C API.
       operator JSStringRef() const {

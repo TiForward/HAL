@@ -10,9 +10,9 @@
 #ifndef _JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASSDEFINITIONBUILDER_HPP_
 #define _JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASSDEFINITIONBUILDER_HPP_
 
+#include "JavaScriptCoreCPP/detail/JSBase.hpp"
 #include "JavaScriptCoreCPP/detail/JSExportClassDefinition.hpp"
 #include "JavaScriptCoreCPP/detail/JSExportClass.hpp"
-#include "JavaScriptCoreCPP/JSLogger.hpp"
 #include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 
 #include <string>

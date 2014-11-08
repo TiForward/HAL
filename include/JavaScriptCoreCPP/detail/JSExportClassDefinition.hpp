@@ -10,6 +10,7 @@
 #ifndef _JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASSDEFINITION_HPP_
 #define _JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASSDEFINITION_HPP_
 
+#include "JavaScriptCoreCPP/detail/JSBase.hpp"
 #include "JavaScriptCoreCPP/JSClassDefinition.hpp"
 #include "JavaScriptCoreCPP/JSClassAttribute.hpp"
 

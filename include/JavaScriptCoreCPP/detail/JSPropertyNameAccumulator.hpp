@@ -10,6 +10,7 @@
 #ifndef _JAVASCRIPTCORECPP_DETAIL_JSPROPERTYNAMEACCUMULATOR_HPP_
 #define _JAVASCRIPTCORECPP_DETAIL_JSPROPERTYNAMEACCUMULATOR_HPP_
 
+#include "JavaScriptCoreCPP/detail/JSBase.hpp"
 #include "JavaScriptCoreCPP/JSString.hpp"
 #include <iostream>
 #include <cassert>

@@ -10,7 +10,6 @@
 #include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 #include "JavaScriptCoreCPP/JSString.hpp"
 #include "JavaScriptCoreCPP/JSValue.hpp"
-#include "JavaScriptCoreCPP/JSLogger.hpp"
 
 #include <bitset>
 #include <sstream>

@@ -33,8 +33,4 @@
 
 #include "JavaScriptCoreCPP/JSPropertyNameArray.hpp"
 
-#include "JavaScriptCoreCPP/JSLogger.hpp"
-#include "JavaScriptCoreCPP/JSLoggerPolicyConsole.hpp"
-#include "JavaScriptCoreCPP/JSLoggerPolicyFile.hpp"
-
 #endif // _JAVASCRIPTCORECPP_HPP_

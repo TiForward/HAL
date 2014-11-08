@@ -10,6 +10,7 @@
 #ifndef _JAVASCRIPTCORECPP_JSUTIL_HPP_
 #define _JAVASCRIPTCORECPP_JSUTIL_HPP_
 
+#include "JavaScriptCoreCPP/detail/JSBase.hpp"
 #include "JavaScriptCoreCPP/JSPropertyAttribute.hpp"
 #include "JavaScriptCoreCPP/JSClassAttribute.hpp"
 
@@ -43,7 +44,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   // For interoperability with the JavaScriptCore C API.
   std::vector<JSValue>     to_vector(const JSContext&, size_t count, const JSValueRef[]);
   std::vector<JSValue>     to_vector(const JSContext&, const std::vector<JSString>&);
-  std::vector<JSValueRef>  to_vector(const std::vector<JSValue>& );
+  std::vector<JSValueRef>  to_vector(const std::vector<JSValue>&);
   std::vector<JSStringRef> to_vector(const std::vector<JSString>&);
   
   // For interoperability with the JavaScriptCore C API.

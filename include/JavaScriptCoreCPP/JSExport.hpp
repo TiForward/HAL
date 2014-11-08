@@ -10,6 +10,7 @@
 #ifndef _JAVASCRIPTCORECPP_JSEXPORT_HPP_
 #define _JAVASCRIPTCORECPP_JSEXPORT_HPP_
 
+#include "JavaScriptCoreCPP/detail/JSBase.hpp"
 #include "JavaScriptCoreCPP/JSContext.hpp"
 #include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 

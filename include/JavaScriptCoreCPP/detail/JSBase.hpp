@@ -10,6 +10,7 @@
 #ifndef _JAVASCRIPTCORECPP_DETAIL_JSBASE_HPP_
 #define _JAVASCRIPTCORECPP_DETAIL_JSBASE_HPP_
 
+#include "JavaScriptCoreCPP/JSLogger.hpp"
 #include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 
 #ifdef JAVASCRIPTCORECPP_THREAD_SAFE

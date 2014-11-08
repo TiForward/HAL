@@ -10,6 +10,7 @@
 #ifndef _JAVASCRIPTCORECPP_DETAIL_JSEXPORTNAMEDVALUEPROPERTYCALLBACK_HPP_
 #define _JAVASCRIPTCORECPP_DETAIL_JSEXPORTNAMEDVALUEPROPERTYCALLBACK_HPP_
 
+#include "JavaScriptCoreCPP/detail/JSBase.hpp"
 #include "JavaScriptCoreCPP/detail/JSPropertyCallback.hpp"
 #include "JavaScriptCoreCPP/detail/JSExportCallbacks.hpp"
 #include "JavaScriptCoreCPP/detail/JSUtil.hpp"

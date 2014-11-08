@@ -10,14 +10,13 @@
 #ifndef _JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_HPP_
 #define _JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_HPP_
 
+#include "JavaScriptCoreCPP/detail/JSBase.hpp"
 #include "JavaScriptCoreCPP/JSClass.hpp"
 #include "JavaScriptCoreCPP/detail/JSExportClassDefinition.hpp"
 
 #include "JavaScriptCoreCPP/JSString.hpp"
 #include "JavaScriptCoreCPP/JSObject.hpp"
 #include "JavaScriptCoreCPP/JSUndefined.hpp"
-
-#include "JavaScriptCoreCPP/JSLogger.hpp"
 
 //#include "JavaScriptCoreCPP/detail/JSExportNamedValuePropertyCallback.hpp"
 //#include "JavaScriptCoreCPP/detail/JSExportNamedFunctionPropertyCallback.hpp"
