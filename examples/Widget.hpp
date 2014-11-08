@@ -94,10 +94,10 @@ public:
 	  @abstract This is callback is invoked when your JavaScript object
 	  is used as a constructor in a 'new' expression.
 	*/
-	JSObject Constructor(const std::vector<JSValue>&& arguments) {
-		// Use the arguments to initialize yourself as required.
-		return *this;
-	}
+//	JSObject Constructor(const std::vector<JSValue>&& arguments) {
+//		// Use the arguments to initialize yourself as required.
+//		return *this;
+//	}
 
 	JSValue get_name() const {
 		return name_;

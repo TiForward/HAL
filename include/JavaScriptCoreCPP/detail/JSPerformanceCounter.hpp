@@ -10,6 +10,7 @@
 #ifndef _JAVASCRIPTCORECPP_DETAIL_JSPERFORMANCECOUNTER_HPP_
 #define _JAVASCRIPTCORECPP_DETAIL_JSPERFORMANCECOUNTER_HPP_
 
+#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 #include <atomic>
 
 namespace JavaScriptCoreCPP { namespace detail {
@@ -123,5 +124,12 @@ std::atomic<long> JSPerformanceCounter<T>::objects_move_assigned_;
 
 
 }} // namespace JavaScriptCoreCPP { namespace detail {
+
+#define JAVASCRIPTCORECPP_PERFORMANCE_COUNTER1(class_name) : public detail::JSPerformanceCounter<class_name>
+#define JAVASCRIPTCORECPP_PERFORMANCE_COUNTER2(class_name) , public detail::JSPerformanceCounter<class_name>
+#else
+#define JAVASCRIPTCORECPP_PERFORMANCE_COUNTER1(class_name)
+#define JAVASCRIPTCORECPP_PERFORMANCE_COUNTER2(class_name)
+#endif // JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
 
 #endif // _JAVASCRIPTCORECPP_DETAIL_JSPERFORMANCECOUNTER_HPP_

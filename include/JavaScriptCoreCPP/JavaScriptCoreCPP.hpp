@@ -37,9 +37,4 @@
 #include "JavaScriptCoreCPP/JSLoggerPolicyConsole.hpp"
 #include "JavaScriptCoreCPP/JSLoggerPolicyFile.hpp"
 
-#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
-#include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
-#include "JavaScriptCoreCPP/detail/JSPerformanceCounterPrinter.hpp"
-#endif
-
 #endif // _JAVASCRIPTCORECPP_HPP_

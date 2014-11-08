@@ -63,7 +63,7 @@ using namespace JavaScriptCoreCPP;
 }
 
 - (void)testJSNativeClassBuilder {
-  detail::JSClassBuilder<Widget> builder("Widget");
+  detail::JSExportClassDefinitionBuilder<Widget> builder("Widget");
   builder
       .AddValueProperty("name", &Widget::get_name, &Widget::set_name)
       .AddValueProperty("number", &Widget::get_number, &Widget::set_number)
@@ -81,8 +81,8 @@ using namespace JavaScriptCoreCPP;
   auto global_object = js_context.get_global_object();
 
   XCTAssertFalse(global_object.HasProperty("Widget"));
-  auto widget_js_class_ptr = Widget::get_js_class_ptr();
-  auto widget              = js_context.CreateObject(*widget_js_class_ptr);
+  auto widget_class = Widget::get_js_class();
+  auto widget              = js_context.CreateObject(widget_class);
   global_object.SetProperty("Widget", widget);
   XCTAssertTrue(global_object.HasProperty("Widget"));
       
