@@ -73,8 +73,8 @@ namespace JavaScriptCoreCPP {
      
      @result The name of this JSClass.
      */
-    virtual JSClassDefinition js_class_definition() const noexcept final {
-      return js_class_definition__;
+    virtual std::string get_name() const noexcept final {
+      return name__;
     }
     
     virtual ~JSClass() noexcept;
@@ -87,7 +87,7 @@ namespace JavaScriptCoreCPP {
   private:
     
     // For interoperability with the JavaScriptCore C API.
-    explicit JSClass(JSClassRef js_class_ref) noexcept;
+    // explicit JSClass(JSClassRef js_class_ref) noexcept;
     
     // These five classes need access to operator JSClassRef().
     friend class JSContext; // for constructor
@@ -106,8 +106,8 @@ namespace JavaScriptCoreCPP {
       return js_class_ref__;
     }
     
-    JSClassDefinition js_class_definition__;
-    JSClassRef        js_class_ref__ { nullptr };
+    std::string name__ { "Default" };
+    JSClassRef  js_class_ref__ { nullptr };
     
 #undef  JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD
 #ifdef  JAVASCRIPTCORECPP_THREAD_SAFE

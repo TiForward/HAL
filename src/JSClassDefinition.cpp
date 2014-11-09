@@ -93,7 +93,7 @@ namespace JavaScriptCoreCPP {
     js_class_definition__.version           = other.version;
     js_class_definition__.attributes        = other.attributes;
     
-    js_class_definition__.className         = name__.c_str();
+    js_class_definition__.className         = other.className;
     js_class_definition__.parentClass       = other.parentClass;
     
     // staticValues and staticFunctions are handled separately by
