@@ -1,6 +1,7 @@
 add_library(JavaScriptCoreCPP
 	JSArray.cpp
 	JSClass.cpp
+	JSClassDefinition.cpp
 	JSContext.cpp
 	JSContextGroup.cpp
 	JSDate.cpp
@@ -11,8 +12,11 @@ add_library(JavaScriptCoreCPP
 	JSRegExp.cpp
 	JSString.cpp
 	JSValue.cpp
-	detail/JSExportPropertyCallback.cpp
+	detail/JSBase.cpp
 	detail/JSLoggerPimpl.cpp
+	detail/JSPropertyCallback.cpp
+	detail/JSStaticFunction.cpp
+	detail/JSStaticValue.cpp
 	detail/JSUtil.cpp
   )
 
