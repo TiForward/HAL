@@ -228,6 +228,23 @@ namespace JavaScriptCoreCPP { namespace detail {
     }
   }
   
+//  std::string to_string(JSValue::Type js_value_type) noexcept {
+//    switch (js_value_type) {
+//      case JSValue::Type::Undefined:
+//        return "Undefined";
+//      case JSValue::Type::Null:
+//        return "Null";
+//      case JSValue::Type::Boolean:
+//        return "Boolean";
+//      case JSValue::Type::Number:
+//        return "Number";
+//      case JSValue::Type::String:
+//        return "String";
+//      case JSValue::Type::Object:
+//        return "Object";
+//    }
+//  }
+  
   // The bitwise_cast and to_int32_t code was copied from
   // WebKit/Source/WTF/wtf/StdLibExtras.h and came with these terms and
   // conditions:

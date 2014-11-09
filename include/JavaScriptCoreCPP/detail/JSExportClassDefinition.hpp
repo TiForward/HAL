@@ -32,6 +32,9 @@ namespace JavaScriptCoreCPP { namespace detail {
   template<typename T>
   class JSExportClassDefinitionBuilder;
   
+  template<typename T>
+  class JSExportClass;
+
   /*!
    @class
    
@@ -50,13 +53,13 @@ namespace JavaScriptCoreCPP { namespace detail {
     
     JSExportClassDefinition(const JSExportClassDefinitionBuilder<T>& builder);
     
-    JSExportNamedValuePropertyCallbackMap_t<T> get_named_value_property_callback_map() const {
-      return named_value_property_callback_map__;
-    }
-    
-    JSExportNamedFunctionPropertyCallbackMap_t<T> get_named_function_property_callback_map() const {
-      return named_function_property_callback_map__;
-    }
+//    JSExportNamedValuePropertyCallbackMap_t<T> get_named_value_property_callback_map() const {
+//      return named_value_property_callback_map__;
+//    }
+//    
+//    JSExportNamedFunctionPropertyCallbackMap_t<T> get_named_function_property_callback_map() const {
+//      return named_function_property_callback_map__;
+//    }
     
     JSExportClassDefinition()  = default;
     ~JSExportClassDefinition() = default;
@@ -69,9 +72,22 @@ namespace JavaScriptCoreCPP { namespace detail {
   private:
     
     void InitializeNamedPropertyCallbacks() noexcept;
+
+    // Only JSExportClass can access our private member variables.
+    template<typename U>
+    friend class JSExportClass;
     
     JSExportNamedValuePropertyCallbackMap_t<T>    named_value_property_callback_map__;
     JSExportNamedFunctionPropertyCallbackMap_t<T> named_function_property_callback_map__;
+    HasPropertyCallback<T>                        has_property_callback__        { nullptr };
+    GetPropertyCallback<T>                        get_property_callback__        { nullptr };
+    SetPropertyCallback<T>                        set_property_callback__        { nullptr };
+    DeletePropertyCallback<T>                     delete_property_callback__     { nullptr };
+    GetPropertyNamesCallback<T>                   get_property_names_callback__  { nullptr };
+    CallAsFunctionCallback<T>                     call_as_function_callback__    { nullptr };
+    CallAsConstructorCallback<T>                  call_as_constructor_callback__ { nullptr };
+    HasInstanceCallback<T>                        has_instance_callback__        { nullptr };
+    ConvertToTypeCallback<T>                      convert_to_type_callback__     { nullptr };
   };
   
   template<typename T>

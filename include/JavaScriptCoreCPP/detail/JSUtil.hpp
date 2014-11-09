@@ -64,6 +64,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   std::string to_string_JSClassAttributes(::JSClassAttributes attributes) noexcept;
 
   JSValue::Type ToJSValueType(JSType type) noexcept;
+//  std::string to_string_JSClassAttributes(JSValue::Type) noexcept;
   
   // This in the ToInt32 operation as defined in section 9.5 of the
   // ECMA-262 spec. Note that this operation is identical to ToUInt32

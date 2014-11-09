@@ -15,14 +15,16 @@
 #include <iostream>
 #include <cassert>
 
-namespace JavaScriptCoreCPP { namespace detail {
-  template<typename T>
-  class JSExportPimpl;
-}}
-
 namespace JavaScriptCoreCPP {
 
 class JSObject;
+
+namespace detail {
+  template<typename T>
+  class JSExportClass;
+}}
+
+namespace JavaScriptCoreCPP {
 
 /*!
   @class
@@ -64,12 +66,12 @@ private:
 	JSPropertyNameAccumulator& operator=(const JSPropertyNameAccumulator& rhs) = delete;
 	JSPropertyNameAccumulator& operator=(JSPropertyNameAccumulator&& rhs) = delete;
 
-	// Only a JSObject and a JSExportPimpl can create a
+	// Only a JSObject and a JSExportClass can create a
 	// JSPropertyNameAccumulator.
 	friend class JSObject;
 
   template<typename T>
-  friend class detail::JSExportPimpl;
+  friend class detail::JSExportClass;
 
 	// For interoperability with the JavaScriptCore C API.
 	explicit JSPropertyNameAccumulator(const JSPropertyNameAccumulatorRef& js_property_name_accumulator_ref)

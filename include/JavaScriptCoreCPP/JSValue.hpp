@@ -413,7 +413,7 @@ namespace JavaScriptCoreCPP {
     return static_cast<std::string>(js_value);
   }
   
-  std::string to_string(const JSValue::Type& js_value_type);
+  std::string to_string(const JSValue::Type& js_value_type) noexcept;
   
   /*!
    @function
@@ -428,7 +428,7 @@ namespace JavaScriptCoreCPP {
    @result true if the two values are equal, false if they are not
    equal.
    */
-  bool operator==(const JSValue& lhs, const JSValue& rhs) noexcept ;
+  bool operator==(const JSValue& lhs, const JSValue& rhs) noexcept;
   
   // Return true if the two JSValues are not strict equal, as compared by the JS === operator.
   inline

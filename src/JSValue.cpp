@@ -290,38 +290,26 @@ namespace JavaScriptCoreCPP {
     JSValueProtect(js_context__, js_value_ref__);
   }
   
-  std::string to_string(const JSValue::Type& js_value_type) {
+  std::string to_string(const JSValue::Type& js_value_type) noexcept {
     switch (js_value_type) {
       case JSValue::Type::Undefined:
         return "Undefined";
         break;
-        
       case JSValue::Type::Null:
         return "Null";
         break;
-        
       case JSValue::Type::Boolean:
         return "Boolean";
         break;
-        
       case JSValue::Type::Number:
         return "Number";
         break;
-        
       case JSValue::Type::String:
         return "String";
         break;
-        
       case JSValue::Type::Object:
         return "Object";
         break;
-        
-      default:
-        std::ostringstream os;
-        os << "Could not map JSValue::Type with value "
-        << static_cast<std::underlying_type<JSValue::Type>::type>(js_value_type)
-        << " to a std::string.";
-        detail::ThrowLogicError("JSValue", os.str());
     }
   }
   
