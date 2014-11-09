@@ -33,15 +33,14 @@ namespace JavaScriptCoreCPP { namespace detail {
   
   JSPropertyCallback& JSPropertyCallback::operator=(const JSPropertyCallback& rhs) noexcept {
     JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
-    name__ = rhs.name__;
-    attributes__    = rhs.attributes__;
+    name__       = rhs.name__;
+    attributes__ = rhs.attributes__;
     return *this;
   }
   
   JSPropertyCallback& JSPropertyCallback::operator=(JSPropertyCallback&& rhs) noexcept {
     JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
-    name__ = std::move(rhs.name__);
-    attributes__    = std::move(rhs.attributes__);
+    swap(rhs);
     return *this;
   }
   

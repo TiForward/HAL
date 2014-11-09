@@ -52,10 +52,17 @@ namespace JavaScriptCoreCPP { namespace detail {
     
     JSExportClass()                                = default;
     ~JSExportClass()                               = default;
-    JSExportClass(const JSExportClass& rhs)        = default;
-    JSExportClass(JSExportClass&& rhs)             = default;
-    JSExportClass& operator=(const JSExportClass&) = default;
-    JSExportClass& operator=(JSExportClass&&)      = default;
+    //    JSExportClass(const JSExportClass&)            = default;
+    //    JSExportClass(JSExportClass&&)                 = default;
+    //    JSExportClass& operator=(const JSExportClass&) = default;
+    //    JSExportClass& operator=(JSExportClass&&)      = default;
+    
+    JSExportClass(const JSExportClass&) noexcept;
+    JSExportClass(JSExportClass&&) noexcept;
+    JSExportClass& operator=(const JSExportClass&) noexcept;
+    JSExportClass& operator=(JSExportClass&&) noexcept;
+    void swap(JSExportClass&) noexcept;
+    
     
   private:
     
@@ -67,6 +74,8 @@ namespace JavaScriptCoreCPP { namespace detail {
     JSObject CallAsConstructor(JSObject&& constructor, const std::vector<JSValue>&& arguments);
     bool     HasInstance(JSObject&& constructor, const JSValue&& possible_instance) const;
     // JSValue  ConvertToType(JSObject&& object, const JSValue::Type&& type) const final;
+    
+    void Print() const;
     
     JSExportClassDefinition<T>                    js_export_class_definition__;
     JSExportNamedValuePropertyCallbackMap_t<T>    named_value_property_callback_map__;
@@ -112,21 +121,12 @@ namespace JavaScriptCoreCPP { namespace detail {
     
     static JSExportCallbackMap_t<T> js_export_callback_map__;
     
-#undef JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD
 #undef JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC
 #ifdef JAVASCRIPTCORECPP_THREAD_SAFE
-    
-    std::recursive_mutex mutex__;
     static std::recursive_mutex mutex_static__;
-    
-#define JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD        std::lock_guard<std::recursive_mutex> lock(mutex__)
 #define JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC std::lock_guard<std::recursive_mutex> lock_static(JSExportClass::mutex_static__)
-    
 #else
-    
-#define JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD
 #define JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC
-    
 #endif  // JAVASCRIPTCORECPP_THREAD_SAFE
   };
   
@@ -144,6 +144,10 @@ namespace JavaScriptCoreCPP { namespace detail {
   , js_export_class_definition__(js_export_class_definition)
   , named_value_property_callback_map__(js_export_class_definition.get_named_value_property_callback_map())
   , named_function_property_callback_map__(js_export_class_definition.get_named_function_property_callback_map()) {
+    JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
+    
+    //js_export_class_definition__.Print();
+    
     // We are callback 0 so that we can intercept all Initialize callbacks.
     const auto key                      = reinterpret_cast<typename JSExportCallbackMap_t<T>::key_type>(nullptr);
     const auto callback_insert_result   = js_export_callback_map__.emplace(key, this);
@@ -151,456 +155,529 @@ namespace JavaScriptCoreCPP { namespace detail {
     
     JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass: callback ", std::to_string(key), " registered = ", callback_registered);
     assert(callback_registered);
-
-    // js_export_class_definition__.Print();
+  }
+  
+  
+  template<typename T>
+  JSExportClass<T>::JSExportClass(const JSExportClass<T>& rhs) noexcept
+  : JSClass(rhs)
+  , named_value_property_callback_map__(rhs.named_value_property_callback_map__)
+  , named_function_property_callback_map__(rhs.named_function_property_callback_map__) {
+    std::clog << "MDL: copy ctor" << std::endl;
+    Print();
   }
   
   template<typename T>
-  void JSExportClass<T>::Initialize(JSObject&& object) {
-    JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD;
-    
-    object.SetPrivate(new T(object.get_context()));
-    
-    const auto key                    = reinterpret_cast<typename JSExportCallbackMap_t<T>::key_type>(object.GetPrivate());
-    const auto callback_insert_result = js_export_callback_map__.emplace(key, this);
-    const bool callback_registered    = callback_insert_result.second;
-    
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::Initialize: callback ", std::to_string(key), " registered = ", std::to_string(callback_registered));
-    assert(callback_registered);
+  JSExportClass<T>::JSExportClass(JSExportClass<T>&& rhs) noexcept
+  : JSClass(rhs)
+  , named_value_property_callback_map__(std::move(rhs.named_value_property_callback_map__))
+  , named_function_property_callback_map__(std::move(rhs.named_function_property_callback_map__)) {
+    std::clog << "MDL: move ctor" << std::endl;
+    Print();
   }
   
   template<typename T>
-  JSValue JSExportClass<T>::GetNamedProperty(JSObject&& object, const JSString&& property_name) const {
-    JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD;
-    
-    const auto callback_position = named_value_property_callback_map__.find(property_name);
-    const bool callback_found    = callback_position != named_value_property_callback_map__.end();
-    
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::GetNamedProperty: callback found = ", std::to_string(callback_found), " for ", to_string(object), ".", to_string(property_name));
-    
-    // precondition
-    assert(callback_found);
-    
-    auto native_object_ptr = reinterpret_cast<T*>(object.GetPrivate());
-    const auto callback    = (callback_position -> second).get_callback();
-    const auto result      = callback(*native_object_ptr);
-    
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::GetNamedProperty: result = ", to_string(result), " for ", to_string(object), ".", to_string(property_name));
-    
-    return result;
-  };
-  
-  template<typename T>
-  bool JSExportClass<T>::SetNamedProperty(JSObject&& object, const JSString&& property_name, const JSValue&& value) {
-    JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD;
-    
-    const auto callback_position = named_value_property_callback_map__.find(property_name);
-    const bool callback_found    = callback_position != named_value_property_callback_map__.end();
-    
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::SetNamedProperty: callback found = ", std::to_string(callback_found), " for ", to_string(object), ".", to_string(property_name));
-    
-    // precondition
-    assert(callback_found);
-    
-    auto native_object_ptr = reinterpret_cast<T*>(object.GetPrivate());
-    const auto callback    = (callback_position -> second).set_callback();
-    const auto result      = callback(*native_object_ptr, std::move(value));
-    
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::SetNamedProperty: result = ", std::to_string(result), " for ", to_string(object), ".", to_string(property_name), " = ", to_string(value));
-    
-    return result;
-  };
-  
-  template<typename T>
-  JSValue JSExportClass<T>::CallNamedFunction(JSObject&& function, const JSString&& function_name, const std::vector<JSValue>&& arguments, JSObject&& this_object) {
-    JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD;
-    
-    // precondition
-    assert(function.IsFunction());
-    
-    const auto callback_position = named_function_property_callback_map__.find(static_cast<JSString>(function_name));
-    const bool callback_found    = callback_position != named_function_property_callback_map__.end();
-    
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallNamedFunction: callback found = ", std::to_string(callback_found), " for ", to_string(function), "(", std::to_string(arguments.size()), "arguments)");
-    
-    // precondition
-    assert(callback_found);
-    
-    auto native_object_ptr = reinterpret_cast<T*>(function.GetPrivate());
-    const auto callback    = (callback_position -> second).function_callback();
-    const auto result      = callback(*native_object_ptr, std::move(arguments), std::move(this_object));
-    
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallNamedFunction: result = ", to_string(result), " for ", to_string(this_object), ".", to_string(function), "(", std::to_string(arguments.size()), "arguments)");
-    
-    return result;
-  };
-  
-  template<typename T>
-  JSValue JSExportClass<T>::CallAsFunction(JSObject&& function, const std::vector<JSValue>&& arguments, JSObject&& this_object) {
-    JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD;
-    
-    // precondition
-    assert(function.IsFunction());
-    
-    auto       callback       = js_export_class_definition__.js_class_definition__.callAsFunction;
-    const bool callback_found = callback != nullptr;
-    
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallAsFunction: callback found = ", std::to_string(callback_found), " for ", to_string(function), "(", std::to_string(arguments.size()), "arguments)");
-    
-    // precondition
-    assert(callback_found);
-    
-    auto native_object_ptr = reinterpret_cast<T*>(function.GetPrivate());
-    const auto result      = callback(*native_object_ptr, std::move(arguments), std::move(this_object));
-    
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallAsFunction: result = ", to_string(result), " for ", to_string(this_object), ".", to_string(function), "(", std::to_string(arguments.size()), "arguments)");
-    
-    return result;
-  };
-  
-  template<typename T>
-  JSObject JSExportClass<T>::CallAsConstructor(JSObject&& constructor, const std::vector<JSValue>&& arguments) {
-    JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD;
-    
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallAsConstructor for ", to_string(constructor), "(", std::to_string(arguments.size()), "arguments)");
-    
-    // TODO
-    return constructor.get_context().CreateUndefined();
-  };
-  
-  template<typename T>
-  bool JSExportClass<T>::HasInstance(JSObject&& constructor, const JSValue&& possible_instance) const {
-    JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD;
-    
-    if (possible_instance.IsObject()) {
-      return false;
+  JSExportClass<T>& JSExportClass<T>::operator=(const JSExportClass<T>& rhs) noexcept {
+    JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD;
+    JSClass::operator=(rhs);
+    named_value_property_callback_map__    = rhs.named_value_property_callback_map__;
+    named_function_property_callback_map__ = rhs.named_function_property_callback_map__;
+    std::clog << "MDL: copy assignment" << std::endl;
+    Print();
+    return *this;
     }
     
-    bool result = false;
-    try {
-      auto native_object_ptr = dynamic_cast<T*>(reinterpret_cast<T*>(constructor.GetPrivate()));
-      static_cast<void>(native_object_ptr);
-      result = true;
-    } catch (...) {
+    template<typename T>
+    JSExportClass<T>& JSExportClass<T>::operator=(JSExportClass<T>&& rhs) noexcept {
+      JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD;
+      JSClass::operator=(rhs);
+      swap(rhs);
+      std::clog << "MDL: move assignment" << std::endl;
+      Print();
+      return *this;
     }
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::HasInstance: result = ", std::to_string(result), " for ", to_string(possible_instance), " instanceof ", to_string(constructor));
+    template<typename T>
+    void JSExportClass<T>::swap(JSExportClass<T>& other) noexcept {
+      JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD;
+      using std::swap;
+      
+      // By swapping the members of two classes, the two classes are
+      // effectively swapped.
+      swap(named_value_property_callback_map__   , other.named_value_property_callback_map__);
+      swap(named_function_property_callback_map__, other.named_function_property_callback_map__);
+    }
     
-    return result;
-  };
-  
-  //    template<typename T>
-  //    JSValue JSExportClass<T>::ConvertToType(JSObject&& object, const JSValue::Type&& type) const {
-  //      JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD;
-  //
-  //      auto       callback       = convert_to_type_callback__;
-  //      const bool callback_found = callback != nullptr;
-  //
-  //      JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::ConvertToType: callback found = ", std::to_string(callback_found), " for ", to_string(object));
-  //
-  //      // precondition
-  //      assert(callback_found);
-  //
-  //      auto native_object_ptr = reinterpret_cast<T*>(object.GetPrivate());
-  //      const auto result      = callback(*native_object_ptr, type);
-  //
-  //      JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::ConvertToType: result = ", to_string(result), " for converting ", to_string(object), " to ", to_string(type));
-  //
-  //      return result;
-  //    };
-  
-  
-  /* Static functions begin here. */
-  
-  template<typename T>
-  JSExportClass<T>* JSExportClass<T>::get_callback_ptr(void* data) {
-    JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
+    template<typename T>
+    void swap(JSExportClass<T>& first, JSExportClass<T>& second) noexcept {
+      first.swap(second);
+    }
     
-    auto key      = reinterpret_cast<typename JSExportCallbackMap_t<T>::key_type>(data);
-    auto position = js_export_callback_map__.find(key);
-    bool found    = (position != js_export_callback_map__.end());
+    template<typename T>
+    void JSExportClass<T>::Print() const {
+      JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD;
+      for (const auto& entry : named_value_property_callback_map__) {
+        const auto& name       = entry.first;
+        const auto& attributes = entry.second.get_attributes();
+        JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass: has value property callback ", name, " with attributes ", to_string(attributes));
+      }
+      
+      for (const auto& entry : named_function_property_callback_map__) {
+        const auto& name       = entry.first;
+        const auto& attributes = entry.second.get_attributes();
+        JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass: has function property callback ", name, " with attributes ", to_string(attributes));
+      }
+    }
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::get_callback_ptr callback ", std::to_string(key), " found = ", std::to_string(found));
+    template<typename T>
+    void JSExportClass<T>::Initialize(JSObject&& object) {
+      JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD;
+      
+      std::clog << "MDL: JSExportClass::Initialize" << std::endl;
+      Print();
+      
+      object.SetPrivate(new T(object.get_context()));
+      
+      const auto key                    = reinterpret_cast<typename JSExportCallbackMap_t<T>::key_type>(object.GetPrivate());
+      const auto callback_insert_result = js_export_callback_map__.emplace(key, this);
+      const bool callback_registered    = callback_insert_result.second;
+      
+      JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::Initialize: callback ", std::to_string(key), " registered = ", std::to_string(callback_registered));
+      assert(callback_registered);
+    }
     
-    if (found) {
+    template<typename T>
+    JSValue JSExportClass<T>::GetNamedProperty(JSObject&& object, const JSString&& property_name) const {
+      JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD;
+      
+      const auto callback_position = named_value_property_callback_map__.find(property_name);
+      const bool callback_found    = callback_position != named_value_property_callback_map__.end();
+      
+      JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::GetNamedProperty: callback found = ", std::to_string(callback_found), " for ", to_string(object), ".", property_name);
+      
+      // precondition
+      assert(callback_found);
+      
+      auto native_object_ptr = reinterpret_cast<T*>(object.GetPrivate());
+      const auto callback    = (callback_position -> second).get_callback();
+      const auto result      = callback(*native_object_ptr);
+      
+      JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::GetNamedProperty: result = ", to_string(result), " for ", to_string(object), ".", to_string(property_name));
+      
+      return result;
+    };
+    
+    template<typename T>
+    bool JSExportClass<T>::SetNamedProperty(JSObject&& object, const JSString&& property_name, const JSValue&& value) {
+      JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD;
+      
+      const auto callback_position = named_value_property_callback_map__.find(property_name);
+      const bool callback_found    = callback_position != named_value_property_callback_map__.end();
+      
+      JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::SetNamedProperty: callback found = ", std::to_string(callback_found), " for ", to_string(object), ".", to_string(property_name));
+      
+      // precondition
+      assert(callback_found);
+      
+      auto native_object_ptr = reinterpret_cast<T*>(object.GetPrivate());
+      const auto callback    = (callback_position -> second).set_callback();
+      const auto result      = callback(*native_object_ptr, std::move(value));
+      
+      JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::SetNamedProperty: result = ", std::to_string(result), " for ", to_string(object), ".", to_string(property_name), " = ", to_string(value));
+      
+      return result;
+    };
+    
+    template<typename T>
+    JSValue JSExportClass<T>::CallNamedFunction(JSObject&& function, const JSString&& function_name, const std::vector<JSValue>&& arguments, JSObject&& this_object) {
+      JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD;
+      
+      // precondition
+      assert(function.IsFunction());
+      
+      const auto callback_position = named_function_property_callback_map__.find(static_cast<JSString>(function_name));
+      const bool callback_found    = callback_position != named_function_property_callback_map__.end();
+      
+      JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallNamedFunction: callback found = ", std::to_string(callback_found), " for ", to_string(function), "(", std::to_string(arguments.size()), "arguments)");
+      
+      // precondition
+      assert(callback_found);
+      
+      auto native_object_ptr = reinterpret_cast<T*>(function.GetPrivate());
+      const auto callback    = (callback_position -> second).function_callback();
+      const auto result      = callback(*native_object_ptr, std::move(arguments), std::move(this_object));
+      
+      JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallNamedFunction: result = ", to_string(result), " for ", to_string(this_object), ".", to_string(function), "(", std::to_string(arguments.size()), "arguments)");
+      
+      return result;
+    };
+    
+    template<typename T>
+    JSValue JSExportClass<T>::CallAsFunction(JSObject&& function, const std::vector<JSValue>&& arguments, JSObject&& this_object) {
+      JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD;
+      
+      // precondition
+      assert(function.IsFunction());
+      
+      auto       callback       = js_export_class_definition__.js_class_definition__.callAsFunction;
+      const bool callback_found = callback != nullptr;
+      
+      JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallAsFunction: callback found = ", std::to_string(callback_found), " for ", to_string(function), "(", std::to_string(arguments.size()), "arguments)");
+      
+      // precondition
+      assert(callback_found);
+      
+      auto native_object_ptr = reinterpret_cast<T*>(function.GetPrivate());
+      const auto result      = callback(*native_object_ptr, std::move(arguments), std::move(this_object));
+      
+      JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallAsFunction: result = ", to_string(result), " for ", to_string(this_object), ".", to_string(function), "(", std::to_string(arguments.size()), "arguments)");
+      
+      return result;
+    };
+    
+    template<typename T>
+    JSObject JSExportClass<T>::CallAsConstructor(JSObject&& constructor, const std::vector<JSValue>&& arguments) {
+      JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD;
+      
+      JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallAsConstructor for ", to_string(constructor), "(", std::to_string(arguments.size()), "arguments)");
+      
+      // TODO
+      return constructor.get_context().CreateUndefined();
+    };
+    
+    template<typename T>
+    bool JSExportClass<T>::HasInstance(JSObject&& constructor, const JSValue&& possible_instance) const {
+      JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD;
+      
+      if (possible_instance.IsObject()) {
+        return false;
+      }
+      
+      bool result = false;
+      try {
+        auto native_object_ptr = dynamic_cast<T*>(reinterpret_cast<T*>(constructor.GetPrivate()));
+        static_cast<void>(native_object_ptr);
+        result = true;
+      } catch (...) {
+      }
+      
+      JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::HasInstance: result = ", std::to_string(result), " for ", to_string(possible_instance), " instanceof ", to_string(constructor));
+      
+      return result;
+    };
+    
+    //    template<typename T>
+    //    JSValue JSExportClass<T>::ConvertToType(JSObject&& object, const JSValue::Type&& type) const {
+    //      JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD;
+    //
+    //      auto       callback       = convert_to_type_callback__;
+    //      const bool callback_found = callback != nullptr;
+    //
+    //      JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::ConvertToType: callback found = ", std::to_string(callback_found), " for ", to_string(object));
+    //
+    //      // precondition
+    //      assert(callback_found);
+    //
+    //      auto native_object_ptr = reinterpret_cast<T*>(object.GetPrivate());
+    //      const auto result      = callback(*native_object_ptr, type);
+    //
+    //      JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::ConvertToType: result = ", to_string(result), " for converting ", to_string(object), " to ", to_string(type));
+    //
+    //      return result;
+    //    };
+    
+    
+    /* Static functions begin here. */
+    
+    template<typename T>
+    JSExportClass<T>* JSExportClass<T>::get_callback_ptr(void* data) {
+      JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
+      
+      auto key      = reinterpret_cast<typename JSExportCallbackMap_t<T>::key_type>(data);
+      auto position = js_export_callback_map__.find(key);
+      bool found    = (position != js_export_callback_map__.end());
+      
+      JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::get_callback_ptr callback ", std::to_string(key), " found = ", std::to_string(found));
+      
+      if (found) {
+        return position -> second;
+      }
+      
+      // Fallback to callback 0.
+      key      = reinterpret_cast<typename JSExportCallbackMap_t<T>::key_type>(nullptr);
+      position = js_export_callback_map__.find(key);
+      found    = (position != js_export_callback_map__.end());
+      
+      JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::get_callback_ptr callback ", std::to_string(key), " found = ", std::to_string(found));
+      
+      assert(found);
       return position -> second;
     }
     
-    // Fallback to callback 0.
-    key      = reinterpret_cast<typename JSExportCallbackMap_t<T>::key_type>(nullptr);
-    position = js_export_callback_map__.find(key);
-    found    = (position != js_export_callback_map__.end());
+    template<typename T>
+    JSExportClass<T>* JSExportClass<T>::get_callback_ptr(JSObject& js_object) {
+      return get_callback_ptr(js_object.GetPrivate());
+    }
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::get_callback_ptr callback ", std::to_string(key), " found = ", std::to_string(found));
     
-    assert(found);
-    return position -> second;
-  }
-  
-  template<typename T>
-  JSExportClass<T>* JSExportClass<T>::get_callback_ptr(JSObject& js_object) {
-    return get_callback_ptr(js_object.GetPrivate());
-  }
-  
-  
-  /* Implementations of the JavaScriptCore C API callbacks begin here. */
-  
-  template<typename T>
-  void JSExportClass<T>::JSObjectInitializeCallback(JSContextRef context_ref, JSObjectRef object_ref) {
-    JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
+    /* Implementations of the JavaScriptCore C API callbacks begin here. */
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExport::JSObjectInitializeCallback");
+    template<typename T>
+    void JSExportClass<T>::JSObjectInitializeCallback(JSContextRef context_ref, JSObjectRef object_ref) {
+      JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
+      
+      JAVASCRIPTCORECPP_LOG_DEBUG("JSExport::JSObjectInitializeCallback");
+      
+      JSContext js_context(context_ref);
+      JSObject  js_object(js_context, object_ref);
+      
+      get_callback_ptr(js_object) -> Initialize(std::move(js_object));
+    }
     
-    JSContext js_context(context_ref);
-    JSObject  js_object(js_context, object_ref);
+    template<typename T>
+    void JSExportClass<T>::JSObjectFinalizeCallback(JSObjectRef object_ref) {
+      JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
+      
+      auto       native_object_ptr = JSObjectGetPrivate(object_ref);
+      const auto key               = reinterpret_cast<typename JSExportCallbackMap_t<T>::key_type>(native_object_ptr);
+      
+      JAVASCRIPTCORECPP_LOG_DEBUG("JSExport::JSObjectFinalizeCallback: delete native object ", std::to_string(key));
+      delete reinterpret_cast<T*>(native_object_ptr);
+      JAVASCRIPTCORECPP_LOG_DEBUG("JSExport::JSObjectFinalizeCallback: native object ", std::to_string(key), "deleted");
+      
+      const auto callback_erase_result = js_export_callback_map__.erase(key);
+      const bool callback_unregistered = (callback_erase_result == 1);
+      
+      JAVASCRIPTCORECPP_LOG_DEBUG("JSExport::JSObjectFinalizeCallback: callback ", std::to_string(key), "un-registered = ", std::to_string(callback_unregistered));
+      
+      assert(callback_unregistered);
+    }
     
-    get_callback_ptr(js_object) -> Initialize(std::move(js_object));
-  }
-  
-  template<typename T>
-  void JSExportClass<T>::JSObjectFinalizeCallback(JSObjectRef object_ref) {
-    JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
     
-    auto       native_object_ptr = JSObjectGetPrivate(object_ref);
-    const auto key               = reinterpret_cast<typename JSExportCallbackMap_t<T>::key_type>(native_object_ptr);
+    /* FIXME: ALl of the following are broken. */
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExport::JSObjectFinalizeCallback: delete native object ", std::to_string(key));
-    delete reinterpret_cast<T*>(native_object_ptr);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExport::JSObjectFinalizeCallback: native object ", std::to_string(key), "deleted");
+    template<typename T>
+    JSValueRef JSExportClass<T>::GetNamedValuePropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception) try {
+      JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
+      JSContext js_context(context_ref);
+      JSObject  js_object(js_context, object_ref);
+      return get_callback_ptr(js_object) -> GetNamedProperty(std::move(js_object), JSString(property_name_ref));
+    } catch (const std::exception& e) {
+      JSContext js_context(context_ref);
+      JSString message(LogStdException("GetNamedValuePropertyCallback", JSObject(js_context, object_ref), e));
+      *exception = JSValue(js_context, message);
+    } catch (...) {
+      JSContext js_context(context_ref);
+      JSString message(LogUnknownException("GetNamedValuePropertyCallback", JSObject(js_context, object_ref)));
+      *exception = JSValue(js_context, message);
+    }
     
-    const auto callback_erase_result = js_export_callback_map__.erase(key);
-    const bool callback_unregistered = (callback_erase_result == 1);
+    template<typename T>
+    bool JSExportClass<T>::SetNamedValuePropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef value_ref, JSValueRef* exception) try {
+      JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
+      JSContext js_context(context_ref);
+      JSObject  js_object(js_context, object_ref);
+      return get_callback_ptr(js_object) -> SetNamedProperty(std::move(js_object), JSString(property_name_ref), JSValue(js_context, value_ref));
+    } catch (const std::exception& e) {
+      JSContext js_context(context_ref);
+      JSString message(LogStdException("SetNamedValuePropertyCallback", JSObject(js_context, object_ref), e));
+      *exception = JSValue(js_context, message);
+    } catch (...) {
+      JSContext js_context(context_ref);
+      JSString message(LogUnknownException("SetNamedValuePropertyCallback", JSObject(js_context, object_ref)));
+      *exception = JSValue(js_context, message);
+    }
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExport::JSObjectFinalizeCallback: callback ", std::to_string(key), "un-registered = ", std::to_string(callback_unregistered));
+    template<typename T>
+    JSValueRef JSExportClass<T>::CallNamedFunctionCallback(JSContextRef context_ref, JSObjectRef function_ref, JSObjectRef this_object_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception) try {
+      JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
+      JSContext js_context(context_ref);
+      JSObject  js_object(js_context, function_ref);
+      
+      // TODO:
+      // const JSString&& function_name = ...
+      // return get_callback_ptr(js_object) -> CallNamedFunction(std::move(js_object), function_name, to_vector(js_context, argument_count, arguments_array), JSObject(js_context, this_object_ref));
+      return nullptr;
+      
+    } catch (const std::exception& e) {
+      JSContext js_context(context_ref);
+      JSString message(LogStdException("CallNamedFunctionCallback", JSObject(js_context, function_ref), e));
+      *exception = JSValue(js_context, message);
+    } catch (...) {
+      JSContext js_context(context_ref);
+      JSString message(LogUnknownException("CallNamedFunctionCallback", JSObject(js_context, function_ref)));
+      *exception = JSValue(js_context, message);
+    }
     
-    assert(callback_unregistered);
-  }
-  
-  
-  /* FIXME: ALl of the following are broken. */
-  
-  template<typename T>
-  JSValueRef JSExportClass<T>::GetNamedValuePropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception) try {
-    JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
-    JSContext js_context(context_ref);
-    JSObject  js_object(js_context, object_ref);
-    return get_callback_ptr(js_object) -> GetNamedProperty(std::move(js_object), JSString(property_name_ref));
-  } catch (const std::exception& e) {
-    JSContext js_context(context_ref);
-    JSString message(LogStdException("GetNamedValuePropertyCallback", JSObject(js_context, object_ref), e));
-    *exception = JSValue(js_context, message);
-  } catch (...) {
-    JSContext js_context(context_ref);
-    JSString message(LogUnknownException("GetNamedValuePropertyCallback", JSObject(js_context, object_ref)));
-    *exception = JSValue(js_context, message);
-  }
-  
-  template<typename T>
-  bool JSExportClass<T>::SetNamedValuePropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef value_ref, JSValueRef* exception) try {
-    JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
-    JSContext js_context(context_ref);
-    JSObject  js_object(js_context, object_ref);
-    return get_callback_ptr(js_object) -> SetNamedProperty(std::move(js_object), JSString(property_name_ref), JSValue(js_context, value_ref));
-  } catch (const std::exception& e) {
-    JSContext js_context(context_ref);
-    JSString message(LogStdException("SetNamedValuePropertyCallback", JSObject(js_context, object_ref), e));
-    *exception = JSValue(js_context, message);
-  } catch (...) {
-    JSContext js_context(context_ref);
-    JSString message(LogUnknownException("SetNamedValuePropertyCallback", JSObject(js_context, object_ref)));
-    *exception = JSValue(js_context, message);
-  }
-  
-  template<typename T>
-  JSValueRef JSExportClass<T>::CallNamedFunctionCallback(JSContextRef context_ref, JSObjectRef function_ref, JSObjectRef this_object_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception) try {
-    JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
-    JSContext js_context(context_ref);
-    JSObject  js_object(js_context, function_ref);
+    template<typename T>
+    bool JSExportClass<T>::JSObjectHasPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref) try {
+      JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
+      JSContext js_context(context_ref);
+      JSObject  js_object(js_context, object_ref);
+      
+      return js_object.HasProperty(JSString(property_name_ref));
+      return false;
+      
+    } catch (const std::exception& e) {
+      LogStdException("JSObjectHasPropertyCallback", JSObject(JSContext(context_ref), object_ref), e);
+    } catch (...) {
+      LogUnknownException("JSObjectHasPropertyCallback", JSObject(JSContext(context_ref), object_ref));
+    }
     
-    // TODO:
-    // const JSString&& function_name = ...
-    // return get_callback_ptr(js_object) -> CallNamedFunction(std::move(js_object), function_name, to_vector(js_context, argument_count, arguments_array), JSObject(js_context, this_object_ref));
-    return nullptr;
+    template<typename T>
+    JSValueRef JSExportClass<T>::JSObjectGetPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception) try {
+      JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
+      JSContext js_context(context_ref);
+      JSObject  js_object(js_context, object_ref);
+      return js_object.GetProperty(JSString(property_name_ref));
+    } catch (const std::exception& e) {
+      JSContext js_context(context_ref);
+      JSString message(LogStdException("JSObjectGetPropertyCallback", JSObject(js_context, object_ref), e));
+      *exception = JSValue(js_context, message);
+    } catch (...) {
+      JSContext js_context(context_ref);
+      JSString message(LogUnknownException("JSObjectGetPropertyCallback", JSObject(js_context, object_ref)));
+      *exception = JSValue(js_context, message);
+    }
     
-  } catch (const std::exception& e) {
-    JSContext js_context(context_ref);
-    JSString message(LogStdException("CallNamedFunctionCallback", JSObject(js_context, function_ref), e));
-    *exception = JSValue(js_context, message);
-  } catch (...) {
-    JSContext js_context(context_ref);
-    JSString message(LogUnknownException("CallNamedFunctionCallback", JSObject(js_context, function_ref)));
-    *exception = JSValue(js_context, message);
-  }
-  
-  template<typename T>
-  bool JSExportClass<T>::JSObjectHasPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref) try {
-    JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
-    JSContext js_context(context_ref);
-    JSObject  js_object(js_context, object_ref);
+    template<typename T>
+    bool JSExportClass<T>::JSObjectSetPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef value_ref, JSValueRef* exception) try {
+      JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
+      JSContext js_context(context_ref);
+      JSObject  js_object(js_context, object_ref);
+      js_object.SetProperty(JSString(property_name_ref), JSValue(js_context, value_ref));
+      return true;
+    } catch (const std::exception& e) {
+      JSContext js_context(context_ref);
+      JSString message(LogStdException("JSObjectSetPropertyCallback", JSObject(js_context, object_ref), e));
+      *exception = JSValue(js_context, message);
+    } catch (...) {
+      JSContext js_context(context_ref);
+      JSString message(LogUnknownException("JSObjectSetPropertyCallback", JSObject(js_context, object_ref)));
+      *exception = JSValue(js_context, message);
+    }
     
-    return js_object.HasProperty(JSString(property_name_ref));
-    return false;
+    template<typename T>
+    bool JSExportClass<T>::JSObjectDeletePropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception) try {
+      JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
+      JSContext js_context(context_ref);
+      JSObject  js_object(js_context, object_ref);
+      return js_object.DeleteProperty(JSString(property_name_ref));
+    } catch (const std::exception& e) {
+      JSContext js_context(context_ref);
+      JSString message(LogStdException("JSObjectDeletePropertyCallback", JSObject(js_context, object_ref), e));
+      *exception = JSValue(js_context, message);
+    } catch (...) {
+      JSContext js_context(context_ref);
+      JSString message(LogUnknownException("JSObjectDeletePropertyCallback", JSObject(js_context, object_ref)));
+      *exception = JSValue(js_context, message);
+    }
     
-  } catch (const std::exception& e) {
-    LogStdException("JSObjectHasPropertyCallback", JSObject(JSContext(context_ref), object_ref), e);
-  } catch (...) {
-    LogUnknownException("JSObjectHasPropertyCallback", JSObject(JSContext(context_ref), object_ref));
-  }
-  
-  template<typename T>
-  JSValueRef JSExportClass<T>::JSObjectGetPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception) try {
-    JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
-    JSContext js_context(context_ref);
-    JSObject  js_object(js_context, object_ref);
-    return js_object.GetProperty(JSString(property_name_ref));
-  } catch (const std::exception& e) {
-    JSContext js_context(context_ref);
-    JSString message(LogStdException("JSObjectGetPropertyCallback", JSObject(js_context, object_ref), e));
-    *exception = JSValue(js_context, message);
-  } catch (...) {
-    JSContext js_context(context_ref);
-    JSString message(LogUnknownException("JSObjectGetPropertyCallback", JSObject(js_context, object_ref)));
-    *exception = JSValue(js_context, message);
-  }
-  
-  template<typename T>
-  bool JSExportClass<T>::JSObjectSetPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef value_ref, JSValueRef* exception) try {
-    JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
-    JSContext js_context(context_ref);
-    JSObject  js_object(js_context, object_ref);
-    js_object.SetProperty(JSString(property_name_ref), JSValue(js_context, value_ref));
-    return true;
-  } catch (const std::exception& e) {
-    JSContext js_context(context_ref);
-    JSString message(LogStdException("JSObjectSetPropertyCallback", JSObject(js_context, object_ref), e));
-    *exception = JSValue(js_context, message);
-  } catch (...) {
-    JSContext js_context(context_ref);
-    JSString message(LogUnknownException("JSObjectSetPropertyCallback", JSObject(js_context, object_ref)));
-    *exception = JSValue(js_context, message);
-  }
-  
-  template<typename T>
-  bool JSExportClass<T>::JSObjectDeletePropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception) try {
-    JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
-    JSContext js_context(context_ref);
-    JSObject  js_object(js_context, object_ref);
-    return js_object.DeleteProperty(JSString(property_name_ref));
-  } catch (const std::exception& e) {
-    JSContext js_context(context_ref);
-    JSString message(LogStdException("JSObjectDeletePropertyCallback", JSObject(js_context, object_ref), e));
-    *exception = JSValue(js_context, message);
-  } catch (...) {
-    JSContext js_context(context_ref);
-    JSString message(LogUnknownException("JSObjectDeletePropertyCallback", JSObject(js_context, object_ref)));
-    *exception = JSValue(js_context, message);
-  }
-  
-  template<typename T>
-  void JSExportClass<T>::JSObjectGetPropertyNamesCallback(JSContextRef context_ref, JSObjectRef object_ref, JSPropertyNameAccumulatorRef property_names) try {
-    JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
-    JSContext js_context(context_ref);
-    JSObject  js_object(js_context, object_ref);
-    return js_object.GetPropertyNames(JSPropertyNameAccumulator(property_names));
-  } catch (const std::exception& e) {
-    LogStdException("JSObjectGetPropertyNamesCallback", JSObject(JSContext(context_ref), object_ref), e);
-  } catch (...) {
-    LogUnknownException("JSObjectGetPropertyNamesCallback", JSObject(JSContext(context_ref), object_ref));
-  }
-  
-  template<typename T>
-  JSValueRef JSExportClass<T>::JSObjectCallAsFunctionCallback(JSContextRef context_ref, JSObjectRef function_ref, JSObjectRef this_object_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception) try {
-    JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
-    JSContext js_context(context_ref);
-    JSObject  js_object(js_context, function_ref);
-    return get_callback_ptr(js_object) -> CallAsFunction(std::move(js_object), to_vector(js_context, argument_count, arguments_array), JSObject(js_context, this_object_ref));
-  } catch (const std::exception& e) {
-    JSContext js_context(context_ref);
-    JSString message(LogStdException("JSObjectCallAsFunctionCallback", JSObject(js_context, function_ref), e));
-    *exception = JSValue(js_context, message);
-  } catch (...) {
-    JSContext js_context(context_ref);
-    JSString message(LogUnknownException("JSObjectCallAsFunctionCallback", JSObject(js_context, function_ref)));
-    *exception = JSValue(js_context, message);
-  }
-  
-  template<typename T>
-  JSObjectRef JSExportClass<T>::JSObjectCallAsConstructorCallback(JSContextRef context_ref, JSObjectRef constructor_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception) try {
-    JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
-    JSContext js_context(context_ref);
-    JSObject  js_object(js_context, constructor_ref);
-    return get_callback_ptr(js_object) -> CallAsConstructor(std::move(js_object), to_vector(js_context, argument_count, arguments_array));
-  } catch (const std::exception& e) {
-    JSContext js_context(context_ref);
-    JSString message(LogStdException("JSObjectCallAsConstructorCallback", JSObject(js_context, constructor_ref), e));
-    *exception = JSValue(js_context, message);
-  } catch (...) {
-    JSContext js_context(context_ref);
-    JSString message(LogUnknownException("JSObjectCallAsConstructorCallback", JSObject(js_context, constructor_ref)));
-    *exception = JSValue(js_context, message);
-  }
-  
-  template<typename T>
-  bool JSExportClass<T>::JSObjectHasInstanceCallback(JSContextRef context_ref, JSObjectRef constructor_ref, JSValueRef possible_instance_ref, JSValueRef* exception) try {
-    JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
-    JSContext js_context(context_ref);
-    JSObject  js_object(js_context, constructor_ref);
-    return get_callback_ptr(js_object) -> HasInstance(std::move(js_object), JSValue(js_context, possible_instance_ref));
-  } catch (const std::exception& e) {
-    JSContext js_context(context_ref);
-    JSString message(LogStdException("JSObjectHasInstanceCallback", JSObject(js_context, constructor_ref), e));
-    *exception = JSValue(js_context, message);
-  } catch (...) {
-    JSContext js_context(context_ref);
-    JSString message(LogUnknownException("JSObjectHasInstanceCallback", JSObject(js_context, constructor_ref)));
-    *exception = JSValue(js_context, message);
-  }
-  
-  //  template<typename T>
-  //  JSValueRef JSExportClass<T>::JSObjectConvertToTypeCallback(JSContextRef context_ref, JSObjectRef object_ref, JSType type, JSValueRef* exception) try {
-  //    JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
-  //    JSContext js_context(context_ref);
-  //    JSObject  js_object(js_context, object_ref);
-  //    return get_callback_ptr(js_object) -> ConvertToType(std::move(js_object), ToJSValueType(type));
-  //  } catch (const std::exception& e) {
-  //    JSContext js_context(context_ref);
-  //    JSString message(LogStdException("JSObjectConvertToTypeCallback", JSObject(js_context, object_ref), e));
-  //    *exception = JSValue(js_context, message);
-  //  } catch (...) {
-  //    JSContext js_context(context_ref);
-  //    JSString message(LogUnknownException("JSObjectConvertToTypeCallback", JSObject(js_context, object_ref)));
-  //    *exception = JSValue(js_context, message);
-  //  }
-  
-  template<typename T>
-  std::string JSExportClass<T>::LogStdException(const std::string& function_name, const JSObject& js_object, const std::exception& exception) {
-    std::ostringstream os;
-    os << "JSExportClass<T>:: "
-    <<  function_name
-    << " for object "
-    << to_string(js_object)
-    << " threw exception: "
-    << exception.what();
+    template<typename T>
+    void JSExportClass<T>::JSObjectGetPropertyNamesCallback(JSContextRef context_ref, JSObjectRef object_ref, JSPropertyNameAccumulatorRef property_names) try {
+      JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
+      JSContext js_context(context_ref);
+      JSObject  js_object(js_context, object_ref);
+      return js_object.GetPropertyNames(JSPropertyNameAccumulator(property_names));
+    } catch (const std::exception& e) {
+      LogStdException("JSObjectGetPropertyNamesCallback", JSObject(JSContext(context_ref), object_ref), e);
+    } catch (...) {
+      LogUnknownException("JSObjectGetPropertyNamesCallback", JSObject(JSContext(context_ref), object_ref));
+    }
     
-    const auto message = os.str();
-    JAVASCRIPTCORECPP_LOG_ERROR(message);
-    return message;
-  }
-  
-  template<typename T>
-  std::string JSExportClass<T>::LogUnknownException(const std::string& function_name, const JSObject& js_object) {
-    std::ostringstream os;
-    os << "JSExportClass<T>:: "
-    <<  function_name
-    << " for object "
-    << to_string(js_object)
-    << " threw unknown exception";
+    template<typename T>
+    JSValueRef JSExportClass<T>::JSObjectCallAsFunctionCallback(JSContextRef context_ref, JSObjectRef function_ref, JSObjectRef this_object_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception) try {
+      JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
+      JSContext js_context(context_ref);
+      JSObject  js_object(js_context, function_ref);
+      return get_callback_ptr(js_object) -> CallAsFunction(std::move(js_object), to_vector(js_context, argument_count, arguments_array), JSObject(js_context, this_object_ref));
+    } catch (const std::exception& e) {
+      JSContext js_context(context_ref);
+      JSString message(LogStdException("JSObjectCallAsFunctionCallback", JSObject(js_context, function_ref), e));
+      *exception = JSValue(js_context, message);
+    } catch (...) {
+      JSContext js_context(context_ref);
+      JSString message(LogUnknownException("JSObjectCallAsFunctionCallback", JSObject(js_context, function_ref)));
+      *exception = JSValue(js_context, message);
+    }
     
-    const auto message = os.str();
-    JAVASCRIPTCORECPP_LOG_ERROR(message);
-    return message;
-  }
-  
-}} // namespace JavaScriptCoreCPP { namespace detail {
-
+    template<typename T>
+    JSObjectRef JSExportClass<T>::JSObjectCallAsConstructorCallback(JSContextRef context_ref, JSObjectRef constructor_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception) try {
+      JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
+      JSContext js_context(context_ref);
+      JSObject  js_object(js_context, constructor_ref);
+      return get_callback_ptr(js_object) -> CallAsConstructor(std::move(js_object), to_vector(js_context, argument_count, arguments_array));
+    } catch (const std::exception& e) {
+      JSContext js_context(context_ref);
+      JSString message(LogStdException("JSObjectCallAsConstructorCallback", JSObject(js_context, constructor_ref), e));
+      *exception = JSValue(js_context, message);
+    } catch (...) {
+      JSContext js_context(context_ref);
+      JSString message(LogUnknownException("JSObjectCallAsConstructorCallback", JSObject(js_context, constructor_ref)));
+      *exception = JSValue(js_context, message);
+    }
+    
+    template<typename T>
+    bool JSExportClass<T>::JSObjectHasInstanceCallback(JSContextRef context_ref, JSObjectRef constructor_ref, JSValueRef possible_instance_ref, JSValueRef* exception) try {
+      JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
+      JSContext js_context(context_ref);
+      JSObject  js_object(js_context, constructor_ref);
+      return get_callback_ptr(js_object) -> HasInstance(std::move(js_object), JSValue(js_context, possible_instance_ref));
+    } catch (const std::exception& e) {
+      JSContext js_context(context_ref);
+      JSString message(LogStdException("JSObjectHasInstanceCallback", JSObject(js_context, constructor_ref), e));
+      *exception = JSValue(js_context, message);
+    } catch (...) {
+      JSContext js_context(context_ref);
+      JSString message(LogUnknownException("JSObjectHasInstanceCallback", JSObject(js_context, constructor_ref)));
+      *exception = JSValue(js_context, message);
+    }
+    
+    //  template<typename T>
+    //  JSValueRef JSExportClass<T>::JSObjectConvertToTypeCallback(JSContextRef context_ref, JSObjectRef object_ref, JSType type, JSValueRef* exception) try {
+    //    JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
+    //    JSContext js_context(context_ref);
+    //    JSObject  js_object(js_context, object_ref);
+    //    return get_callback_ptr(js_object) -> ConvertToType(std::move(js_object), ToJSValueType(type));
+    //  } catch (const std::exception& e) {
+    //    JSContext js_context(context_ref);
+    //    JSString message(LogStdException("JSObjectConvertToTypeCallback", JSObject(js_context, object_ref), e));
+    //    *exception = JSValue(js_context, message);
+    //  } catch (...) {
+    //    JSContext js_context(context_ref);
+    //    JSString message(LogUnknownException("JSObjectConvertToTypeCallback", JSObject(js_context, object_ref)));
+    //    *exception = JSValue(js_context, message);
+    //  }
+    
+    template<typename T>
+    std::string JSExportClass<T>::LogStdException(const std::string& function_name, const JSObject& js_object, const std::exception& exception) {
+      std::ostringstream os;
+      os << "JSExportClass<T>:: "
+      <<  function_name
+      << " for object "
+      << to_string(js_object)
+      << " threw exception: "
+      << exception.what();
+      
+      const auto message = os.str();
+      JAVASCRIPTCORECPP_LOG_ERROR(message);
+      return message;
+    }
+    
+    template<typename T>
+    std::string JSExportClass<T>::LogUnknownException(const std::string& function_name, const JSObject& js_object) {
+      std::ostringstream os;
+      os << "JSExportClass<T>:: "
+      <<  function_name
+      << " for object "
+      << to_string(js_object)
+      << " threw unknown exception";
+      
+      const auto message = os.str();
+      JAVASCRIPTCORECPP_LOG_ERROR(message);
+      return message;
+    }
+    
+    }} // namespace JavaScriptCoreCPP { namespace detail {
+    
 #endif // _JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_HPP_

@@ -142,10 +142,10 @@ namespace JavaScriptCoreCPP { namespace detail {
     std::string result;
     for (auto attribute : {JSPropertyAttribute::None, JSPropertyAttribute::ReadOnly, JSPropertyAttribute::DontEnum, JSPropertyAttribute::DontDelete}) {
       auto position = attributes.find(attribute);
-      if (!result.empty()) {
-        result += ", ";
-      }
       if (position != attributes.end()) {
+        if (!result.empty()) {
+          result += ", ";
+        }
         result += to_string(*position);
       }
     }
@@ -196,10 +196,10 @@ namespace JavaScriptCoreCPP { namespace detail {
     std::string result;
     for (auto attribute : {JSClassAttribute::None, JSClassAttribute::NoAutomaticPrototype}) {
       auto position = attributes.find(attribute);
-      if (!result.empty()) {
-        result += ", ";
-      }
       if (position != attributes.end()) {
+        if (!result.empty()) {
+          result += ", ";
+        }
         result += to_string(*position);
       }
     }

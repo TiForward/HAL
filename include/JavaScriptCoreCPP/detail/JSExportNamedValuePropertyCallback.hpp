@@ -149,8 +149,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   JSExportNamedValuePropertyCallback<T>& JSExportNamedValuePropertyCallback<T>::JSExportNamedValuePropertyCallback::operator=(JSExportNamedValuePropertyCallback<T>&& rhs) noexcept {
     JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
     JSPropertyCallback::operator=(rhs);
-    get_callback__ = std::move(rhs.get_callback__);
-    set_callback__ = std::move(rhs.set_callback__);
+    swap(rhs);
     return *this;
   }
   

@@ -81,18 +81,18 @@ namespace JavaScriptCoreCPP { namespace detail {
   , named_function_property_callback_map__(rhs.named_function_property_callback_map__) {
     InitializeNamedPropertyCallbacks();
     
-//    std::clog << "MDL: copy ctor " << std::endl;
+//    std::clog << "MDL: copy ctor" << std::endl;
 //    Print();
   }
   
   template<typename T>
   JSExportClassDefinition<T>::JSExportClassDefinition(JSExportClassDefinition<T>&& rhs) noexcept
   : JSClassDefinition(rhs)
-  , named_value_property_callback_map__(rhs.named_value_property_callback_map__)
-  , named_function_property_callback_map__(rhs.named_function_property_callback_map__) {
+  , named_value_property_callback_map__(std::move(rhs.named_value_property_callback_map__))
+  , named_function_property_callback_map__(std::move(rhs.named_function_property_callback_map__)) {
     InitializeNamedPropertyCallbacks();
     
-//    std::clog << "MDL: move ctor " << std::endl;
+//    std::clog << "MDL: move ctor" << std::endl;
 //    Print();
   }
   
@@ -104,7 +104,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     named_function_property_callback_map__ = rhs.named_function_property_callback_map__;
     InitializeNamedPropertyCallbacks();
     
-//    std::clog << "MDL: copy assignment " << std::endl;
+//    std::clog << "MDL: copy assignment" << std::endl;
 //    Print();
     
     return *this;
@@ -117,7 +117,7 @@ namespace JavaScriptCoreCPP { namespace detail {
       swap(rhs);
       InitializeNamedPropertyCallbacks();
       
-//      std::clog << "MDL: move assignment " << std::endl;
+//      std::clog << "MDL: move assignment" << std::endl;
 //      Print();
       
       return *this;

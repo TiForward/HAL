@@ -76,7 +76,7 @@ using namespace JavaScriptCoreCPP;
   auto native_class = builder.build();
 }
 
-- (void)xtestJSExport {
+- (void)testJSExport {
   JSContext js_context = js_context_group.CreateContext();
   auto global_object   = js_context.get_global_object();
 

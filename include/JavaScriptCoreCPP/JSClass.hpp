@@ -86,14 +86,11 @@ namespace JavaScriptCoreCPP {
     
   private:
     
-    // For interoperability with the JavaScriptCore C API.
-    // explicit JSClass(JSClassRef js_class_ref) noexcept;
-    
     // These five classes need access to operator JSClassRef().
     friend class JSContext; // for constructor
     friend class JSValue;   // for IsObjectOfClass
     friend class JSObject;  // for constructor
-
+    
     // For setting JSClassDefinition.parentClass
     template<typename T>
     friend class detail::JSExportClassDefinition;
@@ -108,6 +105,8 @@ namespace JavaScriptCoreCPP {
     
     std::string name__ { "Default" };
     JSClassRef  js_class_ref__ { nullptr };
+    
+  protected:
     
 #undef  JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD
 #ifdef  JAVASCRIPTCORECPP_THREAD_SAFE
