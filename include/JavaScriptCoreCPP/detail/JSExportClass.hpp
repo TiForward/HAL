@@ -150,8 +150,9 @@ namespace JavaScriptCoreCPP { namespace detail {
     const bool callback_registered      = callback_insert_result.second;
     
     JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass: callback ", std::to_string(key), " registered = ", callback_registered);
-    
     assert(callback_registered);
+
+    // js_export_class_definition__.Print();
   }
   
   template<typename T>

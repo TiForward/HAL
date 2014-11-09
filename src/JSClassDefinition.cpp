@@ -23,8 +23,7 @@ namespace JavaScriptCoreCPP {
   : name__(js_class_definition.className) {
 
     Initialize(js_class_definition);
-
-    js_class_definition__.className       = name__.c_str();
+    
     js_class_definition__.staticValues    = nullptr;
     js_class_definition__.staticFunctions = nullptr;
     
@@ -33,7 +32,7 @@ namespace JavaScriptCoreCPP {
       js_value_properties__.push_back(detail::JSStaticValue(*static_value_ptr));
       ++static_value_ptr;
     }
-
+    
     auto static_function_ptr = const_cast<::JSStaticFunction*>(js_class_definition.staticFunctions);
     while (static_function_ptr && static_function_ptr -> name) {
       js_function_properties__.push_back(detail::JSStaticFunction(*static_function_ptr));
@@ -50,33 +49,25 @@ namespace JavaScriptCoreCPP {
   : name__(rhs.name__)
   , js_value_properties__(rhs.js_value_properties__)
   , js_function_properties__(rhs.js_function_properties__) {
-
     Initialize(rhs.js_class_definition__);
-    js_class_definition__.className = name__.c_str();
     InitializePropertyCallbacks();
- }
+  }
   
   JSClassDefinition::JSClassDefinition(JSClassDefinition&& rhs) noexcept
   : name__(std::move(rhs.name__))
   , js_value_properties__(std::move(rhs.js_value_properties__))
   , js_function_properties__(std::move(rhs.js_function_properties__)) {
-    
     Initialize(rhs.js_class_definition__);
-    js_class_definition__.className = name__.c_str();
     InitializePropertyCallbacks();
   }
   
   JSClassDefinition& JSClassDefinition::operator=(const JSClassDefinition& rhs) noexcept {
     JAVASCRIPTCORECPP_JSCLASSDEFINITION_LOCK_GUARD;
-
     name__                   = rhs.name__;
     js_value_properties__    = rhs.js_value_properties__;
     js_function_properties__ = rhs.js_function_properties__;
-    
     Initialize(rhs.js_class_definition__);
-    js_class_definition__.className = name__.c_str();
     InitializePropertyCallbacks();
-    
     return *this;
   }
   
@@ -89,7 +80,7 @@ namespace JavaScriptCoreCPP {
   void JSClassDefinition::swap(JSClassDefinition& other) noexcept {
     JAVASCRIPTCORECPP_JSCLASSDEFINITION_LOCK_GUARD;
     using std::swap;
-
+    
     swap(name__                  , other.name__);
     swap(js_value_properties__   , other.js_value_properties__);
     swap(js_function_properties__, other.js_function_properties__);
@@ -97,13 +88,16 @@ namespace JavaScriptCoreCPP {
     swap(static_functions__      , other.static_functions__);
     swap(js_class_definition__   , other.js_class_definition__);
   }
-
+  
   void JSClassDefinition::JSClassDefinition::Initialize(const ::JSClassDefinition& other) noexcept {
     js_class_definition__.version           = other.version;
     js_class_definition__.attributes        = other.attributes;
     
-    js_class_definition__.className         = nullptr;
+    js_class_definition__.className         = name__.c_str();
     js_class_definition__.parentClass       = other.parentClass;
+    
+    // staticValues and staticFunctions are handled separately by
+    // InitializePropertyCallbacks.
     
     js_class_definition__.initialize        = other.initialize;
     js_class_definition__.finalize          = other.finalize;
@@ -120,9 +114,9 @@ namespace JavaScriptCoreCPP {
   
   void JSClassDefinition::InitializePropertyCallbacks() noexcept {
     JAVASCRIPTCORECPP_JSCLASSDEFINITION_LOCK_GUARD;
-
-    static_values__.clear();
+    
     js_class_definition__.staticValues = nullptr;
+    static_values__.clear();
     if (!js_value_properties__.empty()) {
       std::transform(js_value_properties__.begin(),
                      js_value_properties__.end(),
@@ -141,8 +135,8 @@ namespace JavaScriptCoreCPP {
       js_class_definition__.staticValues = &static_values__[0];
     }
     
-    static_functions__.clear();
     js_class_definition__.staticFunctions = nullptr;
+    static_functions__.clear();
     if (!js_function_properties__.empty()) {
       std::transform(js_function_properties__.begin(),
                      js_function_properties__.end(),
@@ -169,35 +163,38 @@ namespace JavaScriptCoreCPP {
     return js_class_definition__.version;
   }
   
-  void JSClassDefinition::Print() const noexcept {
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: version           = ", js_class_definition__.version);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: attributes        = ", detail::to_string_JSClassAttributes(js_class_definition__.attributes));
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: className         = ", js_class_definition__.className);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: parentClass       = ", js_class_definition__.parentClass);
-
-    auto static_value_ptr = const_cast<::JSStaticValue*>(js_class_definition__.staticValues);
+  void JSClassDefinition::Print() noexcept {
+    Print(js_class_definition__);
+  }
+  
+  void JSClassDefinition::Print(const ::JSClassDefinition& js_class_definition) noexcept {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: version           = ", js_class_definition.version);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: attributes        = ", detail::to_string_JSClassAttributes(js_class_definition.attributes));
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: className         = ", js_class_definition.className);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: parentClass       = ", js_class_definition.parentClass);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: initialize        = ", js_class_definition.initialize);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: finalize          = ", js_class_definition.finalize);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: hasProperty       = ", js_class_definition.hasProperty);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: getProperty       = ", js_class_definition.getProperty);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: setProperty       = ", js_class_definition.setProperty);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: deleteProperty    = ", js_class_definition.deleteProperty);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: getPropertyNames  = ", js_class_definition.getPropertyNames);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: callAsFunction    = ", js_class_definition.callAsFunction);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: callAsConstructor = ", js_class_definition.callAsConstructor);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: hasInstance       = ", js_class_definition.hasInstance);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: convertToType     = ", js_class_definition.convertToType);
+    
+    auto static_value_ptr = const_cast<::JSStaticValue*>(js_class_definition.staticValues);
     while (static_value_ptr && static_value_ptr -> name) {
       JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: value property ", static_value_ptr -> name, ": ", detail::to_string_JSPropertyAttributes(static_value_ptr -> attributes));
       ++static_value_ptr;
     }
     
-    auto static_function_ptr = const_cast<::JSStaticFunction*>(js_class_definition__.staticFunctions);
+    auto static_function_ptr = const_cast<::JSStaticFunction*>(js_class_definition.staticFunctions);
     while (static_function_ptr && static_function_ptr -> name) {
       JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: function property ", static_function_ptr -> name, ": ", detail::to_string_JSPropertyAttributes(static_function_ptr -> attributes));
       ++static_function_ptr;
     }
-
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: initialize        = ", js_class_definition__.initialize);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: finalize          = ", js_class_definition__.finalize);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: hasProperty       = ", js_class_definition__.hasProperty);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: getProperty       = ", js_class_definition__.getProperty);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: setProperty       = ", js_class_definition__.setProperty);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: deleteProperty    = ", js_class_definition__.deleteProperty);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: getPropertyNames  = ", js_class_definition__.getPropertyNames);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: callAsFunction    = ", js_class_definition__.callAsFunction);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: callAsConstructor = ", js_class_definition__.callAsConstructor);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: hasInstance       = ", js_class_definition__.hasInstance);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: convertToType     = ", js_class_definition__.convertToType);
   }
   
 } // namespace JavaScriptCoreCPP {

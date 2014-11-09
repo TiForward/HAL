@@ -67,6 +67,9 @@ namespace JavaScriptCoreCPP {
     JSClassDefinition& operator=(JSClassDefinition&&) noexcept;
     void swap(JSClassDefinition&) noexcept;
     
+    virtual void Print() noexcept final;
+    static  void Print(const ::JSClassDefinition& js_class_definition) noexcept;
+    
   private:
     
     virtual void Initialize(const ::JSClassDefinition& other) noexcept final;
@@ -82,13 +85,11 @@ namespace JavaScriptCoreCPP {
     template<typename T>
     friend class detail::JSExportClass;
     
-    virtual void Print() const noexcept final;
-    
-    std::string                           name__ { "Empty" };
+    std::string                           name__;
     std::vector<::JSStaticValue>          static_values__;
     std::vector<::JSStaticFunction>       static_functions__;
     ::JSClassDefinition                   js_class_definition__;
-
+    
 #undef  JAVASCRIPTCORECPP_JSCLASSDEFINITION_LOCK_GUARD
 #ifdef  JAVASCRIPTCORECPP_THREAD_SAFE
     std::recursive_mutex mutex__;

@@ -493,7 +493,6 @@ namespace JavaScriptCoreCPP { namespace detail {
     InitializeNamedPropertyCallbacks();
   }
   
-  
 }} // namespace JavaScriptCoreCPP { namespace detail {
 
 #endif // _JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASSDEFINITIONBUILDER_HPP_

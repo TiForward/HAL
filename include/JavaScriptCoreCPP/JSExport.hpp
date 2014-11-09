@@ -305,7 +305,6 @@ namespace JavaScriptCoreCPP {
         detail::ThrowInvalidArgument("JSExport", "You must provide a JSClass name");
       }
       js_export_class_definition = builder__.build();
-      std::clog << "MDL: js_export_class_definition.name = " << js_export_class_definition.get_name() << std::endl;
       js_export_class            = detail::JSExportClass<T>(js_export_class_definition);
     });
     

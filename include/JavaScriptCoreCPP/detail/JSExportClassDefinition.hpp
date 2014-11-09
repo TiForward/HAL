@@ -58,12 +58,13 @@ namespace JavaScriptCoreCPP { namespace detail {
       return named_function_property_callback_map__;
     }
     
-    JSExportClassDefinition()                                          = default;
-    ~JSExportClassDefinition()                                         = default;
-    JSExportClassDefinition(const JSExportClassDefinition&)            = default;
-    JSExportClassDefinition(JSExportClassDefinition&&)                 = default;
-    JSExportClassDefinition& operator=(const JSExportClassDefinition&) = default;
-    JSExportClassDefinition& operator=(JSExportClassDefinition&&)      = default;
+    JSExportClassDefinition()  = default;
+    ~JSExportClassDefinition() = default;
+    JSExportClassDefinition(const JSExportClassDefinition&) noexcept;
+    JSExportClassDefinition(JSExportClassDefinition&&) noexcept;
+    JSExportClassDefinition& operator=(const JSExportClassDefinition&) noexcept;
+    JSExportClassDefinition& operator=(JSExportClassDefinition&&) noexcept;
+    void swap(JSExportClassDefinition&) noexcept;
     
   private:
     
@@ -72,6 +73,52 @@ namespace JavaScriptCoreCPP { namespace detail {
     JSExportNamedValuePropertyCallbackMap_t<T>    named_value_property_callback_map__;
     JSExportNamedFunctionPropertyCallbackMap_t<T> named_function_property_callback_map__;
   };
+  
+  template<typename T>
+  JSExportClassDefinition<T>::JSExportClassDefinition(const JSExportClassDefinition<T>& rhs) noexcept
+  : named_value_property_callback_map__(rhs.named_value_property_callback_map__)
+  , named_function_property_callback_map__(rhs.named_function_property_callback_map__) {
+    InitializeNamedPropertyCallbacks();
+  }
+  
+  template<typename T>
+  JSExportClassDefinition<T>::JSExportClassDefinition(JSExportClassDefinition<T>&& rhs) noexcept
+    : named_value_property_callback_map__(rhs.named_value_property_callback_map__)
+    , named_function_property_callback_map__(rhs.named_function_property_callback_map__) {
+      InitializeNamedPropertyCallbacks();
+  }
+  
+  template<typename T>
+  JSExportClassDefinition<T>& JSExportClassDefinition<T>::operator=(const JSExportClassDefinition<T>& rhs) noexcept {
+    JAVASCRIPTCORECPP_JSCLASSDEFINITION_LOCK_GUARD;
+    JSClassDefinition::operator=(rhs);
+    InitializeNamedPropertyCallbacks();
+    return *this;
+  }
+  
+  template<typename T>
+  JSExportClassDefinition<T>& JSExportClassDefinition<T>::operator=(JSExportClassDefinition<T>&& rhs) noexcept {
+    JAVASCRIPTCORECPP_JSCLASSDEFINITION_LOCK_GUARD;
+    JSClassDefinition::operator=(rhs);
+    swap(rhs);
+    return *this;
+  }
+  
+  template<typename T>
+  void JSExportClassDefinition<T>::swap(JSExportClassDefinition<T>& other) noexcept {
+    JAVASCRIPTCORECPP_JSCLASSDEFINITION_LOCK_GUARD;
+    using std::swap;
+    
+    // By swapping the members of two classes, the two classes are
+    // effectively swapped.
+    swap(named_value_property_callback_map__   , other.named_value_property_callback_map__);
+    swap(named_function_property_callback_map__, other.named_function_property_callback_map__);
+  }
+  
+  template<typename T>
+  void swap(JSExportClassDefinition<T>& first, JSExportClassDefinition<T>& second) noexcept {
+    first.swap(second);
+  }
   
   template<typename T>
   void JSExportClassDefinition<T>::InitializeNamedPropertyCallbacks() noexcept {
@@ -89,7 +136,7 @@ namespace JavaScriptCoreCPP { namespace detail {
         static_value.setProperty = JSExportClass<T>::SetNamedValuePropertyCallback;
         static_value.attributes  = ToJSPropertyAttributes(property_attributes);
         static_values__.push_back(static_value);
-        JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClassDefinition<", name__, "> added value property ", static_values__.back().name);
+        // JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClassDefinition<", name__, "> added value property ", static_values__.back().name);
       }
       static_values__.push_back({nullptr, nullptr, nullptr, kJSPropertyAttributeNone});
       js_class_definition__.staticValues = &static_values__[0];
@@ -107,7 +154,7 @@ namespace JavaScriptCoreCPP { namespace detail {
         static_function.callAsFunction = JSExportClass<T>::CallNamedFunctionCallback;
         static_function.attributes     = ToJSPropertyAttributes(property_attributes);
         static_functions__.push_back(static_function);
-        JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClassDefinition<", name__, "> added function property ", static_functions__.back().name);
+        // JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClassDefinition<", name__, "> added function property ", static_functions__.back().name);
       }
       static_functions__.push_back({nullptr, nullptr, kJSPropertyAttributeNone});
       js_class_definition__.staticFunctions = &static_functions__[0];
