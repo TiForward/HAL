@@ -20,12 +20,97 @@
 #include <mutex>
 
 namespace JavaScriptCoreCPP {
-  
+
   /*!
    @class
    
-   @abstract This class is the bridge between a custom JavaScript
-   object backed by a C++ class for some or all of its functionality.
+   @abstract This is a CRTP (i.e. Curiously Recurring Template
+   Pattern) base class that allows any C++ class derived from it to be
+   seamlessly integrated into JavaScriptCore. For example, to expose
+   the following C++ Widget class to JavaScriptCore you would define
+   Widget like this:
+   
+   class Widget : public JSExport<Widget> {
+   
+     // Mandatory constructor.
+     Widget::Widget(const JSContext& js_context) : JSExport<Widget>(js_context)
+     }
+
+     // Add additional C++ methods to implement any or all of the
+     // following characteristics that define a JavaScript object (all
+     // described in detail in the documentation that follows):
+     //
+     // 1. JavaScript named value properties (i.e. getters and/or
+     //    setters) with full support for all JavaScript property
+     //    attributes (i.e.  'None', 'ReadOnly', 'DontEnum' and
+     //    'DontDelete').
+     //   
+     // 2. JavaScript named function properties with full support for
+     //    all JavaScript property attributes (i.e.  'None',
+     //    'ReadOnly', 'DontEnum' and 'DontDelete').
+     //
+     // 3. Calling Widget as a function property on another JavaScript
+     //    object.
+     //
+     // 4. Calling Widget as a constructor in a JavaScript 'new'
+     //    expression.
+     //
+     // 5. Definig how a Widget behaves when it is the target of a
+     //    JavaScript 'instanceof' expression.
+     //
+     // 6. Definig how a Widget converts to a JavaScript string or
+     //    number.
+
+     // Implementing this static function is how your C++ class
+     // seamlessly integrates into JavaScriptCore.
+     static void JSExportInitialize() {
+       // It is mandatory to give your class a 'class name' that
+       // JavaScriptCore uses to refer to your C++ class.
+       SetClassName("Widget");
+
+       // All of the additional characteristics are optional, but here
+       // are some examples:
+       SetClassVersion(1);
+       AddValueProperty("name", &Widget::get_name, &Widget::set_name);
+       AddValueProperty("number", &Widget::get_number, &Widget::set_number);
+       AddValueProperty("pi", &Widget::pi);
+       AddFunctionProperty("sayHello", &Widget::sayHello);
+     }
+   };
+   
+   @discussion All properties except 'ClassName' are optional. By
+   default the 'class version numner' is initialized to 0, the
+   'parent' JavaScriptCore class is initialized to the default
+   JavaScript object class, and the JavaScriptCore 'class attribute'
+   defaults to 'AutomaticPrototype' (more on this below).
+   
+   Using the AddValueProperty and AddFunctionProperty static methods
+   in your JSExportInitialize are the simplest and most efficient
+   means for vending custom JavaScript properties since they
+   autmatically service requests like GetProperty, SetProperty and
+   GetPropertyNames. The other property access callbacks are required
+   only to implement unusual properties, like array indexes, whose
+   names are not known at compile-time.
+   
+   Standard JavaScript practice calls for storing JavaScript function
+   objects in prototypes so that they can be shared with JavaScript
+   objects having that prototype. By default all derived classes of
+   JSExport follow this idiom whereby JavaScriptCore instantiates your
+   JavaScript objects with a shared, automatically generated prototype
+   containing the JavaScript function properties you have (optionally)
+   defined.
+   
+   To override this behavior call the SetClassAttribute method with
+   the argument 'NoAutomaticPrototype', which specifies that
+   JavaScriptCore should not automatically generate such a
+   prototype. JavaScriptCore will then instantiate your JavaScript
+   objects with the default JavaScript object prototype, and give each
+   JavaScript object its own copy of the the JavaScript function
+   properties you have (optionally) defined.
+   
+   Setting any callback to nullptr specifies that the default object
+   callback should substitute, except in the case of HasProperty,
+   where it specifies that GetProperty should substitute.
    */
   template<typename T>
   class JSExport JAVASCRIPTCORECPP_PERFORMANCE_COUNTER1(JSExport<T>) {

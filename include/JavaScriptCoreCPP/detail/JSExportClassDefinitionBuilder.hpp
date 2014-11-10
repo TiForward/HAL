@@ -70,10 +70,6 @@ namespace JavaScriptCoreCPP { namespace detail {
    callback should substitute, except in the case of HasProperty,
    where it specifies that GetProperty should substitute.
    */
-  
-  template<typename T>
-  using JSClassMap_t = std::unordered_map<std::string, std::shared_ptr<JSClass>>;
-  
   template<typename T>
   class JSExportClassDefinitionBuilder final JAVASCRIPTCORECPP_PERFORMANCE_COUNTER1(JSExportClassDefinitionBuilder<T>) {
     
@@ -121,8 +117,12 @@ namespace JavaScriptCoreCPP { namespace detail {
      
      @result A reference to the builder for chaining.
      */
-    JSExportClassDefinitionBuilder<T>& ClassName(const std::string& class_name) JAVASCRIPTCORECPP_NOEXCEPT {
+    JSExportClassDefinitionBuilder<T>& ClassName(const std::string& class_name) {
       JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASSDEFINITIONBUILDER_LOCK_GUARD;
+      if (class_name.empty()) {
+        ThrowInvalidArgument("JSExportClassDefinitionBuilder::ClassName", "The class name cannot be emoty.");
+      }
+
       name__ = class_name;
       return *this;
     }
@@ -310,7 +310,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      JavaScript object has a property.
      */
     
-    HasPropertyCallback<T> HasProperty() const {
+    HasPropertyCallback<T> HasProperty() const JAVASCRIPTCORECPP_NOEXCEPT {
       return has_property_callback__;
     }
     
@@ -347,7 +347,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      
      @result A reference to the builder for chaining.
      */
-    JSExportClassDefinitionBuilder<T>& HasProperty(const HasPropertyCallback<T>& has_property_callback) {
+    JSExportClassDefinitionBuilder<T>& HasProperty(const HasPropertyCallback<T>& has_property_callback) JAVASCRIPTCORECPP_NOEXCEPT {
       JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASSDEFINITIONBUILDER_LOCK_GUARD;
       has_property_callback__ = has_property_callback;
       return *this;
@@ -362,7 +362,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      @result The callback to invoke when getting a property's value
      from your JavaScript object.
      */
-    GetPropertyCallback<T> GetProperty() const {
+    GetPropertyCallback<T> GetProperty() const JAVASCRIPTCORECPP_NOEXCEPT {
       return get_property_callback__;
     }
     
@@ -391,7 +391,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      
      @result A reference to the builder for chaining.
      */
-    JSExportClassDefinitionBuilder<T>& GetProperty(const GetPropertyCallback<T>& get_property_callback) {
+    JSExportClassDefinitionBuilder<T>& GetProperty(const GetPropertyCallback<T>& get_property_callback) JAVASCRIPTCORECPP_NOEXCEPT {
       JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASSDEFINITIONBUILDER_LOCK_GUARD;
       get_property_callback__ = get_property_callback;
       return *this;
@@ -406,7 +406,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      @result The callback to invoke when setting a property's value on
      your JavaScript object.
      */
-    SetPropertyCallback<T> SetProperty() const {
+    SetPropertyCallback<T> SetProperty() const JAVASCRIPTCORECPP_NOEXCEPT {
       return set_property_callback__;
     }
     
@@ -435,7 +435,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      
      @result A reference to the builder for chaining.
      */
-    JSExportClassDefinitionBuilder<T>& SetProperty(const SetPropertyCallback<T>& set_property_callback) {
+    JSExportClassDefinitionBuilder<T>& SetProperty(const SetPropertyCallback<T>& set_property_callback) JAVASCRIPTCORECPP_NOEXCEPT {
       JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASSDEFINITIONBUILDER_LOCK_GUARD;
       set_property_callback__ = set_property_callback;
       return *this;
@@ -450,7 +450,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      @result The callback to invoke when deleting a property from your
      JavaScript object.
      */
-    DeletePropertyCallback<T> DeleteProperty() const {
+    DeletePropertyCallback<T> DeleteProperty() const JAVASCRIPTCORECPP_NOEXCEPT {
       return delete_property_callback__;
     }
     
@@ -479,7 +479,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      
      @result A reference to the builder for chaining.
      */
-    JSExportClassDefinitionBuilder<T>& DeleteProperty(const DeletePropertyCallback<T>& delete_property_callback) {
+    JSExportClassDefinitionBuilder<T>& DeleteProperty(const DeletePropertyCallback<T>& delete_property_callback) JAVASCRIPTCORECPP_NOEXCEPT {
       JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASSDEFINITIONBUILDER_LOCK_GUARD;
       delete_property_callback__ = delete_property_callback;
       return *this;
@@ -494,7 +494,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      @result The callback to invoke when collecting the names of your
      JavaScript object's properties
      */
-    GetPropertyNamesCallback<T> GetPropertyNames() const {
+    GetPropertyNamesCallback<T> GetPropertyNames() const JAVASCRIPTCORECPP_NOEXCEPT {
       return get_property_names_callback__;
     }
     
@@ -528,7 +528,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      
      @result A reference to the builder for chaining.
      */
-    JSExportClassDefinitionBuilder<T>& GetPropertyNames(const GetPropertyNamesCallback<T>& get_property_names_callback) {
+    JSExportClassDefinitionBuilder<T>& GetPropertyNames(const GetPropertyNamesCallback<T>& get_property_names_callback) JAVASCRIPTCORECPP_NOEXCEPT {
       JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASSDEFINITIONBUILDER_LOCK_GUARD;
       get_property_names_callback__ = get_property_names_callback;
       return *this;
@@ -592,7 +592,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      @result The callback to invoke when your JavaScript object is
      used as a constructor in a 'new' expression.
      */
-    CallAsConstructorCallback<T> Constructor() const {
+    CallAsConstructorCallback<T> Constructor() const JAVASCRIPTCORECPP_NOEXCEPT {
       return call_as_constructor_callback__;
     }
     
@@ -625,7 +625,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      
      @result A reference to the builder for chaining.
      */
-    JSExportClassDefinitionBuilder<T>& Constructor(const CallAsConstructorCallback<T>& call_as_constructor_callback) {
+    JSExportClassDefinitionBuilder<T>& Constructor(const CallAsConstructorCallback<T>& call_as_constructor_callback) JAVASCRIPTCORECPP_NOEXCEPT {
       JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASSDEFINITIONBUILDER_LOCK_GUARD;
       call_as_constructor_callback__ = call_as_constructor_callback;
       return *this;
@@ -642,7 +642,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      @result The callback to invoke when your JavaScript object is
      used as the target of an 'instanceof' expression.
      */
-    HasInstanceCallback<T> HasInstance() const {
+    HasInstanceCallback<T> HasInstance() const JAVASCRIPTCORECPP_NOEXCEPT {
       return has_instance_callback__;
     }
     
@@ -675,7 +675,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      
      @result A reference to the builder for chaining.
      */
-    JSExportClassDefinitionBuilder<T>& HasInstance(const HasInstanceCallback<T>& has_instance_callback) {
+    JSExportClassDefinitionBuilder<T>& HasInstance(const HasInstanceCallback<T>& has_instance_callback) JAVASCRIPTCORECPP_NOEXCEPT {
       JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASSDEFINITIONBUILDER_LOCK_GUARD;
       has_instance_callback__ = has_instance_callback;
       return *this;
