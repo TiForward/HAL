@@ -305,10 +305,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     // precondition
     assert(callback_found);
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallNamedFunction: JSObjectGetPrivate     = ", JSObjectGetPrivate(function_ref));
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallNamedFunction: js_object.GetPrivate() = ", js_object.GetPrivate());
-
-    const auto native_object_ptr = reinterpret_cast<const T*>(js_object.GetPrivate());
+    const auto native_object_ptr = reinterpret_cast<const T*>(this_object.GetPrivate());
     const auto callback          = (callback_position -> second).function_callback();
     const auto result            = callback(*native_object_ptr, to_vector(js_context, argument_count, arguments_array), this_object);
     

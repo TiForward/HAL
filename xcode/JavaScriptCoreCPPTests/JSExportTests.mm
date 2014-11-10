@@ -21,13 +21,13 @@ using namespace JavaScriptCoreCPP;
 }
 
 - (void)setUp {
-    [super setUp];
-    // Put setup code here. This method is called before the invocation of each test method in the class.
+  [super setUp];
+  // Put setup code here. This method is called before the invocation of each test method in the class.
 }
 
 - (void)tearDown {
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
-    [super tearDown];
+  // Put teardown code here. This method is called after the invocation of each test method in the class.
+  [super tearDown];
 }
 
 - (void)testJSPropertyAttribute {
@@ -50,10 +50,10 @@ using namespace JavaScriptCoreCPP;
   
   XCTAssertEqual(1, name_callback.get_attributes().count(JSPropertyAttribute::DontDelete));
   XCTAssertEqual(0, name_callback.get_attributes().count(JSPropertyAttribute::ReadOnly));
-
+  
   XCTAssertEqual(1, number_callback.get_attributes().count(JSPropertyAttribute::DontDelete));
   XCTAssertEqual(0, number_callback.get_attributes().count(JSPropertyAttribute::ReadOnly));
-
+  
   XCTAssertEqual(1, pi_callback.get_attributes().count(JSPropertyAttribute::DontDelete));
   XCTAssertEqual(1, pi_callback.get_attributes().count(JSPropertyAttribute::ReadOnly));
 }
@@ -65,13 +65,13 @@ using namespace JavaScriptCoreCPP;
 - (void)testJSExportClassDefinitionBuilder {
   detail::JSExportClassDefinitionBuilder<Widget> builder("Widget");
   builder
-      .AddValueProperty("name", &Widget::get_name, &Widget::set_name)
-      .AddValueProperty("number", &Widget::get_number, &Widget::set_number)
-      .AddValueProperty("pi", &Widget::pi)
-      .AddFunctionProperty("sayhello", &Widget::sayHello)
-      // .Function(&Widget::CallAsFunction)
-      // .ConvertType(&Widget::ConvertToType);
-      ;
+  .AddValueProperty("name", &Widget::get_name, &Widget::set_name)
+  .AddValueProperty("number", &Widget::get_number, &Widget::set_number)
+  .AddValueProperty("pi", &Widget::pi)
+  .AddFunctionProperty("sayhello", &Widget::sayHello)
+  // .Function(&Widget::CallAsFunction)
+  // .ConvertType(&Widget::ConvertToType);
+  ;
   
   auto native_class = builder.build();
 }
@@ -79,51 +79,32 @@ using namespace JavaScriptCoreCPP;
 - (void)testJSExport {
   JSContext js_context = js_context_group.CreateContext();
   auto global_object   = js_context.get_global_object();
-
+  
   XCTAssertFalse(global_object.HasProperty("Widget"));
   auto widget = js_context.CreateObject(Widget::Class());
   global_object.SetProperty("Widget", widget);
   XCTAssertTrue(global_object.HasProperty("Widget"));
-      
+  
   for (const auto& property_name : static_cast<std::vector<JSString>>(global_object.CopyPropertyNames())) {
     //SetProperty(property_name, props.GetProperty(property_name));
     std::clog << "MDL: property_name = " << property_name << std::endl;
   }
   
-  JSString script =
-      //"Widget;"
-      //"typeof Widget;"
-      "Widget.name;"
-      //"Widget.sayHello();"
-      // "Widget();"
-      // "var widget = new Widget();"
-      ;
-  auto result = js_context.JSEvaluateScript(script);
-  std::clog << "MDL: result = " << static_cast<std::string>(result) << std::endl;
+  auto result = js_context.JSEvaluateScript("typeof Widget;");
+  XCTAssertEqual("object", static_cast<std::string>(result));
+  
+  result = js_context.JSEvaluateScript("Widget.name;");
+  XCTAssertTrue(result.IsString());
+  XCTAssertEqual("world", static_cast<std::string>(result));
+  
+  result = js_context.JSEvaluateScript("Widget.number;");
+  XCTAssertTrue(result.IsNumber());
+  XCTAssertEqual(42, static_cast<std::uint32_t>(result));
+  
+  result = js_context.JSEvaluateScript("Widget.sayHello();");
+  XCTAssertTrue(result.IsString());
+  XCTAssertEqual("Hello, world. Your number is 42.", static_cast<std::string>(result));
 }
-
-// - (void)testWidget {
-//   JSContext js_context = js_context_group.CreateContext();
-//   //Widget widget(js_context);
-
-//   auto widget_ptr = js_context.CreateObject<Widget>();
-
-//   auto global_object = js_context.get_global_object();
-//   XCTAssertFalse(global_object.HasProperty("Widget"));
-//   global_object.SetProperty("Widget", *widget_ptr);
-//   XCTAssertTrue(global_object.HasProperty("Widget"));
-
-//   JSString script =
-//       //"Widget;"
-//       //"typeof Widget;"
-//       "Widget.name;"
-//       // "Widget();"
-//       // "var widget = new Widget();"
-//       // "widget.sayHello();"
-//       ;
-//   auto result = js_context.JSEvaluateScript(script);
-//   std::clog << "MDL: result = " << static_cast<std::string>(result) << std::endl;
-// }
 
 // As of 2014.09.20 Travis CI only supports Xcode 5.1 which lacks support for
 // measureBlock.
