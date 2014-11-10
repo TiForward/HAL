@@ -79,15 +79,16 @@ namespace JavaScriptCoreCPP {
      JavaScript function objects in prototypes so that they can be
      shared with JavaScript objects with that prototype. By default
      your JSClass follows this idiom, instantiating your JavaScript
-     object with a shared, automatically generated prototype containing
-     your JSClass's JavaScript function objects.
+     object with a shared, automatically generated prototype
+     containing your JSClass's JavaScript function objects.
      
      To override this behavior set the JSClassAttribute to
      'NoAutomaticPrototype', which specifies that your JSClass should
-     not automatically generate such a prototype. The resulting JSClass
-     will then instantiate your JavaScript objects with the default
-     JavaScript object prototype, and give each JavaScript object its
-     own copy of your JSClass's JavaScript function objects.
+     not automatically generate such a prototype. The resulting
+     JSClass will then instantiate your JavaScript objects with the
+     default JavaScript object prototype, and give each JavaScript
+     object its own copy of your JSClass's JavaScript function
+     objects.
      */
     static void SetClassAttribute(JSClassAttribute class_attribute);
     
@@ -103,9 +104,9 @@ namespace JavaScriptCoreCPP {
      @method
      
      @abstract Add callbacks to invoke when getting and/or setting a
-     value property on your JavaScript object. The property will always
-     have the 'DontDelete' attribute. If a setter callback is not
-     provided then the property will also have the 'ReadOnly'
+     value property on your JavaScript object. The property will
+     always have the 'DontDelete' attribute. If a setter callback is
+     not provided then the property will also have the 'ReadOnly'
      attribute. By default the property is enumerable unless you
      specify otherwise.
      
@@ -140,7 +141,8 @@ namespace JavaScriptCoreCPP {
      whether your property is enumerable. The default value is true,
      which means the property is enumerable.
      
-     @throws std::invalid_argument exception under these preconditions:
+     @throws std::invalid_argument exception under these
+     preconditions:
      
      1. If property_name is empty.
      
@@ -179,7 +181,8 @@ namespace JavaScriptCoreCPP {
      whether your property is enumerable. The default value is true,
      which means the property is enumerable.
      
-     @throws std::invalid_argument exception under these preconditions:
+     @throws std::invalid_argument exception under these
+     preconditions:
      
      1. If function_name is empty.
      
@@ -215,14 +218,160 @@ namespace JavaScriptCoreCPP {
      bool HasProperty(const JSString& property_name) const;
      };
      
-     You would call the builer like this:
+     You would call AddHasPropertyCallback like this:
      
-     JSClassBuilder<Foo> builder("Foo");
-     builder.HasProperty(&Foo::HasProperty);
+     AddHasPropertyCallback(&Foo::HasProperty);
      
-     @result A reference to the builder for chaining.
+     @param has_property_callback The callback to invoke when
+     determining whether your JavaScript object has a property.
+     
+     @result Your callback should return true if your JavaScript
+     object has a property with the given name. Your callback should
+     return false to forward the reqeust to properties added by the
+     AddValueProperty and AddFunctionProperty methods (if any), then
+     properties vended by your class' parent class chain, then
+     properties belonging to your JavaScript object's prototype chain.
      */
-    static void HasPropertyCallback(const detail::HasPropertyCallback<T>& has_property_callback);
+    static void AddHasPropertyCallback(const detail::HasPropertyCallback<T>& has_property_callback);
+    
+    /*!
+     @method
+     
+     @abstract Set the callback to invoke when getting a property's
+     value from your JavaScript object.
+     
+     @discussion If this callback returns JSUndefined then the get
+     request forwards to properties added by the AddValueProperty and
+     AddFunctionProperty methods (if any), then properties vended by
+     your class' parent class chain, then properties belonging to your
+     JavaScript object's prototype chain.
+     
+     For example, given this class definition:
+     
+     class Foo {
+     JSValue GetProperty(const JSString& property_name) const;
+     };
+     
+     You would call AddGetPropertyCallback like this:
+     
+     AddGetPropertyCallback(&Foo::GetProperty);
+     
+     @param get_property_callback The callback to invoke when getting
+     a property's value from your JavaScript object.
+     
+     @result Your callback should return the property's value with the
+     name given name if it exists. If the property does not exist then
+     return JSUndefined to forward the request to properties added by
+     the AddValueProperty and AddFunctionProperty methods (if any),
+     then properties vended by your class' parent class chain, then
+     properties belonging to your JavaScript object's prototype chain.
+     */
+    static void AddGetPropertyCallback(const detail::GetPropertyCallback<T>& get_property_callback);
+    
+    /*!
+     @method
+     
+     @abstract Set the callback to invoke when setting a property's
+     value on your JavaScript object.
+     
+     @discussion If this callback returns false then the request
+     forwards to properties added by the AddValueProperty method (if
+     any), then properties vended by your class' parent class chain,
+     then properties belonging to your JavaScript object's prototype
+     chain.
+     
+     For example, given this class definition:
+     
+     class Foo {
+     bool SetProperty(const JSString& property_name, const JSValue& value);
+     };
+     
+     You would call AddSetPropertyCallback like this:
+     
+     AddSetPropertyCallback(&Foo::SetProperty);
+     
+     @param set_property_callback The callback to invoke when setting
+     a property's value on your JavaScript object.
+     
+     @result Your callback should return true if the property with the
+     given name and value was set on your JavaScript object. Your
+     callback should return false to forward the reqeust to properties
+     added by the AddValueProperty and AddFunctionProperty methods (if
+     any), then properties vended by your class' parent class chain,
+     then properties belonging to your JavaScript object's prototype
+     chain.
+     */
+    static void AddSetPropertyCallback(const detail::SetPropertyCallback<T>& set_property_callback);
+    
+    /*!
+     @method
+     
+     @abstract Set the callback to invoke when deleting a property
+     from your JavaScript object.
+     
+     @discussion If this callback returns false then the request
+     forwards to properties added by the AddValueProperty and
+     AddFunctionProperty methods (if any), then properties vended by
+     your class' parent class chain, then properties belonging to your
+     JavaScript object's prototype chain.
+     
+     For example, given this class definition:
+     
+     class Foo {
+     bool DeleteProperty(const JSString& property_name);
+     };
+     
+     You would call AddDeletePropertyCallback like this:
+     
+     AddDeletePropertyCallback(&Foo::DeleteProperty);
+     
+     @param delete_property_callback The callback to invoke when
+     deleting a property from your JavaScript object.
+     
+     @result Your callback should return true if the property with the
+     given name was deleted from your JavaScript object. Your callback
+     should return false to forward the reqeust to properties added by
+     the AddValueProperty and AddFunctionProperty methods (if any),
+     then properties vended by your class' parent class chain, then
+     properties belonging to your JavaScript object's prototype chain.
+     */
+    static void AddDeletePropertyCallback(const detail::DeletePropertyCallback<T>& delete_property_callback);
+    
+    /*!
+     @method
+     
+     @abstract Set the callback to invoke when collecting the names of
+     your JavaScript object's properties provided by the GetProperty
+     and SetProperty methods. This callback is part of a chain of
+     callbacks that are automatically invoked when your JavaScript
+     object is used in a JavaScript for...in loop.
+     
+     @discussion The GetPropertyNamesCallback only needs to provide
+     the property names provided by the GetProperty and SetProperty
+     methods. Other property names are automatically added from
+     properties provided by the AddValueProperty and
+     AddFunctionProperty methods (if any), then properties vended by
+     your class' parent class chain, then properties belonging to your
+     JavaScript object's prototype chain.
+     
+     For example, given this class definition:
+     
+     class Foo {
+     void GetPropertyNames(JSPropertyNameAccumulator& accumulator) const;
+     };
+     
+     You would call AddGetPropertyNamesCallback like this:
+     
+     AddGetPropertyNamesCallback(&Foo::GetPropertyNames);
+     
+     @param get_property_names_callback The callback to invoke when
+     collecting the names of your JavaScript object's properties
+     provided by the GetProperty and SetProperty methods. This
+     callback is part of a chain of callbacks that are automatically
+     invoked when your JavaScript object is used in a JavaScript
+     for...in loop.
+     */
+    static void AddGetPropertyNamesCallback(const detail::GetPropertyNamesCallback<T>& get_property_names_callback);
     
     /*!
      @method
@@ -231,51 +380,138 @@ namespace JavaScriptCoreCPP {
      is called as a function.
      
      @discussion If this callback does not exist, then calling your
-     object as a function will throw a JavaScript exception.
+     JavaScript object as a function will throw a JavaScript
+     exception.
      
      For example, given this class definition:
      
      class Foo {
-     JSValue DoSomething(std::vector<JSValue>&& arguments, JSObject&& this_object);
+     JSValue DoSomething(const std::vector<JSValue>& arguments, JSObject& this_object);
      };
      
-     You would call FunctionCallback like this:
+     You would call AddCallAsFunctionCallback like this:
      
-     FunctionCallback(&Foo::DoSomething);
+     AddCallAsFunctionCallback(&Foo::DoSomething);
      
      In the JavaScript expression 'myObject.myFunction()', then
-     'myFunction' is the instance of Foo being called, and this_object
-     would be set to 'myObject'.
+     'myFunction' is the instance of Foo being called, and 'myObject'
+     is the context of the function call (i.e. the 'this' JavaScript
+     object).
      
-     In the JavaScript expression 'myFunction()', then both
-     'myFunction' and 'myObject' is the instance of Foo being called.
+     @param call_as_function_callback The callback to invoke when your
+     JavaScript object is called as a function.
+     
+     @result Your callback should return the value produced by calling
+     your JavaScript object as a function.
      */
-    static void FunctionCallback(const detail::CallAsFunctionCallback<T>& call_as_function_callback);
+    static void AddCallAsFunctionCallback(const detail::CallAsFunctionCallback<T>& call_as_function_callback);
+    
+    /*!
+     @method
+     
+     @abstract Set the callback to invoke when your JavaScript object
+     is used as a constructor in a 'new' expression. If you provide
+     this callback then you must also provide the HasInstanceCallback
+     as well.
+     
+     @discussion If this callback doest not exist, then using your
+     JavaScript object as a constructor in a 'new' expression will
+     throw a JavaScript exception.
+     
+     For example, given this class definition:
+     
+     class Foo {
+     JSObject Constructor(const std::vector<JSValue>& arguments);
+     };
+     
+     You would call AddCallAsConstructorCallback like this:
+     
+     AddCallAsConstructorCallback(&Foo::Constructor);
+     
+     If your callback were invoked by the JavaScript expression 'new
+     myConstructor()', then 'myConstructor' is the instance of Foo
+     being called.
+     
+     @param call_as_constructor_callback The callback to invoke when
+     your JavaScript object is used as a constructor in a 'new'
+     expression. If you provide this callback then you must also
+     provide the HasInstanceCallback as well.
+     
+     @result Your callback should return a JSObject that is the result
+     of calling your JavaScript object in a 'new' expression.
+     */
+    static void AddCallAsConstructorCallback(const detail::CallAsConstructorCallback<T>& call_as_constructor_callback);
+    
+    /*!
+     @method
+     
+     @abstract Set the callback to invoke when your JavaScript object
+     is used as the target of an 'instanceof' expression. If you
+     provide this callback then you must also provide the
+     CallAsConstructorCallback as well.
+     
+     @discussion If this callback does not exist, then 'instanceof'
+     expressions that target your JavaScript object will return false.
+     
+     For example, given this class definition:
+     
+     class Foo {
+     bool HasInstance(const JSValue& possible_instance) const;
+     };
+     
+     You would call AddHasInstanceCallback like this:
+     
+     AddHasInstanceCallback(&Foo::HasInstance);
+     
+     If your callback were invoked by the JavaScript expression
+     'someValue instanceof myObject', then 'myObject' is the instance
+     of Foo being called and 'someValue' is the possible_instance
+     parameter.
+     
+     @param has_instance_callback The callback to invoke when your
+     JavaScript object is used as the target of an 'instanceof'
+     expression. If you provide this callback then you must also
+     provide the CallAsConstructorCallback as well.
+     
+     @result Your callback should return true to indicate whether it
+     is 'instanceof' the given JSValue 'possible_instance'.
+     */
+    static void AddHasInstanceCallback(const detail::HasInstanceCallback<T>& has_instance_callback);
     
     /*!
      @method
      
      @abstract Set the callback to invoke when converting your
-     JavaScript object to another JavaScript type. This function is
+     JavaScript object to another JavaScript type. This callback is
      only invoked when converting your object to a number or a
      string. An object converted to boolean is 'true.' An object
      converted to object is itself.
      
-     @discussion If this function returns JSUndefined, then the
-     conversion request forwards the reqeust to your JSClass' parent
-     class chain, then your JavaScript object's prototype chain.
+     @discussion If this callback returns JSUndefined then the
+     conversion request forwards to your your class' parent class
+     chain, then your JavaScript object's prototype chain.
      
      For example, given this class definition:
      
      class Foo {
-     JSValue ConvertToType(JSValue::Type&& type) const;
+     JSValue ConvertToType(JSValue::Type type) const;
      };
      
-     You would call ConvertToTypeCallback like this:
+     You would call AddHasInstanceCallback like this:
      
-     ConvertToTypeCallback(&Foo::ConvertToType);
+     AddHasInstanceCallback(&Foo::HasInstance);
+     
+     @param convert_to_type_callback The callback to invoke when
+     converting your JavaScript object to another JavaScript
+     type. This callback is only invoked when converting your object
+     to a number or a string. An object converted to boolean is
+     'true.' An object converted to object is itself.
+     
+     @result Return the objects's converted value. Return JSUndefined
+     to forward the reqeust to your class' parent class chain, then
+     your JavaScript object's prototype chain.
      */
-    // static void ConvertToTypeCallback(const detail::ConvertToTypeCallback<T>& convert_to_type_callback);
+    static void AddConvertToTypeCallback(const detail::ConvertToTypeCallback<T>& convert_to_type_callback);
     
   private:
     
@@ -316,13 +552,42 @@ namespace JavaScriptCoreCPP {
   }
   
   template<typename T>
-  void JSExport<T>::HasPropertyCallback(const detail::HasPropertyCallback<T>& has_property_callback) {
+  void JSExport<T>::AddHasPropertyCallback(const detail::HasPropertyCallback<T>& has_property_callback) {
     builder__.HasProperty(has_property_callback);
   }
-
+  
   template<typename T>
-  void JSExport<T>::FunctionCallback(const detail::CallAsFunctionCallback<T>& call_as_function_callback) {
-    builder__.Function(call_as_function_callback);
+  void JSExport<T>::AddGetPropertyCallback(const detail::GetPropertyCallback<T>& get_property_callback) {
+    builder__.GetProperty(get_property_callback);
+  }
+  template<typename T>
+  void JSExport<T>::AddSetPropertyCallback(const detail::SetPropertyCallback<T>& set_property_callback) {
+    builder__.SetProperty(set_property_callback);
+  }
+  template<typename T>
+  void JSExport<T>::AddDeletePropertyCallback(const detail::DeletePropertyCallback<T>& delete_property_callback) {
+    builder__.DeleteProperty(delete_property_callback);
+  }
+  template<typename T>
+  void JSExport<T>::AddGetPropertyNamesCallback(const detail::GetPropertyNamesCallback<T>& get_property_names_callback) {
+    builder__.GetPropertyNames(get_property_names_callback);
+  }
+  template<typename T>
+  void JSExport<T>::AddCallAsFunctionCallback(const detail::CallAsFunctionCallback<T>& call_as_function_callback) {
+    builder__.CallAsfunction(call_as_function_callback);
+  }
+  template<typename T>
+  void JSExport<T>::AddCallAsConstructorCallback(const detail::CallAsConstructorCallback<T>& call_as_constructor_callback) {
+    builder__.CallAsConstructor(call_as_constructor_callback);
+  }
+  
+  template<typename T>
+  void JSExport<T>::AddHasInstanceCallback(const detail::HasInstanceCallback<T>& has_instance_callback) {
+    builder__.HasInstance(has_instance_callback);
+  }
+  template<typename T>
+  void JSExport<T>::AddConvertToTypeCallback(const detail::ConvertToTypeCallback<T>& convert_to_type_callback) {
+    builder__.ConvertTotype(convert_to_type_callback);
   }
   
   template<typename T>
