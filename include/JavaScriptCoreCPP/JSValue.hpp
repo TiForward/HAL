@@ -322,12 +322,12 @@ namespace JavaScriptCoreCPP {
       return js_context__;
     }
     
-    virtual ~JSValue() JAVASCRIPTCORECPP_NOEXCEPT;
-    JSValue(const JSValue&) JAVASCRIPTCORECPP_NOEXCEPT;
-    JSValue(JSValue&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    virtual ~JSValue()                  JAVASCRIPTCORECPP_NOEXCEPT;
+    JSValue(const JSValue&)             JAVASCRIPTCORECPP_NOEXCEPT;
+    JSValue(JSValue&&)                  JAVASCRIPTCORECPP_NOEXCEPT;
     JSValue& operator=(const JSValue&);
     JSValue& operator=(JSValue&&);
-    void swap(JSValue&) JAVASCRIPTCORECPP_NOEXCEPT;
+    void swap(JSValue&)                 JAVASCRIPTCORECPP_NOEXCEPT;
     
   protected:
     

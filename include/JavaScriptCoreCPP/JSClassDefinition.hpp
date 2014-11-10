@@ -60,12 +60,12 @@ namespace JavaScriptCoreCPP {
      */
     virtual std::uint32_t get_version() const JAVASCRIPTCORECPP_NOEXCEPT final;
     
-    virtual ~JSClassDefinition() JAVASCRIPTCORECPP_NOEXCEPT;
-    JSClassDefinition(const JSClassDefinition&) JAVASCRIPTCORECPP_NOEXCEPT;
-    JSClassDefinition(JSClassDefinition&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    virtual ~JSClassDefinition()                           JAVASCRIPTCORECPP_NOEXCEPT;
+    JSClassDefinition(const JSClassDefinition&)            JAVASCRIPTCORECPP_NOEXCEPT;
+    JSClassDefinition(JSClassDefinition&&)                 JAVASCRIPTCORECPP_NOEXCEPT;
     JSClassDefinition& operator=(const JSClassDefinition&) JAVASCRIPTCORECPP_NOEXCEPT;
-    JSClassDefinition& operator=(JSClassDefinition&&) JAVASCRIPTCORECPP_NOEXCEPT;
-    void swap(JSClassDefinition&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSClassDefinition& operator=(JSClassDefinition&&)      JAVASCRIPTCORECPP_NOEXCEPT;
+    void swap(JSClassDefinition&)                          JAVASCRIPTCORECPP_NOEXCEPT;
     
     virtual void Print() JAVASCRIPTCORECPP_NOEXCEPT final;
     static  void Print(const ::JSClassDefinition& js_class_definition) JAVASCRIPTCORECPP_NOEXCEPT;

@@ -43,14 +43,12 @@ namespace JavaScriptCoreCPP {
     static detail::JSExportClass<T> Class();
     
     JSExport()                           = delete;
-    virtual ~JSExport()                  = default;
-    JSExport(const JSExport&)            = default;
-    JSExport& operator=(const JSExport&) = default;
-    
-#ifdef JAVASCRIPTCORECPP_MOVE_CTOR_AND_ASSIGN_DEFAULT_ENABLE
-    JSExport(JSExport&&)                 = default;
-    JSExport& operator=(JSExport&&)      = default;
-#endif
+    virtual ~JSExport()                  JAVASCRIPTCORECPP_NOEXCEPT;
+    JSExport(const JSExport&)            JAVASCRIPTCORECPP_NOEXCEPT;
+    JSExport(JSExport&&)                 JAVASCRIPTCORECPP_NOEXCEPT;
+    JSExport& operator=(const JSExport&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSExport& operator=(JSExport&&)      JAVASCRIPTCORECPP_NOEXCEPT;
+    void swap(JSExport&)                 JAVASCRIPTCORECPP_NOEXCEPT;
     
   protected:
     
@@ -287,12 +285,6 @@ namespace JavaScriptCoreCPP {
     builder__.Function(call_as_function_callback);
   }
   
-  // template<typename T>
-  // void JSExport<T>::ConvertToTypeCallback(const detail::ConvertToTypeCallback<T>& convert_to_type_callback) {
-  //  builder__.ConvertToType(convert_to_type_callback);
-  // }
-  
-  
   template<typename T>
   detail::JSExportClassDefinitionBuilder<T> JSExport<T>::builder__ = detail::JSExportClassDefinitionBuilder<T>("NotSet");
   
@@ -317,6 +309,46 @@ namespace JavaScriptCoreCPP {
   template<typename T>
   JSExport<T>::JSExport(const JSContext& js_context)
   : js_context__(js_context) {
+  }
+  
+  template<typename T>
+  JSExport<T>::~JSExport() JAVASCRIPTCORECPP_NOEXCEPT {
+  }
+  
+  template<typename T>
+  JSExport<T>::JSExport(const JSExport<T>& rhs) JAVASCRIPTCORECPP_NOEXCEPT
+  : js_context__(rhs.js_context__) {
+  }
+  
+  template<typename T>
+  JSExport<T>::JSExport(JSExport&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
+  : js_context__(std::move(rhs.js_context__)) {
+  }
+  
+  template<typename T>
+  JSExport<T>& JSExport<T>::operator=(const JSExport<T>& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
+    js_context__ = rhs.js_context__;
+    return *this;
+  }
+  
+  template<typename T>
+  JSExport<T>& JSExport<T>::operator=(JSExport<T>&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
+    swap(rhs);
+    return *this;
+  }
+  
+  template<typename T>
+  void JSExport<T>::swap(JSExport<T>& other) JAVASCRIPTCORECPP_NOEXCEPT {
+    using std::swap;
+    
+    // By swapping the members of two classes, the two classes are
+    // effectively swapped.
+    swap(js_context__, other.js_context__);
+  }
+  
+  template<typename T>
+  void swap(JSExport<T>& first, JSExport<T>& second) JAVASCRIPTCORECPP_NOEXCEPT {
+    first.swap(second);
   }
   
   template<typename T>

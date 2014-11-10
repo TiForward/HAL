@@ -409,12 +409,12 @@ namespace JavaScriptCoreCPP {
 #endif
     
     JSContext() = delete;
-    ~JSContext() JAVASCRIPTCORECPP_NOEXCEPT;
-    JSContext(const JSContext&) JAVASCRIPTCORECPP_NOEXCEPT;
-    JSContext(JSContext&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    ~JSContext()                           JAVASCRIPTCORECPP_NOEXCEPT;
+    JSContext(const JSContext&)            JAVASCRIPTCORECPP_NOEXCEPT;
+    JSContext(JSContext&&)                 JAVASCRIPTCORECPP_NOEXCEPT;
     JSContext& operator=(const JSContext&) JAVASCRIPTCORECPP_NOEXCEPT;
-    JSContext& operator=(JSContext&&) JAVASCRIPTCORECPP_NOEXCEPT;
-    void swap(JSContext&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSContext& operator=(JSContext&&)      JAVASCRIPTCORECPP_NOEXCEPT;
+    void swap(JSContext&)                  JAVASCRIPTCORECPP_NOEXCEPT;
     
   private:
     

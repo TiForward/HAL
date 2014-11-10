@@ -77,12 +77,12 @@ namespace JavaScriptCoreCPP {
       return name__;
     }
     
-    virtual ~JSClass() JAVASCRIPTCORECPP_NOEXCEPT;
-    JSClass(const JSClass&) JAVASCRIPTCORECPP_NOEXCEPT;
-    JSClass(JSClass&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    virtual ~JSClass()                 JAVASCRIPTCORECPP_NOEXCEPT;
+    JSClass(const JSClass&)            JAVASCRIPTCORECPP_NOEXCEPT;
+    JSClass(JSClass&&)                 JAVASCRIPTCORECPP_NOEXCEPT;
     JSClass& operator=(const JSClass&) JAVASCRIPTCORECPP_NOEXCEPT;
-    JSClass& operator=(JSClass&&) JAVASCRIPTCORECPP_NOEXCEPT;
-    void swap(JSClass&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSClass& operator=(JSClass&&)      JAVASCRIPTCORECPP_NOEXCEPT;
+    void swap(JSClass&)                JAVASCRIPTCORECPP_NOEXCEPT;
     
   private:
     

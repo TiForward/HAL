@@ -131,7 +131,6 @@ namespace UnitTestConstants {
   JSContext js_context = js_context_group.CreateContext();
   JSFunction js_function = js_context.CreateFunction("return 'Hello, ' + name;", {"name"});
   XCTAssertTrue(js_function.IsFunction());
-  XCTAssertTrue(js_function.IsObject());
   //std::clog << "MDL: js_function(\"world\") = " << js_function("world") << std::endl;
   XCTAssertEqual("Hello, world", static_cast<std::string>(js_function("world")));
 }

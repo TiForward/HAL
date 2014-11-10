@@ -10,13 +10,15 @@
 #ifndef _JAVASCRIPTCORECPP_JSOBJECT_HPP_
 #define _JAVASCRIPTCORECPP_JSOBJECT_HPP_
 
-#include "JavaScriptCoreCPP/JSValue.hpp"
+#include "JavaScriptCoreCPP/detail/JSBase.hpp"
+#include "JavaScriptCoreCPP/JSContext.hpp"
 #include "JavaScriptCoreCPP/JSPropertyAttribute.hpp"
 #include <vector>
 #include <unordered_set>
 
 namespace JavaScriptCoreCPP {
   class JSString;
+  class JSValue;
   class JSClass;
   class JSPropertyNameAccumulator;
   class JSPropertyNameArray;
@@ -38,7 +40,7 @@ namespace JavaScriptCoreCPP {
    The only way to create a JSObject is by using the
    JSContext::CreateObject member functions.
    */
-  class JSObject : public JSValue JAVASCRIPTCORECPP_PERFORMANCE_COUNTER2(JSObject) {
+  class JSObject JAVASCRIPTCORECPP_PERFORMANCE_COUNTER1(JSObject) {
     
   public:
     
@@ -243,15 +245,32 @@ namespace JavaScriptCoreCPP {
      */
     virtual void SetPrototype(const JSValue& js_value) JAVASCRIPTCORECPP_NOEXCEPT final;
     
-    JSObject()                           = delete;
-    ~JSObject()                          = default;
-    JSObject(const JSObject&)            = default;
-    JSObject& operator=(const JSObject&) = default;
+    /*!
+     @method
+     
+     @abstract Return the execution context of this JavaScript value.
+     
+     @result The the execution context of this JavaScript value.
+     */
+    virtual JSContext get_context() const JAVASCRIPTCORECPP_NOEXCEPT final {
+      return js_context__;
+    }
     
-#ifdef JAVASCRIPTCORECPP_MOVE_CTOR_AND_ASSIGN_DEFAULT_ENABLE
-    JSObject(JSObject&&)                 = default;
-    JSObject& operator=(JSObject&&)      = default;
-#endif
+    /*!
+     @method
+     
+     @abstract Convert this JSObject to a JSValue.
+     
+     @result A JSValue with the result of conversion.
+     */
+    virtual operator JSValue() const final;
+    
+    virtual ~JSObject()                  JAVASCRIPTCORECPP_NOEXCEPT;
+    JSObject(const JSObject&)            JAVASCRIPTCORECPP_NOEXCEPT;
+    JSObject(JSObject&&)                 JAVASCRIPTCORECPP_NOEXCEPT;
+    JSObject& operator=(const JSObject&);
+    JSObject& operator=(JSObject&&);
+    void swap(JSObject&)                 JAVASCRIPTCORECPP_NOEXCEPT;
     
   protected:
     
@@ -276,8 +295,8 @@ namespace JavaScriptCoreCPP {
     friend class JSPropertyNameArray;
     
     // For interoperability with the JavaScriptCore C API.
-    operator JSObjectRef() const {
-      return const_cast<JSObjectRef>(operator JSValueRef());
+    virtual operator JSObjectRef() const JAVASCRIPTCORECPP_NOEXCEPT final {
+      return js_object_ref__;
     }
     
   private:
@@ -347,7 +366,27 @@ namespace JavaScriptCoreCPP {
      used by JavaScript for...in loops.
      */
     virtual void GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const JAVASCRIPTCORECPP_NOEXCEPT final;
+    
+    // Prevent heap based objects.
+    static void * operator new(std::size_t);     // #1: To prevent allocation of scalar objects
+    static void * operator new [] (std::size_t); // #2: To prevent allocation of array of objects
+    
+    JSContext   js_context__;
+    JSObjectRef js_object_ref__;
+    
+#undef  JAVASCRIPTCORECPP_JSOBJECT_LOCK_GUARD
+#ifdef  JAVASCRIPTCORECPP_THREAD_SAFE
+    std::recursive_mutex mutex__;
+#define JAVASCRIPTCORECPP_JSOBJECT_LOCK_GUARD std::lock_guard<std::recursive_mutex> lock(mutex__)
+#else
+#define JAVASCRIPTCORECPP_JSOBJECT_LOCK_GUARD
+#endif  // JAVASCRIPTCORECPP_THREAD_SAFE
   };
+  
+  inline
+  void swap(JSObject& first, JSObject& second) JAVASCRIPTCORECPP_NOEXCEPT {
+    first.swap(second);
+  }
   
 } // namespace JavaScriptCoreCPP {
 

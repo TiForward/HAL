@@ -140,12 +140,12 @@ namespace JavaScriptCoreCPP {
       operator std::u16string() const JAVASCRIPTCORECPP_NOEXCEPT;
       
       
-      ~JSString() JAVASCRIPTCORECPP_NOEXCEPT;
-      JSString(const JSString&) JAVASCRIPTCORECPP_NOEXCEPT;
-      JSString(JSString&&) JAVASCRIPTCORECPP_NOEXCEPT;
+      ~JSString()                          JAVASCRIPTCORECPP_NOEXCEPT;
+      JSString(const JSString&)            JAVASCRIPTCORECPP_NOEXCEPT;
+      JSString(JSString&&)                 JAVASCRIPTCORECPP_NOEXCEPT;
       JSString& operator=(const JSString&) JAVASCRIPTCORECPP_NOEXCEPT;
-      JSString& operator=(JSString&&) JAVASCRIPTCORECPP_NOEXCEPT;
-      void swap(JSString&) JAVASCRIPTCORECPP_NOEXCEPT;
+      JSString& operator=(JSString&&)      JAVASCRIPTCORECPP_NOEXCEPT;
+      void swap(JSString&)                 JAVASCRIPTCORECPP_NOEXCEPT;
       
       // FIXME
     private:

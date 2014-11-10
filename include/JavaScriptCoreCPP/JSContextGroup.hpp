@@ -78,12 +78,12 @@ namespace JavaScriptCoreCPP {
     JSContext CreateContext() const JAVASCRIPTCORECPP_NOEXCEPT;
     JSContext CreateContext(const JSClass& global_object_class) const JAVASCRIPTCORECPP_NOEXCEPT;
     
-    ~JSContextGroup() JAVASCRIPTCORECPP_NOEXCEPT;
-    JSContextGroup(const JSContextGroup&) JAVASCRIPTCORECPP_NOEXCEPT;
-    JSContextGroup(JSContextGroup&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    ~JSContextGroup()                                JAVASCRIPTCORECPP_NOEXCEPT;
+    JSContextGroup(const JSContextGroup&)            JAVASCRIPTCORECPP_NOEXCEPT;
+    JSContextGroup(JSContextGroup&&)                 JAVASCRIPTCORECPP_NOEXCEPT;
     JSContextGroup& operator=(const JSContextGroup&) JAVASCRIPTCORECPP_NOEXCEPT;
-    JSContextGroup& operator=(JSContextGroup&&) JAVASCRIPTCORECPP_NOEXCEPT;
-    void swap(JSContextGroup&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSContextGroup& operator=(JSContextGroup&&)      JAVASCRIPTCORECPP_NOEXCEPT;
+    void swap(JSContextGroup&)                       JAVASCRIPTCORECPP_NOEXCEPT;
     
   private:
     

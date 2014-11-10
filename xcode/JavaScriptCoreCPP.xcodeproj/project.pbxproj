@@ -78,6 +78,7 @@
 		C97455021A0D23AD00CB4CA9 /* JSClassDefinition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97455001A0D23AD00CB4CA9 /* JSClassDefinition.cpp */; };
 		C97455041A0D292500CB4CA9 /* JSBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97455031A0D292500CB4CA9 /* JSBase.cpp */; };
 		C97455061A0D55E200CB4CA9 /* JSExportClassDefinition.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C97455051A0D55E200CB4CA9 /* JSExportClassDefinition.hpp */; };
+		C985CB091A107E96004D4163 /* Widget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C985CB081A107E96004D4163 /* Widget.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -167,6 +168,7 @@
 		C97455001A0D23AD00CB4CA9 /* JSClassDefinition.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSClassDefinition.cpp; path = src/JSClassDefinition.cpp; sourceTree = "<group>"; };
 		C97455031A0D292500CB4CA9 /* JSBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSBase.cpp; path = src/detail/JSBase.cpp; sourceTree = "<group>"; };
 		C97455051A0D55E200CB4CA9 /* JSExportClassDefinition.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSExportClassDefinition.hpp; path = include/JavaScriptCoreCPP/detail/JSExportClassDefinition.hpp; sourceTree = "<group>"; };
+		C985CB081A107E96004D4163 /* Widget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Widget.cpp; path = ../../examples/Widget.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -230,6 +232,7 @@
 			isa = PBXGroup;
 			children = (
 				C97454ED1A0B66E500CB4CA9 /* Widget.hpp */,
+				C985CB081A107E96004D4163 /* Widget.cpp */,
 				C974548B1A05FC5D00CB4CA9 /* JSLoggerTests.mm */,
 				C974542A1A0280A400CB4CA9 /* JSContextGroupTests.mm */,
 				C974542B1A0280A400CB4CA9 /* JSContextTests.mm */,
@@ -566,6 +569,7 @@
 			files = (
 				C974548C1A05FC5D00CB4CA9 /* JSLoggerTests.mm in Sources */,
 				C97454331A0280A400CB4CA9 /* JSExportTests.mm in Sources */,
+				C985CB091A107E96004D4163 /* Widget.cpp in Sources */,
 				C974543D1A02810600CB4CA9 /* LambdaTests.mm in Sources */,
 				C97454311A0280A400CB4CA9 /* JSContextGroupTests.mm in Sources */,
 				C97454371A0280A400CB4CA9 /* HashUtilitiesTests.mm in Sources */,
