@@ -96,14 +96,32 @@ using namespace JavaScriptCoreCPP;
   result = js_context.JSEvaluateScript("Widget.name;");
   XCTAssertTrue(result.IsString());
   XCTAssertEqual("world", static_cast<std::string>(result));
+
+  result = js_context.JSEvaluateScript("Widget.sayHello();");
+  XCTAssertTrue(result.IsString());
+  XCTAssertEqual("Hello, world. Your number is 42.", static_cast<std::string>(result));
   
   result = js_context.JSEvaluateScript("Widget.number;");
   XCTAssertTrue(result.IsNumber());
   XCTAssertEqual(42, static_cast<std::uint32_t>(result));
-  
+
   result = js_context.JSEvaluateScript("Widget.sayHello();");
   XCTAssertTrue(result.IsString());
   XCTAssertEqual("Hello, world. Your number is 42.", static_cast<std::string>(result));
+  
+  result = js_context.JSEvaluateScript("Widget.name = 'foo';");
+  result = js_context.JSEvaluateScript("Widget.name;");
+  XCTAssertTrue(result.IsString());
+  XCTAssertEqual("foo", static_cast<std::string>(result));
+  
+  result = js_context.JSEvaluateScript("Widget.number = 3*7;");
+  result = js_context.JSEvaluateScript("Widget.number;");
+  XCTAssertTrue(result.IsNumber());
+  XCTAssertEqual(21, static_cast<std::uint32_t>(result));
+  
+  result = js_context.JSEvaluateScript("Widget.sayHello();");
+  XCTAssertTrue(result.IsString());
+  XCTAssertEqual("Hello, foo. Your number is 21.", static_cast<std::string>(result));
 }
 
 // As of 2014.09.20 Travis CI only supports Xcode 5.1 which lacks support for
