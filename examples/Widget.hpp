@@ -56,7 +56,7 @@ public:
   
   JSValue pi() const;
   
-  JSValue sayHello(const std::vector<JSValue>& arguments, JSObject& this_object) const;
+  JSValue sayHello(const std::vector<JSValue>& arguments) const;
   
   virtual ~Widget()                   JAVASCRIPTCORECPP_NOEXCEPT;
   Widget(const Widget&)               JAVASCRIPTCORECPP_NOEXCEPT;

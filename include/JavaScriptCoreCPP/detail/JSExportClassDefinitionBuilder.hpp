@@ -215,7 +215,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      
      class Foo {
      JSValue GetName() const;
-     bool SetName(JSValue&& value);
+     bool SetName(JSValue& value);
      };
      
      You would call the builer like this:
@@ -270,7 +270,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      @discussion For example, given this class definition:
      
      class Foo {
-     JSValue Hello(std::vector<JSValue>&& arguments, JSObject&& this_object);
+     JSValue Hello(const std::vector<JSValue>& arguments);
      };
      
      You would call the builer like this:
@@ -279,9 +279,6 @@ namespace JavaScriptCoreCPP { namespace detail {
      builder.AddFunctionProperty("hello", &Foo::Hello);
      
      @param function_name A JSString containing the function's name.
-     
-     @param function_callback The callback to invoke when calling your
-     JavaScript object as a function.
      
      @param enumerable An optional property attribute that specifies
      whether the property is enumerable. The default value is true,
@@ -340,7 +337,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      For example, given this class definition:
      
      class Foo {
-     bool HasProperty(const JSString&& property_name) const;
+     bool HasProperty(const JSString& property_name) const;
      };
      
      You would call the builer like this:
@@ -384,7 +381,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      For example, given this class definition:
      
      class Foo {
-     JSValue GetProperty(const JSString&& property_name) const;
+     JSValue GetProperty(const JSString& property_name) const;
      };
      
      You would call the builer like this:
@@ -428,7 +425,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      For example, given this class definition:
      
      class Foo {
-     bool SetProperty(const JSString&& property_name, const JSValue&& value);
+     bool SetProperty(const JSString& property_name, const JSValue& value);
      };
      
      You would call the builer like this:
@@ -472,7 +469,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      For example, given this class definition:
      
      class Foo {
-     bool DeleteProperty(const JSString&& property_name);
+     bool DeleteProperty(const JSString& property_name);
      };
      
      You would call the builer like this:
@@ -521,7 +518,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      For example, given this class definition:
      
      class Foo {
-     void GetPropertyNames(JSPropertyNameAccumulator&& accumulator) const;
+     void GetPropertyNames(JSPropertyNameAccumulator& accumulator) const;
      };
      
      You would call the builer like this:
@@ -563,7 +560,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      For example, given this class definition:
      
      class Foo {
-     JSValue DoSomething(std::vector<JSValue>&& arguments, JSObject&& this_object);
+     JSValue DoSomething(const std::vector<JSValue>& arguments, JSObject& this_object);
      };
      
      You would call the builer like this:
@@ -614,7 +611,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      For example, given this class definition:
      
      class Foo {
-     JSObject Constructor(const std::vector<JSValue>&& arguments);
+     JSObject Constructor(const std::vector<JSValue>& arguments);
      };
      
      You would call the builer like this:
@@ -663,7 +660,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      For example, given this class definition:
      
      class Foo {
-     bool HasInstance(const JSValue&& possible_instance) const;
+     bool HasInstance(const JSValue& possible_instance) const;
      };
      
      You would call the builer like this:

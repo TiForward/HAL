@@ -83,7 +83,7 @@ namespace JavaScriptCoreCPP { namespace detail {
    @discussion For example, given this class definition:
    
    class Foo {
-   JSValue Hello(const std::vector<JSValue>& arguments, JSObject& this_object) const;
+   JSValue Hello(const std::vector<JSValue>& arguments) const;
    };
    
    You would define the callback like this:
@@ -100,12 +100,10 @@ namespace JavaScriptCoreCPP { namespace detail {
    @param 2 A const rvalue reference to the JSValue array of arguments
    to pass to the function.
    
-   @param 3 An rvalue reference to the 'this' JavaScript object.
-   
    @result Return the function's value.
    */
   template<typename T>
-  using CallNamedFunctionCallback = std::function<JSValue(const T&, const std::vector<JSValue>&, JSObject&)>;
+  using CallNamedFunctionCallback = std::function<JSValue(const T&, const std::vector<JSValue>&)>;
   
   /*!
    @typedef HasPropertyCallback

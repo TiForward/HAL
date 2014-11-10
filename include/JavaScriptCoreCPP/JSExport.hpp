@@ -113,7 +113,7 @@ namespace JavaScriptCoreCPP {
      
      class Foo {
      JSValue GetName() const;
-     bool SetName(JSValue&& value);
+     bool SetName(JSValue& value);
      };
      
      You would call AddValueProperty like this:
@@ -188,6 +188,41 @@ namespace JavaScriptCoreCPP {
      3. You have already added a property with the same property_name.
      */
     static void AddFunctionProperty(const JSString& function_name, detail::CallNamedFunctionCallback<T> function_callback, bool enumerable = true);
+    
+    /*!
+     @method
+     
+     @abstract Set the callback to invoke when determining whether
+     your JavaScript object has a property. If this callback is
+     missing then your JavaScript object will delegate to it's
+     GetPropertyCallback.
+     
+     @discussion The HasPropertyCallback enables optimization in cases
+     where only a property's existence needs to be known, not its
+     value, and computing its value is expensive. If the
+     HasPropertyCallback doesn't exist, then the GetPropertyCallback
+     will be used instead.
+     
+     If this callback returns false then the reqeust forwards to
+     properties added by the AddValueProperty and AddFunctionProperty
+     methods (if any), then properties vended by your class' parent
+     class chain, then properties belonging to your JavaScript
+     object's prototype chain.
+     
+     For example, given this class definition:
+     
+     class Foo {
+     bool HasProperty(const JSString& property_name) const;
+     };
+     
+     You would call the builer like this:
+     
+     JSClassBuilder<Foo> builder("Foo");
+     builder.HasProperty(&Foo::HasProperty);
+     
+     @result A reference to the builder for chaining.
+     */
+    static void HasPropertyCallback(const detail::HasPropertyCallback<T>& has_property_callback);
     
     /*!
      @method
@@ -280,6 +315,11 @@ namespace JavaScriptCoreCPP {
     builder__.AddFunctionProperty(function_name, function_callback, enumerable);
   }
   
+  template<typename T>
+  void JSExport<T>::HasPropertyCallback(const detail::HasPropertyCallback<T>& has_property_callback) {
+    builder__.HasProperty(has_property_callback);
+  }
+
   template<typename T>
   void JSExport<T>::FunctionCallback(const detail::CallAsFunctionCallback<T>& call_as_function_callback) {
     builder__.Function(call_as_function_callback);
