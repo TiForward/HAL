@@ -15,7 +15,7 @@
 
 namespace JavaScriptCoreCPP {
   
-  JSContextGroup::JSContextGroup() noexcept
+  JSContextGroup::JSContextGroup() JAVASCRIPTCORECPP_NOEXCEPT
   : js_context_group_ref__(JSContextGroupCreate()) {
   }
   

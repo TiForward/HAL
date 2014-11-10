@@ -22,6 +22,7 @@
 #include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 
 #include <string>
+#include <regex>
 #include <cstdint>
 #include <vector>
 #include <unordered_map>
@@ -155,10 +156,8 @@ namespace JavaScriptCoreCPP { namespace detail {
     }
   }
   
-  /* Static functions begin here. */
-  
-  
-  /* Implementations of the JavaScriptCore C API callbacks begin here. */
+// The static functions that implement the JavaScriptCore C API
+// callbacks begin here.
   
   template<typename T>
   void JSExportClass<T>::JSObjectInitializeCallback(JSContextRef context_ref, JSObjectRef object_ref) {
@@ -181,8 +180,6 @@ namespace JavaScriptCoreCPP { namespace detail {
   }
   
   
-  /* FIXME: ALl of the following are broken. */
-  
   template<typename T>
   JSValueRef JSExportClass<T>::GetNamedValuePropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception) try {
     
@@ -199,9 +196,9 @@ namespace JavaScriptCoreCPP { namespace detail {
     // precondition
     assert(callback_found);
     
-    auto native_object_ptr = reinterpret_cast<T*>(js_object.GetPrivate());
-    const auto callback    = (callback_position -> second).get_callback();
-    const auto result      = callback(*native_object_ptr);
+    const auto native_object_ptr = reinterpret_cast<const T*>(js_object.GetPrivate());
+    const auto callback          = (callback_position -> second).get_callback();
+    const auto result            = callback(*native_object_ptr);
     
     JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::GetNamedProperty: result = ", to_string(result), " for ", to_string(js_object), ".", property_name);
     
@@ -254,30 +251,49 @@ namespace JavaScriptCoreCPP { namespace detail {
   
   template<typename T>
   JSValueRef JSExportClass<T>::CallNamedFunctionCallback(JSContextRef context_ref, JSObjectRef function_ref, JSObjectRef this_object_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception) try {
-    
-    JSContext js_context(context_ref);
-    JSObject  js_object(js_context, function_ref);
-    JSObject  this_object(js_context, this_object_ref);
-    
-    // FIXME
-    const std::string function_name = "...";
+	  // to_string(js_object) produces this text:
+    //
+    // function sayHello() {
+    //     [native code]
+    // }
+	  //
+	  // So this is the regular expression we use to determing the
+	  // function's name for lookup.
+	  static std::regex regex("^function\\s+([^(]+)\\(\\)(.|\\n)*$");
+	  
+    JSContext         js_context(context_ref);
+    JSObject          js_object(js_context, function_ref);
+    JSObject          this_object(js_context, this_object_ref);
+    const std::string js_object_string = to_string(js_object);
+    std::smatch       match_results;
+    const bool        found = std::regex_match(js_object_string, match_results, regex);
+
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallNamedFunction: function name found = ", found, ", match_results.size() = ", match_results.size(), ", input = ", js_object_string);
+
+    // precondition
+    // The size of the match results should be 3:
+    // match_results[0] == the whole string.
+    // match_results[1] == The function's name
+    // match_results[2] == Everything after the function's name.
+    assert(match_results.size() == 3);
+    const std::string function_name = match_results[1];
     
     // precondition
     assert(js_object.IsFunction());
     
-    const auto callback_position = js_export_class_definition__.named_function_property_callback_map__.find(static_cast<JSString>(function_name));
+    const auto callback_position = js_export_class_definition__.named_function_property_callback_map__.find(function_name);
     const bool callback_found    = callback_position != js_export_class_definition__.named_function_property_callback_map__.end();
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallNamedFunction: callback found = ", callback_found, " for ", to_string(this_object), ".", to_string(js_object), "(...)");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallNamedFunction: callback found = ", callback_found, " for ", to_string(this_object), ".", function_name, "(...)");
     
     // precondition
     assert(callback_found);
     
-    auto native_object_ptr = reinterpret_cast<T*>(js_object.GetPrivate());
-    const auto callback    = (callback_position -> second).function_callback();
-    const auto result      = callback(*native_object_ptr, to_vector(js_context, argument_count, arguments_array), this_object);
+    const auto native_object_ptr = reinterpret_cast<const T*>(js_object.GetPrivate());
+    const auto callback          = (callback_position -> second).function_callback();
+    const auto result            = callback(*native_object_ptr, to_vector(js_context, argument_count, arguments_array), this_object);
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallNamedFunction: result = ", to_string(result), " for ", to_string(this_object), ".", to_string(js_object), "(...)");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallNamedFunction: result = ", to_string(result), " for ", to_string(this_object), ".", function_name, "(...)");
     
     return result;
     
@@ -307,7 +323,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     assert(callback_found);
     
     const auto native_object_ptr = reinterpret_cast<const T*>(js_object.GetPrivate());
-    const auto result      = callback(*native_object_ptr, property_name);
+    const auto result            = callback(*native_object_ptr, property_name);
     
     JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::HasProperty: result = ", result, " for ", to_string(js_object), ".", property_name);
     
@@ -334,8 +350,8 @@ namespace JavaScriptCoreCPP { namespace detail {
     // precondition
     assert(callback_found);
     
-    auto native_object_ptr = reinterpret_cast<T*>(js_object.GetPrivate());
-    const auto result      = callback(*native_object_ptr, property_name);
+    const auto native_object_ptr = reinterpret_cast<const T*>(js_object.GetPrivate());
+    const auto result            = callback(*native_object_ptr, property_name);
     
     JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::GetProperty: result = ", to_string(result), " for ", to_string(js_object), ".", property_name);
     
@@ -431,7 +447,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     // precondition
     assert(callback_found);
     
-    auto native_object_ptr = reinterpret_cast<T*>(js_object.GetPrivate());
+    const auto native_object_ptr = reinterpret_cast<const T*>(js_object.GetPrivate());
     callback(*native_object_ptr, js_property_name_accumulator);
     
   } catch (const std::exception& e) {
@@ -458,8 +474,8 @@ namespace JavaScriptCoreCPP { namespace detail {
     // precondition
     assert(callback_found);
     
-    auto native_object_ptr = reinterpret_cast<T*>(js_object.GetPrivate());
-    const auto result      = callback(*native_object_ptr, to_vector(js_context, argument_count, arguments_array), this_object);
+    const auto native_object_ptr = reinterpret_cast<const T*>(js_object.GetPrivate());
+    const auto result            = callback(*native_object_ptr, to_vector(js_context, argument_count, arguments_array), this_object);
     
     JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallAsFunction: result = ", to_string(result), " for ", to_string(this_object), ".", to_string(js_object), "(...)");
     
@@ -520,8 +536,8 @@ namespace JavaScriptCoreCPP { namespace detail {
     // precondition
     assert(callback_found);
     
-    auto native_object_ptr = reinterpret_cast<T*>(js_object.GetPrivate());
-    const auto result      = callback(*native_object_ptr, possible_instance);
+    const auto native_object_ptr = reinterpret_cast<const T*>(js_object.GetPrivate());
+    const auto result            = callback(*native_object_ptr, possible_instance);
     
     JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::HasInstance: result = ", result, " for ", to_string(js_object));
     
@@ -567,8 +583,8 @@ namespace JavaScriptCoreCPP { namespace detail {
     // precondition
     assert(callback_found);
     
-    auto native_object_ptr = reinterpret_cast<T*>(js_object.GetPrivate());
-    const auto result      = callback(*native_object_ptr, js_value_type);
+    const auto native_object_ptr = reinterpret_cast<const T*>(js_object.GetPrivate());
+    const auto result            = callback(*native_object_ptr, js_value_type);
     
     JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::ConvertToType: result = ", to_string(result), " for converting ", to_string(js_object), " to ", to_string(js_value_type));
     

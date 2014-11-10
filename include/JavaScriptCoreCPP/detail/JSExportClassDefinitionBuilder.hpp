@@ -780,7 +780,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     const auto callback_insert_result = named_value_property_callback_map__.emplace(property_name, value_property_callback);
     const bool callback_inserted      = callback_insert_result.second;
     
-    JAVASCRIPTCORECPP_LOG_DEBUG(internal_component_name, ": value property ", property_name, " inserted = ", callback_inserted);
+    // JAVASCRIPTCORECPP_LOG_DEBUG(internal_component_name, ": value property ", property_name, " inserted = ", callback_inserted);
     assert(callback_inserted);
   }
   
@@ -799,7 +799,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     const auto callback_insert_result = named_function_property_callback_map__.emplace(property_name, function_property_callback);
     const bool callback_inserted      = callback_insert_result.second;
     
-    JAVASCRIPTCORECPP_LOG_DEBUG(internal_component_name, ": function property ", property_name, " inserted = ", callback_inserted);
+    // JAVASCRIPTCORECPP_LOG_DEBUG(internal_component_name, ": function property ", property_name, " inserted = ", callback_inserted);
     assert(callback_inserted);
   }
   

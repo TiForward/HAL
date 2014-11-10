@@ -51,7 +51,7 @@ namespace JavaScriptCoreCPP {
      this context group may share and exchange JavaScript objects with
      one another.
      */
-    JSContextGroup() noexcept;
+    JSContextGroup() JAVASCRIPTCORECPP_NOEXCEPT;
     
     /*!
      @method

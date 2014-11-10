@@ -13,6 +13,12 @@
 #include "JavaScriptCoreCPP/JSLogger.hpp"
 #include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 
+#ifdef JAVASCRIPTCORECPP_NOEXCEPT_ENABLE
+#define JAVASCRIPTCORECPP_NOEXCEPT noexcept
+#else
+#define JAVASCRIPTCORECPP_NOEXCEPT
+#endif
+
 #ifdef JAVASCRIPTCORECPP_THREAD_SAFE
 #include <mutex>
 #endif

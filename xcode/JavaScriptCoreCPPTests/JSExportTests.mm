@@ -94,9 +94,9 @@ using namespace JavaScriptCoreCPP;
       //"Widget;"
       //"typeof Widget;"
       "Widget.name;"
+      //"Widget.sayHello();"
       // "Widget();"
       // "var widget = new Widget();"
-      // "widget.sayHello();"
       ;
   auto result = js_context.JSEvaluateScript(script);
   std::clog << "MDL: result = " << static_cast<std::string>(result) << std::endl;
