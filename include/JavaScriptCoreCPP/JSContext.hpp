@@ -205,7 +205,7 @@ namespace JavaScriptCoreCPP {
      @abstract Create a JavaScript object in this execution context
      that is implemented by a C++ class.
      
-     @param T Any class that derives from JSNativeObject.
+     @param T Any class that derives from JSExport.
      
      @param constructor_arguments The constructor arguments to pass to
      T.

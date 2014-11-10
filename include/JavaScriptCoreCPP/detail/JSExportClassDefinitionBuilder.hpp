@@ -96,9 +96,12 @@ namespace JavaScriptCoreCPP { namespace detail {
     JSExportClassDefinitionBuilder()                                                       = delete;
     ~JSExportClassDefinitionBuilder()                                                      = default;
     JSExportClassDefinitionBuilder(const JSExportClassDefinitionBuilder<T>&)               = default;
-    JSExportClassDefinitionBuilder(JSExportClassDefinitionBuilder<T>&&)                    = default;
     JSExportClassDefinitionBuilder<T>& operator=(const JSExportClassDefinitionBuilder<T>&) = default;
+    
+#ifdef JAVASCRIPTCORECPP_MOVE_CTOR_AND_ASSIGN_DEFAULT_ENABLE
+    JSExportClassDefinitionBuilder(JSExportClassDefinitionBuilder<T>&&)                    = default;
     JSExportClassDefinitionBuilder<T>& operator=(JSExportClassDefinitionBuilder<T>&&)      = default;
+#endif
     
     /*!
      @method

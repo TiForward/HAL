@@ -45,9 +45,12 @@ namespace JavaScriptCoreCPP {
     JSExport()                           = delete;
     virtual ~JSExport()                  = default;
     JSExport(const JSExport&)            = default;
-    JSExport(JSExport&&)                 = default;
     JSExport& operator=(const JSExport&) = default;
+    
+#ifdef JAVASCRIPTCORECPP_MOVE_CTOR_AND_ASSIGN_DEFAULT_ENABLE
+    JSExport(JSExport&&)                 = default;
     JSExport& operator=(JSExport&&)      = default;
+#endif
     
   protected:
     

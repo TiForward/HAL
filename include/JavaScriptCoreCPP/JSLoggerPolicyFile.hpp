@@ -14,38 +14,39 @@
 #include <fstream>
 
 namespace JavaScriptCoreCPP {
-
-class JSLoggerPolicyFile final : public JSLoggerPolicyInterface {
- public:
   
-	JSLoggerPolicyFile(const std::string& name) {
-		ofstream__.open(name, std::ios_base::binary | std::ios_base::out);
-		if(!ofstream__.is_open() ) {
-			throw(std::runtime_error("JSLoggerPolicyFile: Unable to open an output stream"));
-		}
-	}
-	
-	JSLoggerPolicyFile() = delete;
-	
-	~JSLoggerPolicyFile() {
-		ofstream__.close();
-	}
-	
-	JSLoggerPolicyFile(const JSLoggerPolicyFile& rhs) = default;
-	JSLoggerPolicyFile(JSLoggerPolicyFile&& rhs) = default;
-	
-	JSLoggerPolicyFile& operator=(const JSLoggerPolicyFile&) = default;
-	JSLoggerPolicyFile& operator=(JSLoggerPolicyFile&&) = default;
-	
-	virtual void Write(const std::string& log_message) override final {
-		ofstream__ << log_message << std::endl;
-	}
-	
- private:
-	
-	std::ofstream ofstream__;
-};
-
-} // namespace JavaScriptCoreCPP {
-
+  class JSLoggerPolicyFile final : public JSLoggerPolicyInterface {
+  public:
+    
+    JSLoggerPolicyFile(const std::string& name) {
+      ofstream__.open(name, std::ios_base::binary | std::ios_base::out);
+      if(!ofstream__.is_open() ) {
+        throw(std::runtime_error("JSLoggerPolicyFile: Unable to open an output stream"));
+      }
+    }
+    
+    ~JSLoggerPolicyFile() {
+      ofstream__.close();
+    }
+    
+    JSLoggerPolicyFile()                                     = delete;
+    JSLoggerPolicyFile(const JSLoggerPolicyFile&)            = default;
+    JSLoggerPolicyFile(JSLoggerPolicyFile&&)                 = default;
+    
+#ifdef JAVASCRIPTCORECPP_MOVE_CTOR_AND_ASSIGN_DEFAULT_ENABLE
+    JSLoggerPolicyFile& operator=(const JSLoggerPolicyFile&) = default;
+    JSLoggerPolicyFile& operator=(JSLoggerPolicyFile&&)      = default;
+#endif
+    
+    virtual void Write(const std::string& log_message) override final {
+      ofstream__ << log_message << std::endl;
+      }
+      
+    private:
+      
+      std::ofstream ofstream__;
+      };
+      
+      } // namespace JavaScriptCoreCPP {
+      
 #endif // _JAVASCRIPTCORECPP_JSLOGGERPOLICYFILE_HPP_

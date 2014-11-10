@@ -246,14 +246,16 @@ namespace JavaScriptCoreCPP {
     JSObject()                           = delete;
     ~JSObject()                          = default;
     JSObject(const JSObject&)            = default;
-    JSObject(JSObject&&)                 = default;
     JSObject& operator=(const JSObject&) = default;
+    
+#ifdef JAVASCRIPTCORECPP_MOVE_CTOR_AND_ASSIGN_DEFAULT_ENABLE
+    JSObject(JSObject&&)                 = default;
     JSObject& operator=(JSObject&&)      = default;
+#endif
     
   protected:
     
-    // Only JSContext and JSNativeObject use the following
-    // constructor.
+    // Only JSContext uses the following constructor.
     friend class JSContext;
     
     JSObject(const JSContext& js_context, const JSClass& js_class, void* private_data = nullptr);

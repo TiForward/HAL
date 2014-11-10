@@ -13,10 +13,10 @@
 
 using namespace JavaScriptCoreCPP;
 
-@interface JSNativeObjectTests : XCTestCase
+@interface JSExportTests : XCTestCase
 @end
 
-@implementation JSNativeObjectTests {
+@implementation JSExportTests {
   JSContextGroup js_context_group;
 }
 
@@ -62,7 +62,7 @@ using namespace JavaScriptCoreCPP;
   detail::JSExportNamedFunctionPropertyCallback<Widget> sayHello_callback("sayHello", &Widget::sayHello, {JSPropertyAttribute::DontDelete});
 }
 
-- (void)testJSNativeClassBuilder {
+- (void)testJSExportClassDefinitionBuilder {
   detail::JSExportClassDefinitionBuilder<Widget> builder("Widget");
   builder
       .AddValueProperty("name", &Widget::get_name, &Widget::set_name)

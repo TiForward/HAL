@@ -11,22 +11,23 @@
 #define _JAVASCRIPTCORECPP_JSLOGGERPOLICYINTERFACE_HPP_
 
 namespace JavaScriptCoreCPP {
-
-class JSLoggerPolicyInterface {
- public:
   
-	JSLoggerPolicyInterface() = default;
-	virtual ~JSLoggerPolicyInterface() = default;
-	
-	JSLoggerPolicyInterface(const JSLoggerPolicyInterface& rhs) = default;
-	JSLoggerPolicyInterface(JSLoggerPolicyInterface&& rhs) = default;
-	
-	JSLoggerPolicyInterface& operator=(const JSLoggerPolicyInterface&) = default;
-	JSLoggerPolicyInterface& operator=(JSLoggerPolicyInterface&&) = default;
-	
-	virtual void Write(const std::string& log_message) = 0;
-};
-
+  class JSLoggerPolicyInterface {
+  public:
+    
+    JSLoggerPolicyInterface()                                          = default;
+    virtual ~JSLoggerPolicyInterface()                                 = default;
+    JSLoggerPolicyInterface(const JSLoggerPolicyInterface&)            = default;
+    JSLoggerPolicyInterface& operator=(const JSLoggerPolicyInterface&) = default;
+    
+#ifdef JAVASCRIPTCORECPP_MOVE_CTOR_AND_ASSIGN_DEFAULT_ENABLE
+    JSLoggerPolicyInterface(JSLoggerPolicyInterface&&)                 = default;
+    JSLoggerPolicyInterface& operator=(JSLoggerPolicyInterface&&)      = default;
+#endif
+    
+    virtual void Write(const std::string& log_message) = 0;
+  };
+  
 } // namespace JavaScriptCoreCPP {
 
 #endif // _JAVASCRIPTCORECPP_JSLOGGERPOLICYINTERFACE_HPP_

@@ -14,27 +14,28 @@
 #include <iostream>
 
 namespace JavaScriptCoreCPP {
-
-class JSLoggerPolicyConsole final : public JSLoggerPolicyInterface {
- public:
   
-	JSLoggerPolicyConsole(const std::string& name) {
-	}
-	
-	JSLoggerPolicyConsole() = delete;
-	~JSLoggerPolicyConsole() = default;
-	
-	JSLoggerPolicyConsole(const JSLoggerPolicyConsole& rhs) = default;
-	JSLoggerPolicyConsole(JSLoggerPolicyConsole&& rhs) = default;
-	
-	JSLoggerPolicyConsole& operator=(const JSLoggerPolicyConsole&) = default;
-	JSLoggerPolicyConsole& operator=(JSLoggerPolicyConsole&&) = default;
-	
-	virtual void Write(const std::string& log_message) override final {
-		std::clog << log_message << std::endl;
-	}
-};
-
-} // namespace JavaScriptCoreCPP {
-
+  class JSLoggerPolicyConsole final : public JSLoggerPolicyInterface {
+  public:
+    
+    JSLoggerPolicyConsole(const std::string& name) {
+    }
+    
+    JSLoggerPolicyConsole()                                        = delete;
+    ~JSLoggerPolicyConsole()                                       = default;
+    JSLoggerPolicyConsole(const JSLoggerPolicyConsole&)            = default;
+    JSLoggerPolicyConsole& operator=(const JSLoggerPolicyConsole&) = default;
+    
+#ifdef JAVASCRIPTCORECPP_MOVE_CTOR_AND_ASSIGN_DEFAULT_ENABLE
+    JSLoggerPolicyConsole(JSLoggerPolicyConsole&&)                 = default;
+    JSLoggerPolicyConsole& operator=(JSLoggerPolicyConsole&&)      = default;
+#endif
+    
+    virtual void Write(const std::string& log_message) override final {
+      std::clog << log_message << std::endl;
+      }
+      };
+      
+      } // namespace JavaScriptCoreCPP {
+      
 #endif // _JAVASCRIPTCORECPP_JSLOGGERPOLICYCONSOLE_HPP_

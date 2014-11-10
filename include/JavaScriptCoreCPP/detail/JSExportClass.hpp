@@ -44,6 +44,16 @@ namespace JavaScriptCoreCPP { namespace detail {
   template<typename T>
   class JSExportClassDefinition;
   
+  /*!
+   @class
+   
+   @discussion A JSExportClass is an RAII wrapper around a JSClassRef,
+   the JavaScriptCore C API representation of a JavaScript class. A
+   JSExportClass defines JavaScript objects implemented by a C++
+   class.
+   
+   This class is thread-safe and lock-free by design.
+   */
   template<typename T>
   class JSExportClass final : public JSClass JAVASCRIPTCORECPP_PERFORMANCE_COUNTER2(JSExportClass<T>) {
     
@@ -54,9 +64,12 @@ namespace JavaScriptCoreCPP { namespace detail {
     JSExportClass()                                = default;
     ~JSExportClass()                               = default;
     JSExportClass(const JSExportClass&)            = default;
-    JSExportClass(JSExportClass&&)                 = default;
     JSExportClass& operator=(const JSExportClass&) = default;
+    
+#ifdef JAVASCRIPTCORECPP_MOVE_CTOR_AND_ASSIGN_DEFAULT_ENABLE
+    JSExportClass(JSExportClass&&)                 = default;
     JSExportClass& operator=(JSExportClass&&)      = default;
+#endif
     
   private:
     
@@ -156,8 +169,8 @@ namespace JavaScriptCoreCPP { namespace detail {
     }
   }
   
-// The static functions that implement the JavaScriptCore C API
-// callbacks begin here.
+  // The static functions that implement the JavaScriptCore C API
+  // callbacks begin here.
   
   template<typename T>
   void JSExportClass<T>::JSObjectInitializeCallback(JSContextRef context_ref, JSObjectRef object_ref) {
@@ -251,25 +264,25 @@ namespace JavaScriptCoreCPP { namespace detail {
   
   template<typename T>
   JSValueRef JSExportClass<T>::CallNamedFunctionCallback(JSContextRef context_ref, JSObjectRef function_ref, JSObjectRef this_object_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception) try {
-	  // to_string(js_object) produces this text:
+    // to_string(js_object) produces this text:
     //
     // function sayHello() {
     //     [native code]
     // }
-	  //
-	  // So this is the regular expression we use to determing the
-	  // function's name for lookup.
-	  static std::regex regex("^function\\s+([^(]+)\\(\\)(.|\\n)*$");
-	  
+    //
+    // So this is the regular expression we use to determing the
+    // function's name for lookup.
+    static std::regex regex("^function\\s+([^(]+)\\(\\)(.|\\n)*$");
+    
     JSContext         js_context(context_ref);
     JSObject          js_object(js_context, function_ref);
     JSObject          this_object(js_context, this_object_ref);
     const std::string js_object_string = to_string(js_object);
     std::smatch       match_results;
     const bool        found = std::regex_match(js_object_string, match_results, regex);
-
+    
     JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallNamedFunction: function name found = ", found, ", match_results.size() = ", match_results.size(), ", input = ", js_object_string);
-
+    
     // precondition
     // The size of the match results should be 3:
     // match_results[0] == the whole string.

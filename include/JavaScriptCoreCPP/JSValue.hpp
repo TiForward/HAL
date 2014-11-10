@@ -62,19 +62,6 @@ namespace JavaScriptCoreCPP {
    JSDate
    JSError
    JSRegExp
-   JSNativeObject
-   
-   These are the only remaining major classes in the JavaScriptCoreCPP
-   library that do not have JSValue in their class hierarchy:
-   
-   JSClass
-   JSContext
-   JSContextGroup
-   JSString
-   JSNativeClass
-   
-   The other ancillary helper classes in the JavaScriptCoreCPP library
-   also do not have JSValue in their class hierarchy.
    
    The only way to create a JSValue is by using the
    JSContext::CreateXXX member functions.

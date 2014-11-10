@@ -14,32 +14,32 @@
 #include <cstdint>
 
 namespace JavaScriptCoreCPP {
-template<typename JSLoggerPolicy>
-class JSLogger;
+  template<typename JSLoggerPolicy>
+  class JSLogger;
 }
 
 namespace JavaScriptCoreCPP { namespace detail {
-
-class JSLoggerPimpl final {
-	
- public:
-
- // private:
-	
- //  // We are used exclusively JSLogger<T>.
- //  template<typename JSLoggerPolicy>
- //  friend class JSLogger;
-
-	JSLoggerPimpl()                                = delete;
-	~JSLoggerPimpl()                               = delete;
-	JSLoggerPimpl(const JSLoggerPimpl&)            = delete;
-	JSLoggerPimpl(JSLoggerPimpl&&)                 = delete;
-	JSLoggerPimpl& operator=(const JSLoggerPimpl&) = delete;
-	JSLoggerPimpl& operator=(JSLoggerPimpl&&)      = delete;
-
-	static std::string GetLoglineHeader(uint32_t log_line_number);
-};
-
+  
+  class JSLoggerPimpl final {
+    
+  public:
+    
+    // private:
+    
+    //  // We are used exclusively JSLogger<T>.
+    //  template<typename JSLoggerPolicy>
+    //  friend class JSLogger;
+    
+    JSLoggerPimpl()                                = delete;
+    ~JSLoggerPimpl()                               = delete;
+    JSLoggerPimpl(const JSLoggerPimpl&)            = delete;
+    JSLoggerPimpl(JSLoggerPimpl&&)                 = delete;
+    JSLoggerPimpl& operator=(const JSLoggerPimpl&) = delete;
+    JSLoggerPimpl& operator=(JSLoggerPimpl&&)      = delete;
+    
+    static std::string GetLoglineHeader(uint32_t log_line_number);
+  };
+  
 }} // namespace JavaScriptCoreCPP { namespace detail
 
 #endif // _JAVASCRIPTCORECPP_DETAIL_JSLOGGERPIMPL_HPP_

@@ -16,77 +16,76 @@
 #include <cassert>
 
 namespace JavaScriptCoreCPP {
-
-class JSObject;
-
-namespace detail {
-  template<typename T>
-  class JSExportClass;
-}}
+  
+  class JSObject;
+  
+  namespace detail {
+    template<typename T>
+    class JSExportClass;
+  }}
 
 namespace JavaScriptCoreCPP {
-
-/*!
-  @class
   
-  @discussion A JSPropertyNameAccumulator is an RAII wrapper around a
-  JSPropertyNameAccumulatorRef, the JavaScriptCore C API
-  representation of a JavaScript property name accumulator which is an
-  ordered set used to collect the names of a JavaScript object's
-  properties
-*/
+  /*!
+   @class
+   
+   @discussion A JSPropertyNameAccumulator is an RAII wrapper around a
+   JSPropertyNameAccumulatorRef, the JavaScriptCore C API
+   representation of a JavaScript property name accumulator which is
+   an ordered set used to collect the names of a JavaScript object's
+   properties
+   */
 #ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
-class JSPropertyNameAccumulator	: public detail::JSPerformanceCounter<JSPropertyNameAccumulator> {
+  class JSPropertyNameAccumulator : public detail::JSPerformanceCounter<JSPropertyNameAccumulator> {
 #else
-class JSPropertyNameAccumulator	{
+    class JSPropertyNameAccumulator {
 #endif
-	
- public:
-	
-	JSPropertyNameAccumulator() = delete;
-	~JSPropertyNameAccumulator() = default;
-	
-	/*!
-	  @method
-	  
-	  @abstract Adds a property name to a JavaScript property name
-	  accumulator.
-	  
-	  @param property_name The property name to add.
-	*/
-	void AddName(const JSString& property_name) const {
-		JSPropertyNameAccumulatorAddName(js_property_name_accumulator_ref__, property_name);
-	}
-	
-private:
-
-	JSPropertyNameAccumulator(const JSPropertyNameAccumulator& rhs) = delete;
-	JSPropertyNameAccumulator(JSPropertyNameAccumulator&& rhs) = delete;
-
-	JSPropertyNameAccumulator& operator=(const JSPropertyNameAccumulator& rhs) = delete;
-	JSPropertyNameAccumulator& operator=(JSPropertyNameAccumulator&& rhs) = delete;
-
-	// Only a JSObject and a JSExportClass can create a
-	// JSPropertyNameAccumulator.
-	friend class JSObject;
-
-  template<typename T>
-  friend class detail::JSExportClass;
-
-	// For interoperability with the JavaScriptCore C API.
-	explicit JSPropertyNameAccumulator(const JSPropertyNameAccumulatorRef& js_property_name_accumulator_ref)
-			: js_property_name_accumulator_ref__(js_property_name_accumulator_ref) {
-		assert(js_property_name_accumulator_ref__);
-	}
-	
-  // For interoperability with the JavaScriptCore C API.
-	operator JSPropertyNameAccumulatorRef() const {
-		return js_property_name_accumulator_ref__;
-	}
-
-	JSPropertyNameAccumulatorRef js_property_name_accumulator_ref__;
-};
-
-} // namespace JavaScriptCoreCPP {
-
+      
+    public:
+      
+      JSPropertyNameAccumulator()                                            = delete;
+      ~JSPropertyNameAccumulator()                                           = default;
+      JSPropertyNameAccumulator(const JSPropertyNameAccumulator&)            = delete;
+      JSPropertyNameAccumulator(JSPropertyNameAccumulator&&)                 = delete;
+      JSPropertyNameAccumulator& operator=(const JSPropertyNameAccumulator&) = delete;
+      JSPropertyNameAccumulator& operator=(JSPropertyNameAccumulator&&)      = delete;
+      
+      
+      /*!
+       @method
+       
+       @abstract Adds a property name to a JavaScript property name
+       accumulator.
+       
+       @param property_name The property name to add.
+       */
+      void AddName(const JSString& property_name) const {
+        JSPropertyNameAccumulatorAddName(js_property_name_accumulator_ref__, property_name);
+      }
+      
+    private:
+      
+      // Only a JSObject and a JSExportClass can create a
+      // JSPropertyNameAccumulator.
+      friend class JSObject;
+      
+      template<typename T>
+      friend class detail::JSExportClass;
+      
+      // For interoperability with the JavaScriptCore C API.
+      explicit JSPropertyNameAccumulator(const JSPropertyNameAccumulatorRef& js_property_name_accumulator_ref)
+      : js_property_name_accumulator_ref__(js_property_name_accumulator_ref) {
+        assert(js_property_name_accumulator_ref__);
+      }
+      
+      // For interoperability with the JavaScriptCore C API.
+      operator JSPropertyNameAccumulatorRef() const {
+        return js_property_name_accumulator_ref__;
+      }
+      
+      JSPropertyNameAccumulatorRef js_property_name_accumulator_ref__;
+    };
+    
+  } // namespace JavaScriptCoreCPP {
+  
 #endif // _JAVASCRIPTCORECPP_DETAIL_JSPROPERTYNAMEACCUMULATOR_HPP_

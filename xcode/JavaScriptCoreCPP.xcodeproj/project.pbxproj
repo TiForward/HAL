@@ -158,7 +158,6 @@
 		C97454E51A09C71200CB4CA9 /* JSExportClassDefinitionBuilder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSExportClassDefinitionBuilder.hpp; path = include/JavaScriptCoreCPP/detail/JSExportClassDefinitionBuilder.hpp; sourceTree = "<group>"; };
 		C97454E71A09C79600CB4CA9 /* JSPropertyCallback.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSPropertyCallback.cpp; path = src/detail/JSPropertyCallback.cpp; sourceTree = "<group>"; };
 		C97454ED1A0B66E500CB4CA9 /* Widget.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Widget.hpp; path = ../../examples/Widget.hpp; sourceTree = "<group>"; };
-		C97454EE1A0BFB3800CB4CA9 /* JSExportClassOrig.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSExportClassOrig.hpp; path = include/JavaScriptCoreCPP/detail/JSExportClassOrig.hpp; sourceTree = "<group>"; };
 		C97454F31A0CFB7000CB4CA9 /* JSStaticFunction.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSStaticFunction.hpp; path = include/JavaScriptCoreCPP/detail/JSStaticFunction.hpp; sourceTree = "<group>"; };
 		C97454F41A0CFB7000CB4CA9 /* JSStaticValue.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSStaticValue.hpp; path = include/JavaScriptCoreCPP/detail/JSStaticValue.hpp; sourceTree = "<group>"; };
 		C97454F51A0CFB7000CB4CA9 /* JSStaticFunction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSStaticFunction.cpp; path = src/detail/JSStaticFunction.cpp; sourceTree = "<group>"; };
@@ -383,7 +382,6 @@
 			children = (
 				C97455051A0D55E200CB4CA9 /* JSExportClassDefinition.hpp */,
 				C97454E51A09C71200CB4CA9 /* JSExportClassDefinitionBuilder.hpp */,
-				C97454EE1A0BFB3800CB4CA9 /* JSExportClassOrig.hpp */,
 				C97454D81A09C6D500CB4CA9 /* JSExportClass.hpp */,
 				C97454D91A09C6D500CB4CA9 /* JSExportNamedValuePropertyCallback.hpp */,
 				C97454DA1A09C6D500CB4CA9 /* JSExportNamedFunctionPropertyCallback.hpp */,
