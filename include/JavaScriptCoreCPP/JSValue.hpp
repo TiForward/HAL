@@ -111,7 +111,7 @@ namespace JavaScriptCoreCPP {
      
      @result A JSString with the result of conversion.
      */
-    virtual explicit operator JSString() const final;
+    explicit operator JSString() const;
     
     /*!
      @method
@@ -120,7 +120,7 @@ namespace JavaScriptCoreCPP {
      
      @result A std::string with the result of conversion.
      */
-    virtual explicit operator std::string() const final;
+    explicit operator std::string() const;
     
     /*!
      @method
@@ -129,7 +129,7 @@ namespace JavaScriptCoreCPP {
      
      @result The boolean result of conversion.
      */
-    virtual explicit operator bool() const JAVASCRIPTCORECPP_NOEXCEPT final;
+    explicit operator bool() const JAVASCRIPTCORECPP_NOEXCEPT;
     
     /*!
      @method
@@ -147,7 +147,7 @@ namespace JavaScriptCoreCPP {
      
      @result The double result of conversion.
      */
-    virtual explicit operator double() const final;
+    explicit operator double() const;
     
     /*!
      @method
@@ -157,7 +157,7 @@ namespace JavaScriptCoreCPP {
      
      @result The int32_t result of conversion.
      */
-    virtual explicit operator int32_t() const final;
+    explicit operator int32_t() const;
     
     /*!
      @method
@@ -171,7 +171,7 @@ namespace JavaScriptCoreCPP {
      
      @result The uint32_t result of the conversion.
      */
-    virtual explicit operator uint32_t() const final {
+    explicit operator uint32_t() const{
       // As commented in the spec, the operation of ToInt32 and
       // ToUint32 only differ in how the result is interpreted; see
       // NOTEs in sections 9.5 and 9.6.

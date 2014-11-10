@@ -89,7 +89,7 @@ namespace JavaScriptCoreCPP {
     swap(js_class_definition__   , other.js_class_definition__);
   }
   
-  void JSClassDefinition::JSClassDefinition::Initialize(const ::JSClassDefinition& other) JAVASCRIPTCORECPP_NOEXCEPT {
+  void JSClassDefinition::Initialize(const ::JSClassDefinition& other) JAVASCRIPTCORECPP_NOEXCEPT {
     js_class_definition__.version           = other.version;
     js_class_definition__.attributes        = other.attributes;
     

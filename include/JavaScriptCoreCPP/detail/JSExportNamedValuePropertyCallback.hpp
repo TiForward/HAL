@@ -137,7 +137,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   }
   
   template<typename T>
-  JSExportNamedValuePropertyCallback<T>& JSExportNamedValuePropertyCallback<T>::JSExportNamedValuePropertyCallback::operator=(const JSExportNamedValuePropertyCallback<T>& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
+  JSExportNamedValuePropertyCallback<T>& JSExportNamedValuePropertyCallback<T>::operator=(const JSExportNamedValuePropertyCallback<T>& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
     JSPropertyCallback::operator=(rhs);
     get_callback__ = rhs.get_callback__;
@@ -146,7 +146,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   }
   
   template<typename T>
-  JSExportNamedValuePropertyCallback<T>& JSExportNamedValuePropertyCallback<T>::JSExportNamedValuePropertyCallback::operator=(JSExportNamedValuePropertyCallback<T>&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
+  JSExportNamedValuePropertyCallback<T>& JSExportNamedValuePropertyCallback<T>::operator=(JSExportNamedValuePropertyCallback<T>&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
     JSPropertyCallback::operator=(rhs);
     swap(rhs);

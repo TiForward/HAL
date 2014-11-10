@@ -17,7 +17,8 @@
 namespace JavaScriptCoreCPP {
   
   JSClass::JSClass() JAVASCRIPTCORECPP_NOEXCEPT
-  : js_class_ref__(JSClassCreate(&kJSClassDefinitionEmpty)) {
+  : name__("Default")
+  , js_class_ref__(JSClassCreate(&kJSClassDefinitionEmpty)) {
   }
   
   JSClass::JSClass(const JSClassDefinition& js_class_definition) JAVASCRIPTCORECPP_NOEXCEPT

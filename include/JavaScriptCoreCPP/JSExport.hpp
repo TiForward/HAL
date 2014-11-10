@@ -324,11 +324,11 @@ namespace JavaScriptCoreCPP {
     return js_context__;
   }
   
-  template<typename T, typename... Us>
-  std::shared_ptr<T> JSContext::CreateObject(Us&&... constructor_arguments) const {
-    auto native_object_ptr = std::make_shared<T>(*this);
-    return native_object_ptr;
-  }
+  // template<typename T, typename... Us>
+  // std::shared_ptr<T> JSContext::CreateObject(Us&&... constructor_arguments) const {
+  //   auto native_object_ptr = std::make_shared<T>(*this);
+  //   return native_object_ptr;
+  // }
   
   
 } // namespace JavaScriptCoreCPP {

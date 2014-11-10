@@ -11,7 +11,7 @@
 #include "JavaScriptCoreCPP/JSString.hpp"
 #include "JavaScriptCoreCPP/JSValue.hpp"
 
-#include <bitset>
+#include <algorithm>
 #include <sstream>
 #include <stdexcept>
 

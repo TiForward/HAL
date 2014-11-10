@@ -103,7 +103,7 @@ namespace JavaScriptCoreCPP {
       return js_class_ref__;
     }
     
-    std::string name__ { "Default" };
+    std::string name__;
     JSClassRef  js_class_ref__ { nullptr };
     
   protected:

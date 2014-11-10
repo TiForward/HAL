@@ -31,10 +31,10 @@ namespace JavaScriptCoreCPP {
     
     JSLoggerPolicyFile()                                     = delete;
     JSLoggerPolicyFile(const JSLoggerPolicyFile&)            = default;
-    JSLoggerPolicyFile(JSLoggerPolicyFile&&)                 = default;
+    JSLoggerPolicyFile& operator=(const JSLoggerPolicyFile&) = default;
     
 #ifdef JAVASCRIPTCORECPP_MOVE_CTOR_AND_ASSIGN_DEFAULT_ENABLE
-    JSLoggerPolicyFile& operator=(const JSLoggerPolicyFile&) = default;
+    JSLoggerPolicyFile(JSLoggerPolicyFile&&)                 = default;
     JSLoggerPolicyFile& operator=(JSLoggerPolicyFile&&)      = default;
 #endif
     

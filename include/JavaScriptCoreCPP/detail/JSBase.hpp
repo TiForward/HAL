@@ -10,9 +10,6 @@
 #ifndef _JAVASCRIPTCORECPP_DETAIL_JSBASE_HPP_
 #define _JAVASCRIPTCORECPP_DETAIL_JSBASE_HPP_
 
-#include "JavaScriptCoreCPP/JSLogger.hpp"
-#include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
-
 #define JAVASCRIPTCORECPP_NOEXCEPT_ENABLE
 #define JAVASCRIPTCORECPP_MOVE_CTOR_AND_ASSIGN_DEFAULT_ENABLE
 
@@ -21,7 +18,6 @@
 // RTM ships with MSVC 18.0.30723.0
 
 #if defined(_MSC_VER) && _MSC_VER <= 1800
-
 // According to Microsoft's "Visual C++ Team Blog":
 // 
 // VS 2013 supported rvalue references, except for automatically
@@ -52,6 +48,8 @@
 #include <mutex>
 #endif
 
+#include "JavaScriptCoreCPP/JSLogger.hpp"
+#include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 #include <JavaScriptCore/JavaScript.h>
 
 #endif // _JAVASCRIPTCORECPP_DETAIL_JSBASE_HPP_

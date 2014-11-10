@@ -54,7 +54,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   }
   
   
-  JSStaticValue& JSStaticValue::JSStaticValue::operator=(const JSStaticValue& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
+  JSStaticValue& JSStaticValue::operator=(const JSStaticValue& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
     JSPropertyCallback::operator=(rhs);
     get_callback__ = rhs.get_callback__;
@@ -62,7 +62,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     return *this;
   }
   
-  JSStaticValue& JSStaticValue::JSStaticValue::operator=(JSStaticValue&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
+  JSStaticValue& JSStaticValue::operator=(JSStaticValue&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
     JSPropertyCallback::operator=(rhs);
     get_callback__ = std::move(rhs.get_callback__);

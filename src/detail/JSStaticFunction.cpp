@@ -35,7 +35,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   }
   
   
-  JSStaticFunction& JSStaticFunction::JSStaticFunction::operator=(const JSStaticFunction& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
+  JSStaticFunction& JSStaticFunction::operator=(const JSStaticFunction& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
     JSPropertyCallback::operator=(rhs);
     function_callback__ = rhs.function_callback__;
@@ -43,7 +43,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   }
   
   
-  JSStaticFunction& JSStaticFunction::JSStaticFunction::operator=(JSStaticFunction&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
+  JSStaticFunction& JSStaticFunction::operator=(JSStaticFunction&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
     JSPropertyCallback::operator=(rhs);
     function_callback__ = std::move(rhs.function_callback__);
