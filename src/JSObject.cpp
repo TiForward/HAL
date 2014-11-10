@@ -94,10 +94,25 @@ namespace JavaScriptCoreCPP {
     return result;
   }
   
-  JSPropertyNameArray JSObject::CopyPropertyNames() const JAVASCRIPTCORECPP_NOEXCEPT {
+  JSPropertyNameArray JSObject::GetPropertyNames() const JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSOBJECT_LOCK_GUARD;
     return JSPropertyNameArray(*this);
   }
+  
+  bool JSObject::IsFunction() const JAVASCRIPTCORECPP_NOEXCEPT {
+    return JSObjectIsFunction(js_context__, js_object_ref__);
+  }
+  
+  JSValue JSObject::operator()(                                                            ) { return CallAsFunction(std::vector<JSValue>()                      , *this      ); }
+  JSValue JSObject::operator()(const JSValue&               argument                       ) { return CallAsFunction({argument}                                  , *this      ); }
+  JSValue JSObject::operator()(const JSString&              argument                       ) { return CallAsFunction(detail::to_vector(js_context__, {argument}) , *this      ); }
+  JSValue JSObject::operator()(const std::vector<JSValue>&  arguments                      ) { return CallAsFunction(arguments                                   , *this      ); }
+  JSValue JSObject::operator()(const std::vector<JSString>& arguments                      ) { return CallAsFunction(detail::to_vector(js_context__, arguments)  , *this      ); }
+  JSValue JSObject::operator()(                                        JSObject this_object) { return CallAsFunction(std::vector<JSValue>()                      , this_object); }
+  JSValue JSObject::operator()(const JSValue&               argument , JSObject this_object) { return CallAsFunction({argument}                                  , this_object); }
+  JSValue JSObject::operator()(const JSString&              argument , JSObject this_object) { return CallAsFunction(detail::to_vector(js_context__, {argument}) , this_object); }
+  JSValue JSObject::operator()(const std::vector<JSValue>&  arguments, JSObject this_object) { return CallAsFunction(arguments                                   , this_object); }
+  JSValue JSObject::operator()(const std::vector<JSString>& arguments, JSObject this_object) { return CallAsFunction(detail::to_vector(js_context__, arguments)  , this_object); }
   
   bool JSObject::IsConstructor() const JAVASCRIPTCORECPP_NOEXCEPT {
     return JSObjectIsConstructor(js_context__, js_object_ref__);
@@ -134,21 +149,6 @@ namespace JavaScriptCoreCPP {
     assert(js_object_ref);
     return JSObject(js_context__, js_object_ref);
   }
-  
-  bool JSObject::IsFunction() const JAVASCRIPTCORECPP_NOEXCEPT {
-    return JSObjectIsFunction(js_context__, js_object_ref__);
-  }
-  
-  JSValue JSObject::operator()(                                                            ) { return CallAsFunction(std::vector<JSValue>()                      , *this      ); }
-  JSValue JSObject::operator()(const JSValue&               argument                       ) { return CallAsFunction({argument}                                  , *this      ); }
-  JSValue JSObject::operator()(const JSString&              argument                       ) { return CallAsFunction(detail::to_vector(js_context__, {argument}) , *this      ); }
-  JSValue JSObject::operator()(const std::vector<JSValue>&  arguments                      ) { return CallAsFunction(arguments                                   , *this      ); }
-  JSValue JSObject::operator()(const std::vector<JSString>& arguments                      ) { return CallAsFunction(detail::to_vector(js_context__, arguments)  , *this      ); }
-  JSValue JSObject::operator()(                                        JSObject this_object) { return CallAsFunction(std::vector<JSValue>()                      , this_object); }
-  JSValue JSObject::operator()(const JSValue&               argument , JSObject this_object) { return CallAsFunction({argument}                                  , this_object); }
-  JSValue JSObject::operator()(const JSString&              argument , JSObject this_object) { return CallAsFunction(detail::to_vector(js_context__, {argument}) , this_object); }
-  JSValue JSObject::operator()(const std::vector<JSValue>&  arguments, JSObject this_object) { return CallAsFunction(arguments                                   , this_object); }
-  JSValue JSObject::operator()(const std::vector<JSString>& arguments, JSObject this_object) { return CallAsFunction(detail::to_vector(js_context__, arguments)  , this_object); }
   
   JSValue JSObject::GetPrototype() const JAVASCRIPTCORECPP_NOEXCEPT {
     return JSValue(js_context__, JSObjectGetPrototype(js_context__, js_object_ref__));
@@ -268,7 +268,7 @@ namespace JavaScriptCoreCPP {
   
   void JSObject::GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSOBJECT_LOCK_GUARD;
-    for (const auto& property_name : static_cast<std::vector<JSString>>(CopyPropertyNames())) {
+    for (const auto& property_name : static_cast<std::vector<JSString>>(GetPropertyNames())) {
       accumulator.AddName(property_name);
     }
   }

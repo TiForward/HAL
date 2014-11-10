@@ -53,15 +53,24 @@ namespace JavaScriptCoreCPP {
      */
     JSString GetNameAtIndex(std::size_t index) const JAVASCRIPTCORECPP_NOEXCEPT;
     
-    explicit operator std::vector<JSString>() const JAVASCRIPTCORECPP_NOEXCEPT;
+    /*!
+     @method
+     
+     @abstract Convert this JSPropertyNameArray into a
+     std::vector<JSString>.
+     
+     @result A std::vector<JSString> containing the property names in
+     this JSPropertyNameArray.
+     */
+    operator std::vector<JSString>() const JAVASCRIPTCORECPP_NOEXCEPT;
     
-    JSPropertyNameArray() = delete;;
-    ~JSPropertyNameArray() JAVASCRIPTCORECPP_NOEXCEPT;
-    JSPropertyNameArray(const JSPropertyNameArray&) JAVASCRIPTCORECPP_NOEXCEPT;
-    JSPropertyNameArray(JSPropertyNameArray&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSPropertyNameArray()                                      = delete;;
+    ~JSPropertyNameArray()                                     JAVASCRIPTCORECPP_NOEXCEPT;
+    JSPropertyNameArray(const JSPropertyNameArray&)            JAVASCRIPTCORECPP_NOEXCEPT;
+    JSPropertyNameArray(JSPropertyNameArray&&)                 JAVASCRIPTCORECPP_NOEXCEPT;
     JSPropertyNameArray& operator=(const JSPropertyNameArray&) JAVASCRIPTCORECPP_NOEXCEPT;
-    JSPropertyNameArray& operator=(JSPropertyNameArray&&) JAVASCRIPTCORECPP_NOEXCEPT;
-    void swap(JSPropertyNameArray&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSPropertyNameArray& operator=(JSPropertyNameArray&&)      JAVASCRIPTCORECPP_NOEXCEPT;
+    void swap(JSPropertyNameArray&)                            JAVASCRIPTCORECPP_NOEXCEPT;
     
   private:
     

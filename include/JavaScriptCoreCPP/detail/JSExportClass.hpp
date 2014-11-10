@@ -35,9 +35,6 @@ namespace JavaScriptCoreCPP { namespace detail {
   template<typename T>
   class JSExportClass;
   
-  //  template<typename T>
-  //  using JSExportCallbackMap_t = std::unordered_map<std::intptr_t, JSExportClass<T>*>;
-  
   template<typename T>
   class JSExportClassDefinitionBuilder;
   
@@ -111,9 +108,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     static std::string LogStdException(const std::string& function_name, const JSObject& js_object, const std::exception& exception);
     static std::string LogUnknownException(const std::string& function_name, const JSObject& js_object);
     
-    static JSExportClassDefinition<T>                    js_export_class_definition__;
-    //    static JSExportNamedValuePropertyCallbackMap_t<T>    named_value_property_callback_map__;
-    //    static JSExportNamedFunctionPropertyCallbackMap_t<T> named_function_property_callback_map__;
+    static JSExportClassDefinition<T> js_export_class_definition__;
     
 #undef JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC
 #ifdef JAVASCRIPTCORECPP_THREAD_SAFE
@@ -132,12 +127,6 @@ namespace JavaScriptCoreCPP { namespace detail {
   template<typename T>
   JSExportClassDefinition<T> JSExportClass<T>::js_export_class_definition__;
   
-  //  template<typename T>
-  //  JSExportNamedValuePropertyCallbackMap_t<T> JSExportClass<T>::named_value_property_callback_map__;
-  //
-  //  template<typename T>
-  //  JSExportNamedFunctionPropertyCallbackMap_t<T> JSExportClass<T>::named_function_property_callback_map__;
-  
   template<typename T>
   JSExportClass<T>::JSExportClass(const JSExportClassDefinition<T>& js_export_class_definition) JAVASCRIPTCORECPP_NOEXCEPT
   : JSClass(js_export_class_definition) {
@@ -145,12 +134,9 @@ namespace JavaScriptCoreCPP { namespace detail {
     std::once_flag of;
     std::call_once(of, [&js_export_class_definition] {
       JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
-      js_export_class_definition__           = js_export_class_definition;
-      //      named_value_property_callback_map__    = js_export_class_definition.get_named_value_property_callback_map();
-      //      named_function_property_callback_map__ = js_export_class_definition.get_named_function_property_callback_map();
+      js_export_class_definition__ = js_export_class_definition;
       //js_export_class_definition__.Print();
     });
-    
   }
   
   template<typename T>

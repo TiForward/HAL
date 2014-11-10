@@ -147,39 +147,9 @@ namespace JavaScriptCoreCPP {
      properties.
      
      @result A JSPropertyNameArray containing the names object's
-     enumerable properties. Ownership follows the Create Rule.
+     enumerable properties.
      */
-    virtual JSPropertyNameArray CopyPropertyNames() const JAVASCRIPTCORECPP_NOEXCEPT final;
-    
-    /*!
-     @method
-     
-     @abstract Determine whether this object can be called as a
-     constructor.
-     
-     @result true if this object can be called as a constructor.
-     */
-    virtual bool IsConstructor() const JAVASCRIPTCORECPP_NOEXCEPT final;
-    
-    /*!
-     @method
-     
-     @abstract Call this JavaScript object as a constructor as if in a
-     'new' expression.
-     
-     @param arguments The JSValue argument(s) to pass to the function.
-     
-     @result The JavaScript object of the constructor's return value.
-     
-     @throws std::runtime_error if either this JavaScript object can't
-     be called as a constructor, or calling the constructor itself
-     threw a JavaScript exception.
-     */
-    virtual JSObject CallAsConstructor(                                      ) final;
-    virtual JSObject CallAsConstructor(const JSValue&               argument ) final;
-    virtual JSObject CallAsConstructor(const JSString&              argument ) final;
-    virtual JSObject CallAsConstructor(const std::vector<JSString>& arguments) final;
-    virtual JSObject CallAsConstructor(const std::vector<JSValue>&  arguments) final;
+    virtual JSPropertyNameArray GetPropertyNames() const JAVASCRIPTCORECPP_NOEXCEPT final;
     
     /*!
      @method
@@ -199,13 +169,14 @@ namespace JavaScriptCoreCPP {
      can't be called as a function.
      
      @discussion In the JavaScript expression 'myObject.myFunction()',
-     the "this_object" parameter will be set to 'myObject' and this
+     the 'this_object' parameter will be set to 'myObject' and this
      JavaScript object is 'myFunction'.
      
-     @param arguments The JSValue argument(s) to pass to the function.
+     @param arguments Optional JSValue argument(s) to pass to the
+     function.
      
      @param this_object An optional JavaScript object to use as
-     "this". The default value is this JavaScript object.
+     'this'. The default value is this JavaScript object.
      
      @result Return the function's return value.
      
@@ -225,6 +196,37 @@ namespace JavaScriptCoreCPP {
     virtual JSValue operator()(const JSString&              argument , JSObject this_object) final;
     virtual JSValue operator()(const std::vector<JSValue>&  arguments, JSObject this_object) final;
     virtual JSValue operator()(const std::vector<JSString>& arguments, JSObject this_object) final;
+    
+    /*!
+     @method
+     
+     @abstract Determine whether this object can be called as a
+     constructor.
+     
+     @result true if this object can be called as a constructor.
+     */
+    virtual bool IsConstructor() const JAVASCRIPTCORECPP_NOEXCEPT final;
+    
+    /*!
+     @method
+     
+     @abstract Call this JavaScript object as a constructor as if in a
+     'new' expression.
+     
+     @param arguments Optional JSValue argument(s) to pass to the
+     constructor.
+     
+     @result The JavaScript object of the constructor's return value.
+     
+     @throws std::runtime_error if either this JavaScript object can't
+     be called as a constructor, or calling the constructor itself
+     threw a JavaScript exception.
+     */
+    virtual JSObject CallAsConstructor(                                      ) final;
+    virtual JSObject CallAsConstructor(const JSValue&               argument ) final;
+    virtual JSObject CallAsConstructor(const JSString&              argument ) final;
+    virtual JSObject CallAsConstructor(const std::vector<JSString>& arguments) final;
+    virtual JSObject CallAsConstructor(const std::vector<JSValue>&  arguments) final;
     
     /*!
      @method
@@ -307,12 +309,13 @@ namespace JavaScriptCoreCPP {
      @abstract Call this JavaScript object as a function.
      
      @discussion In the JavaScript expression 'myObject.myFunction()',
-     the "this_object" parameter will be set to 'myObject' and this
+     the 'this_object' parameter will be set to 'myObject' and this
      JavaScript object is 'myFunction'.
      
-     @param arguments The JSValue argument(s) to pass to the function.
+     @param arguments Optional JSValue argument(s) to pass to the
+     function.
      
-     @param this_object The JavaScript object to use as "this".
+     @param this_object The JavaScript object to use as 'this'.
      
      @result Return the function's return value.
      

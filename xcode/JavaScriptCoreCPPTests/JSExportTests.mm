@@ -85,7 +85,7 @@ using namespace JavaScriptCoreCPP;
   global_object.SetProperty("Widget", widget);
   XCTAssertTrue(global_object.HasProperty("Widget"));
   
-  for (const auto& property_name : static_cast<std::vector<JSString>>(global_object.CopyPropertyNames())) {
+  for (const auto& property_name : static_cast<std::vector<JSString>>(global_object.GetPropertyNames())) {
     //SetProperty(property_name, props.GetProperty(property_name));
     std::clog << "MDL: property_name = " << property_name << std::endl;
   }
