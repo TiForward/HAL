@@ -75,25 +75,25 @@ namespace JavaScriptCoreCPP {
      @param global_object_class An optional JSClass used to create the
      global object.
      */
-    JSContext CreateContext() const noexcept;
-    JSContext CreateContext(const JSClass& global_object_class) const noexcept;
+    JSContext CreateContext() const JAVASCRIPTCORECPP_NOEXCEPT;
+    JSContext CreateContext(const JSClass& global_object_class) const JAVASCRIPTCORECPP_NOEXCEPT;
     
-    ~JSContextGroup() noexcept;
-    JSContextGroup(const JSContextGroup&) noexcept;
-    JSContextGroup(JSContextGroup&&) noexcept;
-    JSContextGroup& operator=(const JSContextGroup&) noexcept;
-    JSContextGroup& operator=(JSContextGroup&&) noexcept;
-    void swap(JSContextGroup&) noexcept;
+    ~JSContextGroup() JAVASCRIPTCORECPP_NOEXCEPT;
+    JSContextGroup(const JSContextGroup&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSContextGroup(JSContextGroup&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSContextGroup& operator=(const JSContextGroup&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSContextGroup& operator=(JSContextGroup&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    void swap(JSContextGroup&) JAVASCRIPTCORECPP_NOEXCEPT;
     
   private:
     
     // For interoperability with the JavaScriptCore C API.
-    explicit JSContextGroup(JSContextGroupRef js_context_group_ref) noexcept;
+    explicit JSContextGroup(JSContextGroupRef js_context_group_ref) JAVASCRIPTCORECPP_NOEXCEPT;
     
     // JSContext needs access to operator JSContextGroupRef().
     friend class JSContext;
     
-    operator JSContextGroupRef() const noexcept {
+    operator JSContextGroupRef() const JAVASCRIPTCORECPP_NOEXCEPT {
       return js_context_group_ref__;
     }
     
@@ -115,7 +115,7 @@ namespace JavaScriptCoreCPP {
   };
   
   inline
-  void swap(JSContextGroup& first, JSContextGroup& second) noexcept {
+  void swap(JSContextGroup& first, JSContextGroup& second) JAVASCRIPTCORECPP_NOEXCEPT {
     first.swap(second);
   }
   

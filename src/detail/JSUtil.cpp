@@ -84,7 +84,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     return js_string_ref_vector;
   }
   
-  JSPropertyAttributes ToJSPropertyAttributes(const std::unordered_set<JSPropertyAttribute>& attributes) noexcept {
+  JSPropertyAttributes ToJSPropertyAttributes(const std::unordered_set<JSPropertyAttribute>& attributes) JAVASCRIPTCORECPP_NOEXCEPT {
     JSPropertyAttributes result = kJSPropertyAttributeNone;
     for (auto attribute : attributes) {
       switch (attribute) {
@@ -109,7 +109,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     return result;
   }
   
-  std::unordered_set<JSPropertyAttribute> FromJSPropertyAttributes(::JSPropertyAttributes attributes) noexcept {
+  std::unordered_set<JSPropertyAttribute> FromJSPropertyAttributes(::JSPropertyAttributes attributes) JAVASCRIPTCORECPP_NOEXCEPT {
     std::unordered_set<JSPropertyAttribute> attribute_set;
     static_cast<void>(attributes == kJSPropertyAttributeNone       && attribute_set.emplace(JSPropertyAttribute::None).second);
     static_cast<void>(attributes &  kJSPropertyAttributeReadOnly   && attribute_set.emplace(JSPropertyAttribute::ReadOnly).second);
@@ -118,7 +118,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     return attribute_set;
   }
   
-  std::string to_string(JSPropertyAttribute attribute) noexcept {
+  std::string to_string(JSPropertyAttribute attribute) JAVASCRIPTCORECPP_NOEXCEPT {
     switch (attribute) {
       case JSPropertyAttribute::None:
         return "None";
@@ -138,7 +138,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     }
   }
   
-  std::string to_string(const std::unordered_set<JSPropertyAttribute>& attributes) noexcept {
+  std::string to_string(const std::unordered_set<JSPropertyAttribute>& attributes) JAVASCRIPTCORECPP_NOEXCEPT {
     std::string result;
     for (auto attribute : {JSPropertyAttribute::None, JSPropertyAttribute::ReadOnly, JSPropertyAttribute::DontEnum, JSPropertyAttribute::DontDelete}) {
       auto position = attributes.find(attribute);
@@ -153,11 +153,11 @@ namespace JavaScriptCoreCPP { namespace detail {
     return result;
   }
   
-  std::string to_string_JSPropertyAttributes(::JSPropertyAttributes attributes) noexcept {
+  std::string to_string_JSPropertyAttributes(::JSPropertyAttributes attributes) JAVASCRIPTCORECPP_NOEXCEPT {
     return to_string(FromJSPropertyAttributes(attributes));
   }
   
-  unsigned ToJSClassAttribute(JSClassAttribute attribute) noexcept {
+  unsigned ToJSClassAttribute(JSClassAttribute attribute) JAVASCRIPTCORECPP_NOEXCEPT {
     JSClassAttributes attributes = kJSClassAttributeNone;
     switch (attribute) {
       case JSClassAttribute::None:
@@ -172,7 +172,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     return attributes;
   }
   
-  std::unordered_set<JSClassAttribute> FromJSClassAttributes(::JSClassAttributes attributes) noexcept {
+  std::unordered_set<JSClassAttribute> FromJSClassAttributes(::JSClassAttributes attributes) JAVASCRIPTCORECPP_NOEXCEPT {
     std::unordered_set<JSClassAttribute> attribute_set;
     static_cast<void>(attributes == kJSClassAttributeNone                 && attribute_set.emplace(JSClassAttribute::None).second);
     static_cast<void>(attributes &  kJSClassAttributeNoAutomaticPrototype && attribute_set.emplace(JSClassAttribute::NoAutomaticPrototype).second);
@@ -180,7 +180,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   }
   
   
-  std::string to_string(JSClassAttribute attribute) noexcept {
+  std::string to_string(JSClassAttribute attribute) JAVASCRIPTCORECPP_NOEXCEPT {
     switch (attribute) {
       case JSClassAttribute::None:
         return "None";
@@ -192,7 +192,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     }
   }
   
-  std::string to_string(const std::unordered_set<JSClassAttribute>& attributes) noexcept {
+  std::string to_string(const std::unordered_set<JSClassAttribute>& attributes) JAVASCRIPTCORECPP_NOEXCEPT {
     std::string result;
     for (auto attribute : {JSClassAttribute::None, JSClassAttribute::NoAutomaticPrototype}) {
       auto position = attributes.find(attribute);
@@ -207,11 +207,11 @@ namespace JavaScriptCoreCPP { namespace detail {
     return result;
   }
   
-  std::string to_string_JSClassAttributes(::JSClassAttributes attributes) noexcept {
+  std::string to_string_JSClassAttributes(::JSClassAttributes attributes) JAVASCRIPTCORECPP_NOEXCEPT {
     return to_string(FromJSClassAttributes(attributes));
   }
   
-  JSValue::Type ToJSValueType(JSType type) noexcept {
+  JSValue::Type ToJSValueType(JSType type) JAVASCRIPTCORECPP_NOEXCEPT {
     switch (type) {
       case kJSTypeUndefined:
         return JSValue::Type::Undefined;
@@ -228,7 +228,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     }
   }
   
-//  std::string to_string(JSValue::Type js_value_type) noexcept {
+//  std::string to_string(JSValue::Type js_value_type) JAVASCRIPTCORECPP_NOEXCEPT {
 //    switch (js_value_type) {
 //      case JSValue::Type::Undefined:
 //        return "Undefined";

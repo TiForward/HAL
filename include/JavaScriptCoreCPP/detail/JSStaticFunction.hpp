@@ -29,36 +29,36 @@ namespace JavaScriptCoreCPP { namespace detail {
       
       JSStaticFunction(const ::JSStaticFunction& js_static_function);
       
-      JSObjectCallAsFunctionCallback function_callback() const noexcept {
+      JSObjectCallAsFunctionCallback function_callback() const JAVASCRIPTCORECPP_NOEXCEPT {
         return function_callback__;
       }
       
       ~JSStaticFunction() = default;
-      JSStaticFunction(const JSStaticFunction&) noexcept;
-      JSStaticFunction(JSStaticFunction&&) noexcept;
-      JSStaticFunction& operator=(const JSStaticFunction&) noexcept;
-      JSStaticFunction& operator=(JSStaticFunction&&) noexcept;
-      void swap(JSStaticFunction&) noexcept;
+      JSStaticFunction(const JSStaticFunction&) JAVASCRIPTCORECPP_NOEXCEPT;
+      JSStaticFunction(JSStaticFunction&&) JAVASCRIPTCORECPP_NOEXCEPT;
+      JSStaticFunction& operator=(const JSStaticFunction&) JAVASCRIPTCORECPP_NOEXCEPT;
+      JSStaticFunction& operator=(JSStaticFunction&&) JAVASCRIPTCORECPP_NOEXCEPT;
+      void swap(JSStaticFunction&) JAVASCRIPTCORECPP_NOEXCEPT;
       
     private:
       
-      friend bool operator==(const JSStaticFunction& lhs, const JSStaticFunction& rhs) noexcept;
+      friend bool operator==(const JSStaticFunction& lhs, const JSStaticFunction& rhs) JAVASCRIPTCORECPP_NOEXCEPT;
       
       JSObjectCallAsFunctionCallback function_callback__ { nullptr };
     };
     
     
     inline
-    void swap(JSStaticFunction& first, JSStaticFunction& second) noexcept {
+    void swap(JSStaticFunction& first, JSStaticFunction& second) JAVASCRIPTCORECPP_NOEXCEPT {
       first.swap(second);
     }
     
     // Return true if the two JSStaticFunctions are equal.
-    bool operator==(const JSStaticFunction& lhs, const JSStaticFunction& rhs) noexcept;
+    bool operator==(const JSStaticFunction& lhs, const JSStaticFunction& rhs) JAVASCRIPTCORECPP_NOEXCEPT;
     
     // Return true if the two JSStaticFunctions are not equal.
     inline
-    bool operator!=(const JSStaticFunction& lhs, const JSStaticFunction& rhs) noexcept {
+    bool operator!=(const JSStaticFunction& lhs, const JSStaticFunction& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
       return ! (lhs == rhs);
     }
     

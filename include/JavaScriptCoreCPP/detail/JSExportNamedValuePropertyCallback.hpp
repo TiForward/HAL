@@ -67,25 +67,25 @@ namespace JavaScriptCoreCPP { namespace detail {
                                        SetNamedValuePropertyCallback<T> set_callback,
                                        const std::unordered_set<JSPropertyAttribute>& attributes);
     
-    GetNamedValuePropertyCallback<T> get_callback() const noexcept {
+    GetNamedValuePropertyCallback<T> get_callback() const JAVASCRIPTCORECPP_NOEXCEPT {
       return get_callback__;
     }
     
-    SetNamedValuePropertyCallback<T> set_callback() const noexcept {
+    SetNamedValuePropertyCallback<T> set_callback() const JAVASCRIPTCORECPP_NOEXCEPT {
       return set_callback__;
     }
     
     ~JSExportNamedValuePropertyCallback() = default;
-    JSExportNamedValuePropertyCallback(const JSExportNamedValuePropertyCallback&) noexcept;
-    JSExportNamedValuePropertyCallback(JSExportNamedValuePropertyCallback&&) noexcept;
-    JSExportNamedValuePropertyCallback& operator=(const JSExportNamedValuePropertyCallback&) noexcept;
-    JSExportNamedValuePropertyCallback& operator=(JSExportNamedValuePropertyCallback&&) noexcept;
-    void swap(JSExportNamedValuePropertyCallback&) noexcept;
+    JSExportNamedValuePropertyCallback(const JSExportNamedValuePropertyCallback&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSExportNamedValuePropertyCallback(JSExportNamedValuePropertyCallback&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSExportNamedValuePropertyCallback& operator=(const JSExportNamedValuePropertyCallback&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSExportNamedValuePropertyCallback& operator=(JSExportNamedValuePropertyCallback&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    void swap(JSExportNamedValuePropertyCallback&) JAVASCRIPTCORECPP_NOEXCEPT;
     
   private:
     
     template<typename U>
-    friend bool operator==(const JSExportNamedValuePropertyCallback<U>& lhs, const JSExportNamedValuePropertyCallback<U>& rhs) noexcept;
+    friend bool operator==(const JSExportNamedValuePropertyCallback<U>& lhs, const JSExportNamedValuePropertyCallback<U>& rhs) JAVASCRIPTCORECPP_NOEXCEPT;
     
     GetNamedValuePropertyCallback<T> get_callback__ { nullptr };
     SetNamedValuePropertyCallback<T> set_callback__ { nullptr };
@@ -123,21 +123,21 @@ namespace JavaScriptCoreCPP { namespace detail {
   }
   
   template<typename T>
-  JSExportNamedValuePropertyCallback<T>::JSExportNamedValuePropertyCallback(const JSExportNamedValuePropertyCallback& rhs) noexcept
+  JSExportNamedValuePropertyCallback<T>::JSExportNamedValuePropertyCallback(const JSExportNamedValuePropertyCallback& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : JSPropertyCallback(rhs)
   , get_callback__(rhs.get_callback__)
   , set_callback__(rhs.set_callback__) {
   }
   
   template<typename T>
-  JSExportNamedValuePropertyCallback<T>::JSExportNamedValuePropertyCallback(JSExportNamedValuePropertyCallback&& rhs) noexcept
+  JSExportNamedValuePropertyCallback<T>::JSExportNamedValuePropertyCallback(JSExportNamedValuePropertyCallback&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : JSPropertyCallback(rhs)
   , get_callback__(std::move(rhs.get_callback__))
   , set_callback__(std::move(rhs.set_callback__)) {
   }
   
   template<typename T>
-  JSExportNamedValuePropertyCallback<T>& JSExportNamedValuePropertyCallback<T>::JSExportNamedValuePropertyCallback::operator=(const JSExportNamedValuePropertyCallback<T>& rhs) noexcept {
+  JSExportNamedValuePropertyCallback<T>& JSExportNamedValuePropertyCallback<T>::JSExportNamedValuePropertyCallback::operator=(const JSExportNamedValuePropertyCallback<T>& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
     JSPropertyCallback::operator=(rhs);
     get_callback__ = rhs.get_callback__;
@@ -146,7 +146,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   }
   
   template<typename T>
-  JSExportNamedValuePropertyCallback<T>& JSExportNamedValuePropertyCallback<T>::JSExportNamedValuePropertyCallback::operator=(JSExportNamedValuePropertyCallback<T>&& rhs) noexcept {
+  JSExportNamedValuePropertyCallback<T>& JSExportNamedValuePropertyCallback<T>::JSExportNamedValuePropertyCallback::operator=(JSExportNamedValuePropertyCallback<T>&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
     JSPropertyCallback::operator=(rhs);
     swap(rhs);
@@ -154,7 +154,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   }
   
   template<typename T>
-  void JSExportNamedValuePropertyCallback<T>::swap(JSExportNamedValuePropertyCallback<T>& other) noexcept {
+  void JSExportNamedValuePropertyCallback<T>::swap(JSExportNamedValuePropertyCallback<T>& other) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
     using std::swap;
     
@@ -165,14 +165,14 @@ namespace JavaScriptCoreCPP { namespace detail {
   }
   
   template<typename T>
-  void swap(JSExportNamedValuePropertyCallback<T>& first, JSExportNamedValuePropertyCallback<T>& second) noexcept {
+  void swap(JSExportNamedValuePropertyCallback<T>& first, JSExportNamedValuePropertyCallback<T>& second) JAVASCRIPTCORECPP_NOEXCEPT {
     first.swap(second);
   }
   
   // Return true if the two JSExportNamedValuePropertyCallbacks are
   // equal.
   template<typename T>
-  bool operator==(const JSExportNamedValuePropertyCallback<T>& lhs, const JSExportNamedValuePropertyCallback<T>& rhs) noexcept {
+  bool operator==(const JSExportNamedValuePropertyCallback<T>& lhs, const JSExportNamedValuePropertyCallback<T>& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     // get_callback__
     if (lhs.get_callback__ && !rhs.get_callback__) {
       return false;
@@ -197,7 +197,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   // Return true if the two JSExportNamedValuePropertyCallback are
   // not equal.
   template<typename T>
-  bool operator!=(const JSExportNamedValuePropertyCallback<T>& lhs, const JSExportNamedValuePropertyCallback<T>& rhs) noexcept {
+  bool operator!=(const JSExportNamedValuePropertyCallback<T>& lhs, const JSExportNamedValuePropertyCallback<T>& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     return ! (lhs == rhs);
   }
   

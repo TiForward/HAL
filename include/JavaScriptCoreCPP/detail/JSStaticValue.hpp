@@ -28,40 +28,40 @@ namespace JavaScriptCoreCPP { namespace detail {
     
     JSStaticValue(const ::JSStaticValue& js_static_value);
     
-    JSObjectGetPropertyCallback get_callback() const noexcept {
+    JSObjectGetPropertyCallback get_callback() const JAVASCRIPTCORECPP_NOEXCEPT {
       return get_callback__;
     }
     
-    JSObjectSetPropertyCallback set_callback() const noexcept {
+    JSObjectSetPropertyCallback set_callback() const JAVASCRIPTCORECPP_NOEXCEPT {
       return set_callback__;
     }
     
     ~JSStaticValue() = default;
-    JSStaticValue(const JSStaticValue&) noexcept;
-    JSStaticValue(JSStaticValue&&) noexcept;
-    JSStaticValue& operator=(const JSStaticValue&) noexcept;
-    JSStaticValue& operator=(JSStaticValue&&) noexcept;
-    void swap(JSStaticValue&) noexcept;
+    JSStaticValue(const JSStaticValue&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSStaticValue(JSStaticValue&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSStaticValue& operator=(const JSStaticValue&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSStaticValue& operator=(JSStaticValue&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    void swap(JSStaticValue&) JAVASCRIPTCORECPP_NOEXCEPT;
     
   private:
     
-    friend bool operator==(const JSStaticValue& lhs, const JSStaticValue& rhs) noexcept;
+    friend bool operator==(const JSStaticValue& lhs, const JSStaticValue& rhs) JAVASCRIPTCORECPP_NOEXCEPT;
     
     JSObjectGetPropertyCallback get_callback__ { nullptr };
     JSObjectSetPropertyCallback set_callback__ { nullptr };
   };
   
   inline
-  void swap(JSStaticValue& first, JSStaticValue& second) noexcept {
+  void swap(JSStaticValue& first, JSStaticValue& second) JAVASCRIPTCORECPP_NOEXCEPT {
     first.swap(second);
   }
   
   // Return true if the two JSStaticValues are equal.
-  bool operator==(const JSStaticValue& lhs, const JSStaticValue& rhs) noexcept;
+  bool operator==(const JSStaticValue& lhs, const JSStaticValue& rhs) JAVASCRIPTCORECPP_NOEXCEPT;
   
   // Return true if the two JSStaticValue are not equal.
   inline
-  bool operator!=(const JSStaticValue& lhs, const JSStaticValue& rhs) noexcept {
+  bool operator!=(const JSStaticValue& lhs, const JSStaticValue& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     return ! (lhs == rhs);
   }
   

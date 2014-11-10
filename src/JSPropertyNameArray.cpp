@@ -17,17 +17,17 @@
 
 namespace JavaScriptCoreCPP {
   
-  std::size_t JSPropertyNameArray::GetCount() const noexcept {
+  std::size_t JSPropertyNameArray::GetCount() const JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSPROPERTYNAMEARRAY_LOCK_GUARD;
     return JSPropertyNameArrayGetCount(js_property_name_array_ref__);
   }
   
-  JSString JSPropertyNameArray::GetNameAtIndex(std::size_t index) const noexcept {
+  JSString JSPropertyNameArray::GetNameAtIndex(std::size_t index) const JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSPROPERTYNAMEARRAY_LOCK_GUARD;
     return JSString(JSPropertyNameArrayGetNameAtIndex(js_property_name_array_ref__, index));
   }
   
-  JSPropertyNameArray::operator std::vector<JSString>() const noexcept {
+  JSPropertyNameArray::operator std::vector<JSString>() const JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSPROPERTYNAMEARRAY_LOCK_GUARD;
     std::vector<JSString> property_names;
     for (std::size_t i = 0, count = GetCount(); i < count; ++i) {
@@ -37,21 +37,21 @@ namespace JavaScriptCoreCPP {
     return property_names;
   }
   
-  JSPropertyNameArray::~JSPropertyNameArray() noexcept {
+  JSPropertyNameArray::~JSPropertyNameArray() JAVASCRIPTCORECPP_NOEXCEPT {
     JSPropertyNameArrayRelease(js_property_name_array_ref__);
   }
   
-  JSPropertyNameArray::JSPropertyNameArray(const JSPropertyNameArray& rhs) noexcept
+  JSPropertyNameArray::JSPropertyNameArray(const JSPropertyNameArray& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : js_property_name_array_ref__(rhs.js_property_name_array_ref__) {
     JSPropertyNameArrayRetain(js_property_name_array_ref__);
   }
   
-  JSPropertyNameArray::JSPropertyNameArray(JSPropertyNameArray&& rhs) noexcept
+  JSPropertyNameArray::JSPropertyNameArray(JSPropertyNameArray&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
     : js_property_name_array_ref__(rhs.js_property_name_array_ref__) {
       JSPropertyNameArrayRetain(js_property_name_array_ref__);
   }
   
-  JSPropertyNameArray& JSPropertyNameArray::operator=(const JSPropertyNameArray& rhs) noexcept {
+  JSPropertyNameArray& JSPropertyNameArray::operator=(const JSPropertyNameArray& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSPROPERTYNAMEARRAY_LOCK_GUARD;
     JSPropertyNameArrayRelease(js_property_name_array_ref__);
     js_property_name_array_ref__ = rhs.js_property_name_array_ref__;
@@ -59,7 +59,7 @@ namespace JavaScriptCoreCPP {
     return *this;
   }
   
-  JSPropertyNameArray& JSPropertyNameArray::operator=(JSPropertyNameArray&& rhs) noexcept {
+  JSPropertyNameArray& JSPropertyNameArray::operator=(JSPropertyNameArray&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSPROPERTYNAMEARRAY_LOCK_GUARD;
     JSPropertyNameArrayRelease(js_property_name_array_ref__);
     js_property_name_array_ref__ = rhs.js_property_name_array_ref__;
@@ -67,7 +67,7 @@ namespace JavaScriptCoreCPP {
     return *this;
   }
   
-  void JSPropertyNameArray::swap(JSPropertyNameArray& other) noexcept {
+  void JSPropertyNameArray::swap(JSPropertyNameArray& other) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSPROPERTYNAMEARRAY_LOCK_GUARD;
     using std::swap;
     
@@ -76,7 +76,7 @@ namespace JavaScriptCoreCPP {
     swap(js_property_name_array_ref__, other.js_property_name_array_ref__);
   }
   
-  JSPropertyNameArray::JSPropertyNameArray(const JSObject& js_object) noexcept
+  JSPropertyNameArray::JSPropertyNameArray(const JSObject& js_object) JAVASCRIPTCORECPP_NOEXCEPT
   : js_property_name_array_ref__(JSObjectCopyPropertyNames(js_object.get_context(), js_object)) {
   }
   

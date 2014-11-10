@@ -21,30 +21,30 @@ namespace JavaScriptCoreCPP { namespace detail {
     }
   }
   
-  JSPropertyCallback::JSPropertyCallback(const JSPropertyCallback& rhs) noexcept
+  JSPropertyCallback::JSPropertyCallback(const JSPropertyCallback& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : name__(rhs.name__)
   , attributes__(rhs.attributes__) {
   }
   
-  JSPropertyCallback::JSPropertyCallback(JSPropertyCallback&& rhs) noexcept
+  JSPropertyCallback::JSPropertyCallback(JSPropertyCallback&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : name__(std::move(rhs.name__))
   , attributes__(std::move(rhs.attributes__)) {
   }
   
-  JSPropertyCallback& JSPropertyCallback::operator=(const JSPropertyCallback& rhs) noexcept {
+  JSPropertyCallback& JSPropertyCallback::operator=(const JSPropertyCallback& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
     name__       = rhs.name__;
     attributes__ = rhs.attributes__;
     return *this;
   }
   
-  JSPropertyCallback& JSPropertyCallback::operator=(JSPropertyCallback&& rhs) noexcept {
+  JSPropertyCallback& JSPropertyCallback::operator=(JSPropertyCallback&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
     swap(rhs);
     return *this;
   }
   
-  void JSPropertyCallback::swap(JSPropertyCallback& other) noexcept {
+  void JSPropertyCallback::swap(JSPropertyCallback& other) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
     using std::swap;
     

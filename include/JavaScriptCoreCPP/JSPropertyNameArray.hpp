@@ -39,7 +39,7 @@ namespace JavaScriptCoreCPP {
      @result The number of names in this JavaScript property name
      array.
      */
-    std::size_t GetCount() const noexcept;
+    std::size_t GetCount() const JAVASCRIPTCORECPP_NOEXCEPT;
     
     /*!
      @method
@@ -51,17 +51,17 @@ namespace JavaScriptCoreCPP {
      
      @result A JSString containing the property name.
      */
-    JSString GetNameAtIndex(std::size_t index) const noexcept;
+    JSString GetNameAtIndex(std::size_t index) const JAVASCRIPTCORECPP_NOEXCEPT;
     
-    explicit operator std::vector<JSString>() const noexcept;
+    explicit operator std::vector<JSString>() const JAVASCRIPTCORECPP_NOEXCEPT;
     
     JSPropertyNameArray() = delete;;
-    ~JSPropertyNameArray() noexcept;
-    JSPropertyNameArray(const JSPropertyNameArray&) noexcept;
-    JSPropertyNameArray(JSPropertyNameArray&&) noexcept;
-    JSPropertyNameArray& operator=(const JSPropertyNameArray&) noexcept;
-    JSPropertyNameArray& operator=(JSPropertyNameArray&&) noexcept;
-    void swap(JSPropertyNameArray&) noexcept;
+    ~JSPropertyNameArray() JAVASCRIPTCORECPP_NOEXCEPT;
+    JSPropertyNameArray(const JSPropertyNameArray&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSPropertyNameArray(JSPropertyNameArray&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSPropertyNameArray& operator=(const JSPropertyNameArray&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSPropertyNameArray& operator=(JSPropertyNameArray&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    void swap(JSPropertyNameArray&) JAVASCRIPTCORECPP_NOEXCEPT;
     
   private:
     
@@ -78,10 +78,10 @@ namespace JavaScriptCoreCPP {
      @result A JSPropertyNameArray containing the names of the
      object's enumerable properties.
      */
-    explicit JSPropertyNameArray(const JSObject& js_object) noexcept;
+    explicit JSPropertyNameArray(const JSObject& js_object) JAVASCRIPTCORECPP_NOEXCEPT;
     
     // For interoperability with the JavaScriptCore C API.
-    operator JSPropertyNameArrayRef() const noexcept {
+    operator JSPropertyNameArrayRef() const JAVASCRIPTCORECPP_NOEXCEPT {
       return js_property_name_array_ref__;
     }
     
@@ -101,7 +101,7 @@ namespace JavaScriptCoreCPP {
   };
   
   inline
-  void swap(JSPropertyNameArray& first, JSPropertyNameArray& second) noexcept {
+  void swap(JSPropertyNameArray& first, JSPropertyNameArray& second) JAVASCRIPTCORECPP_NOEXCEPT {
     first.swap(second);
   }
   

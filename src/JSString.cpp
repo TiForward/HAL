@@ -13,57 +13,57 @@
 
 namespace JavaScriptCoreCPP {
   
-  JSString::JSString() noexcept
+  JSString::JSString() JAVASCRIPTCORECPP_NOEXCEPT
   : js_string_ref__(JSStringCreateWithUTF8CString(nullptr)) {
   }
   
-  JSString::JSString(const char* string) noexcept
+  JSString::JSString(const char* string) JAVASCRIPTCORECPP_NOEXCEPT
   : js_string_ref__(JSStringCreateWithUTF8CString(string)) {
   }
   
-  JSString::JSString(const std::string& string) noexcept
+  JSString::JSString(const std::string& string) JAVASCRIPTCORECPP_NOEXCEPT
   : JSString(string.c_str()) {
   }
   
-  const std::size_t JSString::length() const  noexcept{
+  const std::size_t JSString::length() const  JAVASCRIPTCORECPP_NOEXCEPT{
     JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD;
     return JSStringGetLength(js_string_ref__);
   }
   
-  const std::size_t JSString::size() const noexcept {
+  const std::size_t JSString::size() const JAVASCRIPTCORECPP_NOEXCEPT {
     return length();
   }
   
-  const bool JSString::empty() const noexcept {
+  const bool JSString::empty() const JAVASCRIPTCORECPP_NOEXCEPT {
     return length() == 0;
   }
   
-  JSString::operator std::string() const noexcept {
+  JSString::operator std::string() const JAVASCRIPTCORECPP_NOEXCEPT {
     static std::wstring_convert<std::codecvt_utf8_utf16<char16_t>,char16_t> converter;
     return std::string(converter.to_bytes(static_cast<std::u16string>(*this)));
   }
   
-  JSString::operator std::u16string() const noexcept {
+  JSString::operator std::u16string() const JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD;
     const JSChar* string_ptr = JSStringGetCharactersPtr(js_string_ref__);
     return std::u16string(string_ptr, string_ptr + length());
   }
   
-  JSString::~JSString() noexcept {
+  JSString::~JSString() JAVASCRIPTCORECPP_NOEXCEPT {
     JSStringRelease(js_string_ref__);
   }
   
-  JSString::JSString(const JSString& rhs) noexcept
+  JSString::JSString(const JSString& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : js_string_ref__(rhs.js_string_ref__) {
     JSStringRetain(js_string_ref__);
   }
   
-  JSString::JSString(JSString&& rhs) noexcept
+  JSString::JSString(JSString&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : js_string_ref__(rhs.js_string_ref__) {
     JSStringRetain(rhs.js_string_ref__);
   }
   
-  JSString& JSString::operator=(const JSString& rhs) noexcept {
+  JSString& JSString::operator=(const JSString& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD;
     JSStringRelease(js_string_ref__);
     js_string_ref__ = rhs.js_string_ref__;
@@ -71,7 +71,7 @@ namespace JavaScriptCoreCPP {
     return *this;
   }
   
-  JSString& JSString::operator=(JSString&& rhs) noexcept {
+  JSString& JSString::operator=(JSString&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD;
     JSStringRelease(js_string_ref__);
     js_string_ref__ = rhs.js_string_ref__;
@@ -79,7 +79,7 @@ namespace JavaScriptCoreCPP {
     return *this;
   }
   
-  void JSString::swap(JSString& other) noexcept {
+  void JSString::swap(JSString& other) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD;
     using std::swap;
     
@@ -89,7 +89,7 @@ namespace JavaScriptCoreCPP {
   }
   
   // For interoperability with the JavaScriptCore C API.
-  JSString::JSString(JSStringRef js_string_ref) noexcept
+  JSString::JSString(JSStringRef js_string_ref) JAVASCRIPTCORECPP_NOEXCEPT
   : js_string_ref__(js_string_ref) {
     assert(js_string_ref__);
     JSStringRetain(js_string_ref__);

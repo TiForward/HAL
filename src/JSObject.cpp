@@ -27,7 +27,7 @@
 
 namespace JavaScriptCoreCPP {
   
-  bool JSObject::HasProperty(const JSString& property_name) const noexcept {
+  bool JSObject::HasProperty(const JSString& property_name) const JAVASCRIPTCORECPP_NOEXCEPT {
     return JSObjectHasProperty(get_context(), *this, property_name);
   }
   
@@ -93,12 +93,12 @@ namespace JavaScriptCoreCPP {
     return result;
   }
   
-  JSPropertyNameArray JSObject::CopyPropertyNames() const noexcept {
+  JSPropertyNameArray JSObject::CopyPropertyNames() const JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
     return JSPropertyNameArray(*this);
   }
   
-  bool JSObject::IsConstructor() const noexcept {
+  bool JSObject::IsConstructor() const JAVASCRIPTCORECPP_NOEXCEPT {
     return JSObjectIsConstructor(get_context(), *this);
   }
   
@@ -134,7 +134,7 @@ namespace JavaScriptCoreCPP {
     return JSObject(get_context(), js_object_ref);
   }
   
-  bool JSObject::IsFunction() const noexcept {
+  bool JSObject::IsFunction() const JAVASCRIPTCORECPP_NOEXCEPT {
     return JSObjectIsFunction(get_context(), *this);
   }
   
@@ -149,19 +149,19 @@ namespace JavaScriptCoreCPP {
   JSValue JSObject::operator()(const std::vector<JSValue>&  arguments, JSObject this_object) { return CallAsFunction(arguments                                   , this_object); }
   JSValue JSObject::operator()(const std::vector<JSString>& arguments, JSObject this_object) { return CallAsFunction(detail::to_vector(get_context(), arguments) , this_object); }
   
-  JSValue JSObject::GetPrototype() const noexcept {
+  JSValue JSObject::GetPrototype() const JAVASCRIPTCORECPP_NOEXCEPT {
     return JSValue(get_context(), JSObjectGetPrototype(get_context(), *this));
   }
   
-  void JSObject::SetPrototype(const JSValue& js_value) noexcept {
+  void JSObject::SetPrototype(const JSValue& js_value) JAVASCRIPTCORECPP_NOEXCEPT {
     JSObjectSetPrototype(get_context(), *this, js_value);
   }
   
-  void* JSObject::GetPrivate() const noexcept {
+  void* JSObject::GetPrivate() const JAVASCRIPTCORECPP_NOEXCEPT {
     return JSObjectGetPrivate(*this);
   }
   
-  bool JSObject::SetPrivate(void* data) const noexcept {
+  bool JSObject::SetPrivate(void* data) const JAVASCRIPTCORECPP_NOEXCEPT {
     return JSObjectSetPrivate(*this, data);
   }
   
@@ -202,7 +202,7 @@ namespace JavaScriptCoreCPP {
     return JSValue(get_context(), js_value_ref);
   }
   
-  void JSObject::GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const noexcept {
+  void JSObject::GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
     for (const auto& property_name : static_cast<std::vector<JSString>>(CopyPropertyNames())) {
       accumulator.AddName(property_name);

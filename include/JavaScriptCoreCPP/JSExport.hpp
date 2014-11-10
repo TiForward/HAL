@@ -53,7 +53,7 @@ namespace JavaScriptCoreCPP {
     
     JSExport(const JSContext& js_context);
     
-    JSContext get_context() const noexcept;
+    JSContext get_context() const JAVASCRIPTCORECPP_NOEXCEPT;
     
     /*!
      @method
@@ -317,7 +317,7 @@ namespace JavaScriptCoreCPP {
   }
   
   template<typename T>
-  JSContext JSExport<T>::get_context() const noexcept {
+  JSContext JSExport<T>::get_context() const JAVASCRIPTCORECPP_NOEXCEPT {
     return js_context__;
   }
   

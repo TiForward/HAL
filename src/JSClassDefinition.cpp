@@ -15,7 +15,7 @@
 
 namespace JavaScriptCoreCPP {
   
-  JSClassDefinition::JSClassDefinition() noexcept {
+  JSClassDefinition::JSClassDefinition() JAVASCRIPTCORECPP_NOEXCEPT {
     js_class_definition__ = kJSClassDefinitionEmpty;
   }
   
@@ -42,10 +42,10 @@ namespace JavaScriptCoreCPP {
     InitializePropertyCallbacks();
   }
   
-  JSClassDefinition::~JSClassDefinition() noexcept {
+  JSClassDefinition::~JSClassDefinition() JAVASCRIPTCORECPP_NOEXCEPT {
   }
   
-  JSClassDefinition::JSClassDefinition(const JSClassDefinition& rhs) noexcept
+  JSClassDefinition::JSClassDefinition(const JSClassDefinition& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : name__(rhs.name__)
   , js_value_properties__(rhs.js_value_properties__)
   , js_function_properties__(rhs.js_function_properties__) {
@@ -53,7 +53,7 @@ namespace JavaScriptCoreCPP {
     InitializePropertyCallbacks();
   }
   
-  JSClassDefinition::JSClassDefinition(JSClassDefinition&& rhs) noexcept
+  JSClassDefinition::JSClassDefinition(JSClassDefinition&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : name__(std::move(rhs.name__))
   , js_value_properties__(std::move(rhs.js_value_properties__))
   , js_function_properties__(std::move(rhs.js_function_properties__)) {
@@ -61,7 +61,7 @@ namespace JavaScriptCoreCPP {
     InitializePropertyCallbacks();
   }
   
-  JSClassDefinition& JSClassDefinition::operator=(const JSClassDefinition& rhs) noexcept {
+  JSClassDefinition& JSClassDefinition::operator=(const JSClassDefinition& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSCLASSDEFINITION_LOCK_GUARD;
     name__                   = rhs.name__;
     js_value_properties__    = rhs.js_value_properties__;
@@ -71,13 +71,13 @@ namespace JavaScriptCoreCPP {
     return *this;
   }
   
-  JSClassDefinition& JSClassDefinition::operator=(JSClassDefinition&& rhs) noexcept {
+  JSClassDefinition& JSClassDefinition::operator=(JSClassDefinition&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSCLASSDEFINITION_LOCK_GUARD;
     swap(rhs);
     return *this;
   }
   
-  void JSClassDefinition::swap(JSClassDefinition& other) noexcept {
+  void JSClassDefinition::swap(JSClassDefinition& other) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSCLASSDEFINITION_LOCK_GUARD;
     using std::swap;
     
@@ -89,7 +89,7 @@ namespace JavaScriptCoreCPP {
     swap(js_class_definition__   , other.js_class_definition__);
   }
   
-  void JSClassDefinition::JSClassDefinition::Initialize(const ::JSClassDefinition& other) noexcept {
+  void JSClassDefinition::JSClassDefinition::Initialize(const ::JSClassDefinition& other) JAVASCRIPTCORECPP_NOEXCEPT {
     js_class_definition__.version           = other.version;
     js_class_definition__.attributes        = other.attributes;
     
@@ -112,7 +112,7 @@ namespace JavaScriptCoreCPP {
     js_class_definition__.convertToType     = other.convertToType;
   }
   
-  void JSClassDefinition::InitializePropertyCallbacks() noexcept {
+  void JSClassDefinition::InitializePropertyCallbacks() JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSCLASSDEFINITION_LOCK_GUARD;
     
     js_class_definition__.staticValues = nullptr;
@@ -155,19 +155,19 @@ namespace JavaScriptCoreCPP {
     }
   }
   
-  std::string JSClassDefinition::get_name() const noexcept {
+  std::string JSClassDefinition::get_name() const JAVASCRIPTCORECPP_NOEXCEPT {
     return name__;
   }
   
-  std::uint32_t JSClassDefinition::get_version() const noexcept {
+  std::uint32_t JSClassDefinition::get_version() const JAVASCRIPTCORECPP_NOEXCEPT {
     return js_class_definition__.version;
   }
   
-  void JSClassDefinition::Print() noexcept {
+  void JSClassDefinition::Print() JAVASCRIPTCORECPP_NOEXCEPT {
     Print(js_class_definition__);
   }
   
-  void JSClassDefinition::Print(const ::JSClassDefinition& js_class_definition) noexcept {
+  void JSClassDefinition::Print(const ::JSClassDefinition& js_class_definition) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: version           = ", js_class_definition.version);
     JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: attributes        = ", detail::to_string_JSClassAttributes(js_class_definition.attributes));
     JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: className         = ", js_class_definition.className);

@@ -57,7 +57,7 @@ namespace JavaScriptCoreCPP {
        
        @result An empty JavaScript string with a length of zero.
        */
-      JSString() noexcept;
+      JSString() JAVASCRIPTCORECPP_NOEXCEPT;
       
       /*!
        @method
@@ -70,7 +70,7 @@ namespace JavaScriptCoreCPP {
        
        @result A JSString containing string.
        */
-      JSString(const char* string) noexcept;
+      JSString(const char* string) JAVASCRIPTCORECPP_NOEXCEPT;
       
       /*!
        @method
@@ -83,7 +83,7 @@ namespace JavaScriptCoreCPP {
        
        @result A JSString containing string.
        */
-      JSString(const std::string& string) noexcept;
+      JSString(const std::string& string) JAVASCRIPTCORECPP_NOEXCEPT;
       
       /*!
        @method
@@ -94,7 +94,7 @@ namespace JavaScriptCoreCPP {
        @result The number of Unicode characters in this JavaScript
        string.
        */
-      const std::size_t length() const noexcept;
+      const std::size_t length() const JAVASCRIPTCORECPP_NOEXCEPT;
       
       /*!
        @method
@@ -105,7 +105,7 @@ namespace JavaScriptCoreCPP {
        @result The number of Unicode characters in this JavaScript
        string.
        */
-      const std::size_t size() const noexcept;
+      const std::size_t size() const JAVASCRIPTCORECPP_NOEXCEPT;
       
       /*!
        @method
@@ -115,7 +115,7 @@ namespace JavaScriptCoreCPP {
        
        @result true if this JavaScript string has a length of zero.
        */
-      const bool empty() const noexcept;
+      const bool empty() const JAVASCRIPTCORECPP_NOEXCEPT;
       
       /*!
        @method
@@ -126,7 +126,7 @@ namespace JavaScriptCoreCPP {
        @result This JavaScript string converted to a UTF-8 encoded
        std::string.
        */
-      operator std::string() const noexcept;
+      operator std::string() const JAVASCRIPTCORECPP_NOEXCEPT;
       
       /*!
        @method
@@ -137,15 +137,15 @@ namespace JavaScriptCoreCPP {
        @result This JavaScript string converted to a UTF-16 encoded
        std::u16string.
        */
-      operator std::u16string() const noexcept;
+      operator std::u16string() const JAVASCRIPTCORECPP_NOEXCEPT;
       
       
-      ~JSString() noexcept;
-      JSString(const JSString&) noexcept;
-      JSString(JSString&&) noexcept;
-      JSString& operator=(const JSString&) noexcept;
-      JSString& operator=(JSString&&) noexcept;
-      void swap(JSString&) noexcept;
+      ~JSString() JAVASCRIPTCORECPP_NOEXCEPT;
+      JSString(const JSString&) JAVASCRIPTCORECPP_NOEXCEPT;
+      JSString(JSString&&) JAVASCRIPTCORECPP_NOEXCEPT;
+      JSString& operator=(const JSString&) JAVASCRIPTCORECPP_NOEXCEPT;
+      JSString& operator=(JSString&&) JAVASCRIPTCORECPP_NOEXCEPT;
+      void swap(JSString&) JAVASCRIPTCORECPP_NOEXCEPT;
       
       // FIXME
     private:
@@ -172,13 +172,13 @@ namespace JavaScriptCoreCPP {
       friend class detail::JSExportClass; // static functions
       
       // For interoperability with the JavaScriptCore C API.
-      explicit JSString(JSStringRef js_string_ref) noexcept;
+      explicit JSString(JSStringRef js_string_ref) JAVASCRIPTCORECPP_NOEXCEPT;
       
       // Prevent heap based objects.
       static void * operator new(std::size_t);     // #1: To prevent allocation of scalar objects
       static void * operator new [] (std::size_t); // #2: To prevent allocation of array of objects
       
-      friend void swap(JSString& first, JSString& second) noexcept;
+      friend void swap(JSString& first, JSString& second) JAVASCRIPTCORECPP_NOEXCEPT;
       friend bool operator==(const JSString& lhs, const JSString& rhs);
       
       JSStringRef js_string_ref__ { nullptr };
@@ -234,7 +234,7 @@ namespace JavaScriptCoreCPP {
     }
     
     inline
-    void swap(JSString& first, JSString& second) noexcept {
+    void swap(JSString& first, JSString& second) JAVASCRIPTCORECPP_NOEXCEPT {
       first.swap(second);
     }
     

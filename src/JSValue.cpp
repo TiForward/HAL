@@ -73,12 +73,12 @@ namespace JavaScriptCoreCPP {
     return operator JSString();
   }
   
-  JSValue::operator bool() const noexcept {
+  JSValue::operator bool() const JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
     return JSValueToBoolean(js_context__, js_value_ref__);
   }
   
-  JSValue::operator JSBoolean() const noexcept {
+  JSValue::operator JSBoolean() const JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
     return js_context__.CreateBoolean(operator bool());
   }
@@ -120,7 +120,7 @@ namespace JavaScriptCoreCPP {
     return JSObject(js_context__, js_object_ref);
   }
   
-  JSValue::Type JSValue::GetType() const noexcept {
+  JSValue::Type JSValue::GetType() const JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
     const JSType js_type = JSValueGetType(js_context__, js_value_ref__);
     switch (js_type) {
@@ -150,37 +150,37 @@ namespace JavaScriptCoreCPP {
     }
   }
   
-  bool JSValue::IsUndefined() const noexcept {
+  bool JSValue::IsUndefined() const JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
     return JSValueIsUndefined(js_context__, js_value_ref__);
   }
   
-  bool JSValue::IsNull() const noexcept {
+  bool JSValue::IsNull() const JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
     return JSValueIsNull(js_context__, js_value_ref__);
   }
   
-  bool JSValue::IsBoolean() const noexcept {
+  bool JSValue::IsBoolean() const JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
     return JSValueIsBoolean(js_context__, js_value_ref__);
   }
   
-  bool JSValue::IsNumber() const noexcept {
+  bool JSValue::IsNumber() const JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
     return JSValueIsNumber(js_context__, js_value_ref__);
   }
   
-  bool JSValue::IsString() const noexcept {
+  bool JSValue::IsString() const JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
     return JSValueIsString(js_context__, js_value_ref__);
   }
   
-  bool JSValue::IsObject() const noexcept {
+  bool JSValue::IsObject() const JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
     return JSValueIsObject(js_context__, js_value_ref__);
   }
   
-  bool JSValue::IsObjectOfClass(const JSClass& js_class) const noexcept {
+  bool JSValue::IsObjectOfClass(const JSClass& js_class) const JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
     return JSValueIsObjectOfClass(js_context__, js_value_ref__, js_class);
   }
@@ -211,17 +211,17 @@ namespace JavaScriptCoreCPP {
     return lhs.IsEqualWithTypeCoercion(rhs);
   }
   
-  JSValue::~JSValue() noexcept {
+  JSValue::~JSValue() JAVASCRIPTCORECPP_NOEXCEPT {
     JSValueUnprotect(js_context__, js_value_ref__);
   }
   
-  JSValue::JSValue(const JSValue& rhs) noexcept
+  JSValue::JSValue(const JSValue& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : js_context__(rhs.js_context__)
   , js_value_ref__(rhs.js_value_ref__) {
     JSValueProtect(js_context__, js_value_ref__);
   }
   
-  JSValue::JSValue(JSValue&& rhs) noexcept
+  JSValue::JSValue(JSValue&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : js_context__(std::move(rhs.js_context__))
   , js_value_ref__(rhs.js_value_ref__) {
     JSValueProtect(js_context__, js_value_ref__);
@@ -259,7 +259,7 @@ namespace JavaScriptCoreCPP {
     return *this;
   }
   
-  void JSValue::swap(JSValue& other) noexcept {
+  void JSValue::swap(JSValue& other) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
     using std::swap;
     
@@ -283,14 +283,14 @@ namespace JavaScriptCoreCPP {
   }
   
   // For interoperability with the JavaScriptCore C API.
-  JSValue::JSValue(const JSContext& js_context, JSValueRef js_value_ref) noexcept
+  JSValue::JSValue(const JSContext& js_context, JSValueRef js_value_ref) JAVASCRIPTCORECPP_NOEXCEPT
   : js_context__(js_context)
   , js_value_ref__(js_value_ref)  {
     assert(js_value_ref__);
     JSValueProtect(js_context__, js_value_ref__);
   }
   
-  std::string to_string(const JSValue::Type& js_value_type) noexcept {
+  std::string to_string(const JSValue::Type& js_value_type) JAVASCRIPTCORECPP_NOEXCEPT {
     switch (js_value_type) {
       case JSValue::Type::Undefined:
         return "Undefined";
@@ -313,7 +313,7 @@ namespace JavaScriptCoreCPP {
     }
   }
   
-  bool operator==(const JSValue& lhs, const JSValue& rhs) noexcept {
+  bool operator==(const JSValue& lhs, const JSValue& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     return JSValueIsStrictEqual(lhs.get_context(), lhs, rhs);
   }
   

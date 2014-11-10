@@ -16,32 +16,32 @@
 
 namespace JavaScriptCoreCPP {
   
-  JSClass::JSClass() noexcept
+  JSClass::JSClass() JAVASCRIPTCORECPP_NOEXCEPT
   : js_class_ref__(JSClassCreate(&kJSClassDefinitionEmpty)) {
   }
   
-  JSClass::JSClass(const JSClassDefinition& js_class_definition) noexcept
+  JSClass::JSClass(const JSClassDefinition& js_class_definition) JAVASCRIPTCORECPP_NOEXCEPT
   : name__(js_class_definition.name__)
   , js_class_ref__(JSClassCreate(&js_class_definition.js_class_definition__)) {
   }
   
-  JSClass::~JSClass() noexcept {
+  JSClass::~JSClass() JAVASCRIPTCORECPP_NOEXCEPT {
     JSClassRelease(js_class_ref__);
   }
   
-  JSClass::JSClass(const JSClass& rhs) noexcept
+  JSClass::JSClass(const JSClass& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : name__(rhs.name__) {
     js_class_ref__ = rhs.js_class_ref__;
     JSClassRetain(js_class_ref__);
   }
   
-  JSClass::JSClass(JSClass&& rhs) noexcept
+  JSClass::JSClass(JSClass&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : name__(std::move(rhs.name__)) {
     js_class_ref__ = rhs.js_class_ref__;
     JSClassRetain(js_class_ref__);
   }
   
-  JSClass& JSClass::operator=(const JSClass& rhs) noexcept {
+  JSClass& JSClass::operator=(const JSClass& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD;
     name__ = rhs.name__;
     JSClassRelease(js_class_ref__);
@@ -50,7 +50,7 @@ namespace JavaScriptCoreCPP {
     return *this;
   }
   
-  JSClass& JSClass::operator=(JSClass&& rhs) noexcept {
+  JSClass& JSClass::operator=(JSClass&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD;
     name__ = std::move(rhs.name__);
     JSClassRelease(js_class_ref__);
@@ -59,7 +59,7 @@ namespace JavaScriptCoreCPP {
     return *this;
   }
   
-  void JSClass::swap(JSClass& other) noexcept {
+  void JSClass::swap(JSClass& other) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD;
     using std::swap;
     

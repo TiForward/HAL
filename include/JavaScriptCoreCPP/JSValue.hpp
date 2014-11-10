@@ -142,7 +142,7 @@ namespace JavaScriptCoreCPP {
      
      @result The boolean result of conversion.
      */
-    virtual explicit operator bool() const noexcept final;
+    virtual explicit operator bool() const JAVASCRIPTCORECPP_NOEXCEPT final;
     
     /*!
      @method
@@ -151,7 +151,7 @@ namespace JavaScriptCoreCPP {
      
      @result A JSBoolean with the result of conversion.
      */
-    virtual operator JSBoolean() const noexcept final;
+    virtual operator JSBoolean() const JAVASCRIPTCORECPP_NOEXCEPT final;
     
     /*!
      @method
@@ -220,7 +220,7 @@ namespace JavaScriptCoreCPP {
      @result A value of type JSValue::Type that identifies this
      JavaScript value's type.
      */
-    virtual Type GetType() const noexcept final;
+    virtual Type GetType() const JAVASCRIPTCORECPP_NOEXCEPT final;
     
     /*!
      @method
@@ -231,7 +231,7 @@ namespace JavaScriptCoreCPP {
      @result true if this JavaScript value's type is the undefined
      type.
      */
-    virtual bool IsUndefined() const noexcept final;
+    virtual bool IsUndefined() const JAVASCRIPTCORECPP_NOEXCEPT final;
     
     /*!
      @method
@@ -241,7 +241,7 @@ namespace JavaScriptCoreCPP {
      
      @result true if this JavaScript value's type is the null type.
      */
-    virtual bool IsNull() const noexcept final;
+    virtual bool IsNull() const JAVASCRIPTCORECPP_NOEXCEPT final;
     
     /*!
      @method
@@ -251,7 +251,7 @@ namespace JavaScriptCoreCPP {
      
      @result true if this JavaScript value's type is the boolean type.
      */
-    virtual bool IsBoolean() const noexcept final;
+    virtual bool IsBoolean() const JAVASCRIPTCORECPP_NOEXCEPT final;
     
     /*!
      @method
@@ -261,7 +261,7 @@ namespace JavaScriptCoreCPP {
      
      @result true if this JavaScript value's type is the number type.
      */
-    virtual bool IsNumber() const noexcept final;
+    virtual bool IsNumber() const JAVASCRIPTCORECPP_NOEXCEPT final;
     
     /*!
      @method
@@ -271,7 +271,7 @@ namespace JavaScriptCoreCPP {
      
      @result true if this JavaScript value's type is the string type.
      */
-    virtual bool IsString() const noexcept final;
+    virtual bool IsString() const JAVASCRIPTCORECPP_NOEXCEPT final;
     
     /*!
      @method
@@ -281,7 +281,7 @@ namespace JavaScriptCoreCPP {
      
      @result true if this JavaScript value's type is the object type.
      */
-    virtual bool IsObject() const noexcept final;
+    virtual bool IsObject() const JAVASCRIPTCORECPP_NOEXCEPT final;
     
     /*!
      @method
@@ -294,7 +294,7 @@ namespace JavaScriptCoreCPP {
      @result true if this JavaScript value is an object with a given
      class in its class chain.
      */
-    virtual bool IsObjectOfClass(const JSClass& js_class) const noexcept final;
+    virtual bool IsObjectOfClass(const JSClass& js_class) const JAVASCRIPTCORECPP_NOEXCEPT final;
     
     /*!
      @method
@@ -331,16 +331,16 @@ namespace JavaScriptCoreCPP {
      
      @result The the execution context of this JavaScript value.
      */
-    virtual JSContext get_context() const noexcept final {
+    virtual JSContext get_context() const JAVASCRIPTCORECPP_NOEXCEPT final {
       return js_context__;
     }
     
-    virtual ~JSValue() noexcept;
-    JSValue(const JSValue&) noexcept;
-    JSValue(JSValue&&) noexcept;
+    virtual ~JSValue() JAVASCRIPTCORECPP_NOEXCEPT;
+    JSValue(const JSValue&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSValue(JSValue&&) JAVASCRIPTCORECPP_NOEXCEPT;
     JSValue& operator=(const JSValue&);
     JSValue& operator=(JSValue&&);
-    void swap(JSValue&) noexcept;
+    void swap(JSValue&) JAVASCRIPTCORECPP_NOEXCEPT;
     
   protected:
     
@@ -371,16 +371,16 @@ namespace JavaScriptCoreCPP {
     friend class JSObject;
     
     // For interoperability with the JavaScriptCore C API.
-    JSValue(const JSContext& js_context, JSValueRef js_value_ref) noexcept;
+    JSValue(const JSContext& js_context, JSValueRef js_value_ref) JAVASCRIPTCORECPP_NOEXCEPT;
     
     // For interoperability with the JavaScriptCore C API.
-    virtual operator JSValueRef() const noexcept final {
+    virtual operator JSValueRef() const JAVASCRIPTCORECPP_NOEXCEPT final {
       return js_value_ref__;
     }
     
     // These classes and functions need access to operator
     // JSValueRef().
-    friend bool operator==(const JSValue& lhs, const JSValue& rhs) noexcept;
+    friend bool operator==(const JSValue& lhs, const JSValue& rhs) JAVASCRIPTCORECPP_NOEXCEPT;
     
     friend std::vector<JSValue>    detail::to_vector(const JSContext&, size_t, const JSValueRef[]);
     friend std::vector<JSValueRef> detail::to_vector(const std::vector<JSValue>&);
@@ -404,7 +404,7 @@ namespace JavaScriptCoreCPP {
   };
   
   inline
-  void swap(JSValue& first, JSValue& second) noexcept {
+  void swap(JSValue& first, JSValue& second) JAVASCRIPTCORECPP_NOEXCEPT {
     first.swap(second);
   }
   
@@ -413,7 +413,7 @@ namespace JavaScriptCoreCPP {
     return static_cast<std::string>(js_value);
   }
   
-  std::string to_string(const JSValue::Type& js_value_type) noexcept;
+  std::string to_string(const JSValue::Type& js_value_type) JAVASCRIPTCORECPP_NOEXCEPT;
   
   /*!
    @function
@@ -428,11 +428,11 @@ namespace JavaScriptCoreCPP {
    @result true if the two values are equal, false if they are not
    equal.
    */
-  bool operator==(const JSValue& lhs, const JSValue& rhs) noexcept;
+  bool operator==(const JSValue& lhs, const JSValue& rhs) JAVASCRIPTCORECPP_NOEXCEPT;
   
   // Return true if the two JSValues are not strict equal, as compared by the JS === operator.
   inline
-  bool operator!=(const JSValue& lhs, const JSValue& rhs) noexcept {
+  bool operator!=(const JSValue& lhs, const JSValue& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     return ! (lhs == rhs);
   }
   

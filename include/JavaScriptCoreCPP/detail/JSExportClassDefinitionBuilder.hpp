@@ -88,7 +88,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      JSClassAttribute defaults to 'AutomaticPrototype' and all
      callbacks are initialized to nullptr.
      */
-    explicit JSExportClassDefinitionBuilder(const std::string& class_name) noexcept
+    explicit JSExportClassDefinitionBuilder(const std::string& class_name) JAVASCRIPTCORECPP_NOEXCEPT
     : name__(class_name) {
       js_class_definition__ = kJSClassDefinitionEmpty;
     }
@@ -107,7 +107,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      
      @result Your JSClass's name.
      */
-    std::string ClassName() const noexcept {
+    std::string ClassName() const JAVASCRIPTCORECPP_NOEXCEPT {
       return name__;
     }
     
@@ -118,7 +118,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      
      @result A reference to the builder for chaining.
      */
-    JSExportClassDefinitionBuilder<T>& ClassName(const std::string& class_name) noexcept {
+    JSExportClassDefinitionBuilder<T>& ClassName(const std::string& class_name) JAVASCRIPTCORECPP_NOEXCEPT {
       JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASSDEFINITIONBUILDER_LOCK_GUARD;
       name__ = class_name;
       return *this;
@@ -131,7 +131,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      
      @result Your JSClass's version.
      */
-    std::uint32_t Version() const noexcept {
+    std::uint32_t Version() const JAVASCRIPTCORECPP_NOEXCEPT {
       return js_class_definition__.version;
     }
     
@@ -142,7 +142,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      
      @result A reference to the builder for chaining.
      */
-    JSExportClassDefinitionBuilder<T>& Version(std::uint32_t class_version) noexcept {
+    JSExportClassDefinitionBuilder<T>& Version(std::uint32_t class_version) JAVASCRIPTCORECPP_NOEXCEPT {
       JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASSDEFINITIONBUILDER_LOCK_GUARD;
       js_class_definition__.version = class_version;
       return *this;
@@ -155,7 +155,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      
      @result Your JSClass's JSClassAttribute.
      */
-    JSClassAttribute ClassAttribute() const noexcept {
+    JSClassAttribute ClassAttribute() const JAVASCRIPTCORECPP_NOEXCEPT {
       return FromJSClassAttributes(js_class_definition__.attributes);
     }
     
@@ -166,7 +166,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      
      @result A reference to the builder for chaining.
      */
-    JSExportClassDefinitionBuilder<T>& ClassAttribute(JSClassAttribute class_attribute) noexcept {
+    JSExportClassDefinitionBuilder<T>& ClassAttribute(JSClassAttribute class_attribute) JAVASCRIPTCORECPP_NOEXCEPT {
       JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASSDEFINITIONBUILDER_LOCK_GUARD;
       js_class_definition__.attributes = ToJSClassAttribute(class_attribute);
       return *this;
@@ -180,7 +180,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      
      @result The parent of your JSClass created by this builder.
      */
-    JSClass Parent() const noexcept {
+    JSClass Parent() const JAVASCRIPTCORECPP_NOEXCEPT {
       return parent__;
     }
     
@@ -192,7 +192,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      
      @result A reference to the builder for chaining.
      */
-    JSExportClassDefinitionBuilder<T>& Parent(const JSClass& parent) noexcept {
+    JSExportClassDefinitionBuilder<T>& Parent(const JSClass& parent) JAVASCRIPTCORECPP_NOEXCEPT {
       JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASSDEFINITIONBUILDER_LOCK_GUARD;
       parent__ = parent;
       return *this;
@@ -543,7 +543,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      @result The callback to invoke when your JavaScript object is
      called as a function.
      */
-    CallAsFunctionCallback<T> Function() const noexcept {
+    CallAsFunctionCallback<T> Function() const JAVASCRIPTCORECPP_NOEXCEPT {
       return call_as_function_callback__;
     }
     
@@ -575,7 +575,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      
      @result A reference to the builder for chaining.
      */
-    JSExportClassDefinitionBuilder<T>& Function(const CallAsFunctionCallback<T>& call_as_function_callback) noexcept {
+    JSExportClassDefinitionBuilder<T>& Function(const CallAsFunctionCallback<T>& call_as_function_callback) JAVASCRIPTCORECPP_NOEXCEPT {
       JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASSDEFINITIONBUILDER_LOCK_GUARD;
       call_as_function_callback__ = call_as_function_callback;
       return *this;
@@ -690,7 +690,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      @result The callback to invoke when converting your JavaScript
      object to another JavaScript type.
      */
-    ConvertToTypeCallback<T> ConvertToType() const noexcept {
+    ConvertToTypeCallback<T> ConvertToType() const JAVASCRIPTCORECPP_NOEXCEPT {
       return convert_to_type_callback__;
     }
     
@@ -720,7 +720,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      
      @result A reference to the builder for chaining.
      */
-    JSExportClassDefinitionBuilder<T>& ConvertToType(const ConvertToTypeCallback<T>& convert_to_type_callback) noexcept {
+    JSExportClassDefinitionBuilder<T>& ConvertToType(const ConvertToTypeCallback<T>& convert_to_type_callback) JAVASCRIPTCORECPP_NOEXCEPT {
       JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASSDEFINITIONBUILDER_LOCK_GUARD;
       convert_to_type_callback__ = convert_to_type_callback;
       return *this;

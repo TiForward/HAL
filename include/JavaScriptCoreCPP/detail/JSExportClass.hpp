@@ -49,7 +49,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     
   public:
     
-    JSExportClass(const JSExportClassDefinition<T>& js_export_class_definition) noexcept;
+    JSExportClass(const JSExportClassDefinition<T>& js_export_class_definition) JAVASCRIPTCORECPP_NOEXCEPT;
     
     JSExportClass()                                = default;
     ~JSExportClass()                               = default;
@@ -126,7 +126,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   //  JSExportNamedFunctionPropertyCallbackMap_t<T> JSExportClass<T>::named_function_property_callback_map__;
   
   template<typename T>
-  JSExportClass<T>::JSExportClass(const JSExportClassDefinition<T>& js_export_class_definition) noexcept
+  JSExportClass<T>::JSExportClass(const JSExportClassDefinition<T>& js_export_class_definition) JAVASCRIPTCORECPP_NOEXCEPT
   : JSClass(js_export_class_definition) {
     
     std::once_flag of;

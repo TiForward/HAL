@@ -52,7 +52,7 @@ namespace JavaScriptCoreCPP {
      
      @result true if this JavaScript object has the property.
      */
-    virtual bool HasProperty(const JSString& property_name) const noexcept final;
+    virtual bool HasProperty(const JSString& property_name) const JAVASCRIPTCORECPP_NOEXCEPT final;
     
     /*!
      @method
@@ -147,7 +147,7 @@ namespace JavaScriptCoreCPP {
      @result A JSPropertyNameArray containing the names object's
      enumerable properties. Ownership follows the Create Rule.
      */
-    virtual JSPropertyNameArray CopyPropertyNames() const noexcept final;
+    virtual JSPropertyNameArray CopyPropertyNames() const JAVASCRIPTCORECPP_NOEXCEPT final;
     
     /*!
      @method
@@ -157,7 +157,7 @@ namespace JavaScriptCoreCPP {
      
      @result true if this object can be called as a constructor.
      */
-    virtual bool IsConstructor() const noexcept final;
+    virtual bool IsConstructor() const JAVASCRIPTCORECPP_NOEXCEPT final;
     
     /*!
      @method
@@ -187,7 +187,7 @@ namespace JavaScriptCoreCPP {
      
      @result true if this object can be called as a function.
      */
-    virtual bool IsFunction() const noexcept final;
+    virtual bool IsFunction() const JAVASCRIPTCORECPP_NOEXCEPT final;
     
     /*!
      @method
@@ -231,7 +231,7 @@ namespace JavaScriptCoreCPP {
      
      @result This JavaScript object's prototype.
      */
-    virtual JSValue GetPrototype() const noexcept final;
+    virtual JSValue GetPrototype() const JAVASCRIPTCORECPP_NOEXCEPT final;
     
     /*!
      @method
@@ -241,7 +241,7 @@ namespace JavaScriptCoreCPP {
      @param value The value to set as this JavaScript object's
      prototype.
      */
-    virtual void SetPrototype(const JSValue& js_value) noexcept final;
+    virtual void SetPrototype(const JSValue& js_value) JAVASCRIPTCORECPP_NOEXCEPT final;
     
     JSObject()                           = delete;
     ~JSObject()                          = default;
@@ -309,7 +309,7 @@ namespace JavaScriptCoreCPP {
      @result A void* that is this object's private data, if the object
      has private data, otherwise nullptr.
      */
-    virtual void* GetPrivate() const noexcept final;
+    virtual void* GetPrivate() const JAVASCRIPTCORECPP_NOEXCEPT final;
     
     /*!
      @method
@@ -323,7 +323,7 @@ namespace JavaScriptCoreCPP {
      
      @result true if this object can store private data.
      */
-    virtual bool SetPrivate(void* data) const noexcept final;
+    virtual bool SetPrivate(void* data) const JAVASCRIPTCORECPP_NOEXCEPT final;
     
     /*!
      @method
@@ -344,7 +344,7 @@ namespace JavaScriptCoreCPP {
      property names to the accumulator. Property name accumulators are
      used by JavaScript for...in loops.
      */
-    virtual void GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const noexcept final;
+    virtual void GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const JAVASCRIPTCORECPP_NOEXCEPT final;
   };
   
 } // namespace JavaScriptCoreCPP {

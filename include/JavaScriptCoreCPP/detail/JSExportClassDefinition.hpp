@@ -63,15 +63,15 @@ namespace JavaScriptCoreCPP { namespace detail {
     
     JSExportClassDefinition()  = default;
     ~JSExportClassDefinition() = default;
-    JSExportClassDefinition(const JSExportClassDefinition&) noexcept;
-    JSExportClassDefinition(JSExportClassDefinition&&) noexcept;
-    JSExportClassDefinition& operator=(const JSExportClassDefinition&) noexcept;
-    JSExportClassDefinition& operator=(JSExportClassDefinition&&) noexcept;
-    void swap(JSExportClassDefinition&) noexcept;
+    JSExportClassDefinition(const JSExportClassDefinition&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSExportClassDefinition(JSExportClassDefinition&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSExportClassDefinition& operator=(const JSExportClassDefinition&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSExportClassDefinition& operator=(JSExportClassDefinition&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    void swap(JSExportClassDefinition&) JAVASCRIPTCORECPP_NOEXCEPT;
     
   private:
     
-    void InitializeNamedPropertyCallbacks() noexcept;
+    void InitializeNamedPropertyCallbacks() JAVASCRIPTCORECPP_NOEXCEPT;
 
     // Only JSExportClass can access our private member variables.
     template<typename U>
@@ -91,7 +91,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   };
   
   template<typename T>
-  JSExportClassDefinition<T>::JSExportClassDefinition(const JSExportClassDefinition<T>& rhs) noexcept
+  JSExportClassDefinition<T>::JSExportClassDefinition(const JSExportClassDefinition<T>& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : JSClassDefinition(rhs)
   , named_value_property_callback_map__(rhs.named_value_property_callback_map__)
   , named_function_property_callback_map__(rhs.named_function_property_callback_map__) {
@@ -102,7 +102,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   }
   
   template<typename T>
-  JSExportClassDefinition<T>::JSExportClassDefinition(JSExportClassDefinition<T>&& rhs) noexcept
+  JSExportClassDefinition<T>::JSExportClassDefinition(JSExportClassDefinition<T>&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : JSClassDefinition(rhs)
   , named_value_property_callback_map__(std::move(rhs.named_value_property_callback_map__))
   , named_function_property_callback_map__(std::move(rhs.named_function_property_callback_map__)) {
@@ -113,7 +113,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   }
   
   template<typename T>
-  JSExportClassDefinition<T>& JSExportClassDefinition<T>::operator=(const JSExportClassDefinition<T>& rhs) noexcept {
+  JSExportClassDefinition<T>& JSExportClassDefinition<T>::operator=(const JSExportClassDefinition<T>& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSCLASSDEFINITION_LOCK_GUARD;
     JSClassDefinition::operator=(rhs);
     named_value_property_callback_map__    = rhs.named_value_property_callback_map__;
@@ -127,7 +127,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     }
     
     template<typename T>
-    JSExportClassDefinition<T>& JSExportClassDefinition<T>::operator=(JSExportClassDefinition<T>&& rhs) noexcept {
+    JSExportClassDefinition<T>& JSExportClassDefinition<T>::operator=(JSExportClassDefinition<T>&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
       JAVASCRIPTCORECPP_JSCLASSDEFINITION_LOCK_GUARD;
       JSClassDefinition::operator=(rhs);
       swap(rhs);
@@ -140,7 +140,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     }
     
     template<typename T>
-    void JSExportClassDefinition<T>::swap(JSExportClassDefinition<T>& other) noexcept {
+    void JSExportClassDefinition<T>::swap(JSExportClassDefinition<T>& other) JAVASCRIPTCORECPP_NOEXCEPT {
       JAVASCRIPTCORECPP_JSCLASSDEFINITION_LOCK_GUARD;
       using std::swap;
       
@@ -151,12 +151,12 @@ namespace JavaScriptCoreCPP { namespace detail {
     }
     
     template<typename T>
-    void swap(JSExportClassDefinition<T>& first, JSExportClassDefinition<T>& second) noexcept {
+    void swap(JSExportClassDefinition<T>& first, JSExportClassDefinition<T>& second) JAVASCRIPTCORECPP_NOEXCEPT {
       first.swap(second);
     }
     
     template<typename T>
-    void JSExportClassDefinition<T>::InitializeNamedPropertyCallbacks() noexcept {
+    void JSExportClassDefinition<T>::InitializeNamedPropertyCallbacks() JAVASCRIPTCORECPP_NOEXCEPT {
       
       // Initialize staticValues.
       static_values__.clear();

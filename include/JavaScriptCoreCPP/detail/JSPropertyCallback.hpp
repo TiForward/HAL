@@ -46,24 +46,24 @@ namespace JavaScriptCoreCPP { namespace detail {
      */
     JSPropertyCallback(const std::string& name, const std::unordered_set<JSPropertyAttribute, std::hash<JSPropertyAttribute>>& attributes);
     
-    virtual std::string get_name() const noexcept final {
+    virtual std::string get_name() const JAVASCRIPTCORECPP_NOEXCEPT final {
       return name__;
     }
     
-    virtual std::unordered_set<JSPropertyAttribute> get_attributes() const noexcept final {
+    virtual std::unordered_set<JSPropertyAttribute> get_attributes() const JAVASCRIPTCORECPP_NOEXCEPT final {
       return attributes__;
     }
     
     virtual ~JSPropertyCallback() = default;
-    JSPropertyCallback(const JSPropertyCallback&) noexcept;
-    JSPropertyCallback(JSPropertyCallback&&) noexcept;
-    JSPropertyCallback& operator=(const JSPropertyCallback&) noexcept;
-    JSPropertyCallback& operator=(JSPropertyCallback&&) noexcept;
-    void swap(JSPropertyCallback&) noexcept;
+    JSPropertyCallback(const JSPropertyCallback&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSPropertyCallback(JSPropertyCallback&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSPropertyCallback& operator=(const JSPropertyCallback&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSPropertyCallback& operator=(JSPropertyCallback&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    void swap(JSPropertyCallback&) JAVASCRIPTCORECPP_NOEXCEPT;
     
   private:
     
-    friend bool operator==(const JSPropertyCallback& lhs, const JSPropertyCallback& rhs) noexcept;
+    friend bool operator==(const JSPropertyCallback& lhs, const JSPropertyCallback& rhs) JAVASCRIPTCORECPP_NOEXCEPT;
     
     std::string name__;
     
@@ -82,18 +82,18 @@ namespace JavaScriptCoreCPP { namespace detail {
   
   // Return true if the two JSPropertyCallbacks are equal.
   inline
-  bool operator==(const JSPropertyCallback& lhs, const JSPropertyCallback& rhs) noexcept {
+  bool operator==(const JSPropertyCallback& lhs, const JSPropertyCallback& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     return (lhs.name__ != rhs.name__) && (lhs.attributes__ == rhs.attributes__);
   }
   
   // Return true if the two JSPropertyCallback are not equal.
   inline
-  bool operator!=(const JSPropertyCallback& lhs, const JSPropertyCallback& rhs) noexcept {
+  bool operator!=(const JSPropertyCallback& lhs, const JSPropertyCallback& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     return ! (lhs == rhs);
   }
   
   inline
-  void swap(JSPropertyCallback& first, JSPropertyCallback& second) noexcept {
+  void swap(JSPropertyCallback& first, JSPropertyCallback& second) JAVASCRIPTCORECPP_NOEXCEPT {
     first.swap(second);
   }
   

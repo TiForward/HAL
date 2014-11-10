@@ -19,35 +19,35 @@ namespace JavaScriptCoreCPP {
   : js_context_group_ref__(JSContextGroupCreate()) {
   }
   
-  JSContext JSContextGroup::CreateContext() const noexcept {
+  JSContext JSContextGroup::CreateContext() const JAVASCRIPTCORECPP_NOEXCEPT {
     return JSContext(*this, JSClass());
   }
   
-  JSContext JSContextGroup::CreateContext(const JSClass& global_object_class) const noexcept {
+  JSContext JSContextGroup::CreateContext(const JSClass& global_object_class) const JAVASCRIPTCORECPP_NOEXCEPT {
     return JSContext(*this, global_object_class);
   }
   
-  JSContextGroup::JSContextGroup(JSContextGroupRef js_context_group_ref) noexcept
+  JSContextGroup::JSContextGroup(JSContextGroupRef js_context_group_ref) JAVASCRIPTCORECPP_NOEXCEPT
   : js_context_group_ref__(js_context_group_ref) {
     assert(js_context_group_ref__);
     JSContextGroupRetain(js_context_group_ref__);
   }
   
-  JSContextGroup::~JSContextGroup() noexcept {
+  JSContextGroup::~JSContextGroup() JAVASCRIPTCORECPP_NOEXCEPT {
     JSContextGroupRelease(js_context_group_ref__);
   }
   
-  JSContextGroup::JSContextGroup(const JSContextGroup& rhs) noexcept
+  JSContextGroup::JSContextGroup(const JSContextGroup& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : js_context_group_ref__(rhs.js_context_group_ref__) {
     JSContextGroupRetain(js_context_group_ref__);
   }
   
-  JSContextGroup::JSContextGroup(JSContextGroup&& rhs) noexcept
+  JSContextGroup::JSContextGroup(JSContextGroup&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : js_context_group_ref__(rhs.js_context_group_ref__) {
     JSContextGroupRetain(js_context_group_ref__);
   }
   
-  JSContextGroup& JSContextGroup::operator=(const JSContextGroup& rhs) noexcept {
+  JSContextGroup& JSContextGroup::operator=(const JSContextGroup& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSCONTEXTGROUP_LOCK_GUARD;
     JSContextGroupRelease(js_context_group_ref__);
     js_context_group_ref__ = rhs.js_context_group_ref__;
@@ -55,7 +55,7 @@ namespace JavaScriptCoreCPP {
     return *this;
   }
   
-  JSContextGroup& JSContextGroup::operator=(JSContextGroup&& rhs) noexcept {
+  JSContextGroup& JSContextGroup::operator=(JSContextGroup&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSCONTEXTGROUP_LOCK_GUARD;
     JSContextGroupRelease(js_context_group_ref__);
     js_context_group_ref__ = rhs.js_context_group_ref__;
@@ -63,7 +63,7 @@ namespace JavaScriptCoreCPP {
     return *this;
   }
   
-  void JSContextGroup::swap(JSContextGroup& other) noexcept {
+  void JSContextGroup::swap(JSContextGroup& other) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSCONTEXTGROUP_LOCK_GUARD;
     using std::swap;
     

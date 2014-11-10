@@ -40,21 +40,21 @@ namespace JavaScriptCoreCPP { namespace detail {
     }
   }
   
-  JSStaticValue::JSStaticValue(const JSStaticValue& rhs) noexcept
+  JSStaticValue::JSStaticValue(const JSStaticValue& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : JSPropertyCallback(rhs)
   , get_callback__(rhs.get_callback__)
   , set_callback__(rhs.set_callback__) {
   }
   
   
-  JSStaticValue::JSStaticValue(JSStaticValue&& rhs) noexcept
+  JSStaticValue::JSStaticValue(JSStaticValue&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : JSPropertyCallback(rhs)
   , get_callback__(std::move(rhs.get_callback__))
   , set_callback__(std::move(rhs.set_callback__)) {
   }
   
   
-  JSStaticValue& JSStaticValue::JSStaticValue::operator=(const JSStaticValue& rhs) noexcept {
+  JSStaticValue& JSStaticValue::JSStaticValue::operator=(const JSStaticValue& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
     JSPropertyCallback::operator=(rhs);
     get_callback__ = rhs.get_callback__;
@@ -62,7 +62,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     return *this;
   }
   
-  JSStaticValue& JSStaticValue::JSStaticValue::operator=(JSStaticValue&& rhs) noexcept {
+  JSStaticValue& JSStaticValue::JSStaticValue::operator=(JSStaticValue&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
     JSPropertyCallback::operator=(rhs);
     get_callback__ = std::move(rhs.get_callback__);
@@ -71,7 +71,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   }
   
   
-  void JSStaticValue::swap(JSStaticValue& other) noexcept {
+  void JSStaticValue::swap(JSStaticValue& other) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
     using std::swap;
     
@@ -82,7 +82,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   }
   
   
-  bool operator==(const JSStaticValue& lhs, const JSStaticValue& rhs) noexcept {
+  bool operator==(const JSStaticValue& lhs, const JSStaticValue& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     // get_callback__
     if (lhs.get_callback__ && !rhs.get_callback__) {
       return false;

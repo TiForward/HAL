@@ -55,7 +55,7 @@ namespace JavaScriptCoreCPP {
      
      @result An empty JSClass.
      */
-    JSClass() noexcept;
+    JSClass() JAVASCRIPTCORECPP_NOEXCEPT;
     
     /*!
      @method
@@ -64,7 +64,7 @@ namespace JavaScriptCoreCPP {
      
      @result A JSClass defined by the given JSClassDefinition.
      */
-    JSClass(const JSClassDefinition& js_class_definition) noexcept;
+    JSClass(const JSClassDefinition& js_class_definition) JAVASCRIPTCORECPP_NOEXCEPT;
     
     /*!
      @method
@@ -73,16 +73,16 @@ namespace JavaScriptCoreCPP {
      
      @result The name of this JSClass.
      */
-    virtual std::string get_name() const noexcept final {
+    virtual std::string get_name() const JAVASCRIPTCORECPP_NOEXCEPT final {
       return name__;
     }
     
-    virtual ~JSClass() noexcept;
-    JSClass(const JSClass&) noexcept;
-    JSClass(JSClass&&) noexcept;
-    JSClass& operator=(const JSClass&) noexcept;
-    JSClass& operator=(JSClass&&) noexcept;
-    void swap(JSClass&) noexcept;
+    virtual ~JSClass() JAVASCRIPTCORECPP_NOEXCEPT;
+    JSClass(const JSClass&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSClass(JSClass&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSClass& operator=(const JSClass&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSClass& operator=(JSClass&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    void swap(JSClass&) JAVASCRIPTCORECPP_NOEXCEPT;
     
   private:
     
@@ -99,7 +99,7 @@ namespace JavaScriptCoreCPP {
     template<typename T>
     friend class detail::JSExportClassDefinitionBuilder;
     
-    operator JSClassRef() const noexcept {
+    operator JSClassRef() const JAVASCRIPTCORECPP_NOEXCEPT {
       return js_class_ref__;
     }
     
@@ -118,7 +118,7 @@ namespace JavaScriptCoreCPP {
   };
   
   inline
-  void swap(JSClass& first, JSClass& second) noexcept {
+  void swap(JSClass& first, JSClass& second) JAVASCRIPTCORECPP_NOEXCEPT {
     first.swap(second);
   }
   

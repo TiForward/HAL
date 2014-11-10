@@ -69,7 +69,7 @@ namespace JavaScriptCoreCPP {
      
      @result The global object of this JavaScript execution context.
      */
-    JSObject get_global_object() const noexcept;
+    JSObject get_global_object() const JAVASCRIPTCORECPP_NOEXCEPT;
     
     /*!
      @method
@@ -79,7 +79,7 @@ namespace JavaScriptCoreCPP {
      
      @result The context group of this JavaScript execution context.
      */
-    JSContextGroup get_context_group() const noexcept {
+    JSContextGroup get_context_group() const JAVASCRIPTCORECPP_NOEXCEPT {
       return js_context_group__;
     }
     
@@ -110,10 +110,10 @@ namespace JavaScriptCoreCPP {
      @result A JSValue of the string type that represents the value of
      string.
      */
-    JSValue CreateString()                          const noexcept;
-    JSValue CreateString(const JSString& js_string) const noexcept;
-    JSValue CreateString(const char*        string) const noexcept;
-    JSValue CreateString(const std::string& string) const noexcept;
+    JSValue CreateString()                          const JAVASCRIPTCORECPP_NOEXCEPT;
+    JSValue CreateString(const JSString& js_string) const JAVASCRIPTCORECPP_NOEXCEPT;
+    JSValue CreateString(const char*        string) const JAVASCRIPTCORECPP_NOEXCEPT;
+    JSValue CreateString(const std::string& string) const JAVASCRIPTCORECPP_NOEXCEPT;
     
     /*!
      @method
@@ -122,7 +122,7 @@ namespace JavaScriptCoreCPP {
      
      @result The unique undefined value.
      */
-    JSUndefined CreateUndefined() const noexcept;
+    JSUndefined CreateUndefined() const JAVASCRIPTCORECPP_NOEXCEPT;
     
     /*!
      @method
@@ -131,7 +131,7 @@ namespace JavaScriptCoreCPP {
      
      @result The unique null value.
      */
-    JSNull CreateNull() const noexcept;
+    JSNull CreateNull() const JAVASCRIPTCORECPP_NOEXCEPT;
     
     /*!
      @method
@@ -143,7 +143,7 @@ namespace JavaScriptCoreCPP {
      @result A JavaScript value of the boolean type, representing the
      value of boolean.
      */
-    JSBoolean CreateBoolean(bool boolean) const noexcept;
+    JSBoolean CreateBoolean(bool boolean) const JAVASCRIPTCORECPP_NOEXCEPT;
     
     /*!
      @method
@@ -156,7 +156,7 @@ namespace JavaScriptCoreCPP {
      @result A JavaScript value of the number type, representing the
      value of number.
      */
-    JSNumber CreateNumber(double number) const noexcept;
+    JSNumber CreateNumber(double number) const JAVASCRIPTCORECPP_NOEXCEPT;
     
     /*!
      @method
@@ -169,7 +169,7 @@ namespace JavaScriptCoreCPP {
      @result A JavaScript value of the number type, representing the
      value of number.
      */
-    JSNumber CreateNumber(int32_t number) const noexcept;
+    JSNumber CreateNumber(int32_t number) const JAVASCRIPTCORECPP_NOEXCEPT;
     
     /*!
      @method
@@ -182,7 +182,7 @@ namespace JavaScriptCoreCPP {
      @result A JavaScript value of the number type, representing the
      value of number.
      */
-    JSNumber CreateNumber(uint32_t number) const noexcept;
+    JSNumber CreateNumber(uint32_t number) const JAVASCRIPTCORECPP_NOEXCEPT;
     
     /*!
      @method
@@ -196,8 +196,8 @@ namespace JavaScriptCoreCPP {
      
      @result A JavaScript object.
      */
-    JSObject CreateObject() const noexcept;
-    JSObject CreateObject(const JSClass& js_class) const noexcept;
+    JSObject CreateObject() const JAVASCRIPTCORECPP_NOEXCEPT;
+    JSObject CreateObject(const JSClass& js_class) const JAVASCRIPTCORECPP_NOEXCEPT;
 
     /*!
      @method
@@ -232,7 +232,7 @@ namespace JavaScriptCoreCPP {
      @result A JavaScript object that is an Array, populated with the
      given JavaScript values.
      */
-    JSArray CreateArray() const noexcept;
+    JSArray CreateArray() const JAVASCRIPTCORECPP_NOEXCEPT;
     JSArray CreateArray(const std::vector<JSValue>& arguments) const;
     
     /*!
@@ -246,7 +246,7 @@ namespace JavaScriptCoreCPP {
      
      @result A JSObject that is a Date.
      */
-    JSDate CreateDate() const noexcept;
+    JSDate CreateDate() const JAVASCRIPTCORECPP_NOEXCEPT;
     JSDate CreateDate(const std::vector<JSValue>& arguments) const;
     
     /*!
@@ -260,7 +260,7 @@ namespace JavaScriptCoreCPP {
      
      @result A JSObject that is a Error.
      */
-    JSError CreateError() const noexcept;
+    JSError CreateError() const JAVASCRIPTCORECPP_NOEXCEPT;
     JSError CreateError(const std::vector<JSValue>& arguments) const;
     
     /*!
@@ -274,7 +274,7 @@ namespace JavaScriptCoreCPP {
      
      @result A JSObject that is a RegExp.
      */
-    JSRegExp CreateRegExp() const noexcept;
+    JSRegExp CreateRegExp() const JAVASCRIPTCORECPP_NOEXCEPT;
     JSRegExp CreateRegExp(const std::vector<JSValue>& arguments) const;
     
     /*!
@@ -371,8 +371,8 @@ namespace JavaScriptCoreCPP {
      @result true if the script is syntactically correct, otherwise
      false.
      */
-    bool JSCheckScriptSyntax(const JSString& script) const noexcept;
-    bool JSCheckScriptSyntax(const JSString& script, const JSString& source_url, int starting_line_number = 1) const noexcept;
+    bool JSCheckScriptSyntax(const JSString& script) const JAVASCRIPTCORECPP_NOEXCEPT;
+    bool JSCheckScriptSyntax(const JSString& script, const JSString& source_url, int starting_line_number = 1) const JAVASCRIPTCORECPP_NOEXCEPT;
     
     
     /*!
@@ -391,7 +391,7 @@ namespace JavaScriptCoreCPP {
      automatically destroyed when the last reference to the context
      group is released.
      */
-    void GarbageCollect() const noexcept;
+    void GarbageCollect() const JAVASCRIPTCORECPP_NOEXCEPT;
     
     /*!
      @method
@@ -409,12 +409,12 @@ namespace JavaScriptCoreCPP {
 #endif
     
     JSContext() = delete;
-    ~JSContext() noexcept;
-    JSContext(const JSContext&) noexcept;
-    JSContext(JSContext&&) noexcept;
-    JSContext& operator=(const JSContext&) noexcept;
-    JSContext& operator=(JSContext&&) noexcept;
-    void swap(JSContext&) noexcept;
+    ~JSContext() JAVASCRIPTCORECPP_NOEXCEPT;
+    JSContext(const JSContext&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSContext(JSContext&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSContext& operator=(const JSContext&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSContext& operator=(JSContext&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    void swap(JSContext&) JAVASCRIPTCORECPP_NOEXCEPT;
     
   private:
     
@@ -422,7 +422,7 @@ namespace JavaScriptCoreCPP {
     // constructor.
     friend class JSContextGroup;
     
-    JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class) noexcept;
+    JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class) JAVASCRIPTCORECPP_NOEXCEPT;
     
     // These classes and functions need access to operator
     // JSContextRef().
@@ -439,12 +439,12 @@ namespace JavaScriptCoreCPP {
     friend class JSFunction;
     friend class JSPropertyNameArray;
     
-    friend bool operator==(const JSValue& lhs, const JSValue& rhs) noexcept;
+    friend bool operator==(const JSValue& lhs, const JSValue& rhs) JAVASCRIPTCORECPP_NOEXCEPT;
     
     friend std::vector<JSValue> detail::to_vector(const JSContext&, size_t, const JSValueRef[]);
     
     // For interoperability with the JavaScriptCore C API.
-    operator JSContextRef() const noexcept {
+    operator JSContextRef() const JAVASCRIPTCORECPP_NOEXCEPT {
       return js_global_context_ref__;
     }
     
@@ -453,10 +453,10 @@ namespace JavaScriptCoreCPP {
     template<typename T>
     friend class detail::JSExportClass;
     
-    explicit JSContext(JSContextRef js_context_ref) noexcept;
+    explicit JSContext(JSContextRef js_context_ref) JAVASCRIPTCORECPP_NOEXCEPT;
     
     // For interoperability with the JavaScriptCore C API.
-    explicit JSContext(JSGlobalContextRef js_global_context_ref__) noexcept;
+    explicit JSContext(JSGlobalContextRef js_global_context_ref__) JAVASCRIPTCORECPP_NOEXCEPT;
     
     // Prevent heap based objects.
     static void * operator new(std::size_t);       // #1: To prevent allocation of scalar objects
@@ -477,7 +477,7 @@ namespace JavaScriptCoreCPP {
   };
   
   inline
-  void swap(JSContext& first, JSContext& second) noexcept {
+  void swap(JSContext& first, JSContext& second) JAVASCRIPTCORECPP_NOEXCEPT {
     first.swap(second);
   }
   

@@ -23,19 +23,19 @@ namespace JavaScriptCoreCPP { namespace detail {
     }
   }
   
-  JSStaticFunction::JSStaticFunction(const JSStaticFunction& rhs) noexcept
+  JSStaticFunction::JSStaticFunction(const JSStaticFunction& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : JSPropertyCallback(rhs)
   , function_callback__(rhs.function_callback__) {
   }
   
   
-  JSStaticFunction::JSStaticFunction(JSStaticFunction&& rhs) noexcept
+  JSStaticFunction::JSStaticFunction(JSStaticFunction&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : JSPropertyCallback(rhs)
   , function_callback__(std::move(rhs.function_callback__)) {
   }
   
   
-  JSStaticFunction& JSStaticFunction::JSStaticFunction::operator=(const JSStaticFunction& rhs) noexcept {
+  JSStaticFunction& JSStaticFunction::JSStaticFunction::operator=(const JSStaticFunction& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
     JSPropertyCallback::operator=(rhs);
     function_callback__ = rhs.function_callback__;
@@ -43,7 +43,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   }
   
   
-  JSStaticFunction& JSStaticFunction::JSStaticFunction::operator=(JSStaticFunction&& rhs) noexcept {
+  JSStaticFunction& JSStaticFunction::JSStaticFunction::operator=(JSStaticFunction&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
     JSPropertyCallback::operator=(rhs);
     function_callback__ = std::move(rhs.function_callback__);
@@ -51,7 +51,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   }
   
   
-  void JSStaticFunction::swap(JSStaticFunction& other) noexcept {
+  void JSStaticFunction::swap(JSStaticFunction& other) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
     using std::swap;
     
@@ -64,7 +64,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   // Return true if the two JSStaticFunctions are
   // equal.
   
-  bool operator==(const JSStaticFunction& lhs, const JSStaticFunction& rhs) noexcept {
+  bool operator==(const JSStaticFunction& lhs, const JSStaticFunction& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     if (lhs.function_callback__ && !rhs.function_callback__) {
       return false;
     }

@@ -38,7 +38,7 @@ namespace JavaScriptCoreCPP {
   class JSClassDefinition JAVASCRIPTCORECPP_PERFORMANCE_COUNTER1(JSClassDefinition) {
   public:
     
-    JSClassDefinition() noexcept;
+    JSClassDefinition() JAVASCRIPTCORECPP_NOEXCEPT;
     
     explicit JSClassDefinition(const ::JSClassDefinition& js_class_definition);
     
@@ -49,7 +49,7 @@ namespace JavaScriptCoreCPP {
      
      @result The name of this JSClassDefinition.
      */
-    virtual std::string get_name() const noexcept final;
+    virtual std::string get_name() const JAVASCRIPTCORECPP_NOEXCEPT final;
     
     /*!
      @method
@@ -58,22 +58,22 @@ namespace JavaScriptCoreCPP {
      
      @result The version number of this JSClassDefinition.
      */
-    virtual std::uint32_t get_version() const noexcept final;
+    virtual std::uint32_t get_version() const JAVASCRIPTCORECPP_NOEXCEPT final;
     
-    virtual ~JSClassDefinition() noexcept;
-    JSClassDefinition(const JSClassDefinition&) noexcept;
-    JSClassDefinition(JSClassDefinition&&) noexcept;
-    JSClassDefinition& operator=(const JSClassDefinition&) noexcept;
-    JSClassDefinition& operator=(JSClassDefinition&&) noexcept;
-    void swap(JSClassDefinition&) noexcept;
+    virtual ~JSClassDefinition() JAVASCRIPTCORECPP_NOEXCEPT;
+    JSClassDefinition(const JSClassDefinition&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSClassDefinition(JSClassDefinition&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSClassDefinition& operator=(const JSClassDefinition&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSClassDefinition& operator=(JSClassDefinition&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    void swap(JSClassDefinition&) JAVASCRIPTCORECPP_NOEXCEPT;
     
-    virtual void Print() noexcept final;
-    static  void Print(const ::JSClassDefinition& js_class_definition) noexcept;
+    virtual void Print() JAVASCRIPTCORECPP_NOEXCEPT final;
+    static  void Print(const ::JSClassDefinition& js_class_definition) JAVASCRIPTCORECPP_NOEXCEPT;
     
   private:
     
-    virtual void Initialize(const ::JSClassDefinition& other) noexcept final;
-    virtual void InitializePropertyCallbacks() noexcept final;
+    virtual void Initialize(const ::JSClassDefinition& other) JAVASCRIPTCORECPP_NOEXCEPT final;
+    virtual void InitializePropertyCallbacks() JAVASCRIPTCORECPP_NOEXCEPT final;
     std::vector<detail::JSStaticValue>    js_value_properties__;
     std::vector<detail::JSStaticFunction> js_function_properties__;
     
@@ -100,7 +100,7 @@ namespace JavaScriptCoreCPP {
   };
   
   inline
-  void swap(JSClassDefinition& first, JSClassDefinition& second) noexcept {
+  void swap(JSClassDefinition& first, JSClassDefinition& second) JAVASCRIPTCORECPP_NOEXCEPT {
     first.swap(second);
   }
   
