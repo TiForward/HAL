@@ -93,8 +93,8 @@ using namespace JavaScriptCoreCPP;
   JSString script =
       //"Widget;"
       //"typeof Widget;"
-      //"Widget.name;"
-      "Widget.sayHello();"
+      "Widget.name;"
+      //"Widget.sayHello();"
       // "Widget();"
       // "var widget = new Widget();"
       ;
