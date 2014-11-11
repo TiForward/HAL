@@ -119,7 +119,7 @@ A [JSObject](include/JavaScriptCoreCPP/JSObject.hpp) is an RAII wrapper around a
 Here are some valuable lessons we have learned during the development of the JavaScriptCoreCPP library and possible areas of future exploration and R&D:
 
 1. The JavaScriptCoreCPP library expose 100% of the JavaScript AST object model when used in 'strict' mode. What this means practically is that in principle a JavaScript compiler can compile JavaScript source code directly to C++ without the need of any "JavaScript Engine" for interpretation. We suggest that this is a useful avenue of Appcelerator R&D.
-2. The library offers the capability of a pure C++ implementation of Ti.Next, a pure JavaScript implementation to TI.next, or a hybrid of the two. We suggest that this is a useful avenue of Appcelerator R&D to determine the correct mix.
+2. The library offers the capability of a pure C++ implementation of Ti.Next, a pure JavaScript implementation of Ti.next, or a hybrid of the two. We suggest that this is a useful avenue of Appcelerator R&D to determine the correct mix.
 3. The JavaScriptCoreCPP library is a practical backend target for the Hyperloop compiler. Again, we suggest that this is a useful avenue of Appcelerator R&D.
 
 ## One Last Note
