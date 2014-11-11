@@ -10,7 +10,7 @@
 #ifndef _JAVASCRIPTCORECPP_EXAMPLES_WIDGET_HPP_
 #define _JAVASCRIPTCORECPP_EXAMPLES_WIDGET_HPP_
 
-#include "JavaScriptCoreCPP.hpp"
+#include "JavaScriptCoreCPP/JavaScriptCoreCPP.hpp"
 #include <string>
 
 using namespace JavaScriptCoreCPP;

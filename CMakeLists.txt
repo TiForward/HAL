@@ -1,5 +1,10 @@
-# Author: Matt Langston
-# Date: 2014.09.12
+# JavaScriptCoreCPP
+# Author: Matthew D. Langston
+#
+# Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
+# Licensed under the terms of the Apache Public License.
+# Please see the LICENSE included with this distribution for details.
+
 cmake_minimum_required(VERSION 3.0.0)
 project(JavaScriptCoreCPP)
 
@@ -26,10 +31,11 @@ set( Boost_USE_STATIC_RUNTIME OFF )
 find_package( Boost 1.55.0 REQUIRED )
 
 include_directories(
-  "${PROJECT_SOURCE_DIR}/include"
+  ${PROJECT_SOURCE_DIR}/include
   ${JavaScriptCore_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
   )
 
 add_subdirectory(src)
+add_subdirectory(examples)
 add_subdirectory(test)

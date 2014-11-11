@@ -1,47 +1,80 @@
+/**
+ * JavaScriptCoreCPP
+ * Author: Matthew D. Langston
+ *
+ * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Apache Public License.
+ * Please see the LICENSE included with this distribution for details.
+ */
+
 #include "JavaScriptCoreCPP/JavaScriptCoreCPP.hpp"
 
 #include <string>
 #include <iostream>
 
-#include <JavaScriptCore/JavaScript.h>
 #include "gtest/gtest.h"
+
+#define XCTAssertEqual    ASSERT_EQ
+#define XCTAssertNotEqual ASSERT_NE
+#define XCTAssertTrue     ASSERT_TRUE
+#define XCTAssertFalse    ASSERT_FALSE
 
 using namespace JavaScriptCoreCPP;
 
-// // Tests JSString for std::string interoperability.
-// TEST(JSStringTests, JSEvaluateScript) {
-//   // This test is named "JSEvaluateScript", and belongs to the
-//   // "JSStringTests" test case.
-	
-//   ::JSGlobalContextRef globalContext { JSGlobalContextCreate(nullptr) };
-//   ::JSObjectRef        globalObject  { JSContextGetGlobalObject(globalContext) };
-	
-//   //JSValueRef JSEvaluateScript(JSContextRef ctx, JSStringRef script, JSObjectRef thisObject, JSStringRef sourceURL, int startingLineNumber, JSValueRef* exception);
-    
-//   ::JSValueRef exceptionValue { nullptr };
-//   JSString     scriptString   = JSString("2 + 2");
-//   JSValueRef   resultValue    = JSEvaluateScript(globalContext, JSStringRef(scriptString), globalObject, nullptr, 0, &exceptionValue);
-    
-//   if (exceptionValue) {
-//     ::JSValueRef exceptionValue2 { nullptr };
-//     JSString exceptionString { JSValueToStringCopy(globalContext, exceptionValue, &exceptionValue2) };
-//     EXPECT_FALSE(exceptionValue2);
-//     std::clog << "MDL: caught exception: " << exceptionString << std::endl;
-//   } else {
-//     JSString resultString { JSValueToStringCopy(globalContext, resultValue, &exceptionValue) };
-//     EXPECT_FALSE(exceptionValue);
-//     std::clog << "MDL: result = " << resultString << std::endl;
-//   }
-// }
+JSString makeJSString() {
+  JSString js_string;
+  return js_string;
+}
 
-// // Tests JSString for std::string interoperability.
-// TEST(JSStringTests, Equality) {
-//   JSString string1 { "hello, world" };
-//   JSString string2 = string1;
-//   ASSERT_EQ(string1, string2);
-    
-//   JSString string3 { "hello" };
-//   ASSERT_NE(string1, string3);
-	
-//   std::clog << "MDL: " << string1 << std::endl;
-// }
+TEST(JSStringTests, BasicObjectCapabilities) {
+  JSString js_string_1;
+  JSString js_string_2;
+  XCTAssertEqual(js_string_1, js_string_2);
+  
+  // Test copy constructor.
+  JSString js_string_3(js_string_1);
+  XCTAssertEqual(js_string_1, js_string_3);
+  
+  // Test copy assignment.
+  JSString js_string_4 = js_string_1;
+  XCTAssertEqual(js_string_1, js_string_4);
+  
+  // Test move constructor.
+  JSString js_string_5(makeJSString());
+  
+  // Test unified assignment operator
+  JSString js_string_6 = js_string_1;
+  XCTAssertEqual(js_string_1, js_string_6);
+}
+
+TEST(JSStringTests, EmptyString) {
+  JSString string;
+  XCTAssertEqual(0, string.length());
+  
+  std::string stdString = string;
+  XCTAssertEqual(0, stdString.length());
+  XCTAssertTrue(stdString.empty());
+}
+
+TEST(JSStringTests, Equal) {
+  JSString string1 { "hello, world" };
+  JSString string2 = string1;
+  XCTAssertEqual(string1, string2);
+  
+  JSString string3 { "hello" };
+  XCTAssertNotEqual(string1, string3);
+}
+
+TEST(JSStringTests, StdString) {
+  JSString string1 { "hello, JSString" };
+  XCTAssertEqual("hello, JSString", static_cast<std::string>(string1));
+  
+  // No implicit conversions.
+  //XCTAssertEqual(std::string("hello, JSString"), string1);
+  
+  std::string string2 { "hello, std::string" };
+  XCTAssertEqual("hello, std::string", static_cast<std::string>(JSString(string2)));
+
+  // No implicit conversions.
+  //XCTAssertEqual(std::string("hello, std::string"), JSString(string2));
+}

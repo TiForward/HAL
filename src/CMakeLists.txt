@@ -1,3 +1,10 @@
+# JavaScriptCoreCPP
+# Author: Matthew D. Langston
+#
+# Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
+# Licensed under the terms of the Apache Public License.
+# Please see the LICENSE included with this distribution for details.
+
 add_library(JavaScriptCoreCPP
 	JSArray.cpp
 	JSClass.cpp
@@ -19,6 +26,7 @@ add_library(JavaScriptCoreCPP
 	detail/JSStaticFunction.cpp
 	detail/JSStaticValue.cpp
 	detail/JSUtil.cpp
+	detail/JSValueUtil.cpp
   )
 
 target_link_libraries(JavaScriptCoreCPP

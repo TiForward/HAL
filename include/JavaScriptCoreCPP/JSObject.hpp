@@ -34,12 +34,18 @@ namespace JavaScriptCoreCPP {
    @class
    
    @discussion A JSObject is an RAII wrapper around a JSObjectRef, the
-   JavaScriptCore C API representation of a JavaScript object. A
-   JSObject is a JSValue.
+   JavaScriptCore C API representation of a JavaScript object. This is
+   the base class for all JavaScript objects JSObject:
    
+   JSFunction
+   JSArray
+   JSDate
+   JSError
+   JSRegExp
+
    The only way to create a JSObject is by using the
    JSContext::CreateObject member functions.
-   */
+  */
   class JSObject JAVASCRIPTCORECPP_PERFORMANCE_COUNTER1(JSObject) {
     
   public:

@@ -8,10 +8,13 @@
  */
 
 #include "JavaScriptCoreCPP/JavaScriptCoreCPP.hpp"
-#include <unordered_set>
-#include <limits>
-#include <cstdint>
-#import <XCTest/XCTest.h>
+
+#include "gtest/gtest.h"
+
+#define XCTAssertEqual    ASSERT_EQ
+#define XCTAssertNotEqual ASSERT_NE
+#define XCTAssertTrue     ASSERT_TRUE
+#define XCTAssertFalse    ASSERT_FALSE
 
 using namespace JavaScriptCoreCPP;
 
@@ -19,24 +22,18 @@ namespace UnitTestConstants {
   static const double pi { 3.141592653589793 };
 }
 
-@interface JSObjectTests : XCTestCase
-@end
+class JSObjectTests : public testing::Test {
+ protected:
+  virtual void SetUp() {
+  }
+	
+  virtual void TearDown() {
+  }
+	
+	JSContextGroup js_context_group;
+};
 
-@implementation JSObjectTests {
-  JSContextGroup js_context_group;
-}
-
-- (void)setUp {
-    [super setUp];
-    // Put setup code here. This method is called before the invocation of each test method in the class.
-}
-
-- (void)tearDown {
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
-    [super tearDown];
-}
-
-- (void)testObjectSizes {
+TEST_F(JSObjectTests, ObjectSizes) {
   XCTAssertEqual(sizeof(std::intptr_t)                         , sizeof(JSContextGroup));
   XCTAssertEqual(sizeof(std::intptr_t) + sizeof(JSContextGroup), sizeof(JSContext));
   
@@ -46,7 +43,7 @@ namespace UnitTestConstants {
   XCTAssertEqual(sizeof(std::intptr_t) + sizeof(std::intptr_t) + sizeof(JSContext), sizeof(JSObject));
 }
 
-- (void)testJSPropertyAttribute {
+TEST_F(JSObjectTests, JSPropertyAttribute) {
   std::unordered_set<JSPropertyAttribute> attributes;
   XCTAssertEqual(0, attributes.count(JSPropertyAttribute::None));
   XCTAssertEqual(0, attributes.count(JSPropertyAttribute::ReadOnly));
@@ -61,7 +58,7 @@ namespace UnitTestConstants {
   XCTAssertEqual(1, attributes.size());
 }
 
-- (void)testJSObject {
+TEST_F(JSObjectTests, API) {
   JSContext js_context = js_context_group.CreateContext();
   JSObject js_object = js_context.CreateObject();
   JSValue prototype = js_object.GetPrototype();
@@ -93,30 +90,17 @@ namespace UnitTestConstants {
   XCTAssertTrue(js_object.GetProperty(42).IsUndefined());
   js_object.SetProperty(42, js_context.CreateNumber(UnitTestConstants::pi));
   JSNumber pi = js_object.GetProperty(42);
-  XCTAssertEqualWithAccuracy(UnitTestConstants::pi, static_cast<double>(pi), std::numeric_limits<double>::epsilon());
-
+  //XCTAssertEqualWithAccuracy(UnitTestConstants::pi, static_cast<double>(pi), std::numeric_limits<double>::epsilon());
+  ASSERT_DOUBLE_EQ(UnitTestConstants::pi, static_cast<double>(pi));
+		
+  // You can't call a JSObject as a function.
   XCTAssertFalse(js_object.IsFunction());
+  ASSERT_THROW(js_object(), std::runtime_error);
   
-  try {
-    js_object();
-    XCTFail("js_object was called as a function but did not throw a std::runtime_error exception");
-  } catch (const std::runtime_error& exception) {
-    XCTAssert(YES, @"Caught expected std::runtime_error exception.");
-  } catch (...) {
-    XCTFail("Caught unexpected unknown exception, but we expected a std::runtime_error exception.");
-  }
-
+  // You can't call a JSObject as a constructor.
   XCTAssertFalse(js_object.IsConstructor());
+  ASSERT_THROW(js_object.CallAsConstructor(), std::runtime_error);
   
-  try {
-    js_object.CallAsConstructor();
-    XCTFail("js_object was called as a constructor but did not throw a std::runtime_error exception");
-  } catch (const std::runtime_error& exception) {
-    XCTAssert(YES, @"Caught expected std::runtime_error exception.");
-  } catch (...) {
-    XCTFail("Caught unexpected unknown exception, but we expected a std::runtime_error exception.");
-  }
-
   auto js_value  = js_context.JSEvaluateScript("new Object()");
   XCTAssertTrue(js_value.IsObject());
 
@@ -156,7 +140,7 @@ namespace UnitTestConstants {
   XCTAssertTrue(js_value.IsObject());
 }
 
-- (void)testProperty {
+TEST_F(JSObjectTests, Property) {
   JSContext js_context = js_context_group.CreateContext();
   auto js_value  = js_context.JSEvaluateScript("[1, 3, 5, 7]");
   XCTAssertTrue(js_value.IsObject());
@@ -245,25 +229,11 @@ namespace UnitTestConstants {
 
   // You can't set a custom propery on a undefined.
   js_value = js_context.CreateUndefined();
-  try {
-    js_object = js_value;
-    XCTFail("js_value illegally converted to a JSObject");
-  } catch (const std::runtime_error& exception) {
-    XCTAssert(YES, @"Caught expected std::runtime_error exception.");
-  } catch (...) {
-    XCTFail("Caught unexpected unknown exception, but we expected a std::runtime_error exception.");
-  }
+  ASSERT_THROW(js_object = js_value, std::runtime_error);
 
   // You can't set a custom propery on a null.
   js_value = js_context.CreateNull();
-  try {
-    js_object = js_value;
-    XCTFail("js_value illegally converted to a JSObject");
-  } catch (const std::runtime_error& exception) {
-    XCTAssert(YES, @"Caught expected std::runtime_error exception.");
-  } catch (...) {
-    XCTFail("Caught unexpected unknown exception, but we expected a std::runtime_error exception.");
-  }
+  ASSERT_THROW(js_object = js_value, std::runtime_error);
 
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));
@@ -271,43 +241,30 @@ namespace UnitTestConstants {
   XCTAssertEqual(quoteString, static_cast<std::string>(js_value));
 }
 
-- (void)testJSArray {
-  JSContext js_context = js_context_group.CreateContext();
-  JSArray js_array = js_context.CreateArray();
+TEST_F(JSObjectTests, JSArray) {
+	JSContext js_context = js_context_group.CreateContext();
+	JSArray js_array = js_context.CreateArray();
 }
 
-- (void)testJSDate {
+TEST_F(JSObjectTests, JSDate) {
   JSContext js_context = js_context_group.CreateContext();
   JSDate js_date = js_context.CreateDate();
 }
 
-- (void)testJSError {
+TEST_F(JSObjectTests, JSError) {
   JSContext js_context = js_context_group.CreateContext();
   JSError js_error = js_context.CreateError();
 }
 
-- (void)testJSRegExp {
+TEST_F(JSObjectTests, JSRegExp) {
   JSContext js_context = js_context_group.CreateContext();
   JSRegExp js_regexp = js_context.CreateRegExp();
 }
 
-- (void)testJSFunction {
+TEST_F(JSObjectTests, JSFunction) {
   JSContext js_context = js_context_group.CreateContext();
   JSFunction js_function = js_context.CreateFunction("return 'Hello, ' + name;", {"name"});
   XCTAssertTrue(js_function.IsFunction());
   //std::clog << "MDL: js_function(\"world\") = " << js_function("world") << std::endl;
   XCTAssertEqual("Hello, world", static_cast<std::string>(js_function("world")));
 }
-
-// As of 2014.09.20 Travis CI only supports Xcode 5.1 which lacks support for
-// measureBlock.
-#ifndef TRAVIS
-- (void)testPerformanceExample {
-    // This is an example of a performance test case.
-    [self measureBlock:^{
-        // Put the code you want to measure the time of here.
-    }];
-}
-#endif
-
-@end
