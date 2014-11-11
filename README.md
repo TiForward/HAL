@@ -98,7 +98,7 @@ A [JSObject](include/JavaScriptCoreCPP/JSObject.hpp) is an RAII wrapper around a
 
 ## JSExport
 
-[JSExport](include/JavaScriptCoreCPP/JSExport.hpp) is a CRTP (i.e. Curiously Recurring Template Pattern) base class that allows any C++ class derived from it to be seamlessly integrated into JavaScriptCore. This is what we used to create out Widget example in [Widget.hpp](examples/Widget.hpp) and [Widget.cpp](examples/Widget.cpp). JSExport is fully documented and the Widget example is what you want to study to learn how to seamlessly integrate your own C++ classes into the JavaScriptCore runtime execution environment.
+[JSExport](include/JavaScriptCoreCPP/JSExport.hpp) is a CRTP (i.e. Curiously Recurring Template Pattern) base class that allows any C++ class derived from it to be seamlessly integrated into JavaScriptCore. This is what we used to create our Widget example in [Widget.hpp](examples/Widget.hpp) and [Widget.cpp](examples/Widget.cpp). JSExport is fully documented and the Widget example is what you want to study to learn how to seamlessly integrate your own C++ classes into the JavaScriptCore runtime execution environment.
 
 
 ## Project Goals
