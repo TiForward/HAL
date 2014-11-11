@@ -71,11 +71,12 @@ JSContexts are created by the [JSContextGroup](include/JavaScriptCoreCPP/JSConte
    
 JavaScript scripts may execute concurrently with scripts executing in other JSContexts, and JSContexts within the same JSContextGroup may share and exchange their JSValues anad JSObjects with one another.
    
-A JSContext is the only way to create a [JSValue](include/JavaScriptCoreCPP/JSValue.hpp)s and [JSObject](include/JavaScriptCoreCPP/JSObject.hpp)s.
+A JSContext is the only way to create a [JSValue](include/JavaScriptCoreCPP/JSValue.hpp) and a [JSObject](include/JavaScriptCoreCPP/JSObject.hpp).
 
 ### JSValue
 
 A [JSValue](include/JavaScriptCoreCPP/JSValue.hpp) is an RAII wrapper around a [JSValueRef](https://github.com/WebKit/webkit/blob/master/Source/JavaScriptCore/API/JSValueRef.h), the JavaScriptCore C API representation of a JavaScript value. This is the base class for all JavaScript values in the library. These are the direct descendants of JSValue:
+
 1. [JSUndefined](include/JavaScriptCoreCPP/JSUndefined.hpp)
 2. [JSNull](include/JavaScriptCoreCPP/JSNull.hpp)
 3. [JSBoolean](include/JavaScriptCoreCPP/JSBoolean.hpp)
