@@ -9,6 +9,7 @@
 
 #include "Widget.hpp"
 
+#include <functional>
 #include <sstream>
 
 void Widget::JSExportInitialize() {
