@@ -39,14 +39,36 @@ namespace JavaScriptCoreCPP {
   }
   
   JSString::operator std::string() const JAVASCRIPTCORECPP_NOEXCEPT {
+    JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD;
     static std::wstring_convert<std::codecvt_utf8_utf16<char16_t>,char16_t> converter;
-    return std::string(converter.to_bytes(static_cast<std::u16string>(*this)));
+    auto self = const_cast<JSString*>(this);
+    std::call_once(self -> string_once_flag__, [self]() {
+      self -> string__ = std::string(converter.to_bytes(static_cast<std::u16string>(*self)));
+    });
+    
+    return string__;
   }
   
   JSString::operator std::u16string() const JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD;
-    const JSChar* string_ptr = JSStringGetCharactersPtr(js_string_ref__);
-    return std::u16string(string_ptr, string_ptr + length());
+    auto self = const_cast<JSString*>(this);
+    std::call_once(self -> u16string_once_flag__, [self]() {
+      const JSChar* string_ptr = JSStringGetCharactersPtr(self -> js_string_ref__);
+      self -> u16string__ = std::u16string(string_ptr, string_ptr + self -> length());
+    });
+    
+    return u16string__;
+  }
+  
+  std::size_t JSString::hash_value() const {
+    JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD;
+    auto self = const_cast<JSString*>(this);
+    std::call_once(self -> hash_value_once_flag__, [self]() {
+      std::hash<std::string> hash_function = std::hash<std::string>();
+      self -> hash_value__ = hash_function(static_cast<std::string>(*self));
+    });
+    
+    return hash_value__;
   }
   
   JSString::~JSString() JAVASCRIPTCORECPP_NOEXCEPT {

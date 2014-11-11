@@ -37,11 +37,11 @@ namespace JavaScriptCoreCPP { namespace detail {
     }
     
     ~JSStaticValue() = default;
-    JSStaticValue(const JSStaticValue&) JAVASCRIPTCORECPP_NOEXCEPT;
-    JSStaticValue(JSStaticValue&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSStaticValue(const JSStaticValue&)            JAVASCRIPTCORECPP_NOEXCEPT;
+    JSStaticValue(JSStaticValue&&)                 JAVASCRIPTCORECPP_NOEXCEPT;
     JSStaticValue& operator=(const JSStaticValue&) JAVASCRIPTCORECPP_NOEXCEPT;
-    JSStaticValue& operator=(JSStaticValue&&) JAVASCRIPTCORECPP_NOEXCEPT;
-    void swap(JSStaticValue&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSStaticValue& operator=(JSStaticValue&&)      JAVASCRIPTCORECPP_NOEXCEPT;
+    void swap(JSStaticValue&)                      JAVASCRIPTCORECPP_NOEXCEPT;
     
   private:
     

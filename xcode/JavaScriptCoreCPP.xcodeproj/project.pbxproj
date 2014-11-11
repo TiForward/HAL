@@ -79,6 +79,10 @@
 		C97455041A0D292500CB4CA9 /* JSBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97455031A0D292500CB4CA9 /* JSBase.cpp */; };
 		C97455061A0D55E200CB4CA9 /* JSExportClassDefinition.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C97455051A0D55E200CB4CA9 /* JSExportClassDefinition.hpp */; };
 		C985CB091A107E96004D4163 /* Widget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C985CB081A107E96004D4163 /* Widget.cpp */; };
+		C9E6AFA51A11653A00FED053 /* JSExportObject.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9E6AFA31A11653A00FED053 /* JSExportObject.hpp */; };
+		C9E6AFA61A11653A00FED053 /* JSExportObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9E6AFA41A11653A00FED053 /* JSExportObject.cpp */; };
+		C9E6AFA91A11808800FED053 /* JSValueUtil.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9E6AFA71A11808800FED053 /* JSValueUtil.hpp */; };
+		C9E6AFAA1A11808800FED053 /* JSValueUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9E6AFA81A11808800FED053 /* JSValueUtil.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -169,6 +173,10 @@
 		C97455031A0D292500CB4CA9 /* JSBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSBase.cpp; path = src/detail/JSBase.cpp; sourceTree = "<group>"; };
 		C97455051A0D55E200CB4CA9 /* JSExportClassDefinition.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSExportClassDefinition.hpp; path = include/JavaScriptCoreCPP/detail/JSExportClassDefinition.hpp; sourceTree = "<group>"; };
 		C985CB081A107E96004D4163 /* Widget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Widget.cpp; path = ../../examples/Widget.cpp; sourceTree = "<group>"; };
+		C9E6AFA31A11653A00FED053 /* JSExportObject.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSExportObject.hpp; path = include/JavaScriptCoreCPP/JSExportObject.hpp; sourceTree = "<group>"; };
+		C9E6AFA41A11653A00FED053 /* JSExportObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSExportObject.cpp; path = src/JSExportObject.cpp; sourceTree = "<group>"; };
+		C9E6AFA71A11808800FED053 /* JSValueUtil.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSValueUtil.hpp; path = include/JavaScriptCoreCPP/detail/JSValueUtil.hpp; sourceTree = "<group>"; };
+		C9E6AFA81A11808800FED053 /* JSValueUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSValueUtil.cpp; path = src/detail/JSValueUtil.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -344,6 +352,8 @@
 		C97454D01A09C5FD00CB4CA9 /* JSExport */ = {
 			isa = PBXGroup;
 			children = (
+				C9E6AFA31A11653A00FED053 /* JSExportObject.hpp */,
+				C9E6AFA41A11653A00FED053 /* JSExportObject.cpp */,
 				C97454D51A09C6C300CB4CA9 /* JSExport.hpp */,
 				C97454D41A09C6B800CB4CA9 /* detail */,
 			);
@@ -386,6 +396,8 @@
 				C97455051A0D55E200CB4CA9 /* JSExportClassDefinition.hpp */,
 				C97454E51A09C71200CB4CA9 /* JSExportClassDefinitionBuilder.hpp */,
 				C97454D81A09C6D500CB4CA9 /* JSExportClass.hpp */,
+				C9E6AFA71A11808800FED053 /* JSValueUtil.hpp */,
+				C9E6AFA81A11808800FED053 /* JSValueUtil.cpp */,
 				C97454D91A09C6D500CB4CA9 /* JSExportNamedValuePropertyCallback.hpp */,
 				C97454DA1A09C6D500CB4CA9 /* JSExportNamedFunctionPropertyCallback.hpp */,
 				C97454DB1A09C6D500CB4CA9 /* JSExportCallbacks.hpp */,
@@ -425,6 +437,7 @@
 				C97454851A05FC1400CB4CA9 /* JSLoggerPolicyFile.hpp in Headers */,
 				C97453EC1A027E3D00CB4CA9 /* JSNumber.hpp in Headers */,
 				C974547B1A02BAF200CB4CA9 /* JSPropertyNameArray.hpp in Headers */,
+				C9E6AFA51A11653A00FED053 /* JSExportObject.hpp in Headers */,
 				C97454031A027F6000CB4CA9 /* JSObject.hpp in Headers */,
 				C97454FE1A0D211E00CB4CA9 /* JSBase.hpp in Headers */,
 				C97453FF1A027F6000CB4CA9 /* JSArray.hpp in Headers */,
@@ -434,6 +447,7 @@
 				C974547F1A05FBEE00CB4CA9 /* JSLoggerPimpl.hpp in Headers */,
 				C97454E41A09C6F200CB4CA9 /* JSPropertyAttribute.hpp in Headers */,
 				C97454011A027F6000CB4CA9 /* JSError.hpp in Headers */,
+				C9E6AFA91A11808800FED053 /* JSValueUtil.hpp in Headers */,
 				C97454DD1A09C6D500CB4CA9 /* JSPropertyCallback.hpp in Headers */,
 				C97454E11A09C6D500CB4CA9 /* JSExportCallbacks.hpp in Headers */,
 				C97454DF1A09C6D500CB4CA9 /* JSExportNamedValuePropertyCallback.hpp in Headers */,
@@ -541,7 +555,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C9E6AFAA1A11808800FED053 /* JSValueUtil.cpp in Sources */,
 				C97454F91A0CFB7000CB4CA9 /* JSStaticFunction.cpp in Sources */,
+				C9E6AFA61A11653A00FED053 /* JSExportObject.cpp in Sources */,
 				C97453E21A027A1800CB4CA9 /* JSContextGroup.cpp in Sources */,
 				C97453E11A027A1800CB4CA9 /* JSContext.cpp in Sources */,
 				C974548A1A05FC3F00CB4CA9 /* JSLoggerPimpl.cpp in Sources */,

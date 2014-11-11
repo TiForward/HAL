@@ -18,6 +18,7 @@
 #include <cstddef>
 #include <vector>
 #include <utility>
+#include <mutex>
 
 namespace JavaScriptCoreCPP {
   class JSString;
@@ -139,6 +140,7 @@ namespace JavaScriptCoreCPP {
        */
       operator std::u16string() const JAVASCRIPTCORECPP_NOEXCEPT;
       
+      std::size_t hash_value() const;
       
       ~JSString()                          JAVASCRIPTCORECPP_NOEXCEPT;
       JSString(const JSString&)            JAVASCRIPTCORECPP_NOEXCEPT;
@@ -146,8 +148,7 @@ namespace JavaScriptCoreCPP {
       JSString& operator=(const JSString&) JAVASCRIPTCORECPP_NOEXCEPT;
       JSString& operator=(JSString&&)      JAVASCRIPTCORECPP_NOEXCEPT;
       void swap(JSString&)                 JAVASCRIPTCORECPP_NOEXCEPT;
-      
-      // FIXME
+
     private:
       
       // These classes and functions need access to operator
@@ -181,7 +182,13 @@ namespace JavaScriptCoreCPP {
       friend void swap(JSString& first, JSString& second) JAVASCRIPTCORECPP_NOEXCEPT;
       friend bool operator==(const JSString& lhs, const JSString& rhs);
       
-      JSStringRef js_string_ref__ { nullptr };
+      JSStringRef    js_string_ref__ { nullptr };
+      std::once_flag u16string_once_flag__;
+      std::u16string u16string__;
+      std::once_flag string_once_flag__;
+      std::string    string__;
+      std::once_flag hash_value_once_flag__;
+      std::size_t    hash_value__;
       
 #undef JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD
 #ifdef  JAVASCRIPTCORECPP_THREAD_SAFE
@@ -248,10 +255,9 @@ namespace JavaScriptCoreCPP {
     struct hash<JSString> {
       using argument_type = JSString;
       using result_type   = std::size_t;
-      const std::hash<std::string> hash_function = std::hash<std::string>();
       
       result_type operator()(const argument_type& js_string) const {
-        return hash_function(js_string);
+        return js_string.hash_value();
       }
     };
     

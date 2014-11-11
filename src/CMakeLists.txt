@@ -6,6 +6,7 @@ add_library(JavaScriptCoreCPP
 	JSContextGroup.cpp
 	JSDate.cpp
 	JSError.cpp
+	JSExportObject.cpp
 	JSFunction.cpp
 	JSObject.cpp
 	JSPropertyNameArray.cpp

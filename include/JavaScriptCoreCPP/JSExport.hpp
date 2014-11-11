@@ -11,9 +11,9 @@
 #define _JAVASCRIPTCORECPP_JSEXPORT_HPP_
 
 #include "JavaScriptCoreCPP/detail/JSBase.hpp"
-#include "JavaScriptCoreCPP/JSContext.hpp"
 #include "JavaScriptCoreCPP/detail/JSExportClassDefinitionBuilder.hpp"
-#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
+#include "JavaScriptCoreCPP/JSContext.hpp"
+//#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 
 #include <string>
 #include <memory>
@@ -683,7 +683,7 @@ namespace JavaScriptCoreCPP {
     static detail::JSExportClassDefinition<T> js_export_class_definition;
     static detail::JSExportClass<T>           js_export_class;
     std::once_flag of;
-    std::call_once(of, [] {
+    std::call_once(of, []() {
       T::JSExportInitialize();
       const std::string class_name = builder__.ClassName();
       if (class_name.empty() || class_name == "NotSet") {

@@ -9,6 +9,7 @@
 
 #include "JavaScriptCoreCPP/JSFunction.hpp"
 #include "JavaScriptCoreCPP/JSString.hpp"
+#include "JavaScriptCoreCPP/JSValue.hpp"
 #include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 #include <vector>
 #include <algorithm>

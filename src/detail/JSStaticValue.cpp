@@ -64,15 +64,14 @@ namespace JavaScriptCoreCPP { namespace detail {
   
   JSStaticValue& JSStaticValue::operator=(JSStaticValue&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
-    JSPropertyCallback::operator=(rhs);
-    get_callback__ = std::move(rhs.get_callback__);
-    set_callback__ = std::move(rhs.set_callback__);
+    swap(rhs);
     return *this;
   }
   
   
   void JSStaticValue::swap(JSStaticValue& other) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
+    JSPropertyCallback::swap(other);
     using std::swap;
     
     // By swapping the members of two classes, the two classes are

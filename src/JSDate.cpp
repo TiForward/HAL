@@ -8,6 +8,7 @@
  */
 
 #include "JavaScriptCoreCPP/JSDate.hpp"
+#include "JavaScriptCoreCPP/JSValue.hpp"
 #include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 #include <vector>
 #include <algorithm>

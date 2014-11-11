@@ -129,7 +129,6 @@ namespace JavaScriptCoreCPP { namespace detail {
     template<typename T>
     JSExportClassDefinition<T>& JSExportClassDefinition<T>::operator=(JSExportClassDefinition<T>&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
       JAVASCRIPTCORECPP_JSCLASSDEFINITION_LOCK_GUARD;
-      JSClassDefinition::operator=(rhs);
       swap(rhs);
       InitializeNamedPropertyCallbacks();
       
@@ -142,6 +141,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     template<typename T>
     void JSExportClassDefinition<T>::swap(JSExportClassDefinition<T>& other) JAVASCRIPTCORECPP_NOEXCEPT {
       JAVASCRIPTCORECPP_JSCLASSDEFINITION_LOCK_GUARD;
+      JSClassDefinition::swap(other);
       using std::swap;
       
       // By swapping the members of two classes, the two classes are

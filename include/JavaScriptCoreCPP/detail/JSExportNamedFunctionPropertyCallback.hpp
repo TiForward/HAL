@@ -129,7 +129,6 @@ namespace JavaScriptCoreCPP { namespace detail {
   template<typename T>
   JSExportNamedFunctionPropertyCallback<T>& JSExportNamedFunctionPropertyCallback<T>::operator=(JSExportNamedFunctionPropertyCallback<T>&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
-    JSPropertyCallback::operator=(rhs);
     swap(rhs);
     return *this;
   }
@@ -137,6 +136,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   template<typename T>
   void JSExportNamedFunctionPropertyCallback<T>::swap(JSExportNamedFunctionPropertyCallback<T>& other) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
+    JSPropertyCallback::swap(other);
     using std::swap;
     
     // By swapping the members of two classes, the two classes are

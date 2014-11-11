@@ -20,6 +20,7 @@
 
 #include "JavaScriptCoreCPP/detail/JSPropertyNameAccumulator.hpp"
 #include "JavaScriptCoreCPP/detail/JSUtil.hpp"
+#include "JavaScriptCoreCPP/detail/JSValueUtil.hpp"
 
 #include <string>
 #include <regex>
@@ -132,7 +133,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   : JSClass(js_export_class_definition) {
     
     std::once_flag of;
-    std::call_once(of, [&js_export_class_definition] {
+    std::call_once(of, [&js_export_class_definition]() {
       JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
       js_export_class_definition__ = js_export_class_definition;
       //js_export_class_definition__.Print();

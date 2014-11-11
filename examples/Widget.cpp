@@ -101,13 +101,13 @@ Widget& Widget::operator=(const Widget& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
 }
 
 Widget& Widget::operator=(Widget&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
-  JSExport<Widget>::operator=(rhs);
   swap(rhs);
   JAVASCRIPTCORECPP_LOG_DEBUG("Widget move assign");
   return *this;
 }
 
 void Widget::swap(Widget& other) JAVASCRIPTCORECPP_NOEXCEPT {
+  JSExport<Widget>::swap(other);
   using std::swap;
   
   // By swapping the members of two classes, the two classes are

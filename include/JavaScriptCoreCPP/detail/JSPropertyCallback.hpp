@@ -55,11 +55,11 @@ namespace JavaScriptCoreCPP { namespace detail {
     }
     
     virtual ~JSPropertyCallback() = default;
-    JSPropertyCallback(const JSPropertyCallback&) JAVASCRIPTCORECPP_NOEXCEPT;
-    JSPropertyCallback(JSPropertyCallback&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSPropertyCallback(const JSPropertyCallback&)            JAVASCRIPTCORECPP_NOEXCEPT;
+    JSPropertyCallback(JSPropertyCallback&&)                 JAVASCRIPTCORECPP_NOEXCEPT;
     JSPropertyCallback& operator=(const JSPropertyCallback&) JAVASCRIPTCORECPP_NOEXCEPT;
-    JSPropertyCallback& operator=(JSPropertyCallback&&) JAVASCRIPTCORECPP_NOEXCEPT;
-    void swap(JSPropertyCallback&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSPropertyCallback& operator=(JSPropertyCallback&&)      JAVASCRIPTCORECPP_NOEXCEPT;
+    void swap(JSPropertyCallback&)                           JAVASCRIPTCORECPP_NOEXCEPT;
     
   private:
     
@@ -80,6 +80,11 @@ namespace JavaScriptCoreCPP { namespace detail {
 #endif  // JAVASCRIPTCORECPP_THREAD_SAFE
   };
   
+  inline
+  void swap(JSPropertyCallback& first, JSPropertyCallback& second) JAVASCRIPTCORECPP_NOEXCEPT {
+    first.swap(second);
+  }
+
   // Return true if the two JSPropertyCallbacks are equal.
   inline
   bool operator==(const JSPropertyCallback& lhs, const JSPropertyCallback& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
@@ -90,11 +95,6 @@ namespace JavaScriptCoreCPP { namespace detail {
   inline
   bool operator!=(const JSPropertyCallback& lhs, const JSPropertyCallback& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     return ! (lhs == rhs);
-  }
-  
-  inline
-  void swap(JSPropertyCallback& first, JSPropertyCallback& second) JAVASCRIPTCORECPP_NOEXCEPT {
-    first.swap(second);
   }
   
 }} // JavaScriptCoreCPP { namespace detail {

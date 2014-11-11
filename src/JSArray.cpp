@@ -8,6 +8,7 @@
  */
 
 #include "JavaScriptCoreCPP/JSArray.hpp"
+#include "JavaScriptCoreCPP/JSValue.hpp"
 #include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 #include <vector>
 #include <algorithm>

@@ -34,11 +34,11 @@ namespace JavaScriptCoreCPP { namespace detail {
       }
       
       ~JSStaticFunction() = default;
-      JSStaticFunction(const JSStaticFunction&) JAVASCRIPTCORECPP_NOEXCEPT;
-      JSStaticFunction(JSStaticFunction&&) JAVASCRIPTCORECPP_NOEXCEPT;
+      JSStaticFunction(const JSStaticFunction&)            JAVASCRIPTCORECPP_NOEXCEPT;
+      JSStaticFunction(JSStaticFunction&&)                 JAVASCRIPTCORECPP_NOEXCEPT;
       JSStaticFunction& operator=(const JSStaticFunction&) JAVASCRIPTCORECPP_NOEXCEPT;
-      JSStaticFunction& operator=(JSStaticFunction&&) JAVASCRIPTCORECPP_NOEXCEPT;
-      void swap(JSStaticFunction&) JAVASCRIPTCORECPP_NOEXCEPT;
+      JSStaticFunction& operator=(JSStaticFunction&&)      JAVASCRIPTCORECPP_NOEXCEPT;
+      void swap(JSStaticFunction&)                         JAVASCRIPTCORECPP_NOEXCEPT;
       
     private:
       
@@ -63,5 +63,5 @@ namespace JavaScriptCoreCPP { namespace detail {
     }
     
   }} // namespace JavaScriptCoreCPP { namespace detail
-  
+
 #endif // _JAVASCRIPTCORECPP_DETAIL_JSSTATICFUNCTION_HPP_

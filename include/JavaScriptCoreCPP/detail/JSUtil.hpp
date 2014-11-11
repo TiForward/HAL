@@ -13,8 +13,8 @@
 #include "JavaScriptCoreCPP/detail/JSBase.hpp"
 #include "JavaScriptCoreCPP/JSPropertyAttribute.hpp"
 #include "JavaScriptCoreCPP/JSClassAttribute.hpp"
-#include "JavaScriptCoreCPP/JSValue.hpp"
 
+#include <string>
 #include <cstdint>
 #include <memory>
 #include <vector>
@@ -51,21 +51,18 @@ namespace JavaScriptCoreCPP { namespace detail {
   // For interoperability with the JavaScriptCore C API.
   
   // typedef unsigned JSPropertyAttributes
-  unsigned ToJSPropertyAttributes(const std::unordered_set<JSPropertyAttribute>& attributes) JAVASCRIPTCORECPP_NOEXCEPT;
+  unsigned ToJSPropertyAttributes(const std::unordered_set<JSPropertyAttribute>& attributes)          JAVASCRIPTCORECPP_NOEXCEPT;
   std::unordered_set<JSPropertyAttribute> FromJSPropertyAttributes(::JSPropertyAttributes attributes) JAVASCRIPTCORECPP_NOEXCEPT;
-  std::string to_string(JSPropertyAttribute) JAVASCRIPTCORECPP_NOEXCEPT;
-  std::string to_string(const std::unordered_set<JSPropertyAttribute>& attributes) JAVASCRIPTCORECPP_NOEXCEPT;
-  std::string to_string_JSPropertyAttributes(::JSPropertyAttributes attributes) JAVASCRIPTCORECPP_NOEXCEPT;
+  std::string to_string(JSPropertyAttribute)                                                          JAVASCRIPTCORECPP_NOEXCEPT;
+  std::string to_string(const std::unordered_set<JSPropertyAttribute>& attributes)                    JAVASCRIPTCORECPP_NOEXCEPT;
+  std::string to_string_JSPropertyAttributes(::JSPropertyAttributes attributes)                       JAVASCRIPTCORECPP_NOEXCEPT;
   
-  unsigned ToJSClassAttribute(JSClassAttribute attribute) JAVASCRIPTCORECPP_NOEXCEPT;
-  std::unordered_set<JSClassAttribute> FromJSClassAttributes(::JSClassAttributes attributes) JAVASCRIPTCORECPP_NOEXCEPT;
-  std::string to_string(JSClassAttribute) JAVASCRIPTCORECPP_NOEXCEPT;
-  std::string to_string(const std::unordered_set<JSClassAttribute>& attributes) JAVASCRIPTCORECPP_NOEXCEPT;
-  std::string to_string_JSClassAttributes(::JSClassAttributes attributes) JAVASCRIPTCORECPP_NOEXCEPT;
+  unsigned ToJSClassAttribute(JSClassAttribute attribute)                                             JAVASCRIPTCORECPP_NOEXCEPT;
+  std::unordered_set<JSClassAttribute> FromJSClassAttributes(::JSClassAttributes attributes)          JAVASCRIPTCORECPP_NOEXCEPT;
+  std::string to_string(JSClassAttribute)                                                             JAVASCRIPTCORECPP_NOEXCEPT;
+  std::string to_string(const std::unordered_set<JSClassAttribute>& attributes)                       JAVASCRIPTCORECPP_NOEXCEPT;
+  std::string to_string_JSClassAttributes(::JSClassAttributes attributes)                             JAVASCRIPTCORECPP_NOEXCEPT;
 
-  JSValue::Type ToJSValueType(JSType type) JAVASCRIPTCORECPP_NOEXCEPT;
-//  std::string to_string_JSClassAttributes(JSValue::Type) JAVASCRIPTCORECPP_NOEXCEPT;
-  
   // This in the ToInt32 operation as defined in section 9.5 of the
   // ECMA-262 spec. Note that this operation is identical to ToUInt32
   // other than to interpretation of the resulting bit-pattern (as
