@@ -90,11 +90,11 @@ A JSString satisfies satisfies all the requirements for use in all STL container
 
 A [JSObject](include/JavaScriptCoreCPP/JSObject.hpp) is an RAII wrapper around a [JSObjectRef](https://github.com/WebKit/webkit/blob/master/Source/JavaScriptCore/API/JSObjectRef.h), the JavaScriptCore C API representation of a JavaScript object. This is the base class for all JavaScript objects in the library. These are JSObject's direct descendants:
    
-[JSArray](include/JavaScriptCoreCPP/JSArray.hpp)
-[JSDate](include/JavaScriptCoreCPP/JSDate.hpp)
-[JSError](include/JavaScriptCoreCPP/JSError.hpp)
-[JSRegExp](include/JavaScriptCoreCPP/JSRegExp.hpp)
-[JSFunction](include/JavaScriptCoreCPP/JSFunction.hpp)
+1. [JSArray](include/JavaScriptCoreCPP/JSArray.hpp)
+2. [JSDate](include/JavaScriptCoreCPP/JSDate.hpp)
+3. [JSError](include/JavaScriptCoreCPP/JSError.hpp)
+4. [JSRegExp](include/JavaScriptCoreCPP/JSRegExp.hpp)
+5. [JSFunction](include/JavaScriptCoreCPP/JSFunction.hpp)
 
 ## JSExport
 
