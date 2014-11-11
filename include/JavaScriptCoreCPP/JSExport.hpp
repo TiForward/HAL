@@ -64,10 +64,6 @@ namespace JavaScriptCoreCPP {
      // Implementing this static function is how your C++ class
      // seamlessly integrates into JavaScriptCore.
      static void JSExportInitialize() {
-       // It is mandatory to give your class a 'class name' that
-       // JavaScriptCore uses to refer to your C++ class.
-       SetClassName("Widget");
-
        // All of the additional characteristics are optional, but here
        // are some examples:
        SetClassVersion(1);
@@ -78,11 +74,11 @@ namespace JavaScriptCoreCPP {
      }
    };
    
-   @discussion All properties except 'ClassName' are optional. By
-   default the 'class version numner' is initialized to 0, the
-   'parent' JavaScriptCore class is initialized to the default
-   JavaScript object class, and the JavaScriptCore 'class attribute'
-   defaults to 'AutomaticPrototype' (more on this below).
+   @discussion All properties are optional. By default the 'class
+   version numner' is initialized to 0, the 'parent' JavaScriptCore
+   class is initialized to the default JavaScript object class, and
+   the JavaScriptCore 'class attribute' defaults to
+   'AutomaticPrototype' (more on this below).
    
    Using the AddValueProperty and AddFunctionProperty static methods
    in your JSExportInitialize are the simplest and most efficient
@@ -121,9 +117,6 @@ namespace JavaScriptCoreCPP {
      @method
      
      @abstract Return the JSClass for the C++ class T.
-     
-     @throws std::invalid_argument if the C++ class T didn't at least
-     provide a name for the JSClass.
      */
     static detail::JSExportClass<T> Class();
     
@@ -140,13 +133,6 @@ namespace JavaScriptCoreCPP {
     JSExport(const JSContext& js_context);
     
     JSContext get_context() const JAVASCRIPTCORECPP_NOEXCEPT;
-    
-    /*!
-     @method
-     
-     @abstract Set the name of your JSClass.
-     */
-    static void SetClassName(const JSString& class_name);
     
     /*!
      @method
@@ -607,11 +593,6 @@ namespace JavaScriptCoreCPP {
   };
   
   template<typename T>
-  void JSExport<T>::SetClassName(const JSString& class_name) {
-    builder__.ClassName(class_name);
-  }
-  
-  template<typename T>
   void JSExport<T>::SetClassVersion(uint32_t class_version) {
     builder__.Version(class_version);
   }
@@ -676,7 +657,7 @@ namespace JavaScriptCoreCPP {
   }
   
   template<typename T>
-  detail::JSExportClassDefinitionBuilder<T> JSExport<T>::builder__ = detail::JSExportClassDefinitionBuilder<T>("NotSet");
+  detail::JSExportClassDefinitionBuilder<T> JSExport<T>::builder__ = detail::JSExportClassDefinitionBuilder<T>(typeid(T).name());
   
   template<typename T>
   detail::JSExportClass<T> JSExport<T>::Class() {
@@ -685,10 +666,6 @@ namespace JavaScriptCoreCPP {
     std::once_flag of;
     std::call_once(of, []() {
       T::JSExportInitialize();
-      const std::string class_name = builder__.ClassName();
-      if (class_name.empty() || class_name == "NotSet") {
-        detail::ThrowInvalidArgument("JSExport", "You must provide a JSClass name");
-      }
       js_export_class_definition = builder__.build();
       js_export_class            = detail::JSExportClass<T>(js_export_class_definition);
     });

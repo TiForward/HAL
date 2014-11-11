@@ -9,6 +9,8 @@
 
 #include "JavaScriptCoreCPP/JavaScriptCoreCPP.hpp"
 #include "Widget.hpp"
+#include <typeinfo>
+#include <iostream>
 #import <XCTest/XCTest.h>
 
 using namespace JavaScriptCoreCPP;
@@ -28,6 +30,10 @@ using namespace JavaScriptCoreCPP;
 - (void)tearDown {
   // Put teardown code here. This method is called after the invocation of each test method in the class.
   [super tearDown];
+}
+
+- (void)testTypeId {
+ std::cout << "MDL: typeid(Widget).name() = " << typeid(Widget).name() << '\n';
 }
 
 - (void)testJSPropertyAttribute {

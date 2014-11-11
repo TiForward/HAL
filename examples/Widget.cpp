@@ -12,7 +12,6 @@
 #include <sstream>
 
 void Widget::JSExportInitialize() {
-  SetClassName("Widget");
   SetClassVersion(1);
   AddValueProperty("name", &Widget::get_name, &Widget::set_name);
   AddValueProperty("number", &Widget::get_number, &Widget::set_number);

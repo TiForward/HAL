@@ -47,7 +47,6 @@ namespace JavaScriptCoreCPP {
   
   bool JSExportObject::SetProperty(const JSString& property_name, const JSValue& property_value) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSEXPORTOBJECT_LOCK_GUARD;
-    static const std::string internal_component_name = "JSExportObject::SetProperty";
     
     // TODO: Provide the virtual function
     //
@@ -80,7 +79,7 @@ namespace JavaScriptCoreCPP {
     const auto property_emplace_result = js_property_map__.emplace(std::make_pair(property_name, property_value));
     const bool property_emplaced       = property_emplace_result.second;
     
-    JAVASCRIPTCORECPP_LOG_DEBUG(internal_component_name, ": property ", property_name, " emplace = ", property_emplaced);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportObject::SetProperty", ": property ", property_name, " emplace = ", property_emplaced);
     // postcondition
     assert(property_emplaced);
     
@@ -96,7 +95,6 @@ namespace JavaScriptCoreCPP {
   
   bool JSExportObject::DeleteProperty(const JSString& property_name) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSEXPORTOBJECT_LOCK_GUARD;
-    static const std::string internal_component_name = "JSExportObject::SetProperty";
     
     bool property_deleted = false;
     const auto position = js_property_map__.find(property_name);
