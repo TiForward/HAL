@@ -38,7 +38,7 @@ To seamlessly add a C++ class to the JavaScriptCore runtime take a look at our W
 
 Running it on Windows (type `./build.debug/examples/WidgetMain.exe`) or OS X (type `./build.debug/examples/WidgetMain`) produces this output.
 ```
-JavaScriptCoreCPP (JavaScriptCore_RAII)$ ./build.debug/examples/WidgetMain
+./build.debug/examples/WidgetMain
 Widget is an object
 Widget.name; // outputs 'world'
 Widget.number; // outputs '42'
