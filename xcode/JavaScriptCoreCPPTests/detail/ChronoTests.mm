@@ -11,9 +11,6 @@
 #include <chrono>
 #include <iostream>
 
-@interface JSValueTests : XCTestCase
-@end
-
 template <typename C>
 void printClockData() {
   using namespace std;
@@ -71,7 +68,10 @@ makeTimePoint(int year, int mon, int day, int hour, int min, int sec = 0) {
   return std::chrono::system_clock::from_time_t(time_t);
 }
 
-@implementation JSValueTests
+@interface ChronoTests : XCTestCase
+@end
+
+@implementation ChronoTests
 - (void)setUp {
   [super setUp];
   // Put setup code here. This method is called before the invocation of each test method in the class.

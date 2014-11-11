@@ -12,10 +12,10 @@
 
 using namespace JavaScriptCoreCPP;
 
-@interface JSContextTests2 : XCTestCase
+@interface JSContextTests : XCTestCase
 @end
 
-@implementation JSContextTests2 {
+@implementation JSContextTests {
   JSContextGroup js_context_group;
 }
 

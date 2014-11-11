@@ -17,10 +17,10 @@ JSString makeJSString() {
   return js_string;
 }
 
-@interface JSStringTests2 : XCTestCase
+@interface JSStringTests : XCTestCase
 @end
 
-@implementation JSStringTests2
+@implementation JSStringTests
 
 - (void)setUp {
     [super setUp];

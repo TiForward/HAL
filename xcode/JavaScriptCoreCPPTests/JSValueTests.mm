@@ -16,10 +16,10 @@ namespace UnitTestConstants {
   static const double pi { 3.141592653589793 };
 }
 
-@interface JSValueTests2 : XCTestCase
+@interface JSValueTests : XCTestCase
 @end
 
-@implementation JSValueTests2 {
+@implementation JSValueTests {
   JSContextGroup js_context_group;
 }
 
@@ -124,14 +124,14 @@ namespace UnitTestConstants {
   XCTAssertFalse(js_uint32.IsString());
   XCTAssertFalse(js_uint32.IsObject());
 
-  //  auto piValue_ptr  = context_ptr . evaluateScript("Math.PI");
-  //  XCTAssertEqualWithAccuracy(UnitTestConstants::pi, static_cast<double>(*piValue_ptr), std::numeric_limits<double>::epsilon());
+  auto js_pi_value  = js_context.JSEvaluateScript("Math.PI");
+  XCTAssertEqualWithAccuracy(UnitTestConstants::pi, static_cast<double>(js_pi_value), std::numeric_limits<double>::epsilon());
 
-  //  auto result_ptr  = context_ptr . evaluateScript("21 / 7");
-  //  XCTAssertEqual(3, static_cast<int32_t>(*result_ptr));
+  auto js_result  = js_context.JSEvaluateScript("21 / 7");
+  XCTAssertEqual(3, static_cast<int32_t>(js_result));
 
-  //  auto result_ptr  = context_ptr . evaluateScript("21 / 7");
-  //  XCTAssertEqual(3, static_cast<uint32_t>(*result_ptr));
+  js_result  = js_context.JSEvaluateScript("21 / 7");
+  XCTAssertEqual(3, static_cast<uint32_t>(js_result));
 }
 
 - (void)testToJSONString {
@@ -187,8 +187,8 @@ namespace UnitTestConstants {
   JSString js_string = static_cast<JSString>(js_value);
   XCTAssertEqual("hello, world", js_string);
   
-//  auto result_ptr  = context_ptr . evaluateScript("\"hello, JavaScript\"");
-//  XCTAssertEqual("hello, JavaScript", static_cast<std::string>(*result_ptr));
+  auto js_result  = js_context.JSEvaluateScript("'hello, JavaScript'");
+  XCTAssertEqual("hello, JavaScript", static_cast<std::string>(js_result));
 }
 
 - (void)testCopyingValuesBetweenContexts {
