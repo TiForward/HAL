@@ -20,7 +20,7 @@ pushd Source/JavaScriptCoreCPP/
 build_and_test_osx.sh
 ```
 
-Here is [EvaluateScript.cpp](examples/EvaluateScript.cpp)), a simple main program that evaluates the JavaScript expression `21 / 7` and prints `3` to the terminal. To run it on Windows type `./build.debug/examples/EvaluateScript.exe` and to run it on OS X type `./build.debug/examples/EvaluateScript`.
+Here is [EvaluateScript.cpp](examples/EvaluateScript.cpp), a simple main program that evaluates the JavaScript expression `21 / 7` and prints `3` to the terminal. To run it on Windows type `./build.debug/examples/EvaluateScript.exe` and to run it on OS X type `./build.debug/examples/EvaluateScript`.
 ```
 #include "JavaScriptCoreCPP/JavaScriptCoreCPP.hpp"
 #include <iostream>
