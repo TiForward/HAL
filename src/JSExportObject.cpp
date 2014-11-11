@@ -133,6 +133,10 @@ namespace JavaScriptCoreCPP {
     return is_function__;
   }
   
+  bool JSExportObject::IsConstructor() const JAVASCRIPTCORECPP_NOEXCEPT {
+    return is_constructor__;
+  }
+  
   JSExportObject::JSExportObject(const JSContext& js_context) JAVASCRIPTCORECPP_NOEXCEPT
   : JSExport<JSExportObject>(js_context) {
   }

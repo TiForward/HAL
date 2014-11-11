@@ -83,6 +83,7 @@
 		C9E6AFA61A11653A00FED053 /* JSExportObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9E6AFA41A11653A00FED053 /* JSExportObject.cpp */; };
 		C9E6AFA91A11808800FED053 /* JSValueUtil.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9E6AFA71A11808800FED053 /* JSValueUtil.hpp */; };
 		C9E6AFAA1A11808800FED053 /* JSValueUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9E6AFA81A11808800FED053 /* JSValueUtil.cpp */; };
+		C9E6AFAE1A11B19500FED053 /* ChronoTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9E6AFAD1A11B19500FED053 /* ChronoTests.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -177,6 +178,7 @@
 		C9E6AFA41A11653A00FED053 /* JSExportObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSExportObject.cpp; path = src/JSExportObject.cpp; sourceTree = "<group>"; };
 		C9E6AFA71A11808800FED053 /* JSValueUtil.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSValueUtil.hpp; path = include/JavaScriptCoreCPP/detail/JSValueUtil.hpp; sourceTree = "<group>"; };
 		C9E6AFA81A11808800FED053 /* JSValueUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSValueUtil.cpp; path = src/detail/JSValueUtil.cpp; sourceTree = "<group>"; };
+		C9E6AFAD1A11B19500FED053 /* ChronoTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ChronoTests.mm; path = detail/ChronoTests.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -411,6 +413,7 @@
 				C97454391A02810600CB4CA9 /* GotW71.hpp */,
 				C974543A1A02810600CB4CA9 /* LambdaTests.mm */,
 				C974543B1A02810600CB4CA9 /* TemplateTests.mm */,
+				C9E6AFAD1A11B19500FED053 /* ChronoTests.mm */,
 			);
 			name = detail;
 			sourceTree = "<group>";
@@ -593,6 +596,7 @@
 				C97454361A0280A400CB4CA9 /* JSValueTests.mm in Sources */,
 				C974543E1A02810600CB4CA9 /* TemplateTests.mm in Sources */,
 				C97454321A0280A400CB4CA9 /* JSContextTests.mm in Sources */,
+				C9E6AFAE1A11B19500FED053 /* ChronoTests.mm in Sources */,
 				C97454351A0280A400CB4CA9 /* JSStringTests.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

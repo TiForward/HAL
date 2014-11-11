@@ -52,6 +52,7 @@ struct Prc
   template <int... Is>
   void process(detail::index<Is...>) {
     auto l = { (std::get<Is>(mems).prnt(), 0) ... };
+    static_cast<void>(l);
   }
   
   void process() {
