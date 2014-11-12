@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 
-# Author: Matt Langston
-# Date: 2014.09.15
+# JavaScriptCoreCPP
+# Author: Matthew D. Langston
+#
+# Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
+# Licensed under the terms of the Apache Public License.
+# Please see the LICENSE included with this distribution for details.
 
 if ! test -d "${GTEST_ROOT}"; then
     echo "GTEST_ROOT must point to your Google Test installation."
