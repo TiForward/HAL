@@ -16,7 +16,6 @@
 
 namespace JavaScriptCoreCPP {
   class JSString;
-  class JSValue;
   class JSObject;
   class JSPropertyNameAccumulator;
 }
