@@ -7,7 +7,7 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/detail/JSLogger.hpp"
+#include "JavaScriptCoreCPP/detail/JSBase.hpp"
 #import <XCTest/XCTest.h>
 
 @interface JSLoggerTests : XCTestCase

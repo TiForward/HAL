@@ -7,7 +7,7 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#import "HashUtilities.hpp"
+#include "JavaScriptCoreCPP/detail/HashUtilities.hpp"
 #import <XCTest/XCTest.h>
 
 @interface HashUtilitiesTests : XCTestCase

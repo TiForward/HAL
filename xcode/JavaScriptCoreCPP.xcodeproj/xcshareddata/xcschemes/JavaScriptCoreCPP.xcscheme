@@ -28,16 +28,6 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       buildConfiguration = "Debug">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C936FD4C19CB961A0082CB08"
-               BuildableName = "JavaScriptCoreCPPTests.xctest"
-               BlueprintName = "JavaScriptCoreCPPTests"
-               ReferencedContainer = "container:JavaScriptCoreCPP.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
