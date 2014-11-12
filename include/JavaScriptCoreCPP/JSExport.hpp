@@ -13,7 +13,6 @@
 #include "JavaScriptCoreCPP/detail/JSBase.hpp"
 #include "JavaScriptCoreCPP/detail/JSExportClassDefinitionBuilder.hpp"
 #include "JavaScriptCoreCPP/JSContext.hpp"
-//#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
 
 #include <string>
 #include <memory>
@@ -64,13 +63,13 @@ namespace JavaScriptCoreCPP {
      // Implementing this static function is how your C++ class
      // seamlessly integrates into JavaScriptCore.
      static void JSExportInitialize() {
-       // All of the additional characteristics are optional, but here
-       // are some examples:
+       // All of the characteristics are optional, but here are some
+       // examples:
        SetClassVersion(1);
-       AddValueProperty("name", &Widget::get_name, &Widget::set_name);
-       AddValueProperty("number", &Widget::get_number, &Widget::set_number);
-       AddValueProperty("pi", &Widget::pi);
-       AddFunctionProperty("sayHello", &Widget::sayHello);
+       AddValueProperty("name"       , std::mem_fn(&Widget::get_name)  , std::mem_fn(&Widget::set_name));
+       AddValueProperty("number"     , std::mem_fn(&Widget::get_number), std::mem_fn(&Widget::set_number));
+       AddValueProperty("pi"         , std::mem_fn(&Widget::pi));
+       AddFunctionProperty("sayHello", std::mem_fn(&Widget::sayHello));
      }
    };
    
