@@ -329,10 +329,6 @@
 		C97454801A05FC0000CB4CA9 /* JSLogger */ = {
 			isa = PBXGroup;
 			children = (
-				C9E6AFAF1A12FB5300FED053 /* JSLogger.hpp */,
-				C9E6AFB01A12FB5300FED053 /* JSLoggerPolicyConsole.hpp */,
-				C9E6AFB11A12FB5300FED053 /* JSLoggerPolicyFile.hpp */,
-				C9E6AFB21A12FB5300FED053 /* JSLoggerPolicyInterface.hpp */,
 				C97454D11A09C61900CB4CA9 /* detail */,
 			);
 			name = JSLogger;
@@ -365,6 +361,10 @@
 		C97454D11A09C61900CB4CA9 /* detail */ = {
 			isa = PBXGroup;
 			children = (
+				C9E6AFAF1A12FB5300FED053 /* JSLogger.hpp */,
+				C9E6AFB21A12FB5300FED053 /* JSLoggerPolicyInterface.hpp */,
+				C9E6AFB01A12FB5300FED053 /* JSLoggerPolicyConsole.hpp */,
+				C9E6AFB11A12FB5300FED053 /* JSLoggerPolicyFile.hpp */,
 				C974547E1A05FBEE00CB4CA9 /* JSLoggerPimpl.hpp */,
 				C97454891A05FC3F00CB4CA9 /* JSLoggerPimpl.cpp */,
 			);

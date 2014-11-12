@@ -82,7 +82,7 @@ namespace JavaScriptCoreCPP { namespace detail {
    @discussion For example, given this class definition:
    
    class Foo {
-   JSValue Hello(const std::vector<JSValue>& arguments) const;
+   JSValue Hello(const std::vector<JSValue>& arguments);
    };
    
    You would define the callback like this:
@@ -93,8 +93,8 @@ namespace JavaScriptCoreCPP { namespace detail {
    'myFunction' is the instance of Foo being called, and this_object
    would be set to 'myObject'.
    
-   @param 1 A const reference to the C++ object that implements your
-   JavaScript object.
+   @param 1 A non-const reference to the C++ object that implements
+   your JavaScript object.
    
    @param 2 A const rvalue reference to the JSValue array of arguments
    to pass to the function.
@@ -102,7 +102,7 @@ namespace JavaScriptCoreCPP { namespace detail {
    @result Return the function's value.
    */
   template<typename T>
-  using CallNamedFunctionCallback = std::function<JSValue(const T&, const std::vector<JSValue>&)>;
+  using CallNamedFunctionCallback = std::function<JSValue(T&, const std::vector<JSValue>&)>;
   
   /*!
    @typedef HasPropertyCallback

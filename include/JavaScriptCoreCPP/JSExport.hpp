@@ -20,6 +20,8 @@
 
 namespace JavaScriptCoreCPP {
 
+  using namespace JavaScriptCoreCPP::detail;
+
   /*!
    @class
    
@@ -117,7 +119,7 @@ namespace JavaScriptCoreCPP {
      
      @abstract Return the JSClass for the C++ class T.
      */
-    static detail::JSExportClass<T> Class();
+    static JSExportClass<T> Class();
     
     JSExport()                           = delete;
     virtual ~JSExport()                  JAVASCRIPTCORECPP_NOEXCEPT;
@@ -221,8 +223,8 @@ namespace JavaScriptCoreCPP {
      3. You have already added a property with the same property_name.
      */
     static void AddValueProperty(const JSString& property_name,
-                                 detail::GetNamedValuePropertyCallback<T> get_callback,
-                                 detail::SetNamedValuePropertyCallback<T> set_callback = nullptr,
+                                 GetNamedValuePropertyCallback<T> get_callback,
+                                 SetNamedValuePropertyCallback<T> set_callback = nullptr,
                                  bool enumerable = true);
     
     /*!
@@ -260,7 +262,7 @@ namespace JavaScriptCoreCPP {
      
      3. You have already added a property with the same property_name.
      */
-    static void AddFunctionProperty(const JSString& function_name, detail::CallNamedFunctionCallback<T> function_callback, bool enumerable = true);
+    static void AddFunctionProperty(const JSString& function_name, CallNamedFunctionCallback<T> function_callback, bool enumerable = true);
     
     /*!
      @method
@@ -302,7 +304,7 @@ namespace JavaScriptCoreCPP {
      properties vended by your class' parent class chain, then
      properties belonging to your JavaScript object's prototype chain.
      */
-    static void AddHasPropertyCallback(const detail::HasPropertyCallback<T>& has_property_callback);
+    static void AddHasPropertyCallback(const HasPropertyCallback<T>& has_property_callback);
     
     /*!
      @method
@@ -336,7 +338,7 @@ namespace JavaScriptCoreCPP {
      then properties vended by your class' parent class chain, then
      properties belonging to your JavaScript object's prototype chain.
      */
-    static void AddGetPropertyCallback(const detail::GetPropertyCallback<T>& get_property_callback);
+    static void AddGetPropertyCallback(const GetPropertyCallback<T>& get_property_callback);
     
     /*!
      @method
@@ -371,7 +373,7 @@ namespace JavaScriptCoreCPP {
      then properties belonging to your JavaScript object's prototype
      chain.
      */
-    static void AddSetPropertyCallback(const detail::SetPropertyCallback<T>& set_property_callback);
+    static void AddSetPropertyCallback(const SetPropertyCallback<T>& set_property_callback);
     
     /*!
      @method
@@ -405,7 +407,7 @@ namespace JavaScriptCoreCPP {
      then properties vended by your class' parent class chain, then
      properties belonging to your JavaScript object's prototype chain.
      */
-    static void AddDeletePropertyCallback(const detail::DeletePropertyCallback<T>& delete_property_callback);
+    static void AddDeletePropertyCallback(const DeletePropertyCallback<T>& delete_property_callback);
     
     /*!
      @method
@@ -441,7 +443,7 @@ namespace JavaScriptCoreCPP {
      invoked when your JavaScript object is used in a JavaScript
      for...in loop.
      */
-    static void AddGetPropertyNamesCallback(const detail::GetPropertyNamesCallback<T>& get_property_names_callback);
+    static void AddGetPropertyNamesCallback(const GetPropertyNamesCallback<T>& get_property_names_callback);
     
     /*!
      @method
@@ -474,7 +476,7 @@ namespace JavaScriptCoreCPP {
      @result Your callback should return the value produced by calling
      your JavaScript object as a function.
      */
-    static void AddCallAsFunctionCallback(const detail::CallAsFunctionCallback<T>& call_as_function_callback);
+    static void AddCallAsFunctionCallback(const CallAsFunctionCallback<T>& call_as_function_callback);
     
     /*!
      @method
@@ -510,7 +512,7 @@ namespace JavaScriptCoreCPP {
      @result Your callback should return a JSObject that is the result
      of calling your JavaScript object in a 'new' expression.
      */
-    static void AddCallAsConstructorCallback(const detail::CallAsConstructorCallback<T>& call_as_constructor_callback);
+    static void AddCallAsConstructorCallback(const CallAsConstructorCallback<T>& call_as_constructor_callback);
     
     /*!
      @method
@@ -546,7 +548,7 @@ namespace JavaScriptCoreCPP {
      @result Your callback should return true to indicate whether it
      is 'instanceof' the given JSValue 'possible_instance'.
      */
-    static void AddHasInstanceCallback(const detail::HasInstanceCallback<T>& has_instance_callback);
+    static void AddHasInstanceCallback(const HasInstanceCallback<T>& has_instance_callback);
     
     /*!
      @method
@@ -581,14 +583,14 @@ namespace JavaScriptCoreCPP {
      to forward the reqeust to your class' parent class chain, then
      your JavaScript object's prototype chain.
      */
-    static void AddConvertToTypeCallback(const detail::ConvertToTypeCallback<T>& convert_to_type_callback);
+    static void AddConvertToTypeCallback(const ConvertToTypeCallback<T>& convert_to_type_callback);
     
   private:
     
     friend class JSObject;
     
     JSContext js_context__;
-    static detail::JSExportClassDefinitionBuilder<T> builder__;
+    static JSExportClassDefinitionBuilder<T> builder__;
   };
   
   template<typename T>
@@ -607,66 +609,66 @@ namespace JavaScriptCoreCPP {
   }
   
   template<typename T>
-  void JSExport<T>::AddValueProperty(const JSString& property_name, detail::GetNamedValuePropertyCallback<T> get_callback, detail::SetNamedValuePropertyCallback<T> set_callback, bool enumerable) {
+  void JSExport<T>::AddValueProperty(const JSString& property_name, GetNamedValuePropertyCallback<T> get_callback, SetNamedValuePropertyCallback<T> set_callback, bool enumerable) {
     builder__.AddValueProperty(property_name, get_callback, set_callback);
   }
   
   template<typename T>
-  void JSExport<T>::AddFunctionProperty(const JSString& function_name, detail::CallNamedFunctionCallback<T> function_callback, bool enumerable) {
+  void JSExport<T>::AddFunctionProperty(const JSString& function_name, CallNamedFunctionCallback<T> function_callback, bool enumerable) {
     builder__.AddFunctionProperty(function_name, function_callback, enumerable);
   }
   
   template<typename T>
-  void JSExport<T>::AddHasPropertyCallback(const detail::HasPropertyCallback<T>& has_property_callback) {
+  void JSExport<T>::AddHasPropertyCallback(const HasPropertyCallback<T>& has_property_callback) {
     builder__.HasProperty(has_property_callback);
   }
   
   template<typename T>
-  void JSExport<T>::AddGetPropertyCallback(const detail::GetPropertyCallback<T>& get_property_callback) {
+  void JSExport<T>::AddGetPropertyCallback(const GetPropertyCallback<T>& get_property_callback) {
     builder__.GetProperty(get_property_callback);
   }
   template<typename T>
-  void JSExport<T>::AddSetPropertyCallback(const detail::SetPropertyCallback<T>& set_property_callback) {
+  void JSExport<T>::AddSetPropertyCallback(const SetPropertyCallback<T>& set_property_callback) {
     builder__.SetProperty(set_property_callback);
   }
   template<typename T>
-  void JSExport<T>::AddDeletePropertyCallback(const detail::DeletePropertyCallback<T>& delete_property_callback) {
+  void JSExport<T>::AddDeletePropertyCallback(const DeletePropertyCallback<T>& delete_property_callback) {
     builder__.DeleteProperty(delete_property_callback);
   }
   template<typename T>
-  void JSExport<T>::AddGetPropertyNamesCallback(const detail::GetPropertyNamesCallback<T>& get_property_names_callback) {
+  void JSExport<T>::AddGetPropertyNamesCallback(const GetPropertyNamesCallback<T>& get_property_names_callback) {
     builder__.GetPropertyNames(get_property_names_callback);
   }
   template<typename T>
-  void JSExport<T>::AddCallAsFunctionCallback(const detail::CallAsFunctionCallback<T>& call_as_function_callback) {
+  void JSExport<T>::AddCallAsFunctionCallback(const CallAsFunctionCallback<T>& call_as_function_callback) {
     builder__.CallAsfunction(call_as_function_callback);
   }
   template<typename T>
-  void JSExport<T>::AddCallAsConstructorCallback(const detail::CallAsConstructorCallback<T>& call_as_constructor_callback) {
+  void JSExport<T>::AddCallAsConstructorCallback(const CallAsConstructorCallback<T>& call_as_constructor_callback) {
     builder__.CallAsConstructor(call_as_constructor_callback);
   }
   
   template<typename T>
-  void JSExport<T>::AddHasInstanceCallback(const detail::HasInstanceCallback<T>& has_instance_callback) {
+  void JSExport<T>::AddHasInstanceCallback(const HasInstanceCallback<T>& has_instance_callback) {
     builder__.HasInstance(has_instance_callback);
   }
   template<typename T>
-  void JSExport<T>::AddConvertToTypeCallback(const detail::ConvertToTypeCallback<T>& convert_to_type_callback) {
+  void JSExport<T>::AddConvertToTypeCallback(const ConvertToTypeCallback<T>& convert_to_type_callback) {
     builder__.ConvertTotype(convert_to_type_callback);
   }
   
   template<typename T>
-  detail::JSExportClassDefinitionBuilder<T> JSExport<T>::builder__ = detail::JSExportClassDefinitionBuilder<T>(typeid(T).name());
+  JSExportClassDefinitionBuilder<T> JSExport<T>::builder__ = JSExportClassDefinitionBuilder<T>(typeid(T).name());
   
   template<typename T>
-  detail::JSExportClass<T> JSExport<T>::Class() {
-    static detail::JSExportClassDefinition<T> js_export_class_definition;
-    static detail::JSExportClass<T>           js_export_class;
+  JSExportClass<T> JSExport<T>::Class() {
+    static JSExportClassDefinition<T> js_export_class_definition;
+    static JSExportClass<T>           js_export_class;
     std::once_flag of;
     std::call_once(of, []() {
       T::JSExportInitialize();
       js_export_class_definition = builder__.build();
-      js_export_class            = detail::JSExportClass<T>(js_export_class_definition);
+      js_export_class            = JSExportClass<T>(js_export_class_definition);
     });
     
     return js_export_class;
