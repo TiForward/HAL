@@ -76,19 +76,19 @@ namespace JavaScriptCoreCPP { namespace detail {
     }
     
     ~JSExportNamedValuePropertyCallback() = default;
-    JSExportNamedValuePropertyCallback(const JSExportNamedValuePropertyCallback&) JAVASCRIPTCORECPP_NOEXCEPT;
-    JSExportNamedValuePropertyCallback(JSExportNamedValuePropertyCallback&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSExportNamedValuePropertyCallback(const JSExportNamedValuePropertyCallback&)            JAVASCRIPTCORECPP_NOEXCEPT;
+    JSExportNamedValuePropertyCallback(JSExportNamedValuePropertyCallback&&)                 JAVASCRIPTCORECPP_NOEXCEPT;
     JSExportNamedValuePropertyCallback& operator=(const JSExportNamedValuePropertyCallback&) JAVASCRIPTCORECPP_NOEXCEPT;
-    JSExportNamedValuePropertyCallback& operator=(JSExportNamedValuePropertyCallback&&) JAVASCRIPTCORECPP_NOEXCEPT;
-    void swap(JSExportNamedValuePropertyCallback&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSExportNamedValuePropertyCallback& operator=(JSExportNamedValuePropertyCallback&&)      JAVASCRIPTCORECPP_NOEXCEPT;
+    void swap(JSExportNamedValuePropertyCallback&)                                           JAVASCRIPTCORECPP_NOEXCEPT;
     
   private:
     
     template<typename U>
     friend bool operator==(const JSExportNamedValuePropertyCallback<U>& lhs, const JSExportNamedValuePropertyCallback<U>& rhs) JAVASCRIPTCORECPP_NOEXCEPT;
     
-    GetNamedValuePropertyCallback<T> get_callback__ { nullptr };
-    SetNamedValuePropertyCallback<T> set_callback__ { nullptr };
+    GetNamedValuePropertyCallback<T> get_callback__;
+    SetNamedValuePropertyCallback<T> set_callback__;
   };
   
   template<typename T>

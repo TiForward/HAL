@@ -9,14 +9,15 @@
 
 #include "Widget.hpp"
 
+#include <functional>
 #include <sstream>
 
 void Widget::JSExportInitialize() {
   SetClassVersion(1);
-  AddValueProperty("name", &Widget::get_name, &Widget::set_name);
-  AddValueProperty("number", &Widget::get_number, &Widget::set_number);
-  AddValueProperty("pi", &Widget::pi);
-  AddFunctionProperty("sayHello", &Widget::sayHello);
+  AddValueProperty("name"       , std::mem_fn(&Widget::get_name)  , std::mem_fn(&Widget::set_name));
+  AddValueProperty("number"     , std::mem_fn(&Widget::get_number), std::mem_fn(&Widget::set_number));
+  AddValueProperty("pi"         , std::mem_fn(&Widget::pi));
+  AddFunctionProperty("sayHello", std::mem_fn(&Widget::sayHello));
 }
 
 double Widget::pi__ = 3.141592653589793;
