@@ -7,18 +7,18 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_JSLOGGER_HPP_
-#define _JAVASCRIPTCORECPP_JSLOGGER_HPP_
+#ifndef _JAVASCRIPTCORECPP_DETAIL_JSLOGGER_HPP_
+#define _JAVASCRIPTCORECPP_DETAIL_JSLOGGER_HPP_
 
 #include "JavaScriptCoreCPP/detail/JSLoggerPimpl.hpp"
-#include "JavaScriptCoreCPP/JSLoggerPolicyConsole.hpp"
-#include "JavaScriptCoreCPP/JSLoggerPolicyFile.hpp"
+#include "JavaScriptCoreCPP/detail/JSLoggerPolicyConsole.hpp"
+#include "JavaScriptCoreCPP/detail/JSLoggerPolicyFile.hpp"
 #include <sstream>
 #include <iomanip>
 #include <cstdint>
 #include <mutex>
 
-namespace JavaScriptCoreCPP {
+namespace JavaScriptCoreCPP { namespace detail {
   
   // The JSLogger infrastructure was inspired by this Dr. Dobbs article:
   //
@@ -118,7 +118,7 @@ namespace JavaScriptCoreCPP {
   
   template<typename JSLoggerPolicy>
   void JSLogger<JSLoggerPolicy>::PrintImpl() {
-    js_log_policy__.Write(detail::JSLoggerPimpl::GetLoglineHeader(log_line_number__++) + log_stream__.str());
+    js_log_policy__.Write(JSLoggerPimpl::GetLoglineHeader(log_line_number__++) + log_stream__.str());
     log_stream__.str("");
   }
   
@@ -129,7 +129,6 @@ namespace JavaScriptCoreCPP {
     PrintImpl(rest...);
   }
   
-#define JAVASCRIPTCORECPP_LOGGING_ENABLE
 #ifdef JAVASCRIPTCORECPP_LOGGING_ENABLE
   
   // TODO: Add a more flexible way to specify the logging policy.
@@ -137,10 +136,10 @@ namespace JavaScriptCoreCPP {
   //static JSLogger<JSLoggerPolicyFile>    js_logger_instance("JavaScriptCoreCPP.log");
   static JSLogger<JSLoggerPolicyConsole> js_logger_instance("JavaScriptCoreCPP.log");
   
-#define JAVASCRIPTCORECPP_LOG_DEBUG JavaScriptCoreCPP::js_logger_instance.Print<JavaScriptCoreCPP::JSLoggerSeverityType::JS_DEBUG>
-#define JAVASCRIPTCORECPP_LOG_INFO  JavaScriptCoreCPP::js_logger_instance.Print<JavaScriptCoreCPP::JSLoggerSeverityType::JS_INFO>
-#define JAVASCRIPTCORECPP_LOG_ERROR JavaScriptCoreCPP::js_logger_instance.Print<JavaScriptCoreCPP::JSLoggerSeverityType::JS_WARN>
-#define JAVASCRIPTCORECPP_LOG_WARN  JavaScriptCoreCPP::js_logger_instance.Print<JavaScriptCoreCPP::JSLoggerSeverityType::JS_ERROR>
+#define JAVASCRIPTCORECPP_LOG_DEBUG JavaScriptCoreCPP::detail::js_logger_instance.Print<JavaScriptCoreCPP::detail::JSLoggerSeverityType::JS_DEBUG>
+#define JAVASCRIPTCORECPP_LOG_INFO  JavaScriptCoreCPP::detail::js_logger_instance.Print<JavaScriptCoreCPP::detail::JSLoggerSeverityType::JS_INFO>
+#define JAVASCRIPTCORECPP_LOG_ERROR JavaScriptCoreCPP::detail::js_logger_instance.Print<JavaScriptCoreCPP::detail::JSLoggerSeverityType::JS_WARN>
+#define JAVASCRIPTCORECPP_LOG_WARN  JavaScriptCoreCPP::detail::js_logger_instance.Print<JavaScriptCoreCPP::detail::JSLoggerSeverityType::JS_ERROR>
 #else
 #define JAVASCRIPTCORECPP_LOG_DEBUG(...)
 #define JAVASCRIPTCORECPP_LOG_INFO(...)
@@ -148,6 +147,6 @@ namespace JavaScriptCoreCPP {
 #define JAVASCRIPTCORECPP_LOG_ERROR(...)
 #endif
   
-} // namespace JavaScriptCoreCPP {
+}} // namespace JavaScriptCoreCPP { namespace detail {
 
-#endif // _JAVASCRIPTCORECPP_JSLOGGER_HPP_
+#endif // _JAVASCRIPTCORECPP_DETAIL_JSLOGGER_HPP_

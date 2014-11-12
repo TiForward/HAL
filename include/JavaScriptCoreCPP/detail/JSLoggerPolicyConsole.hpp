@@ -7,13 +7,13 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_JSLOGGERPOLICYCONSOLE_HPP_
-#define _JAVASCRIPTCORECPP_JSLOGGERPOLICYCONSOLE_HPP_
+#ifndef _JAVASCRIPTCORECPP_DETAIL_JSLOGGERPOLICYCONSOLE_HPP_
+#define _JAVASCRIPTCORECPP_DETAIL_JSLOGGERPOLICYCONSOLE_HPP_
 
-#include "JavaScriptCoreCPP/JSLoggerPolicyInterface.hpp"
+#include "JavaScriptCoreCPP/detail/JSLoggerPolicyInterface.hpp"
 #include <iostream>
 
-namespace JavaScriptCoreCPP {
+namespace JavaScriptCoreCPP { namespace detail {
   
   class JSLoggerPolicyConsole final : public JSLoggerPolicyInterface {
   public:
@@ -34,8 +34,8 @@ namespace JavaScriptCoreCPP {
     virtual void Write(const std::string& log_message) override final {
       std::clog << log_message << std::endl;
       }
-      };
+  };
       
-      } // namespace JavaScriptCoreCPP {
+}} // namespace JavaScriptCoreCPP { namespace detail {
       
-#endif // _JAVASCRIPTCORECPP_JSLOGGERPOLICYCONSOLE_HPP_
+#endif // _JAVASCRIPTCORECPP_DETAIL_JSLOGGERPOLICYCONSOLE_HPP_

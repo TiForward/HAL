@@ -10,6 +10,10 @@
 #ifndef _JAVASCRIPTCORECPP_DETAIL_JSBASE_HPP_
 #define _JAVASCRIPTCORECPP_DETAIL_JSBASE_HPP_
 
+
+// #define JAVASCRIPTCORECPP_LOGGING_ENABLE
+// #define JAVASCRIPTCORECPP_THREAD_SAFE
+
 #define JAVASCRIPTCORECPP_NOEXCEPT_ENABLE
 #define JAVASCRIPTCORECPP_MOVE_CTOR_AND_ASSIGN_DEFAULT_ENABLE
 
@@ -48,7 +52,7 @@
 #include <mutex>
 #endif
 
-#include "JavaScriptCoreCPP/JSLogger.hpp"
+#include "JavaScriptCoreCPP/detail/JSLogger.hpp"
 #include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 #include <JavaScriptCore/JavaScript.h>
 

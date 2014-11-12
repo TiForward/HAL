@@ -49,10 +49,6 @@
 		C974543E1A02810600CB4CA9 /* TemplateTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C974543B1A02810600CB4CA9 /* TemplateTests.mm */; };
 		C974547B1A02BAF200CB4CA9 /* JSPropertyNameArray.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C974547A1A02BAF200CB4CA9 /* JSPropertyNameArray.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		C974547F1A05FBEE00CB4CA9 /* JSLoggerPimpl.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C974547E1A05FBEE00CB4CA9 /* JSLoggerPimpl.hpp */; };
-		C97454851A05FC1400CB4CA9 /* JSLoggerPolicyFile.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C97454811A05FC1400CB4CA9 /* JSLoggerPolicyFile.hpp */; };
-		C97454861A05FC1400CB4CA9 /* JSLoggerPolicyConsole.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C97454821A05FC1400CB4CA9 /* JSLoggerPolicyConsole.hpp */; };
-		C97454871A05FC1400CB4CA9 /* JSLoggerPolicyInterface.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C97454831A05FC1400CB4CA9 /* JSLoggerPolicyInterface.hpp */; };
-		C97454881A05FC1400CB4CA9 /* JSLogger.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C97454841A05FC1400CB4CA9 /* JSLogger.hpp */; };
 		C974548A1A05FC3F00CB4CA9 /* JSLoggerPimpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97454891A05FC3F00CB4CA9 /* JSLoggerPimpl.cpp */; };
 		C974548C1A05FC5D00CB4CA9 /* JSLoggerTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C974548B1A05FC5D00CB4CA9 /* JSLoggerTests.mm */; };
 		C97454921A06D03700CB4CA9 /* JSClass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97454911A06D03700CB4CA9 /* JSClass.cpp */; };
@@ -84,6 +80,10 @@
 		C9E6AFA91A11808800FED053 /* JSValueUtil.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9E6AFA71A11808800FED053 /* JSValueUtil.hpp */; };
 		C9E6AFAA1A11808800FED053 /* JSValueUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9E6AFA81A11808800FED053 /* JSValueUtil.cpp */; };
 		C9E6AFAE1A11B19500FED053 /* ChronoTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9E6AFAD1A11B19500FED053 /* ChronoTests.mm */; };
+		C9E6AFB31A12FB5300FED053 /* JSLogger.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9E6AFAF1A12FB5300FED053 /* JSLogger.hpp */; };
+		C9E6AFB41A12FB5300FED053 /* JSLoggerPolicyConsole.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9E6AFB01A12FB5300FED053 /* JSLoggerPolicyConsole.hpp */; };
+		C9E6AFB51A12FB5300FED053 /* JSLoggerPolicyFile.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9E6AFB11A12FB5300FED053 /* JSLoggerPolicyFile.hpp */; };
+		C9E6AFB61A12FB5300FED053 /* JSLoggerPolicyInterface.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9E6AFB21A12FB5300FED053 /* JSLoggerPolicyInterface.hpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -143,10 +143,6 @@
 		C974543F1A0282FD00CB4CA9 /* JavaScriptCoreCPP.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JavaScriptCoreCPP.hpp; path = include/JavaScriptCoreCPP/JavaScriptCoreCPP.hpp; sourceTree = "<group>"; };
 		C974547A1A02BAF200CB4CA9 /* JSPropertyNameArray.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSPropertyNameArray.hpp; path = include/JavaScriptCoreCPP/JSPropertyNameArray.hpp; sourceTree = "<group>"; };
 		C974547E1A05FBEE00CB4CA9 /* JSLoggerPimpl.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSLoggerPimpl.hpp; path = include/JavaScriptCoreCPP/detail/JSLoggerPimpl.hpp; sourceTree = "<group>"; };
-		C97454811A05FC1400CB4CA9 /* JSLoggerPolicyFile.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSLoggerPolicyFile.hpp; path = include/JavaScriptCoreCPP/JSLoggerPolicyFile.hpp; sourceTree = "<group>"; };
-		C97454821A05FC1400CB4CA9 /* JSLoggerPolicyConsole.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSLoggerPolicyConsole.hpp; path = include/JavaScriptCoreCPP/JSLoggerPolicyConsole.hpp; sourceTree = "<group>"; };
-		C97454831A05FC1400CB4CA9 /* JSLoggerPolicyInterface.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSLoggerPolicyInterface.hpp; path = include/JavaScriptCoreCPP/JSLoggerPolicyInterface.hpp; sourceTree = "<group>"; };
-		C97454841A05FC1400CB4CA9 /* JSLogger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSLogger.hpp; path = include/JavaScriptCoreCPP/JSLogger.hpp; sourceTree = "<group>"; };
 		C97454891A05FC3F00CB4CA9 /* JSLoggerPimpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSLoggerPimpl.cpp; path = src/detail/JSLoggerPimpl.cpp; sourceTree = "<group>"; };
 		C974548B1A05FC5D00CB4CA9 /* JSLoggerTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = JSLoggerTests.mm; sourceTree = "<group>"; };
 		C97454911A06D03700CB4CA9 /* JSClass.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSClass.cpp; path = src/JSClass.cpp; sourceTree = "<group>"; };
@@ -179,6 +175,10 @@
 		C9E6AFA71A11808800FED053 /* JSValueUtil.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSValueUtil.hpp; path = include/JavaScriptCoreCPP/detail/JSValueUtil.hpp; sourceTree = "<group>"; };
 		C9E6AFA81A11808800FED053 /* JSValueUtil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSValueUtil.cpp; path = src/detail/JSValueUtil.cpp; sourceTree = "<group>"; };
 		C9E6AFAD1A11B19500FED053 /* ChronoTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ChronoTests.mm; path = detail/ChronoTests.mm; sourceTree = "<group>"; };
+		C9E6AFAF1A12FB5300FED053 /* JSLogger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSLogger.hpp; path = include/JavaScriptCoreCPP/detail/JSLogger.hpp; sourceTree = "<group>"; };
+		C9E6AFB01A12FB5300FED053 /* JSLoggerPolicyConsole.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSLoggerPolicyConsole.hpp; path = include/JavaScriptCoreCPP/detail/JSLoggerPolicyConsole.hpp; sourceTree = "<group>"; };
+		C9E6AFB11A12FB5300FED053 /* JSLoggerPolicyFile.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSLoggerPolicyFile.hpp; path = include/JavaScriptCoreCPP/detail/JSLoggerPolicyFile.hpp; sourceTree = "<group>"; };
+		C9E6AFB21A12FB5300FED053 /* JSLoggerPolicyInterface.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSLoggerPolicyInterface.hpp; path = include/JavaScriptCoreCPP/detail/JSLoggerPolicyInterface.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -329,10 +329,10 @@
 		C97454801A05FC0000CB4CA9 /* JSLogger */ = {
 			isa = PBXGroup;
 			children = (
-				C97454841A05FC1400CB4CA9 /* JSLogger.hpp */,
-				C97454831A05FC1400CB4CA9 /* JSLoggerPolicyInterface.hpp */,
-				C97454821A05FC1400CB4CA9 /* JSLoggerPolicyConsole.hpp */,
-				C97454811A05FC1400CB4CA9 /* JSLoggerPolicyFile.hpp */,
+				C9E6AFAF1A12FB5300FED053 /* JSLogger.hpp */,
+				C9E6AFB01A12FB5300FED053 /* JSLoggerPolicyConsole.hpp */,
+				C9E6AFB11A12FB5300FED053 /* JSLoggerPolicyFile.hpp */,
+				C9E6AFB21A12FB5300FED053 /* JSLoggerPolicyInterface.hpp */,
 				C97454D11A09C61900CB4CA9 /* detail */,
 			);
 			name = JSLogger;
@@ -427,7 +427,6 @@
 			files = (
 				C97454F71A0CFB7000CB4CA9 /* JSStaticFunction.hpp in Headers */,
 				C97453D91A02797E00CB4CA9 /* JSString.hpp in Headers */,
-				C97454881A05FC1400CB4CA9 /* JSLogger.hpp in Headers */,
 				C97453E01A027A1800CB4CA9 /* JSContextGroup.hpp in Headers */,
 				C97453DF1A027A1800CB4CA9 /* JSContext.hpp in Headers */,
 				C97453EE1A027E3D00CB4CA9 /* JSValue.hpp in Headers */,
@@ -437,7 +436,6 @@
 				C97453EB1A027E3D00CB4CA9 /* JSNull.hpp in Headers */,
 				C97454DE1A09C6D500CB4CA9 /* JSExportClass.hpp in Headers */,
 				C97453EA1A027E3D00CB4CA9 /* JSBoolean.hpp in Headers */,
-				C97454851A05FC1400CB4CA9 /* JSLoggerPolicyFile.hpp in Headers */,
 				C97453EC1A027E3D00CB4CA9 /* JSNumber.hpp in Headers */,
 				C974547B1A02BAF200CB4CA9 /* JSPropertyNameArray.hpp in Headers */,
 				C9E6AFA51A11653A00FED053 /* JSExportObject.hpp in Headers */,
@@ -446,27 +444,29 @@
 				C97453FF1A027F6000CB4CA9 /* JSArray.hpp in Headers */,
 				C97454E01A09C6D500CB4CA9 /* JSExportNamedFunctionPropertyCallback.hpp in Headers */,
 				C97454001A027F6000CB4CA9 /* JSDate.hpp in Headers */,
-				C97454861A05FC1400CB4CA9 /* JSLoggerPolicyConsole.hpp in Headers */,
 				C974547F1A05FBEE00CB4CA9 /* JSLoggerPimpl.hpp in Headers */,
 				C97454E41A09C6F200CB4CA9 /* JSPropertyAttribute.hpp in Headers */,
 				C97454011A027F6000CB4CA9 /* JSError.hpp in Headers */,
 				C9E6AFA91A11808800FED053 /* JSValueUtil.hpp in Headers */,
 				C97454DD1A09C6D500CB4CA9 /* JSPropertyCallback.hpp in Headers */,
+				C9E6AFB51A12FB5300FED053 /* JSLoggerPolicyFile.hpp in Headers */,
 				C97454E11A09C6D500CB4CA9 /* JSExportCallbacks.hpp in Headers */,
 				C97454DF1A09C6D500CB4CA9 /* JSExportNamedValuePropertyCallback.hpp in Headers */,
 				C97454041A027F6000CB4CA9 /* JSRegExp.hpp in Headers */,
 				C97454021A027F6000CB4CA9 /* JSFunction.hpp in Headers */,
 				C974540E1A027FB300CB4CA9 /* JSClass.hpp in Headers */,
-				C97454871A05FC1400CB4CA9 /* JSLoggerPolicyInterface.hpp in Headers */,
 				C97454D61A09C6C300CB4CA9 /* JSExport.hpp in Headers */,
 				C97454221A02806300CB4CA9 /* JSPerformanceCounter.hpp in Headers */,
+				C9E6AFB41A12FB5300FED053 /* JSLoggerPolicyConsole.hpp in Headers */,
 				C97454211A02806300CB4CA9 /* JSPerformanceCounterPrinter.hpp in Headers */,
+				C9E6AFB31A12FB5300FED053 /* JSLogger.hpp in Headers */,
 				C97454271A02807900CB4CA9 /* HashUtilities.hpp in Headers */,
 				C97454941A0752E100CB4CA9 /* JSPropertyNameAccumulator.hpp in Headers */,
 				C97454261A02807900CB4CA9 /* JSUtil.hpp in Headers */,
 				C97454C31A09457700CB4CA9 /* JSClassAttribute.hpp in Headers */,
 				C97455061A0D55E200CB4CA9 /* JSExportClassDefinition.hpp in Headers */,
 				C97455011A0D23AD00CB4CA9 /* JSClassDefinition.hpp in Headers */,
+				C9E6AFB61A12FB5300FED053 /* JSLoggerPolicyInterface.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
