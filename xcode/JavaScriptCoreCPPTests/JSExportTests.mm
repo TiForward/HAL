@@ -120,7 +120,7 @@ using namespace JavaScriptCoreCPP;
   XCTAssertTrue(result.IsString());
   XCTAssertEqual("foo", static_cast<std::string>(result));
   
-  result = js_context.JSEvaluateScript("Widget.number = 3*7;");
+  result = js_context.JSEvaluateScript("Widget.number = 3 * 7;");
   result = js_context.JSEvaluateScript("Widget.number;");
   XCTAssertTrue(result.IsNumber());
   XCTAssertEqual(21, static_cast<std::uint32_t>(result));
@@ -128,6 +128,29 @@ using namespace JavaScriptCoreCPP;
   result = js_context.JSEvaluateScript("Widget.sayHello();");
   XCTAssertTrue(result.IsString());
   XCTAssertEqual("Hello, foo. Your number is 21.", static_cast<std::string>(result));
+  
+  // Test getting access to the underlying C++ object that implements the
+  // JavaScript object.
+  auto widget_ptr = widget.GetPrivate<Widget>();
+  XCTAssertTrue(widget_ptr.get());
+  
+  widget_ptr -> set_name_native("bar");
+  result = js_context.JSEvaluateScript("Widget.name;");
+  XCTAssertTrue(result.IsString());
+  XCTAssertEqual("bar", static_cast<std::string>(result));
+  
+  widget_ptr -> set_number_native(4 * 8);
+  result = js_context.JSEvaluateScript("Widget.number;");
+  XCTAssertTrue(result.IsNumber());
+  XCTAssertEqual(32, static_cast<std::uint32_t>(result));
+  
+  result = js_context.JSEvaluateScript("Widget.sayHello();");
+  XCTAssertTrue(result.IsString());
+  XCTAssertEqual("Hello, bar. Your number is 32.", static_cast<std::string>(result));
+  
+  // We get a nullptr if JSObject::GetPrivate() isn't of the correct type.
+  auto string_ptr = widget.GetPrivate<std::string>();
+  XCTAssertFalse(string_ptr.get());
 }
 
 // As of 2014.09.20 Travis CI only supports Xcode 5.1 which lacks support for

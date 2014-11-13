@@ -35,12 +35,12 @@ class JSObjectTests : public testing::Test {
 
 TEST_F(JSObjectTests, ObjectSizes) {
   XCTAssertEqual(sizeof(std::intptr_t)                         , sizeof(JSContextGroup));
-  XCTAssertEqual(sizeof(std::intptr_t) + sizeof(JSContextGroup), sizeof(JSContext));
+  XCTAssertEqual(sizeof(JSContextGroup) + sizeof(std::intptr_t), sizeof(JSContext));
   
   // JSValue and JSObject are base classes, so have an extra pointer for the
   // virtual function table.
-  XCTAssertEqual(sizeof(std::intptr_t) + sizeof(std::intptr_t) + sizeof(JSContext), sizeof(JSValue));
-  XCTAssertEqual(sizeof(std::intptr_t) + sizeof(std::intptr_t) + sizeof(JSContext), sizeof(JSObject));
+  XCTAssertEqual(sizeof(JSContext) + sizeof(std::intptr_t) + sizeof(std::intptr_t), sizeof(JSValue));
+  XCTAssertEqual(sizeof(JSContext) + sizeof(std::intptr_t) + sizeof(std::intptr_t) + sizeof(std::shared_ptr<JSObject>), sizeof(JSObject));
 }
 
 TEST_F(JSObjectTests, JSPropertyAttribute) {

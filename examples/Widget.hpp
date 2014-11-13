@@ -58,12 +58,19 @@ public:
   
   JSValue sayHello(const std::vector<JSValue>& arguments);
   
-  virtual ~Widget()                   JAVASCRIPTCORECPP_NOEXCEPT;
-  Widget(const Widget&)               JAVASCRIPTCORECPP_NOEXCEPT;
-  Widget(Widget&&)                    JAVASCRIPTCORECPP_NOEXCEPT;
-  Widget& operator=(const Widget&)    JAVASCRIPTCORECPP_NOEXCEPT;
-  Widget& operator=(Widget&&)         JAVASCRIPTCORECPP_NOEXCEPT;
-  void swap(Widget&)                  JAVASCRIPTCORECPP_NOEXCEPT;
+  std::string get_name_native() const;
+  void        set_name_native(const std::string& name);
+  
+  int         get_number_native() const;
+  void        set_number_native(int number);
+  
+  
+  virtual ~Widget()                JAVASCRIPTCORECPP_NOEXCEPT;
+  Widget(const Widget&)            JAVASCRIPTCORECPP_NOEXCEPT;
+  Widget(Widget&&)                 JAVASCRIPTCORECPP_NOEXCEPT;
+  Widget& operator=(const Widget&) JAVASCRIPTCORECPP_NOEXCEPT;
+  Widget& operator=(Widget&&)      JAVASCRIPTCORECPP_NOEXCEPT;
+  void swap(Widget&)               JAVASCRIPTCORECPP_NOEXCEPT;
 private:
   
   std::string name__;

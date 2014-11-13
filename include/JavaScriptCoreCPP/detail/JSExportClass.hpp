@@ -270,7 +270,8 @@ namespace JavaScriptCoreCPP { namespace detail {
     const std::string js_object_string = to_string(js_object);
     std::smatch       match_results;
     const bool        found = std::regex_match(js_object_string, match_results, regex);
-    
+
+    static_cast<void>(found);
     JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallNamedFunction: function name found = ", found, ", match_results.size() = ", match_results.size(), ", input = ", js_object_string);
     
     // precondition

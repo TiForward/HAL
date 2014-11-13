@@ -13,6 +13,7 @@
 #include "JavaScriptCoreCPP/detail/JSBase.hpp"
 #include "JavaScriptCoreCPP/JSContext.hpp"
 #include "JavaScriptCoreCPP/JSPropertyAttribute.hpp"
+#include <memory>
 #include <vector>
 #include <unordered_set>
 
@@ -22,6 +23,9 @@ namespace JavaScriptCoreCPP {
   class JSClass;
   class JSPropertyNameAccumulator;
   class JSPropertyNameArray;
+  
+  template<typename T>
+  class JSExport;
   
   namespace detail {
     template<typename T>
@@ -42,11 +46,11 @@ namespace JavaScriptCoreCPP {
    JSDate
    JSError
    JSRegExp
-
+   
    The only way to create a JSObject is by using the
    JSContext::CreateObject member functions.
-  */
-  class JSObject JAVASCRIPTCORECPP_PERFORMANCE_COUNTER1(JSObject) {
+   */
+  class JSObject : public std::enable_shared_from_this<JSObject> JAVASCRIPTCORECPP_PERFORMANCE_COUNTER2(JSObject) {
     
   public:
     
@@ -273,6 +277,19 @@ namespace JavaScriptCoreCPP {
      */
     virtual operator JSValue() const final;
     
+    /*!
+     @method
+     
+     @abstract Return a std::shared_ptr<T> to this object's private
+     data.
+     
+     @result A std::shared_ptr<T> to this object's private data if the
+     object has private data of type T*, otherwise nullptr.
+     */
+    template<typename T>
+    std::shared_ptr<T> GetPrivate() const JAVASCRIPTCORECPP_NOEXCEPT;
+    
+    
     virtual ~JSObject()                  JAVASCRIPTCORECPP_NOEXCEPT;
     JSObject(const JSObject&)            JAVASCRIPTCORECPP_NOEXCEPT;
     JSObject(JSObject&&)                 JAVASCRIPTCORECPP_NOEXCEPT;
@@ -376,10 +393,6 @@ namespace JavaScriptCoreCPP {
      */
     virtual void GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const JAVASCRIPTCORECPP_NOEXCEPT final;
     
-    // Prevent heap based objects.
-    static void * operator new(std::size_t);     // #1: To prevent allocation of scalar objects
-    static void * operator new [] (std::size_t); // #2: To prevent allocation of array of objects
-    
     JSContext   js_context__;
     JSObjectRef js_object_ref__;
     
@@ -395,6 +408,11 @@ namespace JavaScriptCoreCPP {
   inline
   void swap(JSObject& first, JSObject& second) JAVASCRIPTCORECPP_NOEXCEPT {
     first.swap(second);
+  }
+  
+  template<typename T>
+  std::shared_ptr<T> JSObject::GetPrivate() const JAVASCRIPTCORECPP_NOEXCEPT {
+    return std::shared_ptr<T>(std::make_shared<JSObject>(*this), dynamic_cast<T*>(reinterpret_cast<JSExport<T>*>(GetPrivate())));
   }
   
 } // namespace JavaScriptCoreCPP {

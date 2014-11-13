@@ -73,6 +73,22 @@ JSValue Widget::sayHello(const std::vector<JSValue>& arguments) {
   return get_context().CreateString(os.str());
 }
 
+std::string Widget::get_name_native() const {
+  return name__;
+}
+
+void Widget::set_name_native(const std::string& name) {
+  name__ = name;
+}
+
+int Widget::get_number_native() const {
+  return number__;
+}
+
+void Widget::set_number_native(int number) {
+  number__ = number;
+}
+
 Widget::~Widget() JAVASCRIPTCORECPP_NOEXCEPT {
   JAVASCRIPTCORECPP_LOG_DEBUG("Widget dtor");
 }
