@@ -50,7 +50,7 @@ namespace JavaScriptCoreCPP {
    The only way to create a JSObject is by using the
    JSContext::CreateObject member functions.
    */
-  class JSObject : public std::enable_shared_from_this<JSObject> JAVASCRIPTCORECPP_PERFORMANCE_COUNTER2(JSObject) {
+  class JSObject JAVASCRIPTCORECPP_PERFORMANCE_COUNTER1(JSObject) {
     
   public:
     
