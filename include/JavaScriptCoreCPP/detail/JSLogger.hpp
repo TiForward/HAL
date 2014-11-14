@@ -118,7 +118,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   
   template<typename JSLoggerPolicy>
   void JSLogger<JSLoggerPolicy>::PrintImpl() {
-    js_log_policy__.Write(JSLoggerPimpl::GetLoglineHeader(log_line_number__++) + log_stream__.str());
+    js_log_policy__.Write(JSLoggerPimpl::GetLoglineHeader(log_line_number__++) + log_stream__.str() + ".");
     log_stream__.str("");
   }
   

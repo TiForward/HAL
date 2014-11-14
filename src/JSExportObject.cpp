@@ -79,7 +79,7 @@ namespace JavaScriptCoreCPP {
     const auto property_emplace_result = js_property_map__.emplace(std::make_pair(property_name, property_value));
     const bool property_emplaced       = property_emplace_result.second;
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportObject::SetProperty", ": property ", property_name, " emplace = ", property_emplaced);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportObject::SetProperty: property ", property_name, " emplaced = ", property_emplaced);
     // postcondition
     assert(property_emplaced);
     
