@@ -501,20 +501,22 @@ namespace JavaScriptCoreCPP { namespace detail {
     JSContext js_context(context_ref);
     JSObject  js_object(js_context, constructor_ref);
     
-    auto       callback       = js_export_class_definition__.call_as_constructor_callback__;
-    const bool callback_found = callback != nullptr;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallAsConstructor: new ", to_string(js_object));
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallAsConstructor: callback found = ", callback_found, " for ", to_string(js_object));
+    auto new_object = js_context.CreateObject(T::Class());
     
-    // precondition
-    assert(callback_found);
+    // Delete the "default constructed" native object pointer that
+    // comes from the Initialize callback and replace it with the
+    // constructor call that takes a vector of arguments.
+    delete reinterpret_cast<T*>(new_object.GetPrivate());
+
+    const auto native_object_ptr = reinterpret_cast<const T*>(js_object.GetPrivate());
+    const bool result            = new_object.SetPrivate(new T(*native_object_ptr, to_vector(js_context, argument_count, arguments_array)));
     
-    auto native_object_ptr = reinterpret_cast<T*>(js_object.GetPrivate());
-    const auto result      = callback(*native_object_ptr, to_vector(js_context, argument_count, arguments_array));
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallAsConstructor: result = ", to_string(new_object), "(private data set to ", new_object.GetPrivate(), ") for new ", to_string(js_object));
+    assert(result);
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallAsConstructor: result = ", to_string(result), " for ", to_string(js_object));
-    
-    return result;
+    return new_object;
     
   } catch (const std::exception& e) {
     JSContext js_context(context_ref);
@@ -531,37 +533,21 @@ namespace JavaScriptCoreCPP { namespace detail {
     JSContext js_context(context_ref);
     JSObject  js_object(js_context, constructor_ref);
     JSValue   possible_instance(js_context, possible_instance_ref);
+
+    bool result = false;
+    if (possible_instance.IsObject()) {
+      JSObject possible_object = possible_instance;
+      if (possible_object.GetPrivate() != nullptr) {
+        auto possible_js_export_ptr     = reinterpret_cast<JSExport<T>*>(possible_object.GetPrivate());
+        auto possible_native_object_ptr = dynamic_cast<T*>(possible_js_export_ptr);
+        if (possible_native_object_ptr != nullptr) {
+          result = true;
+        }
+      }
+    }
     
-    auto       callback       = js_export_class_definition__.has_instance_callback__;
-    const bool callback_found = callback != nullptr;
-    
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::HasInstance: callback found = ", callback_found, " for ", to_string(js_object));
-    
-    // precondition
-    assert(callback_found);
-    
-    const auto native_object_ptr = reinterpret_cast<const T*>(js_object.GetPrivate());
-    const auto result            = callback(*native_object_ptr, possible_instance);
-    
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::HasInstance: result = ", result, " for ", to_string(js_object));
-    
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::HasInstance: result = ", result, " for ", to_string(possible_instance), " instanceof ", to_string(js_object));
     return result;
-    
-    //    if (possible_instance.IsObject()) {
-    //      return false;
-    //    }
-    //
-    //    bool result = false;
-    //    try {
-    //      auto native_object_ptr = dynamic_cast<T*>(reinterpret_cast<T*>(js_object.GetPrivate()));
-    //      static_cast<void>(native_object_ptr);
-    //      result = true;
-    //    } catch (...) {
-    //    }
-    //
-    //    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::HasInstance: result = ", result, " for ", to_string(possible_instance), " instanceof ", to_string(js_object));
-    //
-    //    return result;
     
   } catch (const std::exception& e) {
     JSContext js_context(context_ref);

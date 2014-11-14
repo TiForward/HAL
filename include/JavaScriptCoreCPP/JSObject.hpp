@@ -196,13 +196,13 @@ namespace JavaScriptCoreCPP {
      */
     
     virtual JSValue operator()(                                                            ) final;
-    virtual JSValue operator()(const JSValue&               argument                       ) final;
+    virtual JSValue operator()(JSValue&                     argument                       ) final;
     virtual JSValue operator()(const JSString&              argument                       ) final;
     virtual JSValue operator()(const std::vector<JSValue>&  arguments                      ) final;
     virtual JSValue operator()(const std::vector<JSString>& arguments                      ) final;
     
     virtual JSValue operator()(                                        JSObject this_object) final;
-    virtual JSValue operator()(const JSValue&               argument , JSObject this_object) final;
+    virtual JSValue operator()(JSValue&                     argument , JSObject this_object) final;
     virtual JSValue operator()(const JSString&              argument , JSObject this_object) final;
     virtual JSValue operator()(const std::vector<JSValue>&  arguments, JSObject this_object) final;
     virtual JSValue operator()(const std::vector<JSString>& arguments, JSObject this_object) final;

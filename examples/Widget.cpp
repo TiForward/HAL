@@ -30,6 +30,21 @@ Widget::Widget(const JSContext& js_context) JAVASCRIPTCORECPP_NOEXCEPT
   JAVASCRIPTCORECPP_LOG_DEBUG("Widget ctor");
 }
 
+Widget::Widget(const Widget& rhs, const std::vector<JSValue>& arguments) JAVASCRIPTCORECPP_NOEXCEPT
+: JSExport<Widget>(rhs, arguments)
+, name__(rhs.name__)
+, number__(rhs.number__) {
+  JAVASCRIPTCORECPP_LOG_DEBUG("Widget JavaScript constructor");
+  assert(arguments.size() >= 2);
+  const auto _0 = arguments.at(0);
+  const auto _1 = arguments.at(1);
+  assert(_0.IsString());
+  assert(_1.IsNumber());
+  name__   = static_cast<JSString>(_0);
+  number__ = static_cast<int32_t>(_1);
+  
+}
+
 JSValue Widget::get_name() const {
   return get_context().CreateString(name__);
 }

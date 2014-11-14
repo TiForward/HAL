@@ -148,6 +148,10 @@ using namespace JavaScriptCoreCPP;
   XCTAssertTrue(result.IsString());
   XCTAssertEqual("Hello, bar. Your number is 32.", static_cast<std::string>(result));
   
+  result = js_context.JSEvaluateScript("var widget = new Widget('baz', 999); widget.sayHello();");
+  XCTAssertTrue(result.IsString());
+  XCTAssertEqual("Hello, baz. Your number is 999.", static_cast<std::string>(result));
+
   // We get a nullptr if JSObject::GetPrivate() isn't of the correct type.
   auto string_ptr = widget.GetPrivate<std::string>();
   XCTAssertFalse(string_ptr.get());

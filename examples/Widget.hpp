@@ -46,7 +46,8 @@ public:
    @param js_context The JavaScriptCore execution context that your
    JavaScript object will execute in.
    */
-  Widget(const JSContext& js_context) JAVASCRIPTCORECPP_NOEXCEPT;
+  Widget(const JSContext& js_context)                          JAVASCRIPTCORECPP_NOEXCEPT;
+  Widget(const Widget&, const std::vector<JSValue>& arguments) JAVASCRIPTCORECPP_NOEXCEPT;
   
   JSValue get_name() const;
   bool    set_name(const JSValue& name);

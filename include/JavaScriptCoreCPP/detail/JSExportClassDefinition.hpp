@@ -52,22 +52,13 @@ namespace JavaScriptCoreCPP { namespace detail {
   public:
     
     JSExportClassDefinition(const JSExportClassDefinitionBuilder<T>& builder);
-    
-//    JSExportNamedValuePropertyCallbackMap_t<T> get_named_value_property_callback_map() const {
-//      return named_value_property_callback_map__;
-//    }
-//    
-//    JSExportNamedFunctionPropertyCallbackMap_t<T> get_named_function_property_callback_map() const {
-//      return named_function_property_callback_map__;
-//    }
-    
-    JSExportClassDefinition()  = default;
-    ~JSExportClassDefinition() = default;
-    JSExportClassDefinition(const JSExportClassDefinition&) JAVASCRIPTCORECPP_NOEXCEPT;
-    JSExportClassDefinition(JSExportClassDefinition&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSExportClassDefinition()                                          = default;
+    ~JSExportClassDefinition()                                         = default;
+    JSExportClassDefinition(const JSExportClassDefinition&)            JAVASCRIPTCORECPP_NOEXCEPT;
+    JSExportClassDefinition(JSExportClassDefinition&&)                 JAVASCRIPTCORECPP_NOEXCEPT;
     JSExportClassDefinition& operator=(const JSExportClassDefinition&) JAVASCRIPTCORECPP_NOEXCEPT;
-    JSExportClassDefinition& operator=(JSExportClassDefinition&&) JAVASCRIPTCORECPP_NOEXCEPT;
-    void swap(JSExportClassDefinition&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSExportClassDefinition& operator=(JSExportClassDefinition&&)      JAVASCRIPTCORECPP_NOEXCEPT;
+    void swap(JSExportClassDefinition&)                                JAVASCRIPTCORECPP_NOEXCEPT;
     
   private:
     
@@ -85,8 +76,6 @@ namespace JavaScriptCoreCPP { namespace detail {
     DeletePropertyCallback<T>                     delete_property_callback__     { nullptr };
     GetPropertyNamesCallback<T>                   get_property_names_callback__  { nullptr };
     CallAsFunctionCallback<T>                     call_as_function_callback__    { nullptr };
-    CallAsConstructorCallback<T>                  call_as_constructor_callback__ { nullptr };
-    HasInstanceCallback<T>                        has_instance_callback__        { nullptr };
     ConvertToTypeCallback<T>                      convert_to_type_callback__     { nullptr };
   };
   

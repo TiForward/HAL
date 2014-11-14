@@ -132,6 +132,7 @@ namespace JavaScriptCoreCPP {
   protected:
     
     JSExport(const JSContext& js_context);
+    JSExport(const JSExport<T>&, const std::vector<JSValue>& arguments);
     
     JSContext get_context() const JAVASCRIPTCORECPP_NOEXCEPT;
     
@@ -481,78 +482,6 @@ namespace JavaScriptCoreCPP {
     /*!
      @method
      
-     @abstract Set the callback to invoke when your JavaScript object
-     is used as a constructor in a 'new' expression. If you provide
-     this callback then you must also provide the HasInstanceCallback
-     as well.
-     
-     @discussion If this callback doest not exist, then using your
-     JavaScript object as a constructor in a 'new' expression will
-     throw a JavaScript exception.
-     
-     For example, given this class definition:
-     
-     class Foo {
-     JSObject Constructor(const std::vector<JSValue>& arguments);
-     };
-     
-     You would call AddCallAsConstructorCallback like this:
-     
-     AddCallAsConstructorCallback(&Foo::Constructor);
-     
-     If your callback were invoked by the JavaScript expression 'new
-     myConstructor()', then 'myConstructor' is the instance of Foo
-     being called.
-     
-     @param call_as_constructor_callback The callback to invoke when
-     your JavaScript object is used as a constructor in a 'new'
-     expression. If you provide this callback then you must also
-     provide the HasInstanceCallback as well.
-     
-     @result Your callback should return a JSObject that is the result
-     of calling your JavaScript object in a 'new' expression.
-     */
-    static void AddCallAsConstructorCallback(const CallAsConstructorCallback<T>& call_as_constructor_callback);
-    
-    /*!
-     @method
-     
-     @abstract Set the callback to invoke when your JavaScript object
-     is used as the target of an 'instanceof' expression. If you
-     provide this callback then you must also provide the
-     CallAsConstructorCallback as well.
-     
-     @discussion If this callback does not exist, then 'instanceof'
-     expressions that target your JavaScript object will return false.
-     
-     For example, given this class definition:
-     
-     class Foo {
-     bool HasInstance(const JSValue& possible_instance) const;
-     };
-     
-     You would call AddHasInstanceCallback like this:
-     
-     AddHasInstanceCallback(&Foo::HasInstance);
-     
-     If your callback were invoked by the JavaScript expression
-     'someValue instanceof myObject', then 'myObject' is the instance
-     of Foo being called and 'someValue' is the possible_instance
-     parameter.
-     
-     @param has_instance_callback The callback to invoke when your
-     JavaScript object is used as the target of an 'instanceof'
-     expression. If you provide this callback then you must also
-     provide the CallAsConstructorCallback as well.
-     
-     @result Your callback should return true to indicate whether it
-     is 'instanceof' the given JSValue 'possible_instance'.
-     */
-    static void AddHasInstanceCallback(const HasInstanceCallback<T>& has_instance_callback);
-    
-    /*!
-     @method
-     
      @abstract Set the callback to invoke when converting your
      JavaScript object to another JavaScript type. This callback is
      only invoked when converting your object to a number or a
@@ -627,31 +556,27 @@ namespace JavaScriptCoreCPP {
   void JSExport<T>::AddGetPropertyCallback(const GetPropertyCallback<T>& get_property_callback) {
     builder__.GetProperty(get_property_callback);
   }
+  
   template<typename T>
   void JSExport<T>::AddSetPropertyCallback(const SetPropertyCallback<T>& set_property_callback) {
     builder__.SetProperty(set_property_callback);
   }
+  
   template<typename T>
   void JSExport<T>::AddDeletePropertyCallback(const DeletePropertyCallback<T>& delete_property_callback) {
     builder__.DeleteProperty(delete_property_callback);
   }
+  
   template<typename T>
   void JSExport<T>::AddGetPropertyNamesCallback(const GetPropertyNamesCallback<T>& get_property_names_callback) {
     builder__.GetPropertyNames(get_property_names_callback);
   }
+  
   template<typename T>
   void JSExport<T>::AddCallAsFunctionCallback(const CallAsFunctionCallback<T>& call_as_function_callback) {
     builder__.CallAsfunction(call_as_function_callback);
   }
-  template<typename T>
-  void JSExport<T>::AddCallAsConstructorCallback(const CallAsConstructorCallback<T>& call_as_constructor_callback) {
-    builder__.CallAsConstructor(call_as_constructor_callback);
-  }
-  
-  template<typename T>
-  void JSExport<T>::AddHasInstanceCallback(const HasInstanceCallback<T>& has_instance_callback) {
-    builder__.HasInstance(has_instance_callback);
-  }
+
   template<typename T>
   void JSExport<T>::AddConvertToTypeCallback(const ConvertToTypeCallback<T>& convert_to_type_callback) {
     builder__.ConvertTotype(convert_to_type_callback);
@@ -664,7 +589,7 @@ namespace JavaScriptCoreCPP {
   JSExportClass<T> JSExport<T>::Class() {
     static JSExportClassDefinition<T> js_export_class_definition;
     static JSExportClass<T>           js_export_class;
-    std::once_flag of;
+    static std::once_flag             of;
     std::call_once(of, []() {
       T::JSExportInitialize();
       js_export_class_definition = builder__.build();
@@ -679,6 +604,11 @@ namespace JavaScriptCoreCPP {
   : js_context__(js_context) {
   }
   
+  template<typename T>
+  JSExport<T>::JSExport(const JSExport<T>& rhs, const std::vector<JSValue>& arguments)
+  : JSExport(rhs) {
+  }
+
   template<typename T>
   JSExport<T>::~JSExport() JAVASCRIPTCORECPP_NOEXCEPT {
   }

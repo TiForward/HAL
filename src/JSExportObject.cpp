@@ -13,6 +13,16 @@
 
 namespace JavaScriptCoreCPP {
   
+  void JSExportObject::JSExportInitialize() {
+    SetClassVersion(1);
+    AddHasPropertyCallback(std::mem_fn(&JSExportObject::HasProperty));
+    AddGetPropertyCallback(std::mem_fn(&JSExportObject::GetProperty));
+    AddSetPropertyCallback(std::mem_fn(&JSExportObject::SetProperty));
+    AddDeletePropertyCallback(std::mem_fn(&JSExportObject::DeleteProperty));
+    AddHasPropertyCallback(std::mem_fn(&JSExportObject::HasProperty));
+  }
+  
+  
   bool JSExportObject::HasProperty(const JSString& property_name) const JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSEXPORTOBJECT_LOCK_GUARD;
     
@@ -119,6 +129,12 @@ namespace JavaScriptCoreCPP {
     return property_deleted;
   }
   
+  void JSExportObject::GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const JAVASCRIPTCORECPP_NOEXCEPT {
+    for (const auto& entry : js_property_map__) {
+      accumulator.AddName(entry.first);
+    }
+  }
+  
   std::size_t JSExportObject::GetPropertyMapCount() const JAVASCRIPTCORECPP_NOEXCEPT {
     return js_property_map__.size();
   }
@@ -128,40 +144,43 @@ namespace JavaScriptCoreCPP {
   }
   
   bool JSExportObject::IsFunction() const JAVASCRIPTCORECPP_NOEXCEPT {
-    return is_function__;
+    return true;
+  }
+  
+  JSValue JSExportObject::CallAsFunction(const std::vector<JSValue>& arguments, JSObject this_object) JAVASCRIPTCORECPP_NOEXCEPT {
+    return get_context().CreateUndefined();
   }
   
   bool JSExportObject::IsConstructor() const JAVASCRIPTCORECPP_NOEXCEPT {
-    return is_constructor__;
+    return true;
   }
   
   JSExportObject::JSExportObject(const JSContext& js_context) JAVASCRIPTCORECPP_NOEXCEPT
   : JSExport<JSExportObject>(js_context) {
   }
   
+  JSExportObject::JSExportObject(const JSExportObject& rhs, const std::vector<JSValue>& arguments) JAVASCRIPTCORECPP_NOEXCEPT
+  : JSExport<JSExportObject>(rhs, arguments)
+  , js_property_map__(rhs.js_property_map__) {
+  }
+
   JSExportObject::~JSExportObject() JAVASCRIPTCORECPP_NOEXCEPT {
   }
   
   JSExportObject::JSExportObject(const JSExportObject& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : JSExport<JSExportObject>(rhs)
-  , js_property_map__(rhs.js_property_map__)
-  , is_function__(rhs.is_function__)
-  , is_constructor__(rhs.is_constructor__) {
+  , js_property_map__(rhs.js_property_map__) {
   }
   
   JSExportObject::JSExportObject(JSExportObject&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : JSExport<JSExportObject>(rhs)
-  , js_property_map__(std::move(rhs.js_property_map__))
-  , is_function__(rhs.is_function__)
-  , is_constructor__(rhs.is_constructor__) {
+  , js_property_map__(std::move(rhs.js_property_map__)) {
   }
   
   JSExportObject& JSExportObject::operator=(const JSExportObject& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSEXPORTOBJECT_LOCK_GUARD;
     JSExport<JSExportObject>::operator=(rhs);
     
-    is_function__     = rhs.is_function__;
-    is_constructor__  = rhs.is_constructor__;
     js_property_map__ = rhs.js_property_map__;
     
     return *this;
@@ -180,8 +199,6 @@ namespace JavaScriptCoreCPP {
     
     // By swapping the members of two classes, the two classes are
     // effectively swapped.
-    swap(is_function__    , other.is_function__);
-    swap(is_constructor__ , other.is_constructor__);
     swap(js_property_map__, other.js_property_map__);
   }
   

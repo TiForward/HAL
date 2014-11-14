@@ -16,10 +16,14 @@
 #include <vector>
 #include <unordered_map>
 
+namespace JavaScriptCoreCPP { namespace detail {
+  template<typename T>
+  class JSExportClass;
+}}
+
 namespace JavaScriptCoreCPP {
   
   using JSPropertyMap_t = std::unordered_map<JSString, JSValue, std::hash<JSString>>;
-  
   
   /*!
    @class
@@ -86,6 +90,27 @@ namespace JavaScriptCoreCPP {
     /*!
      @method
      
+     @abstract Collect the names of this JavaScript object's
+     properties.
+     
+     @discussion Derived classes should provide only the names of
+     properties that this JavaScript object provides through the
+     GetProperty and SetProperty methods. Other property names are
+     automatically added from properties vended by the JavaScript
+     object's parent class chain and properties belonging to the
+     JavaScript object's prototype chain.
+     
+     @param accumulator A JavaScript property name accumulator in
+     which to accumulate the names of this JavaScript object's
+     properties. Use JSPropertyNameAccumulator::AddName to add
+     property names to the accumulator. Property name accumulators are
+     used by JavaScript for...in loops.
+     */
+    virtual void GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const JAVASCRIPTCORECPP_NOEXCEPT final;
+    
+    /*!
+     @method
+     
      @abstract Return the number of properties in this JavaScript
      object.
      
@@ -117,12 +142,54 @@ namespace JavaScriptCoreCPP {
     /*!
      @method
      
+     @abstract Call this JavaScript object as a function. By default
+     this method simply returns JSUndefined to the caller. However,
+     your derived class can override this method to provide custom
+     'CallAsFunction' behavior.
+     
+     @discussion In the JavaScript expression 'myObject.myFunction()',
+     the 'this_object' parameter will be set to 'myObject' and this
+     JavaScript object is 'myFunction'.
+     
+     @param arguments The arguments passed to the function.
+     
+     @param this_object The JavaScript object to use as 'this'.
+     
+     @result Return the function's return value.
+     */
+    virtual JSValue CallAsFunction(const std::vector<JSValue>& arguments, JSObject this_object) JAVASCRIPTCORECPP_NOEXCEPT;
+    
+    /*!
+     @method
+     
      @abstract Determine whether this object can be called as a
      constructor.
      
      @result true if this object can be called as a constructor.
      */
     virtual bool IsConstructor() const JAVASCRIPTCORECPP_NOEXCEPT final;
+    
+    /*!
+     @method
+     
+     @abstract This constructor is invoked when your JavaScript object
+     is created when not in a 'new' expression.
+     
+     @param js_context The JSContext in which your JavaScript object
+     is created.
+     */
+    JSExportObject(const JSContext& js_context) JAVASCRIPTCORECPP_NOEXCEPT;
+    
+    /*!
+     @method
+     
+     @abstract This constructor is invoked when your JavaScript object
+     is called in a 'new' expression.
+     
+     @param arguments The arguments passed to the constructor in the
+     'new' expression.
+     */
+    JSExportObject(const JSExportObject&, const std::vector<JSValue>& arguments) JAVASCRIPTCORECPP_NOEXCEPT;
     
     /*!
      @method
@@ -144,13 +211,9 @@ namespace JavaScriptCoreCPP {
     
   protected:
     
-    JSExportObject(const JSContext& js_context)       JAVASCRIPTCORECPP_NOEXCEPT;
-    
   private:
     
     JSPropertyMap_t js_property_map__;
-    bool            is_function__;
-    bool            is_constructor__;
     
 #undef  JAVASCRIPTCORECPP_JSEXPORTOBJECT_LOCK_GUARD
 #ifdef  JAVASCRIPTCORECPP_THREAD_SAFE

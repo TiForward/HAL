@@ -14,6 +14,7 @@
 #include "JavaScriptCoreCPP/JSContext.hpp"
 
 #include "JavaScriptCoreCPP/JSExport.hpp"
+#include "JavaScriptCoreCPP/JSExportObject.hpp"
 #include "JavaScriptCoreCPP/JSClass.hpp"
 
 #include "JavaScriptCoreCPP/JSString.hpp"

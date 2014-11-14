@@ -50,6 +50,81 @@ std::vector<std::string> JSClass::GetClassNames() {
 	// TODO
 }
 
+* JSExport
+** AddCallAsConstructorCallback
+    /*!
+     @method
+     
+     @abstract Set the callback to invoke when your JavaScript object
+     is used as a constructor in a 'new' expression. If you provide
+     this callback then you must also provide the HasInstanceCallback
+     as well.
+     
+     @discussion If this callback doest not exist, then using your
+     JavaScript object as a constructor in a 'new' expression will
+     throw a JavaScript exception.
+     
+     For example, given this class definition:
+     
+     class Foo {
+     JSObject Constructor(const std::vector<JSValue>& arguments);
+     };
+     
+     You would call AddCallAsConstructorCallback like this:
+     
+     AddCallAsConstructorCallback(&Foo::Constructor);
+     
+     If your callback were invoked by the JavaScript expression 'new
+     myConstructor()', then 'myConstructor' is the instance of Foo
+     being called.
+     
+     @param call_as_constructor_callback The callback to invoke when
+     your JavaScript object is used as a constructor in a 'new'
+     expression. If you provide this callback then you must also
+     provide the HasInstanceCallback as well.
+     
+     @result Your callback should return a JSObject that is the result
+     of calling your JavaScript object in a 'new' expression.
+     */
+    static void AddCallAsConstructorCallback(const CallAsConstructorCallback<T>& call_as_constructor_callback);
+
+** AddHasInstanceCallback    
+    /*!
+     @method
+     
+     @abstract Set the callback to invoke when your JavaScript object
+     is used as the target of an 'instanceof' expression. If you
+     provide this callback then you must also provide the
+     CallAsConstructorCallback as well.
+     
+     @discussion If this callback does not exist, then 'instanceof'
+     expressions that target your JavaScript object will return false.
+     
+     For example, given this class definition:
+     
+     class Foo {
+     bool HasInstance(const JSValue& possible_instance) const;
+     };
+     
+     You would call AddHasInstanceCallback like this:
+     
+     AddHasInstanceCallback(&Foo::HasInstance);
+     
+     If your callback were invoked by the JavaScript expression
+     'someValue instanceof myObject', then 'myObject' is the instance
+     of Foo being called and 'someValue' is the possible_instance
+     parameter.
+     
+     @param has_instance_callback The callback to invoke when your
+     JavaScript object is used as the target of an 'instanceof'
+     expression. If you provide this callback then you must also
+     provide the CallAsConstructorCallback as well.
+     
+     @result Your callback should return true to indicate whether it
+     is 'instanceof' the given JSValue 'possible_instance'.
+     */
+    static void AddHasInstanceCallback(const HasInstanceCallback<T>& has_instance_callback);
+
 * JSExportCallbacks
 ** InitializeCallback
 /*! 
@@ -113,7 +188,83 @@ using InitializeCallback = std::function<void(T&)>;
 template<typename T>
 using FinalizeCallback = std::function<void(T&, void*)>;
 
-* JSClassBuilder.hpp
+** CallAsConstructorCallback
+  /*!
+   @typedef CallAsConstructorCallback
+   
+   @abstract The callback to invoke when your JavaScript object is
+   used as a constructor in a 'new' expression.
+   
+   @discussion If this callback doest not exist, then using your
+   JavaScript object as a constructor in a 'new' expression will throw
+   a JavaScript exception.
+   
+   For example, given this class definition:
+   
+   class Foo {
+   JSObject CallAsConstructor(const std::vector<JSValue>& arguments);
+   };
+   
+   You would define the callback like this:
+   
+   CallAsConstructorCallback callback(&Foo::CallAsConstructor);
+   
+   If your callback were invoked by the JavaScript expression 'new
+   myConstructor()', then 'myConstructor' is the instance of Foo being
+   called.
+   
+   @param 1 A non-const reference to the C++ object that implements
+   your JavaScript object.
+   
+   @param 2 A const rvalue reference to the JSValue array of arguments
+   to pass to the constructor.
+   
+   @result Return a JSObject that is the result of calling your
+   JavaScript object in a 'new' expression.
+   */
+  template<typename T>
+  using CallAsConstructorCallback = std::function<JSObject(T&, const std::vector<JSValue>&)>;
+
+** HasInstanceCallback
+  /*!
+   @typedef HasInstanceCallback
+   
+   @abstract The callback to invoke when your JavaScript object is
+   used as the target of an 'instanceof' expression. If you provide
+   this callback then you must also provide the
+   CallAsConstructorCallback as well.
+   
+   @discussion If this callback does not exist, then 'instanceof'
+   expressions that target your JavaScript object will return false.
+   
+   For example, given this class definition:
+   
+   class Foo {
+   bool HasInstance(const JSValue& possible_instance) const;
+   };
+   
+   You would define the callback like this:
+   
+   HasInstanceCallback callback(&Foo::HasInstance);
+   
+   If your callback were invoked by the JavaScript expression
+   'someValue instanceof myObject', then 'myObject' is the instance of
+   Foo being called and 'someValue' is the possible_instance
+   parameter.
+   
+   @param 1 A const reference to the C++ object that implements your
+   JavaScript object.
+   
+   @param 2 A const rvalue reference to the JSValue being tested to
+   determine if it is an instance of parameter 1.
+   
+   @result Return true to indicate parameter 2 is an 'instanceof'
+   parameter 1.
+   */
+  template<typename T>
+  using HasInstanceCallback = std::function<bool(const T&, const JSValue&)>;
+
+* JSExportClassDefinitionBuilder.hpp
 ** InitializeCallback
 	/*!
 	  @method
@@ -501,107 +652,107 @@ using FinalizeCallback = std::function<void(T&, void*)>;
     }
 
 ** CallAsConstructorCallback
-	/*!
-	  @method
-	  
-	  @abstract Return the callback to invoke when a JavaScript object
-	  is used as a constructor in a 'new' expression. If you provide
-	  this callback then you must also provide the HasInstanceCallback
-	  as well.
-  
-	  @result The callback to invoke when an object is used as a
-	  constructor in a 'new' expression.
-	*/
-	CallAsConstructorCallback<T> Constructor() const {
-		return call_as_constructor_callback__;
-	}
-
-	/*!
-	  @method
-
-	  @abstract Set the callback to invoke when a JavaScript object is
-	  used as a constructor in a 'new' expression. If you provide this
-	  callback then you must also provide the HasInstanceCallback as
-	  well.
-
-	  @discussion If this callback doest not exist, then using your
-	  object as a constructor in a 'new' expression will throw a
-	  JavaScript exception.
-	  
-	  For example, given this class definition:
-	  
-	  class Foo {
-	    JSObject Constructor(std::vector<JSValue>&& arguments);
-	  };
-	  
-	  You would call the builer like this:
-	  
-	  JSClassBuilder<Foo> builder("Foo");
-	  builder.Constructor(&Foo::Constructor);
-
-	  If your callback were invoked by the JavaScript expression
-	  'new myConstructor()', then 'myConstructor' is the instance of Foo
-	  being called.
-
-	  @result A reference to the builder for chaining.
-	*/
-	JSClassBuilder<T>& Constructor(const CallAsConstructorCallback<T>& call_as_constructor_callback) {
-		JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
-		call_as_constructor_callback__ = call_as_constructor_callback;
-		return *this;
-	}
+    /*!
+     @method
+     
+     @abstract Return the callback to invoke when your JavaScript
+     object is used as a constructor in a 'new' expression. If you
+     provide this callback then you must also provide the
+     HasInstanceCallback as well.
+     
+     @result The callback to invoke when your JavaScript object is
+     used as a constructor in a 'new' expression.
+     */
+    CallAsConstructorCallback<T> Constructor() const JAVASCRIPTCORECPP_NOEXCEPT {
+      return call_as_constructor_callback__;
+    }
+    
+    /*!
+     @method
+     
+     @abstract Set the callback to invoke when your JavaScript object
+     is used as a constructor in a 'new' expression. If you provide
+     this callback then you must also provide the HasInstanceCallback
+     as well.
+     
+     @discussion If this callback doest not exist, then using your
+     JavaScript object as a constructor in a 'new' expression will
+     throw a JavaScript exception.
+     
+     For example, given this class definition:
+     
+     class Foo {
+     JSObject Constructor(const std::vector<JSValue>& arguments);
+     };
+     
+     You would call the builer like this:
+     
+     JSClassBuilder<Foo> builder("Foo");
+     builder.Constructor(&Foo::Constructor);
+     
+     If your callback were invoked by the JavaScript expression
+     'new myConstructor()', then 'myConstructor' is the instance of
+     Foo being called.
+     
+     @result A reference to the builder for chaining.
+     */
+    JSExportClassDefinitionBuilder<T>& Constructor(const CallAsConstructorCallback<T>& call_as_constructor_callback) JAVASCRIPTCORECPP_NOEXCEPT {
+      JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASSDEFINITIONBUILDER_LOCK_GUARD;
+      call_as_constructor_callback__ = call_as_constructor_callback;
+      return *this;
+    }
 
 ** HasInstanceCallback	
-	/*!
-	  @method
-	  
-	  @abstract Return the callback to invoke when a JavaScript object
-	  is used as the target of an 'instanceof' expression. If you
-	  provide this callback then you must also provide the
-	  CallAsConstructorCallback as well.
-
-	  @result The callback to invoke when an object is used as the
-	  target of an 'instanceof' expression.
-	*/
-	HasInstanceCallback<T> HasInstance() const {
-		return has_instance_callback__;
-	}
-
-	/*!
-	  @method
-
-	  @abstract Set the callback to invoke when a JavaScript object is
-	  used as the target of an 'instanceof' expression. If you provide
-	  this callback then you must also provide the
-	  CallAsConstructorCallback as well.
-
-	  @discussion If this callback does not exist, then 'instanceof'
-	  expressions that target your object will return false.
-
-	  For example, given this class definition:
-	  
-	  class Foo {
-	    bool HasInstance(JSValue&& possible_instance) const;
-	  };
-
-	  You would call the builer like this:
-	  
-	  JSClassBuilder<Foo> builder("Foo");
-	  builder.HasInstance(&Foo::HasInstance);
-
-	  If your callback were invoked by the JavaScript expression
-	  'someValue instanceof myObject', then 'myObject' is the instanceof
-	  of Foo being called and 'someValue' is the possible_instance
-	  parameter.
-	  
-	  @result A reference to the builder for chaining.
-	*/
-	JSClassBuilder<T>& HasInstance(const HasInstanceCallback<T>& has_instance_callback) {
-		JAVASCRIPTCORECPP_DETAIL_JSCLASSBUILDER_LOCK_GUARD;
-		has_instance_callback__ = has_instance_callback;
-		return *this;
-	}
-
+    /*!
+     @method
+     
+     @abstract Return the callback to invoke when your JavaScript
+     object is used as the target of an 'instanceof' expression. If
+     you provide this callback then you must also provide the
+     CallAsConstructorCallback as well.
+     
+     @result The callback to invoke when your JavaScript object is
+     used as the target of an 'instanceof' expression.
+     */
+    HasInstanceCallback<T> HasInstance() const JAVASCRIPTCORECPP_NOEXCEPT {
+      return has_instance_callback__;
+    }
+    
+    /*!
+     @method
+     
+     @abstract Set the callback to invoke when your JavaScript object
+     is used as the target of an 'instanceof' expression. If you
+     provide this callback then you must also provide the
+     CallAsConstructorCallback as well.
+     
+     @discussion If this callback does not exist, then 'instanceof'
+     expressions that target your JavaScript object will return false.
+     
+     For example, given this class definition:
+     
+     class Foo {
+     bool HasInstance(const JSValue& possible_instance) const;
+     };
+     
+     You would call the builer like this:
+     
+     JSClassBuilder<Foo> builder("Foo");
+     builder.HasInstance(&Foo::HasInstance);
+     
+     If your callback were invoked by the JavaScript expression
+     'someValue instanceof myObject', then 'myObject' is the instance
+     of Foo being called and 'someValue' is the possible_instance
+     parameter.
+     
+     @result A reference to the builder for chaining.
+     */
+    JSExportClassDefinitionBuilder<T>& HasInstance(const HasInstanceCallback<T>& has_instance_callback) JAVASCRIPTCORECPP_NOEXCEPT {
+      JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASSDEFINITIONBUILDER_LOCK_GUARD;
+      has_instance_callback__ = has_instance_callback;
+      return *this;
+    }
+    
 ** ConvertToTypeCallback
     /*!
      @method

@@ -351,9 +351,9 @@
 		C97454D01A09C5FD00CB4CA9 /* JSExport */ = {
 			isa = PBXGroup;
 			children = (
+				C97454D51A09C6C300CB4CA9 /* JSExport.hpp */,
 				C9E6AFA31A11653A00FED053 /* JSExportObject.hpp */,
 				C9E6AFA41A11653A00FED053 /* JSExportObject.cpp */,
-				C97454D51A09C6C300CB4CA9 /* JSExport.hpp */,
 				C97454D41A09C6B800CB4CA9 /* detail */,
 			);
 			name = JSExport;
