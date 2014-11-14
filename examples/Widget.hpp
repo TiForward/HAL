@@ -71,7 +71,8 @@ public:
   Widget& operator=(const Widget&) JAVASCRIPTCORECPP_NOEXCEPT;
   Widget& operator=(Widget&&)      JAVASCRIPTCORECPP_NOEXCEPT;
   void swap(Widget&)               JAVASCRIPTCORECPP_NOEXCEPT;
-private:
+
+ private:
   
   std::string name__;
   int         number__;
