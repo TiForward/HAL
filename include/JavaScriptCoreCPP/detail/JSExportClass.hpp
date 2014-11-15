@@ -503,7 +503,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     
     JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallAsConstructor: new ", to_string(js_object));
     
-    auto new_object = js_context.CreateObject(T::Class());
+    auto new_object = js_context.CreateObject(JSExport<T>::Class());
     
     // Delete the "default constructed" native object pointer that
     // comes from the Initialize callback and replace it with the
