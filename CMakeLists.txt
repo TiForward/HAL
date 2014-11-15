@@ -21,6 +21,7 @@ config_compiler_and_linker()  # Defined in internal_utils.cmake.
 enable_testing()
 
 find_package(JavaScriptCore REQUIRED)
+include_directories(${JavaScriptCore_INCLUDE_DIRS})
 add_definitions(-DSTATICALLY_LINKED_WITH_JavaScriptCore)
 
 set( Boost_USE_STATIC_LIBS    ON  )
@@ -32,7 +33,6 @@ find_package( Boost 1.55.0 REQUIRED )
 
 include_directories(
   ${PROJECT_SOURCE_DIR}/include
-  ${JavaScriptCore_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
   )
 
