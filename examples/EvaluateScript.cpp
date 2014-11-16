@@ -11,10 +11,10 @@
 #include <iostream>
 
 int main () {
-	using namespace JavaScriptCoreCPP;
-	JSContextGroup js_context_group;
-	JSContext js_context = js_context_group.CreateContext();
-	auto js_result       = js_context.JSEvaluateScript("21 / 7");
-	std::cout << static_cast<int32_t>(js_result) << std::endl;
+  using namespace JavaScriptCoreCPP;
+  JSContextGroup js_context_group;
+  JSContext js_context = js_context_group.CreateContext();
+  auto js_result       = js_context.JSEvaluateScript("21 / 7");
+  std::cout << static_cast<int32_t>(js_result) << std::endl;
 }
 

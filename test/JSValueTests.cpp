@@ -26,11 +26,11 @@ class JSValueTests : public testing::Test {
  protected:
   virtual void SetUp() {
   }
-	
+  
   virtual void TearDown() {
   }
-	
-	JSContextGroup js_context_group;
+  
+  JSContextGroup js_context_group;
 };
 
 TEST_F(JSValueTests, JSUndefined) {

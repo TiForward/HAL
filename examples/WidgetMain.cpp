@@ -12,13 +12,13 @@
 #include <iostream>
 
 int main () {
-	using namespace JavaScriptCoreCPP;
-	JSContextGroup js_context_group;
+  using namespace JavaScriptCoreCPP;
+  JSContextGroup js_context_group;
 
-	JSContext js_context = js_context_group.CreateContext();
-	auto global_object   = js_context.get_global_object();
+  JSContext js_context = js_context_group.CreateContext();
+  auto global_object   = js_context.get_global_object();
 
-	auto widget = js_context.CreateObject(Widget::Class());
+  auto widget = js_context.CreateObject(JSExport<Widget>::Class());
   js_context.get_global_object().SetProperty("Widget", widget);
 
   auto result = js_context.JSEvaluateScript("typeof Widget;");

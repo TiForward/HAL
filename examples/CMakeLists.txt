@@ -9,8 +9,8 @@ add_executable(EvaluateScript EvaluateScript.cpp)
 target_link_libraries(EvaluateScript JavaScriptCoreCPP)
 
 add_library(JavaScriptCoreCPP_examples
-	Widget.hpp
-	Widget.cpp
+  Widget.hpp
+  Widget.cpp
   )
 target_link_libraries(JavaScriptCoreCPP_examples JavaScriptCoreCPP)
 

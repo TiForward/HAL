@@ -20,16 +20,16 @@ class JSContextTests : public testing::Test {
  protected:
   virtual void SetUp() {
   }
-	
+  
   virtual void TearDown() {
   }
-	
-	JSContextGroup js_context_group;
+  
+  JSContextGroup js_context_group;
 };
 
 TEST_F(JSContextTests, JSEvaluateScript) {
-	JSContext js_context = js_context_group.CreateContext();
-	JSValue js_value     = js_context.JSEvaluateScript("'Hello, world.'");
+  JSContext js_context = js_context_group.CreateContext();
+  JSValue js_value     = js_context.JSEvaluateScript("'Hello, world.'");
   XCTAssertEqual("Hello, world.", static_cast<std::string>(js_value));
 }
 

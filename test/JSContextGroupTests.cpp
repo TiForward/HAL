@@ -17,8 +17,8 @@
 using namespace JavaScriptCoreCPP;
 
 JSContextGroup makeJSContextGroup() {
-	JSContextGroup js_context_group;
-	return js_context_group;
+  JSContextGroup js_context_group;
+  return js_context_group;
 }
 
 TEST(JSContextGroupTests, BasicObjectCapabilities) {

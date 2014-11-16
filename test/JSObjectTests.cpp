@@ -26,11 +26,11 @@ class JSObjectTests : public testing::Test {
  protected:
   virtual void SetUp() {
   }
-	
+  
   virtual void TearDown() {
   }
-	
-	JSContextGroup js_context_group;
+  
+  JSContextGroup js_context_group;
 };
 
 TEST_F(JSObjectTests, ObjectSizes) {
@@ -92,7 +92,7 @@ TEST_F(JSObjectTests, API) {
   JSNumber pi = js_object.GetProperty(42);
   //XCTAssertEqualWithAccuracy(UnitTestConstants::pi, static_cast<double>(pi), std::numeric_limits<double>::epsilon());
   ASSERT_DOUBLE_EQ(UnitTestConstants::pi, static_cast<double>(pi));
-		
+    
   // You can't call a JSObject as a function.
   XCTAssertFalse(js_object.IsFunction());
   ASSERT_THROW(js_object(), std::runtime_error);
@@ -242,8 +242,8 @@ TEST_F(JSObjectTests, Property) {
 }
 
 TEST_F(JSObjectTests, JSArray) {
-	JSContext js_context = js_context_group.CreateContext();
-	JSArray js_array = js_context.CreateArray();
+  JSContext js_context = js_context_group.CreateContext();
+  JSArray js_array = js_context.CreateArray();
 }
 
 TEST_F(JSObjectTests, JSDate) {
