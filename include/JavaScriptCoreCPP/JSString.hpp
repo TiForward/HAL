@@ -183,11 +183,8 @@ namespace JavaScriptCoreCPP {
       friend bool operator==(const JSString& lhs, const JSString& rhs);
       
       JSStringRef    js_string_ref__ { nullptr };
-      std::once_flag u16string_once_flag__;
-      std::u16string u16string__;
-      std::once_flag string_once_flag__;
       std::string    string__;
-      std::once_flag hash_value_once_flag__;
+      std::u16string u16string__;
       std::size_t    hash_value__;
       
 #undef JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD

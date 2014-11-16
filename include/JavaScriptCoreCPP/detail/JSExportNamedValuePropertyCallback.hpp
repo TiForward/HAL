@@ -75,7 +75,7 @@ namespace JavaScriptCoreCPP { namespace detail {
       return set_callback__;
     }
     
-    ~JSExportNamedValuePropertyCallback() = default;
+    ~JSExportNamedValuePropertyCallback()                                                    = default;
     JSExportNamedValuePropertyCallback(const JSExportNamedValuePropertyCallback&)            JAVASCRIPTCORECPP_NOEXCEPT;
     JSExportNamedValuePropertyCallback(JSExportNamedValuePropertyCallback&&)                 JAVASCRIPTCORECPP_NOEXCEPT;
     JSExportNamedValuePropertyCallback& operator=(const JSExportNamedValuePropertyCallback&) JAVASCRIPTCORECPP_NOEXCEPT;

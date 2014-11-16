@@ -342,7 +342,7 @@ namespace JavaScriptCoreCPP { namespace detail {
    as a function.
    */
   template<typename T>
-  using CallAsFunctionCallback = std::function<JSValue(const T&, const std::vector<JSValue>&, JSObject&)>;
+  using CallAsFunctionCallback = std::function<JSValue(T&, const std::vector<JSValue>&, JSObject&)>;
   
   /*!
    @typedef ConvertToTypeCallback

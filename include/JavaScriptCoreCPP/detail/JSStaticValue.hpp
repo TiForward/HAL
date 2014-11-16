@@ -36,7 +36,7 @@ namespace JavaScriptCoreCPP { namespace detail {
       return set_callback__;
     }
     
-    ~JSStaticValue() = default;
+    ~JSStaticValue()                               = default;
     JSStaticValue(const JSStaticValue&)            JAVASCRIPTCORECPP_NOEXCEPT;
     JSStaticValue(JSStaticValue&&)                 JAVASCRIPTCORECPP_NOEXCEPT;
     JSStaticValue& operator=(const JSStaticValue&) JAVASCRIPTCORECPP_NOEXCEPT;

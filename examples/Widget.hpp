@@ -21,7 +21,7 @@ using namespace JavaScriptCoreCPP;
  @discussion This is an example of how to create a JavaScript object
  implemented by a C++ class.
  */
-class Widget : public JSExport<Widget> {
+class Widget : public JSExport<Widget>, public JSExportObject {
   
 public:
   

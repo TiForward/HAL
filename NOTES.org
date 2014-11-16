@@ -2,6 +2,175 @@ These are Matt Langston's developer notes to himself. This file will
 go away in the future for I want to keep it around during the
 development of the JavaScriptCoreCPP library.
 
+* JSString
+  JSString::operator std::string() const JAVASCRIPTCORECPP_NOEXCEPT {
+    JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD;
+    static std::wstring_convert<std::codecvt_utf8_utf16<char16_t>,char16_t> converter;
+    auto self = const_cast<JSString*>(this);
+    std::call_once(self -> string_once_flag__, [self]() {
+      self -> string__ = std::string(converter.to_bytes(static_cast<std::u16string>(*self)));
+    });
+    return string__;
+  }
+  
+  JSString::operator std::u16string() const JAVASCRIPTCORECPP_NOEXCEPT {
+    JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD;
+    auto self = const_cast<JSString*>(this);
+    std::call_once(self -> u16string_once_flag__, [self]() {
+      const JSChar* string_ptr = JSStringGetCharactersPtr(self -> js_string_ref__);
+      self -> u16string__ = std::u16string(string_ptr, string_ptr + self -> length());
+    });
+    return u16string__;
+  }
+  
+  std::size_t JSString::hash_value() const {
+    JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD;
+    auto self = const_cast<JSString*>(this);
+    std::call_once(self -> hash_value_once_flag__, [self]() {
+      std::hash<std::string> hash_function = std::hash<std::string>();
+      self -> hash_value__ = hash_function(static_cast<std::string>(*self));
+    });
+    return hash_value__;
+  }
+
+* JSExportObject.hpp
+    /*!
+     @method
+     
+     @abstract Return a property of this JavaScript object by numeric
+     index. This method is equivalent to calling GetProperty with a
+     string containing the numeric index, but provides optimized
+     access for numeric properties.
+     
+     @param property_index An integer value that is the property's
+     name.
+     
+     @result The property's value if this JavaScript object has the
+     property, otherwise JSUndefined.
+     */
+    virtual JSValue GetProperty2(unsigned property_index) const JAVASCRIPTCORECPP_NOEXCEPT final;
+    
+    
+    /*!
+     @method
+     
+     @abstract Set a property on this JavaScript object with an
+     optional set of attributes.
+     
+     @param property_name The name of the property to set.
+     
+     @param value The value of the the property to set.
+     
+     @param attributes An optional set of property attributes to give
+     to the property.
+     
+     @result true if the the property was set.
+     */
+    virtual bool SetProperty2(const JSString& property_name, const JSValue& property_value, const std::unordered_set<JSPropertyAttribute>& attributes) JAVASCRIPTCORECPP_NOEXCEPT final;
+    
+    /*!
+     @method
+     
+     @abstract Set a property on this JavaScript object by numeric
+     index. This method is equivalent to calling SetProperty with a
+     string containing the numeric index, but provides optimized
+     access for numeric properties.
+     
+     @param property_index An integer value that is the property's
+     name.
+     
+     @param value The value of the the property to set.
+     
+     @result true if the the property was set.
+     */
+    virtual bool SetProperty3(unsigned property_index, const JSValue& property_value) JAVASCRIPTCORECPP_NOEXCEPT final;
+
+* JSExportObject.cpp
+  JSValue JSExportObject::GetProperty2(unsigned property_index) const JAVASCRIPTCORECPP_NOEXCEPT {
+    return js_object__.GetProperty(property_index);
+  }
+  
+  bool JSExportObject::SetProperty2(const JSString& property_name, const JSValue& property_value, const std::unordered_set<JSPropertyAttribute>& attributes) JAVASCRIPTCORECPP_NOEXCEPT {
+    JAVASCRIPTCORECPP_JSEXPORTOBJECT_LOCK_GUARD;
+    
+    // TODO: Provide the virtual function
+    //
+    // virtual bool WillSetProperty(property_name, property_value);
+    //
+    // that derived classes can implement for property validation and
+    // custom access control (e.g. to enforce security policies)."
+    
+    if (js_object__.HasProperty(property_name)) {
+      JSValue previous_value = js_object__.GetProperty(property_name);
+      
+      // TODO: Provide the virtual function
+      //
+      // virtual bool WillReplaceProperty(property_name, previous_value, property_value);
+      //
+      // that derived classes can implement for property validation
+      // and custom access control (e.g. to enforce security
+      // policies)."
+    }
+    
+    bool property_set = false;
+    try {
+      js_object__.SetProperty(property_name, property_value, attributes);
+      property_set = true;
+    } catch (...) {
+    }
+    
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportObject::SetProperty: property_set = ", std::to_string(property_set), " for ", property_name, " = ", to_string(property_value));
+    
+    // TODO: Provide the virtual function
+    //
+    // virtual bool DidSetProperty(property_name, previous_value, property_value);
+    //
+    // that derived classes can implement for their own implementation
+    // concerns.
+    
+    return property_set;
+  }
+  
+  bool JSExportObject::SetProperty3(unsigned property_index, const JSValue& property_value) JAVASCRIPTCORECPP_NOEXCEPT {
+    JAVASCRIPTCORECPP_JSEXPORTOBJECT_LOCK_GUARD;
+    
+    // TODO: Provide the virtual function
+    //
+    // virtual bool WillSetProperty(property_name, property_value);
+    //
+    // that derived classes can implement for property validation and
+    // custom access control (e.g. to enforce security policies)."
+    
+    JSValue previous_value = js_object__.GetProperty(property_index);
+    if (!previous_value.IsUndefined()) {
+      // TODO: Provide the virtual function
+      //
+      // virtual bool WillReplaceProperty(property_index, previous_value, property_value);
+      //
+      // that derived classes can implement for property validation
+      // and custom access control (e.g. to enforce security
+      // policies)."
+    }
+    
+    bool property_set = false;
+    try {
+      js_object__.SetProperty(property_index, property_value);
+      property_set = true;
+    } catch (...) {
+    }
+    
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportObject::SetProperty: property_set = ", std::to_string(property_set), " for ", std::to_string(property_index), " = ", to_string(property_value));
+    
+    // TODO: Provide the virtual function
+    //
+    // virtual bool DidSetProperty(property_index, previous_value, property_value);
+    //
+    // that derived classes can implement for their own implementation
+    // concerns.
+    
+    return property_set;
+  }
+
 * JSClass.hpp
 
   /*!

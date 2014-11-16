@@ -11,10 +11,12 @@
 #define _JAVASCRIPTCORECPP_JSEXPORTOBJECT_HPP_
 
 #include "JavaScriptCoreCPP/JSExport.hpp"
+#include "JavaScriptCoreCPP/JSContext.hpp"
 #include "JavaScriptCoreCPP/JSString.hpp"
 #include "JavaScriptCoreCPP/JSValue.hpp"
+
 #include <vector>
-#include <unordered_map>
+#include <unordered_set>
 
 namespace JavaScriptCoreCPP { namespace detail {
   template<typename T>
@@ -22,8 +24,6 @@ namespace JavaScriptCoreCPP { namespace detail {
 }}
 
 namespace JavaScriptCoreCPP {
-  
-  using JSPropertyMap_t = std::unordered_map<JSString, JSValue, std::hash<JSString>>;
   
   /*!
    @class
@@ -90,54 +90,13 @@ namespace JavaScriptCoreCPP {
     /*!
      @method
      
-     @abstract Collect the names of this JavaScript object's
+     @abstract Return the names of this JavaScript object's enumerable
      properties.
      
-     @discussion Derived classes should provide only the names of
-     properties that this JavaScript object provides through the
-     GetProperty and SetProperty methods. Other property names are
-     automatically added from properties vended by the JavaScript
-     object's parent class chain and properties belonging to the
-     JavaScript object's prototype chain.
-     
-     @param accumulator A JavaScript property name accumulator in
-     which to accumulate the names of this JavaScript object's
-     properties. Use JSPropertyNameAccumulator::AddName to add
-     property names to the accumulator. Property name accumulators are
-     used by JavaScript for...in loops.
+     @result A JSPropertyNameArray containing the names object's
+     enumerable properties.
      */
-    virtual void GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const JAVASCRIPTCORECPP_NOEXCEPT final;
-    
-    /*!
-     @method
-     
-     @abstract Return the number of properties in this JavaScript
-     object.
-     
-     @result The number of properties in this JavaScript object.
-     */
-    virtual std::size_t GetPropertyMapCount() const JAVASCRIPTCORECPP_NOEXCEPT final;
-    
-    /*!
-     @method
-     
-     @abstract Return the current map of this JavaScript object's
-     properties.
-     
-     @result A JSPropertyMap_t containing this JavaScript object's
-     current properties.
-     */
-    virtual JSPropertyMap_t GetPropertyMap() const JAVASCRIPTCORECPP_NOEXCEPT final;
-    
-    /*!
-     @method
-     
-     @abstract Determine whether this object can be called as a
-     function.
-     
-     @result true if this object can be called as a function.
-     */
-    virtual bool IsFunction() const JAVASCRIPTCORECPP_NOEXCEPT final;
+    virtual std::vector<JSString> GetEnumerablePropertyNames() const JAVASCRIPTCORECPP_NOEXCEPT final;
     
     /*!
      @method
@@ -157,23 +116,16 @@ namespace JavaScriptCoreCPP {
      
      @result Return the function's return value.
      */
-    virtual JSValue CallAsFunction(const std::vector<JSValue>& arguments, JSObject this_object) JAVASCRIPTCORECPP_NOEXCEPT;
+    virtual JSValue CallAsFunction(const std::vector<JSValue>& arguments, JSObject this_object);
     
     /*!
      @method
      
-     @abstract Determine whether this object can be called as a
-     constructor.
-     
-     @result true if this object can be called as a constructor.
-     */
-    virtual bool IsConstructor() const JAVASCRIPTCORECPP_NOEXCEPT final;
-    
-    /*!
      @method
      
-     @abstract This constructor is invoked when your JavaScript object
-     is created when not in a 'new' expression.
+     @abstract This mandatory constructor is invoked when your
+     JavaScript object is created not as the result of a JavaScript
+     'new' expression.
      
      @param js_context The JSContext in which your JavaScript object
      is created.
@@ -183,37 +135,47 @@ namespace JavaScriptCoreCPP {
     /*!
      @method
      
-     @abstract This constructor is invoked when your JavaScript object
-     is called in a 'new' expression.
+     @abstract This mandatory constructor is invoked when your
+     JavaScript object is created as the result of being called in a
+     JavaScript 'new' expression.
      
-     @param arguments The arguments passed to the constructor in the
-     'new' expression.
+     @param arguments An optional list of JSValues to initialize your
+     JavaScript object with as the result of being called in a
+     JavaScript 'new' expression.
      */
     JSExportObject(const JSExportObject&, const std::vector<JSValue>& arguments) JAVASCRIPTCORECPP_NOEXCEPT;
+    
+    virtual JSContext get_context() const JAVASCRIPTCORECPP_NOEXCEPT final;
+    
+    static void JSExportInitialize();
+    
+    virtual ~JSExportObject()  JAVASCRIPTCORECPP_NOEXCEPT;
+    void swap(JSExportObject&) JAVASCRIPTCORECPP_NOEXCEPT;
+    
+  private:
     
     /*!
      @method
      
-     @abstract Convert this JSExportObject to a JSValue.
+     @abstract Collect the names of this JavaScript object's
+     properties.
      
-     @result A JSValue with the result of conversion.
+     @discussion Derived classes should provide only the names of
+     properties that this JavaScript object provides through the
+     GetProperty and SetProperty methods. Other property names are
+     automatically added from properties vended by the JavaScript
+     object's parent class chain and properties belonging to the
+     JavaScript object's prototype chain.
+     
+     @param accumulator A JavaScript property name accumulator in
+     which to accumulate the names of this JavaScript object's
+     properties. Use JSPropertyNameAccumulator::AddName to add
+     property names to the accumulator. Property name accumulators are
+     used by JavaScript for...in loops.
      */
-    virtual operator JSValue() const final;
+    virtual void GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const JAVASCRIPTCORECPP_NOEXCEPT final;
     
-    static void JSExportInitialize();
-    
-    virtual ~JSExportObject()                        JAVASCRIPTCORECPP_NOEXCEPT;
-    JSExportObject(const JSExportObject&)            JAVASCRIPTCORECPP_NOEXCEPT;
-    JSExportObject(JSExportObject&&)                 JAVASCRIPTCORECPP_NOEXCEPT;
-    JSExportObject& operator=(const JSExportObject&) JAVASCRIPTCORECPP_NOEXCEPT;
-    JSExportObject& operator=(JSExportObject&&)      JAVASCRIPTCORECPP_NOEXCEPT;
-    void swap(JSExportObject&)                       JAVASCRIPTCORECPP_NOEXCEPT;
-    
-  protected:
-    
-  private:
-    
-    JSPropertyMap_t js_property_map__;
+    JSObject js_object__;
     
 #undef  JAVASCRIPTCORECPP_JSEXPORTOBJECT_LOCK_GUARD
 #ifdef  JAVASCRIPTCORECPP_THREAD_SAFE

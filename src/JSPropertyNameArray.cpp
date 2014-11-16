@@ -61,8 +61,7 @@ namespace JavaScriptCoreCPP {
   
   JSPropertyNameArray& JSPropertyNameArray::operator=(JSPropertyNameArray&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSPROPERTYNAMEARRAY_LOCK_GUARD;
-    JSPropertyNameArrayRelease(js_property_name_array_ref__);
-    js_property_name_array_ref__ = rhs.js_property_name_array_ref__;
+    swap(rhs);
     JSPropertyNameArrayRetain(js_property_name_array_ref__);
     return *this;
   }

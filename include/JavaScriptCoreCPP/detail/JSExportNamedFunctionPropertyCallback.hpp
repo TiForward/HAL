@@ -78,12 +78,12 @@ namespace JavaScriptCoreCPP { namespace detail {
       return function_callback__;
     }
     
-    ~JSExportNamedFunctionPropertyCallback() = default;
-    JSExportNamedFunctionPropertyCallback(const JSExportNamedFunctionPropertyCallback&) JAVASCRIPTCORECPP_NOEXCEPT;
-    JSExportNamedFunctionPropertyCallback(JSExportNamedFunctionPropertyCallback&&) JAVASCRIPTCORECPP_NOEXCEPT;
+    ~JSExportNamedFunctionPropertyCallback()                                                       = default;
+    JSExportNamedFunctionPropertyCallback(const JSExportNamedFunctionPropertyCallback&)            JAVASCRIPTCORECPP_NOEXCEPT;
+    JSExportNamedFunctionPropertyCallback(JSExportNamedFunctionPropertyCallback&&)                 JAVASCRIPTCORECPP_NOEXCEPT;
     JSExportNamedFunctionPropertyCallback& operator=(const JSExportNamedFunctionPropertyCallback&) JAVASCRIPTCORECPP_NOEXCEPT;
-    JSExportNamedFunctionPropertyCallback& operator=(JSExportNamedFunctionPropertyCallback&&) JAVASCRIPTCORECPP_NOEXCEPT;
-    void swap(JSExportNamedFunctionPropertyCallback&) JAVASCRIPTCORECPP_NOEXCEPT;
+    JSExportNamedFunctionPropertyCallback& operator=(JSExportNamedFunctionPropertyCallback&&)      JAVASCRIPTCORECPP_NOEXCEPT;
+    void swap(JSExportNamedFunctionPropertyCallback&)                                              JAVASCRIPTCORECPP_NOEXCEPT;
     
   private:
     

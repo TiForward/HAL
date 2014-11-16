@@ -234,8 +234,8 @@ namespace JavaScriptCoreCPP {
   
   JSContext& JSContext::operator=(const JSContext& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    js_context_group__ = rhs.js_context_group__;
     JSGlobalContextRelease(js_global_context_ref__);
+    js_context_group__      = rhs.js_context_group__;
     js_global_context_ref__ = rhs.js_global_context_ref__;
     JSGlobalContextRetain(js_global_context_ref__);
     return *this;
@@ -243,9 +243,6 @@ namespace JavaScriptCoreCPP {
   
   JSContext& JSContext::operator=(JSContext&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    js_context_group__ = std::move(rhs.js_context_group__);
-    JSGlobalContextRelease(js_global_context_ref__);
-    js_global_context_ref__ = rhs.js_global_context_ref__;
     JSGlobalContextRetain(js_global_context_ref__);
     return *this;
   }
@@ -263,7 +260,6 @@ namespace JavaScriptCoreCPP {
   JSContext::JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class) JAVASCRIPTCORECPP_NOEXCEPT
   : js_context_group__(js_context_group)
   , js_global_context_ref__(JSGlobalContextCreateInGroup(js_context_group, global_object_class)) {
-    JSGlobalContextRetain(js_global_context_ref__);
   }
   
   JSContext::JSContext(JSContextRef js_context_ref) JAVASCRIPTCORECPP_NOEXCEPT

@@ -57,8 +57,7 @@ namespace JavaScriptCoreCPP {
   
   JSContextGroup& JSContextGroup::operator=(JSContextGroup&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSCONTEXTGROUP_LOCK_GUARD;
-    JSContextGroupRelease(js_context_group_ref__);
-    js_context_group_ref__ = rhs.js_context_group_ref__;
+    swap(rhs);
     JSContextGroupRetain(js_context_group_ref__);
     return *this;
   }

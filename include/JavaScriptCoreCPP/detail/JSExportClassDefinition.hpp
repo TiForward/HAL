@@ -83,7 +83,14 @@ namespace JavaScriptCoreCPP { namespace detail {
   JSExportClassDefinition<T>::JSExportClassDefinition(const JSExportClassDefinition<T>& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : JSClassDefinition(rhs)
   , named_value_property_callback_map__(rhs.named_value_property_callback_map__)
-  , named_function_property_callback_map__(rhs.named_function_property_callback_map__) {
+  , named_function_property_callback_map__(rhs.named_function_property_callback_map__)
+  , has_property_callback__(rhs.has_property_callback__)
+  , get_property_callback__(rhs.get_property_callback__)
+  , set_property_callback__(rhs.set_property_callback__)
+  , delete_property_callback__(rhs.delete_property_callback__)
+  , get_property_names_callback__(rhs.get_property_names_callback__)
+  , call_as_function_callback__(rhs.call_as_function_callback__)
+  , convert_to_type_callback__(rhs.convert_to_type_callback__) {
     InitializeNamedPropertyCallbacks();
     
 //    std::clog << "MDL: copy ctor" << std::endl;
@@ -94,7 +101,14 @@ namespace JavaScriptCoreCPP { namespace detail {
   JSExportClassDefinition<T>::JSExportClassDefinition(JSExportClassDefinition<T>&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : JSClassDefinition(rhs)
   , named_value_property_callback_map__(std::move(rhs.named_value_property_callback_map__))
-  , named_function_property_callback_map__(std::move(rhs.named_function_property_callback_map__)) {
+  , named_function_property_callback_map__(std::move(rhs.named_function_property_callback_map__))
+  , has_property_callback__(std::move(rhs.has_property_callback__))
+  , get_property_callback__(std::move(rhs.get_property_callback__))
+  , set_property_callback__(std::move(rhs.set_property_callback__))
+  , delete_property_callback__(std::move(rhs.delete_property_callback__))
+  , get_property_names_callback__(std::move(rhs.get_property_names_callback__))
+  , call_as_function_callback__(std::move(rhs.call_as_function_callback__))
+  , convert_to_type_callback__(std::move(rhs.convert_to_type_callback__)) {
     InitializeNamedPropertyCallbacks();
     
 //    std::clog << "MDL: move ctor" << std::endl;
@@ -107,6 +121,13 @@ namespace JavaScriptCoreCPP { namespace detail {
     JSClassDefinition::operator=(rhs);
     named_value_property_callback_map__    = rhs.named_value_property_callback_map__;
     named_function_property_callback_map__ = rhs.named_function_property_callback_map__;
+    has_property_callback__                = rhs.has_property_callback__;
+    get_property_callback__                = rhs.get_property_callback__;
+    set_property_callback__                = rhs.set_property_callback__;
+    delete_property_callback__             = rhs.delete_property_callback__;
+    get_property_names_callback__          = rhs.get_property_names_callback__;
+    call_as_function_callback__            = rhs.call_as_function_callback__;
+    convert_to_type_callback__             = rhs.convert_to_type_callback__;
     InitializeNamedPropertyCallbacks();
     
 //    std::clog << "MDL: copy assignment" << std::endl;
@@ -137,6 +158,13 @@ namespace JavaScriptCoreCPP { namespace detail {
       // effectively swapped.
       swap(named_value_property_callback_map__   , other.named_value_property_callback_map__);
       swap(named_function_property_callback_map__, other.named_function_property_callback_map__);
+      swap(has_property_callback__               , other.has_property_callback__);
+      swap(get_property_callback__               , other.get_property_callback__);
+      swap(set_property_callback__               , other.set_property_callback__);
+      swap(delete_property_callback__            , other.delete_property_callback__);
+      swap(get_property_names_callback__         , other.get_property_names_callback__);
+      swap(call_as_function_callback__           , other.call_as_function_callback__);
+      swap(convert_to_type_callback__            , other.convert_to_type_callback__);
     }
     
     template<typename T>

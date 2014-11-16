@@ -131,13 +131,9 @@ namespace JavaScriptCoreCPP { namespace detail {
   template<typename T>
   JSExportClass<T>::JSExportClass(const JSExportClassDefinition<T>& js_export_class_definition) JAVASCRIPTCORECPP_NOEXCEPT
   : JSClass(js_export_class_definition) {
-    
-    std::once_flag of;
-    std::call_once(of, [&js_export_class_definition]() {
-      JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
-      js_export_class_definition__ = js_export_class_definition;
-      //js_export_class_definition__.Print();
-    });
+    JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
+    js_export_class_definition__ = js_export_class_definition;
+    //js_export_class_definition__.Print();
   }
   
   template<typename T>
@@ -181,7 +177,6 @@ namespace JavaScriptCoreCPP { namespace detail {
     JAVASCRIPTCORECPP_LOG_DEBUG("JSExport::Finalize: delete native object ", native_object_ptr);
     delete reinterpret_cast<T*>(native_object_ptr);
   }
-  
   
   template<typename T>
   JSValueRef JSExportClass<T>::GetNamedValuePropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception) try {
@@ -321,7 +316,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     auto       callback       = js_export_class_definition__.has_property_callback__;
     const bool callback_found = callback != nullptr;
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::HasProperty: callback found = ", callback_found, " for ", to_string(js_object), ".", property_name);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::HasProperty: callback found = ", callback_found, " for ", std::to_string(reinterpret_cast<intptr_t>(reinterpret_cast<T*>(js_object.GetPrivate()))), ".", property_name);
     
     // precondition
     assert(callback_found);
@@ -329,7 +324,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     const auto native_object_ptr = reinterpret_cast<const T*>(js_object.GetPrivate());
     const auto result            = callback(*native_object_ptr, property_name);
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::HasProperty: result = ", result, " for ", to_string(js_object), ".", property_name);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::HasProperty: result = ", result, " for ", std::to_string(reinterpret_cast<intptr_t>(reinterpret_cast<T*>(js_object.GetPrivate()))), ".", property_name);
     
     return result;
     
@@ -478,8 +473,8 @@ namespace JavaScriptCoreCPP { namespace detail {
     // precondition
     assert(callback_found);
     
-    const auto native_object_ptr = reinterpret_cast<const T*>(js_object.GetPrivate());
-    const auto result            = callback(*native_object_ptr, to_vector(js_context, argument_count, arguments_array), this_object);
+    auto native_object_ptr = reinterpret_cast<T*>(js_object.GetPrivate());
+    const auto result      = callback(*native_object_ptr, to_vector(js_context, argument_count, arguments_array), this_object);
     
     JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallAsFunction: result = ", to_string(result), " for ", to_string(this_object), ".", to_string(js_object), "(...)");
     

@@ -54,7 +54,7 @@ namespace JavaScriptCoreCPP { namespace detail {
       return attributes__;
     }
     
-    virtual ~JSPropertyCallback() = default;
+    virtual ~JSPropertyCallback()                            = default;
     JSPropertyCallback(const JSPropertyCallback&)            JAVASCRIPTCORECPP_NOEXCEPT;
     JSPropertyCallback(JSPropertyCallback&&)                 JAVASCRIPTCORECPP_NOEXCEPT;
     JSPropertyCallback& operator=(const JSPropertyCallback&) JAVASCRIPTCORECPP_NOEXCEPT;

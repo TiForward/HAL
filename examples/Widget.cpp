@@ -13,25 +13,25 @@
 #include <sstream>
 
 void Widget::JSExportInitialize() {
-  SetClassVersion(1);
-  AddValueProperty("name"       , std::mem_fn(&Widget::get_name)  , std::mem_fn(&Widget::set_name));
-  AddValueProperty("number"     , std::mem_fn(&Widget::get_number), std::mem_fn(&Widget::set_number));
-  AddValueProperty("pi"         , std::mem_fn(&Widget::pi));
-  AddFunctionProperty("sayHello", std::mem_fn(&Widget::sayHello));
+  JSExport<Widget>::SetClassVersion(1);
+  JSExport<Widget>::AddValueProperty("name"       , std::mem_fn(&Widget::get_name)  , std::mem_fn(&Widget::set_name));
+  JSExport<Widget>::AddValueProperty("number"     , std::mem_fn(&Widget::get_number), std::mem_fn(&Widget::set_number));
+  JSExport<Widget>::AddValueProperty("pi"         , std::mem_fn(&Widget::pi));
+  JSExport<Widget>::AddFunctionProperty("sayHello", std::mem_fn(&Widget::sayHello));
 }
 
 double Widget::pi__ = 3.141592653589793;
 
 
 Widget::Widget(const JSContext& js_context) JAVASCRIPTCORECPP_NOEXCEPT
-: JSExport<Widget>(js_context)
+: JSExportObject(js_context)
 , name__("world")
 , number__(42) {
   JAVASCRIPTCORECPP_LOG_DEBUG("Widget ctor");
 }
 
 Widget::Widget(const Widget& rhs, const std::vector<JSValue>& arguments) JAVASCRIPTCORECPP_NOEXCEPT
-: JSExport<Widget>(rhs, arguments)
+: JSExportObject(rhs, arguments)
 , name__(rhs.name__)
 , number__(rhs.number__) {
   JAVASCRIPTCORECPP_LOG_DEBUG("Widget JavaScript constructor");
@@ -109,21 +109,21 @@ Widget::~Widget() JAVASCRIPTCORECPP_NOEXCEPT {
 }
 
 Widget::Widget(const Widget& rhs) JAVASCRIPTCORECPP_NOEXCEPT
-: JSExport<Widget>(rhs.get_context())
+: JSExportObject(rhs.get_context())
 , name__(rhs.name__)
 , number__(rhs.number__) {
   JAVASCRIPTCORECPP_LOG_DEBUG("Widget copy ctor");
 }
 
 Widget::Widget(Widget&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
-: JSExport<Widget>(rhs.get_context())
+: JSExportObject(rhs.get_context())
 , name__(rhs.name__)
 , number__(rhs.number__) {
   JAVASCRIPTCORECPP_LOG_DEBUG("Widget move ctor");
 }
 
 Widget& Widget::operator=(const Widget& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
-  JSExport<Widget>::operator=(rhs);
+  JSExportObject::operator=(rhs);
   name__   = rhs.name__;
   number__ = rhs.number__;
   JAVASCRIPTCORECPP_LOG_DEBUG("Widget copy assign");
@@ -137,7 +137,7 @@ Widget& Widget::operator=(Widget&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
 }
 
 void Widget::swap(Widget& other) JAVASCRIPTCORECPP_NOEXCEPT {
-  JSExport<Widget>::swap(other);
+  JSExportObject::swap(other);
   using std::swap;
   
   // By swapping the members of two classes, the two classes are

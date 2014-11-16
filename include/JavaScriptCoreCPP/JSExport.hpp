@@ -12,16 +12,13 @@
 
 #include "JavaScriptCoreCPP/detail/JSBase.hpp"
 #include "JavaScriptCoreCPP/detail/JSExportClassDefinitionBuilder.hpp"
-#include "JavaScriptCoreCPP/JSContext.hpp"
 
 #include <string>
 #include <memory>
 #include <mutex>
 
 namespace JavaScriptCoreCPP {
-
-  using namespace JavaScriptCoreCPP::detail;
-
+  
   /*!
    @class
    
@@ -33,46 +30,46 @@ namespace JavaScriptCoreCPP {
    
    class Widget : public JSExport<Widget> {
    
-     // Mandatory constructor.
-     Widget::Widget(const JSContext& js_context) : JSExport<Widget>(js_context)
-     }
-
-     // Add additional C++ methods to implement any or all of the
-     // following characteristics that define a JavaScript object (all
-     // described in detail in the documentation that follows):
-     //
-     // 1. JavaScript named value properties (i.e. getters and/or
-     //    setters) with full support for all JavaScript property
-     //    attributes (i.e.  'None', 'ReadOnly', 'DontEnum' and
-     //    'DontDelete').
-     //   
-     // 2. JavaScript named function properties with full support for
-     //    all JavaScript property attributes (i.e.  'None',
-     //    'ReadOnly', 'DontEnum' and 'DontDelete').
-     //
-     // 3. Calling Widget as a function property on another JavaScript
-     //    object.
-     //
-     // 4. Calling Widget as a constructor in a JavaScript 'new'
-     //    expression.
-     //
-     // 5. Definig how a Widget behaves when it is the target of a
-     //    JavaScript 'instanceof' expression.
-     //
-     // 6. Definig how a Widget converts to a JavaScript string or
-     //    number.
-
-     // Implementing this static function is how your C++ class
-     // seamlessly integrates into JavaScriptCore.
-     static void JSExportInitialize() {
-       // All of the characteristics are optional, but here are some
-       // examples:
-       SetClassVersion(1);
-       AddValueProperty("name"       , std::mem_fn(&Widget::get_name)  , std::mem_fn(&Widget::set_name));
-       AddValueProperty("number"     , std::mem_fn(&Widget::get_number), std::mem_fn(&Widget::set_number));
-       AddValueProperty("pi"         , std::mem_fn(&Widget::pi));
-       AddFunctionProperty("sayHello", std::mem_fn(&Widget::sayHello));
-     }
+   // Mandatory constructor.
+   Widget::Widget(const JSContext& js_context)
+   }
+   
+   // Add additional C++ methods to implement any or all of the
+   // following characteristics that define a JavaScript object (all
+   // described in detail in the documentation that follows):
+   //
+   // 1. JavaScript named value properties (i.e. getters and/or
+   //    setters) with full support for all JavaScript property
+   //    attributes (i.e.  'None', 'ReadOnly', 'DontEnum' and
+   //    'DontDelete').
+   //
+   // 2. JavaScript named function properties with full support for
+   //    all JavaScript property attributes (i.e.  'None',
+   //    'ReadOnly', 'DontEnum' and 'DontDelete').
+   //
+   // 3. Calling Widget as a function property on another JavaScript
+   //    object.
+   //
+   // 4. Calling Widget as a constructor in a JavaScript 'new'
+   //    expression.
+   //
+   // 5. Definig how a Widget behaves when it is the target of a
+   //    JavaScript 'instanceof' expression.
+   //
+   // 6. Definig how a Widget converts to a JavaScript string or
+   //    number.
+   
+   // Implementing this static function is how your C++ class
+   // seamlessly integrates into JavaScriptCore.
+   static void JSExportInitialize() {
+   // All of the characteristics are optional, but here are some
+   // examples:
+   SetClassVersion(1);
+   AddValueProperty("name"       , std::mem_fn(&Widget::get_name)  , std::mem_fn(&Widget::set_name));
+   AddValueProperty("number"     , std::mem_fn(&Widget::get_number), std::mem_fn(&Widget::set_number));
+   AddValueProperty("pi"         , std::mem_fn(&Widget::pi));
+   AddFunctionProperty("sayHello", std::mem_fn(&Widget::sayHello));
+   }
    };
    
    @discussion All properties are optional. By default the 'class
@@ -119,22 +116,12 @@ namespace JavaScriptCoreCPP {
      
      @abstract Return the JSClass for the C++ class T.
      */
-    static JSExportClass<T> Class();
+    static detail::JSExportClass<T> Class();
     
-    JSExport()                           = delete;
-    virtual ~JSExport()                  JAVASCRIPTCORECPP_NOEXCEPT;
-    JSExport(const JSExport&)            JAVASCRIPTCORECPP_NOEXCEPT;
-    JSExport(JSExport&&)                 JAVASCRIPTCORECPP_NOEXCEPT;
-    JSExport& operator=(const JSExport&) JAVASCRIPTCORECPP_NOEXCEPT;
-    JSExport& operator=(JSExport&&)      JAVASCRIPTCORECPP_NOEXCEPT;
-    void swap(JSExport&)                 JAVASCRIPTCORECPP_NOEXCEPT;
+    virtual ~JSExport() JAVASCRIPTCORECPP_NOEXCEPT {
+    }
     
   protected:
-    
-    JSExport(const JSContext& js_context);
-    JSExport(const JSExport<T>&, const std::vector<JSValue>& arguments);
-    
-    JSContext get_context() const JAVASCRIPTCORECPP_NOEXCEPT;
     
     /*!
      @method
@@ -224,8 +211,8 @@ namespace JavaScriptCoreCPP {
      3. You have already added a property with the same property_name.
      */
     static void AddValueProperty(const JSString& property_name,
-                                 GetNamedValuePropertyCallback<T> get_callback,
-                                 SetNamedValuePropertyCallback<T> set_callback = nullptr,
+                                 detail::GetNamedValuePropertyCallback<T> get_callback,
+                                 detail::SetNamedValuePropertyCallback<T> set_callback = nullptr,
                                  bool enumerable = true);
     
     /*!
@@ -263,7 +250,7 @@ namespace JavaScriptCoreCPP {
      
      3. You have already added a property with the same property_name.
      */
-    static void AddFunctionProperty(const JSString& function_name, CallNamedFunctionCallback<T> function_callback, bool enumerable = true);
+    static void AddFunctionProperty(const JSString& function_name, detail::CallNamedFunctionCallback<T> function_callback, bool enumerable = true);
     
     /*!
      @method
@@ -305,7 +292,7 @@ namespace JavaScriptCoreCPP {
      properties vended by your class' parent class chain, then
      properties belonging to your JavaScript object's prototype chain.
      */
-    static void AddHasPropertyCallback(const HasPropertyCallback<T>& has_property_callback);
+    static void AddHasPropertyCallback(const detail::HasPropertyCallback<T>& has_property_callback);
     
     /*!
      @method
@@ -339,7 +326,7 @@ namespace JavaScriptCoreCPP {
      then properties vended by your class' parent class chain, then
      properties belonging to your JavaScript object's prototype chain.
      */
-    static void AddGetPropertyCallback(const GetPropertyCallback<T>& get_property_callback);
+    static void AddGetPropertyCallback(const detail::GetPropertyCallback<T>& get_property_callback);
     
     /*!
      @method
@@ -374,7 +361,7 @@ namespace JavaScriptCoreCPP {
      then properties belonging to your JavaScript object's prototype
      chain.
      */
-    static void AddSetPropertyCallback(const SetPropertyCallback<T>& set_property_callback);
+    static void AddSetPropertyCallback(const detail::SetPropertyCallback<T>& set_property_callback);
     
     /*!
      @method
@@ -408,7 +395,7 @@ namespace JavaScriptCoreCPP {
      then properties vended by your class' parent class chain, then
      properties belonging to your JavaScript object's prototype chain.
      */
-    static void AddDeletePropertyCallback(const DeletePropertyCallback<T>& delete_property_callback);
+    static void AddDeletePropertyCallback(const detail::DeletePropertyCallback<T>& delete_property_callback);
     
     /*!
      @method
@@ -444,7 +431,7 @@ namespace JavaScriptCoreCPP {
      invoked when your JavaScript object is used in a JavaScript
      for...in loop.
      */
-    static void AddGetPropertyNamesCallback(const GetPropertyNamesCallback<T>& get_property_names_callback);
+    static void AddGetPropertyNamesCallback(const detail::GetPropertyNamesCallback<T>& get_property_names_callback);
     
     /*!
      @method
@@ -477,7 +464,7 @@ namespace JavaScriptCoreCPP {
      @result Your callback should return the value produced by calling
      your JavaScript object as a function.
      */
-    static void AddCallAsFunctionCallback(const CallAsFunctionCallback<T>& call_as_function_callback);
+    static void AddCallAsFunctionCallback(const detail::CallAsFunctionCallback<T>& call_as_function_callback);
     
     /*!
      @method
@@ -512,14 +499,11 @@ namespace JavaScriptCoreCPP {
      to forward the reqeust to your class' parent class chain, then
      your JavaScript object's prototype chain.
      */
-    static void AddConvertToTypeCallback(const ConvertToTypeCallback<T>& convert_to_type_callback);
+    static void AddConvertToTypeCallback(const detail::ConvertToTypeCallback<T>& convert_to_type_callback);
     
   private:
     
-    friend class JSObject;
-    
-    JSContext js_context__;
-    static JSExportClassDefinitionBuilder<T> builder__;
+    static detail::JSExportClassDefinitionBuilder<T> builder__;
   };
   
   template<typename T>
@@ -538,120 +522,65 @@ namespace JavaScriptCoreCPP {
   }
   
   template<typename T>
-  void JSExport<T>::AddValueProperty(const JSString& property_name, GetNamedValuePropertyCallback<T> get_callback, SetNamedValuePropertyCallback<T> set_callback, bool enumerable) {
+  void JSExport<T>::AddValueProperty(const JSString& property_name, detail::GetNamedValuePropertyCallback<T> get_callback, detail::SetNamedValuePropertyCallback<T> set_callback, bool enumerable) {
     builder__.AddValueProperty(property_name, get_callback, set_callback);
   }
   
   template<typename T>
-  void JSExport<T>::AddFunctionProperty(const JSString& function_name, CallNamedFunctionCallback<T> function_callback, bool enumerable) {
+  void JSExport<T>::AddFunctionProperty(const JSString& function_name, detail::CallNamedFunctionCallback<T> function_callback, bool enumerable) {
     builder__.AddFunctionProperty(function_name, function_callback, enumerable);
   }
   
   template<typename T>
-  void JSExport<T>::AddHasPropertyCallback(const HasPropertyCallback<T>& has_property_callback) {
+  void JSExport<T>::AddHasPropertyCallback(const detail::HasPropertyCallback<T>& has_property_callback) {
     builder__.HasProperty(has_property_callback);
   }
   
   template<typename T>
-  void JSExport<T>::AddGetPropertyCallback(const GetPropertyCallback<T>& get_property_callback) {
+  void JSExport<T>::AddGetPropertyCallback(const detail::GetPropertyCallback<T>& get_property_callback) {
     builder__.GetProperty(get_property_callback);
   }
   
   template<typename T>
-  void JSExport<T>::AddSetPropertyCallback(const SetPropertyCallback<T>& set_property_callback) {
+  void JSExport<T>::AddSetPropertyCallback(const detail::SetPropertyCallback<T>& set_property_callback) {
     builder__.SetProperty(set_property_callback);
   }
   
   template<typename T>
-  void JSExport<T>::AddDeletePropertyCallback(const DeletePropertyCallback<T>& delete_property_callback) {
+  void JSExport<T>::AddDeletePropertyCallback(const detail::DeletePropertyCallback<T>& delete_property_callback) {
     builder__.DeleteProperty(delete_property_callback);
   }
   
   template<typename T>
-  void JSExport<T>::AddGetPropertyNamesCallback(const GetPropertyNamesCallback<T>& get_property_names_callback) {
+  void JSExport<T>::AddGetPropertyNamesCallback(const detail::GetPropertyNamesCallback<T>& get_property_names_callback) {
     builder__.GetPropertyNames(get_property_names_callback);
   }
   
   template<typename T>
-  void JSExport<T>::AddCallAsFunctionCallback(const CallAsFunctionCallback<T>& call_as_function_callback) {
-    builder__.CallAsfunction(call_as_function_callback);
+  void JSExport<T>::AddCallAsFunctionCallback(const detail::CallAsFunctionCallback<T>& call_as_function_callback) {
+    builder__.CallAsFunction(call_as_function_callback);
   }
-
+  
   template<typename T>
-  void JSExport<T>::AddConvertToTypeCallback(const ConvertToTypeCallback<T>& convert_to_type_callback) {
+  void JSExport<T>::AddConvertToTypeCallback(const detail::ConvertToTypeCallback<T>& convert_to_type_callback) {
     builder__.ConvertTotype(convert_to_type_callback);
   }
   
   template<typename T>
-  JSExportClassDefinitionBuilder<T> JSExport<T>::builder__ = JSExportClassDefinitionBuilder<T>(typeid(T).name());
+  detail::JSExportClassDefinitionBuilder<T> JSExport<T>::builder__ = detail::JSExportClassDefinitionBuilder<T>(typeid(T).name());
   
   template<typename T>
-  JSExportClass<T> JSExport<T>::Class() {
-    static JSExportClassDefinition<T> js_export_class_definition;
-    static JSExportClass<T>           js_export_class;
-    static std::once_flag             of;
+  detail::JSExportClass<T> JSExport<T>::Class() {
+    static detail::JSExportClassDefinition<T> js_export_class_definition;
+    static detail::JSExportClass<T>           js_export_class;
+    static std::once_flag                     of;
     std::call_once(of, []() {
       T::JSExportInitialize();
       js_export_class_definition = builder__.build();
-      js_export_class            = JSExportClass<T>(js_export_class_definition);
+      js_export_class            = detail::JSExportClass<T>(js_export_class_definition);
     });
     
     return js_export_class;
-  }
-  
-  template<typename T>
-  JSExport<T>::JSExport(const JSContext& js_context)
-  : js_context__(js_context) {
-  }
-  
-  template<typename T>
-  JSExport<T>::JSExport(const JSExport<T>& rhs, const std::vector<JSValue>& arguments)
-  : JSExport(rhs) {
-  }
-
-  template<typename T>
-  JSExport<T>::~JSExport() JAVASCRIPTCORECPP_NOEXCEPT {
-  }
-  
-  template<typename T>
-  JSExport<T>::JSExport(const JSExport<T>& rhs) JAVASCRIPTCORECPP_NOEXCEPT
-  : js_context__(rhs.js_context__) {
-  }
-  
-  template<typename T>
-  JSExport<T>::JSExport(JSExport&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
-  : js_context__(std::move(rhs.js_context__)) {
-  }
-  
-  template<typename T>
-  JSExport<T>& JSExport<T>::operator=(const JSExport<T>& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
-    js_context__ = rhs.js_context__;
-    return *this;
-  }
-  
-  template<typename T>
-  JSExport<T>& JSExport<T>::operator=(JSExport<T>&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
-    swap(rhs);
-    return *this;
-  }
-  
-  template<typename T>
-  void JSExport<T>::swap(JSExport<T>& other) JAVASCRIPTCORECPP_NOEXCEPT {
-    using std::swap;
-    
-    // By swapping the members of two classes, the two classes are
-    // effectively swapped.
-    swap(js_context__, other.js_context__);
-  }
-  
-  template<typename T>
-  void swap(JSExport<T>& first, JSExport<T>& second) JAVASCRIPTCORECPP_NOEXCEPT {
-    first.swap(second);
-  }
-  
-  template<typename T>
-  JSContext JSExport<T>::get_context() const JAVASCRIPTCORECPP_NOEXCEPT {
-    return js_context__;
   }
   
   // template<typename T, typename... Us>

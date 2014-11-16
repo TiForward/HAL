@@ -14,18 +14,17 @@
 namespace JavaScriptCoreCPP {
   
   void JSExportObject::JSExportInitialize() {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportObject::JSExportInitialize");
     SetClassVersion(1);
     AddHasPropertyCallback(std::mem_fn(&JSExportObject::HasProperty));
     AddGetPropertyCallback(std::mem_fn(&JSExportObject::GetProperty));
     AddSetPropertyCallback(std::mem_fn(&JSExportObject::SetProperty));
     AddDeletePropertyCallback(std::mem_fn(&JSExportObject::DeleteProperty));
-    AddHasPropertyCallback(std::mem_fn(&JSExportObject::HasProperty));
+    AddGetPropertyNamesCallback(std::mem_fn(&JSExportObject::GetPropertyNames));
+    AddCallAsFunctionCallback(std::mem_fn(&JSExportObject::CallAsFunction));
   }
   
-  
   bool JSExportObject::HasProperty(const JSString& property_name) const JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSEXPORTOBJECT_LOCK_GUARD;
-    
     // TODO: Provide the virtual function
     //
     // virtual bool WillGetProperty(property_name);
@@ -33,12 +32,10 @@ namespace JavaScriptCoreCPP {
     // that derived classes can implement for custom access control
     // (e.g. to enforce security policies)."
     
-    return js_property_map__.count(property_name) > 0;
+    return js_object__.HasProperty(property_name);
   }
   
   JSValue JSExportObject::GetProperty(const JSString& property_name) const JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSEXPORTOBJECT_LOCK_GUARD;
-    
     // TODO: Provide the virtual function
     //
     // virtual bool WillGetProperty(property_name);
@@ -46,13 +43,7 @@ namespace JavaScriptCoreCPP {
     // that derived classes can implement for custom access control
     // (e.g. to enforce security policies)."
     
-    const auto position = js_property_map__.find(property_name);
-    
-    if (position == js_property_map__.end()) {
-      return get_context().CreateUndefined();
-    }
-    
-    return position -> second;
+    return js_object__.GetProperty(property_name);
   }
   
   bool JSExportObject::SetProperty(const JSString& property_name, const JSValue& property_value) JAVASCRIPTCORECPP_NOEXCEPT {
@@ -65,12 +56,8 @@ namespace JavaScriptCoreCPP {
     // that derived classes can implement for property validation and
     // custom access control (e.g. to enforce security policies)."
     
-    const auto position = js_property_map__.find(property_name);
-    
-    if (position != js_property_map__.end()) {
-      // The map already contains this key, so replace it.
-      
-      JSValue previous_value = position -> second;
+    if (js_object__.HasProperty(property_name)) {
+      JSValue previous_value = js_object__.GetProperty(property_name);
       
       // TODO: Provide the virtual function
       //
@@ -79,19 +66,16 @@ namespace JavaScriptCoreCPP {
       // that derived classes can implement for property validation
       // and custom access control (e.g. to enforce security
       // policies)."
-      
-      const auto number_of_elements_removed = js_property_map__.erase(property_name);
-      
-      // postcondition
-      assert(number_of_elements_removed == 1);
     }
     
-    const auto property_emplace_result = js_property_map__.emplace(std::make_pair(property_name, property_value));
-    const bool property_emplaced       = property_emplace_result.second;
+    bool property_set = false;
+    try {
+      js_object__.SetProperty(property_name, property_value);
+      property_set = true;
+    } catch (...) {
+    }
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportObject::SetProperty: property ", property_name, " emplaced = ", property_emplaced);
-    // postcondition
-    assert(property_emplaced);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportObject::SetProperty: property_set = ", std::to_string(property_set), " for ", property_name, " = ", to_string(property_value));
     
     // TODO: Provide the virtual function
     //
@@ -100,17 +84,16 @@ namespace JavaScriptCoreCPP {
     // that derived classes can implement for their own implementation
     // concerns.
     
-    return property_emplaced;
+    return property_set;
   }
   
   bool JSExportObject::DeleteProperty(const JSString& property_name) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSEXPORTOBJECT_LOCK_GUARD;
     
     bool property_deleted = false;
-    const auto position = js_property_map__.find(property_name);
     
-    if (position != js_property_map__.end()) {
-      JSValue current_value = position -> second;
+    if (js_object__.HasProperty(property_name)) {
+      JSValue current_value = js_object__.GetProperty(property_name);
       
       // TODO: Provide the virtual function
       //
@@ -119,87 +102,53 @@ namespace JavaScriptCoreCPP {
       // that derived classes can implement for custom access control
       // (e.g. to enforce security policies)."
       
-      const auto number_of_elements_removed = js_property_map__.erase(property_name);
-      property_deleted                      = (number_of_elements_removed == 1);
-      
-      // postcondition
-      assert(property_deleted);
+      try {
+        js_object__.DeleteProperty(property_name);
+        property_deleted = true;
+      } catch (...) {
+      }
     }
+    
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportObject::DeleteProperty: property_deleted = ", std::to_string(property_deleted), " for ", property_name);
     
     return property_deleted;
   }
   
-  void JSExportObject::GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const JAVASCRIPTCORECPP_NOEXCEPT {
-    for (const auto& entry : js_property_map__) {
-      accumulator.AddName(entry.first);
-    }
+  std::vector<JSString> JSExportObject::GetEnumerablePropertyNames() const JAVASCRIPTCORECPP_NOEXCEPT {
+    return static_cast<std::vector<JSString>>(js_object__.GetPropertyNames());
   }
   
-  std::size_t JSExportObject::GetPropertyMapCount() const JAVASCRIPTCORECPP_NOEXCEPT {
-    return js_property_map__.size();
-  }
-  
-  JSPropertyMap_t JSExportObject::GetPropertyMap() const JAVASCRIPTCORECPP_NOEXCEPT {
-    return js_property_map__;
-  }
-  
-  bool JSExportObject::IsFunction() const JAVASCRIPTCORECPP_NOEXCEPT {
-    return true;
-  }
-  
-  JSValue JSExportObject::CallAsFunction(const std::vector<JSValue>& arguments, JSObject this_object) JAVASCRIPTCORECPP_NOEXCEPT {
+  JSValue JSExportObject::CallAsFunction(const std::vector<JSValue>& arguments, JSObject this_object) {
     return get_context().CreateUndefined();
   }
   
-  bool JSExportObject::IsConstructor() const JAVASCRIPTCORECPP_NOEXCEPT {
-    return true;
+  JSContext JSExportObject::get_context() const JAVASCRIPTCORECPP_NOEXCEPT {
+    return js_object__.get_context();
   }
   
   JSExportObject::JSExportObject(const JSContext& js_context) JAVASCRIPTCORECPP_NOEXCEPT
-  : JSExport<JSExportObject>(js_context) {
+  : js_object__(js_context.CreateObject()) {
   }
   
   JSExportObject::JSExportObject(const JSExportObject& rhs, const std::vector<JSValue>& arguments) JAVASCRIPTCORECPP_NOEXCEPT
-  : JSExport<JSExportObject>(rhs, arguments)
-  , js_property_map__(rhs.js_property_map__) {
+  : js_object__(rhs.js_object__) {
   }
-
+  
   JSExportObject::~JSExportObject() JAVASCRIPTCORECPP_NOEXCEPT {
   }
   
-  JSExportObject::JSExportObject(const JSExportObject& rhs) JAVASCRIPTCORECPP_NOEXCEPT
-  : JSExport<JSExportObject>(rhs)
-  , js_property_map__(rhs.js_property_map__) {
-  }
-  
-  JSExportObject::JSExportObject(JSExportObject&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
-  : JSExport<JSExportObject>(rhs)
-  , js_property_map__(std::move(rhs.js_property_map__)) {
-  }
-  
-  JSExportObject& JSExportObject::operator=(const JSExportObject& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSEXPORTOBJECT_LOCK_GUARD;
-    JSExport<JSExportObject>::operator=(rhs);
-    
-    js_property_map__ = rhs.js_property_map__;
-    
-    return *this;
-  }
-  
-  JSExportObject& JSExportObject::operator=(JSExportObject&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSEXPORTOBJECT_LOCK_GUARD;
-    swap(rhs);
-    return *this;
+  void JSExportObject::GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const JAVASCRIPTCORECPP_NOEXCEPT {
+    for (const auto& entry : GetEnumerablePropertyNames()) {
+      accumulator.AddName(entry);
+    }
   }
   
   void JSExportObject::swap(JSExportObject& other) JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSEXPORTOBJECT_LOCK_GUARD;
-    JSExport<JSExportObject>::swap(other);
     using std::swap;
     
     // By swapping the members of two classes, the two classes are
     // effectively swapped.
-    swap(js_property_map__, other.js_property_map__);
+    swap(js_object__  , other.js_object__);
   }
   
 } // namespace JavaScriptCoreCPP {

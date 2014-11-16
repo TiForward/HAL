@@ -543,7 +543,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      @result The callback to invoke when your JavaScript object is
      called as a function.
      */
-    CallAsFunctionCallback<T> Function() const JAVASCRIPTCORECPP_NOEXCEPT {
+    CallAsFunctionCallback<T> CallAsFunction() const JAVASCRIPTCORECPP_NOEXCEPT {
       return call_as_function_callback__;
     }
     
@@ -575,7 +575,7 @@ namespace JavaScriptCoreCPP { namespace detail {
      
      @result A reference to the builder for chaining.
      */
-    JSExportClassDefinitionBuilder<T>& Function(const CallAsFunctionCallback<T>& call_as_function_callback) JAVASCRIPTCORECPP_NOEXCEPT {
+    JSExportClassDefinitionBuilder<T>& CallAsFunction(const CallAsFunctionCallback<T>& call_as_function_callback) JAVASCRIPTCORECPP_NOEXCEPT {
       JAVASCRIPTCORECPP_DETAIL_JSEXPORTCLASSDEFINITIONBUILDER_LOCK_GUARD;
       call_as_function_callback__ = call_as_function_callback;
       return *this;

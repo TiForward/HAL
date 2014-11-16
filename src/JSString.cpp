@@ -15,14 +15,29 @@ namespace JavaScriptCoreCPP {
   
   JSString::JSString() JAVASCRIPTCORECPP_NOEXCEPT
   : js_string_ref__(JSStringCreateWithUTF8CString(nullptr)) {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString::JSString()");
   }
   
   JSString::JSString(const char* string) JAVASCRIPTCORECPP_NOEXCEPT
-  : js_string_ref__(JSStringCreateWithUTF8CString(string)) {
+  : js_string_ref__(JSStringCreateWithUTF8CString(string))
+  , string__(string) {
+    const JSChar* string_ptr = JSStringGetCharactersPtr(js_string_ref__);
+    u16string__ = std::u16string(string_ptr, string_ptr + length());
+    
+    std::hash<std::string> hash_function = std::hash<std::string>();
+    hash_value__ = hash_function(static_cast<std::string>(string__));
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString::JSString(const char*)");
   }
   
   JSString::JSString(const std::string& string) JAVASCRIPTCORECPP_NOEXCEPT
-  : JSString(string.c_str()) {
+  : js_string_ref__(JSStringCreateWithUTF8CString(string.c_str()))
+  , string__(string) {
+    const JSChar* string_ptr = JSStringGetCharactersPtr(js_string_ref__);
+    u16string__ = std::u16string(string_ptr, string_ptr + length());
+
+    std::hash<std::string> hash_function = std::hash<std::string>();
+    hash_value__ = hash_function(static_cast<std::string>(string__));
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString::JSString(const std::string&)");
   }
   
   const std::size_t JSString::length() const  JAVASCRIPTCORECPP_NOEXCEPT{
@@ -39,35 +54,14 @@ namespace JavaScriptCoreCPP {
   }
   
   JSString::operator std::string() const JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD;
-    static std::wstring_convert<std::codecvt_utf8_utf16<char16_t>,char16_t> converter;
-    auto self = const_cast<JSString*>(this);
-    std::call_once(self -> string_once_flag__, [self]() {
-      self -> string__ = std::string(converter.to_bytes(static_cast<std::u16string>(*self)));
-    });
-    
     return string__;
   }
   
   JSString::operator std::u16string() const JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD;
-    auto self = const_cast<JSString*>(this);
-    std::call_once(self -> u16string_once_flag__, [self]() {
-      const JSChar* string_ptr = JSStringGetCharactersPtr(self -> js_string_ref__);
-      self -> u16string__ = std::u16string(string_ptr, string_ptr + self -> length());
-    });
-    
     return u16string__;
   }
   
   std::size_t JSString::hash_value() const {
-    JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD;
-    auto self = const_cast<JSString*>(this);
-    std::call_once(self -> hash_value_once_flag__, [self]() {
-      std::hash<std::string> hash_function = std::hash<std::string>();
-      self -> hash_value__ = hash_function(static_cast<std::string>(*self));
-    });
-    
     return hash_value__;
   }
   
@@ -76,28 +70,40 @@ namespace JavaScriptCoreCPP {
   }
   
   JSString::JSString(const JSString& rhs) JAVASCRIPTCORECPP_NOEXCEPT
-  : js_string_ref__(rhs.js_string_ref__) {
+  : js_string_ref__(rhs.js_string_ref__)
+  , string__(rhs.string__)
+  , u16string__(rhs.u16string__)
+  , hash_value__(rhs.hash_value__) {
     JSStringRetain(js_string_ref__);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: copy ctor");
   }
   
   JSString::JSString(JSString&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
-  : js_string_ref__(rhs.js_string_ref__) {
-    JSStringRetain(rhs.js_string_ref__);
+  : js_string_ref__(rhs.js_string_ref__)
+  , string__(std::move(rhs.string__))
+  , u16string__(std::move(rhs.u16string__))
+  , hash_value__(std::move(rhs.hash_value__)) {
+    JSStringRetain(js_string_ref__);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: move ctor");
   }
   
   JSString& JSString::operator=(const JSString& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD;
     JSStringRelease(js_string_ref__);
     js_string_ref__ = rhs.js_string_ref__;
-    JSStringRetain(rhs.js_string_ref__);
+    string__        = rhs.string__;
+    u16string__     = rhs.u16string__;
+    hash_value__    = rhs.hash_value__;
+    JSStringRetain(js_string_ref__);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: copy assignment");
     return *this;
   }
   
   JSString& JSString::operator=(JSString&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD;
-    JSStringRelease(js_string_ref__);
-    js_string_ref__ = rhs.js_string_ref__;
-    JSStringRetain(rhs.js_string_ref__);
+    swap(rhs);
+    JSStringRetain(js_string_ref__);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: move assignment");
     return *this;
   }
   
@@ -108,13 +114,26 @@ namespace JavaScriptCoreCPP {
     // By swapping the members of two classes, the two classes are
     // effectively swapped.
     swap(js_string_ref__, other.js_string_ref__);
+    swap(u16string__    , other.u16string__);
+    swap(string__       , other.string__);
+    swap(hash_value__   , other.hash_value__);
   }
   
   // For interoperability with the JavaScriptCore C API.
   JSString::JSString(JSStringRef js_string_ref) JAVASCRIPTCORECPP_NOEXCEPT
   : js_string_ref__(js_string_ref) {
+    static std::wstring_convert<std::codecvt_utf8_utf16<char16_t>,char16_t> converter;
     assert(js_string_ref__);
     JSStringRetain(js_string_ref__);
+
+    const JSChar* string_ptr = JSStringGetCharactersPtr(js_string_ref__);
+    u16string__ = std::u16string(string_ptr, string_ptr + length());
+    string__    = std::string(converter.to_bytes(u16string__));
+    
+    std::hash<std::string> hash_function = std::hash<std::string>();
+    hash_value__ = hash_function(static_cast<std::string>(string__));
+
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString::JSString(JSStringRef)");
   }
   
   bool operator==(const JSString& lhs, const JSString& rhs) {

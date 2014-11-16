@@ -11,7 +11,6 @@
 #include "JavaScriptCoreCPP/JSValue.hpp"
 
 #include "JavaScriptCoreCPP/JSClass.hpp"
-#include "JavaScriptCoreCPP/JSPropertyNameArray.hpp"
 
 #include "JavaScriptCoreCPP/JSUndefined.hpp"
 #include "JavaScriptCoreCPP/JSNull.hpp"
@@ -190,8 +189,8 @@ namespace JavaScriptCoreCPP {
       detail::ThrowRuntimeError("JSObject", "JSObjects must belong to JSContexts within the same JSContextGroup to be shared and exchanged.");
     }
     
-    js_context__ = rhs.js_context__;
     JSValueUnprotect(js_context__, js_object_ref__);
+    js_context__    = rhs.js_context__;
     js_object_ref__ = rhs.js_object_ref__;
     JSValueProtect(js_context__, js_object_ref__);
     
@@ -206,11 +205,8 @@ namespace JavaScriptCoreCPP {
       detail::ThrowRuntimeError("JSObject", "JSObjects must belong to JSContexts within the same JSContextGroup to be shared and exchanged.");
     }
     
-    js_context__ = std::move(rhs.js_context__);
-    JSValueUnprotect(js_context__, js_object_ref__);
-    js_object_ref__ = rhs.js_object_ref__;
+    swap(rhs);
     JSValueProtect(js_context__, js_object_ref__);
-    
     return *this;
   }
   

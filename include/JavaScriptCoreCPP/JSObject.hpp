@@ -13,6 +13,8 @@
 #include "JavaScriptCoreCPP/detail/JSBase.hpp"
 #include "JavaScriptCoreCPP/JSContext.hpp"
 #include "JavaScriptCoreCPP/JSPropertyAttribute.hpp"
+#include "JavaScriptCoreCPP/JSPropertyNameArray.hpp"
+
 #include <memory>
 #include <vector>
 #include <unordered_set>
@@ -73,7 +75,8 @@ namespace JavaScriptCoreCPP {
      
      @param property_name The name of the property to get.
      
-     @result The property's value.
+     @result The property's value if this JavaScript object has the
+     property, otherwise JSUndefined.
      
      @throws std::runtime_error if getting the property threw a
      JavaScript exception.
@@ -91,7 +94,8 @@ namespace JavaScriptCoreCPP {
      @param property_index An integer value that is the property's
      name.
      
-     @result The property's value.
+     @result The property's value if this JavaScript object has the
+     property, otherwise JSUndefined.
      
      @throws std::runtime_error if getting the property threw a
      JavaScript exception.
