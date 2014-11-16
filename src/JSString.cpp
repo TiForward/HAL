@@ -15,7 +15,7 @@ namespace JavaScriptCoreCPP {
   
   JSString::JSString() JAVASCRIPTCORECPP_NOEXCEPT
   : js_string_ref__(JSStringCreateWithUTF8CString(nullptr)) {
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSString::JSString()");
+    //JAVASCRIPTCORECPP_LOG_DEBUG("JSString::JSString()");
   }
   
   JSString::JSString(const char* string) JAVASCRIPTCORECPP_NOEXCEPT
@@ -26,7 +26,7 @@ namespace JavaScriptCoreCPP {
     
     std::hash<std::string> hash_function = std::hash<std::string>();
     hash_value__ = hash_function(static_cast<std::string>(string__));
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSString::JSString(const char*)");
+    //JAVASCRIPTCORECPP_LOG_DEBUG("JSString::JSString(const char*)");
   }
   
   JSString::JSString(const std::string& string) JAVASCRIPTCORECPP_NOEXCEPT
@@ -37,7 +37,7 @@ namespace JavaScriptCoreCPP {
 
     std::hash<std::string> hash_function = std::hash<std::string>();
     hash_value__ = hash_function(static_cast<std::string>(string__));
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSString::JSString(const std::string&)");
+    //JAVASCRIPTCORECPP_LOG_DEBUG("JSString::JSString(const std::string&)");
   }
   
   const std::size_t JSString::length() const  JAVASCRIPTCORECPP_NOEXCEPT{
@@ -75,7 +75,7 @@ namespace JavaScriptCoreCPP {
   , u16string__(rhs.u16string__)
   , hash_value__(rhs.hash_value__) {
     JSStringRetain(js_string_ref__);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: copy ctor");
+    //JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: copy ctor");
   }
   
   JSString::JSString(JSString&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
@@ -84,7 +84,7 @@ namespace JavaScriptCoreCPP {
   , u16string__(std::move(rhs.u16string__))
   , hash_value__(std::move(rhs.hash_value__)) {
     JSStringRetain(js_string_ref__);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: move ctor");
+    //JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: move ctor");
   }
   
   JSString& JSString::operator=(const JSString& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
@@ -95,7 +95,7 @@ namespace JavaScriptCoreCPP {
     u16string__     = rhs.u16string__;
     hash_value__    = rhs.hash_value__;
     JSStringRetain(js_string_ref__);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: copy assignment");
+    //JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: copy assignment");
     return *this;
   }
   
@@ -103,7 +103,7 @@ namespace JavaScriptCoreCPP {
     JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD;
     swap(rhs);
     JSStringRetain(js_string_ref__);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: move assignment");
+    //JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: move assignment");
     return *this;
   }
   
@@ -133,7 +133,7 @@ namespace JavaScriptCoreCPP {
     std::hash<std::string> hash_function = std::hash<std::string>();
     hash_value__ = hash_function(static_cast<std::string>(string__));
 
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSString::JSString(JSStringRef)");
+    //JAVASCRIPTCORECPP_LOG_DEBUG("JSString::JSString(JSStringRef)");
   }
   
   bool operator==(const JSString& lhs, const JSString& rhs) {

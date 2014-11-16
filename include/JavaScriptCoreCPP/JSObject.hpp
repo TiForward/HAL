@@ -416,7 +416,8 @@ namespace JavaScriptCoreCPP {
   
   template<typename T>
   std::shared_ptr<T> JSObject::GetPrivate() const JAVASCRIPTCORECPP_NOEXCEPT {
-    return std::shared_ptr<T>(std::make_shared<JSObject>(*this), dynamic_cast<T*>(reinterpret_cast<JSExport<T>*>(GetPrivate())));
+    //return std::shared_ptr<T>(std::make_shared<JSObject>(*this), dynamic_cast<T*>(reinterpret_cast<JSExport<T>*>(GetPrivate())));
+    return std::shared_ptr<T>(std::make_shared<JSObject>(*this), dynamic_cast<T*>(reinterpret_cast<T*>(GetPrivate())));
   }
   
 } // namespace JavaScriptCoreCPP {
