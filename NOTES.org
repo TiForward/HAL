@@ -2,6 +2,10 @@ These are Matt Langston's developer notes to himself. This file will
 go away in the future for I want to keep it around during the
 development of the JavaScriptCoreCPP library.
 
+* Travis CI
+As of 2014.09.20 Travis CI only supports Xcode 5.1 which lacks support
+for measureBlock.
+
 * JSString
   JSString::operator std::string() const JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD;

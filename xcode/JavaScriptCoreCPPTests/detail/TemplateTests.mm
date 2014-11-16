@@ -81,15 +81,4 @@ struct Prc
   obj.process();
 }
 
-// As of 2014.09.20 Travis CI only supports Xcode 5.1 which lacks support for
-// measureBlock.
-#ifndef TRAVIS
-- (void)testPerformanceExample {
-  // This is an example of a performance test case.
-  [self measureBlock:^{
-    // Put the code you want to measure the time of here.
-  }];
-}
-#endif
-
 @end

@@ -112,15 +112,4 @@ makeTimePoint(int year, int mon, int day, int hour, int min, int sec = 0) {
   std::cout << "tp2: " << asString(tp2) << std::endl;
 }
 
-// As of 2014.09.20 Travis CI only supports Xcode 5.1 which lacks support for
-// measureBlock.
-#ifndef TRAVIS
-- (void)testPerformanceExample {
-  // This is an example of a performance test case.
-  [self measureBlock:^{
-      // Put the code you want to measure the time of here.
-    }];
-}
-#endif
-
 @end

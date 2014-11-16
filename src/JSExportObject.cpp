@@ -32,7 +32,7 @@ namespace JavaScriptCoreCPP {
     // that derived classes can implement for custom access control
     // (e.g. to enforce security policies)."
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportObject::HasProperty: ", property_name, " = ", std::to_string(js_object__.HasProperty(property_name)));
+    //JAVASCRIPTCORECPP_LOG_DEBUG("JSExportObject::HasProperty: ", property_name, " = ", std::to_string(js_object__.HasProperty(property_name)));
     return js_object__.HasProperty(property_name);
   }
   
@@ -44,7 +44,7 @@ namespace JavaScriptCoreCPP {
     // that derived classes can implement for custom access control
     // (e.g. to enforce security policies)."
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportObject::GetProperty: ", property_name, " = ", to_string(js_object__.GetProperty(property_name)));
+    //JAVASCRIPTCORECPP_LOG_DEBUG("JSExportObject::GetProperty: ", property_name, " = ", to_string(js_object__.GetProperty(property_name)));
     return js_object__.GetProperty(property_name);
   }
   
@@ -77,7 +77,7 @@ namespace JavaScriptCoreCPP {
     } catch (...) {
     }
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportObject::SetProperty: property_set = ", std::to_string(property_set), " for ", property_name, " = ", to_string(property_value));
+    //JAVASCRIPTCORECPP_LOG_DEBUG("JSExportObject::SetProperty: property_set = ", std::to_string(property_set), " for ", property_name, " = ", to_string(property_value));
     
     // TODO: Provide the virtual function
     //
@@ -111,7 +111,7 @@ namespace JavaScriptCoreCPP {
       }
     }
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportObject::DeleteProperty: property_deleted = ", std::to_string(property_deleted), " for ", property_name);
+    //JAVASCRIPTCORECPP_LOG_DEBUG("JSExportObject::DeleteProperty: property_deleted = ", std::to_string(property_deleted), " for ", property_name);
     
     return property_deleted;
   }
