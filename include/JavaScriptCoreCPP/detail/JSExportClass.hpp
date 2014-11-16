@@ -356,7 +356,13 @@ namespace JavaScriptCoreCPP { namespace detail {
     auto       callback       = js_export_class_definition__.get_property_callback__;
     const bool callback_found = callback != nullptr;
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::GetProperty: callback found = ", callback_found, " for ", to_string(js_object), ".", property_name);
+    // FIXME: Why does to_string(js_object) cause an
+    // 'EXC_BAD_ACCESS(code=2, address=...)
+    // in JSValueToStringCopy?
+    //const std::string js_object_str = to_string(js_object);
+    const std::string js_object_str = std::to_string(reinterpret_cast<intptr_t>(js_object.GetPrivate()));
+    
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::GetProperty: callback found = ", callback_found, " for ", js_object_str, ".", property_name);
     
     // precondition
     assert(callback_found);
@@ -364,7 +370,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     const auto native_object_ptr = reinterpret_cast<const T*>(js_object.GetPrivate());
     const auto result            = callback(*native_object_ptr, property_name);
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::GetProperty: result = ", to_string(result), " for ", to_string(js_object), ".", property_name);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::GetProperty: result = ", to_string(result), " for ", js_object_str, ".", property_name);
     
     return result;
     
@@ -389,7 +395,13 @@ namespace JavaScriptCoreCPP { namespace detail {
     auto       callback       = js_export_class_definition__.set_property_callback__;
     const bool callback_found = callback != nullptr;
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::SetProperty: callback found = ", callback_found, " for ", to_string(js_object), ".", property_name);
+    // FIXME: Why does to_string(js_object) cause an
+    // 'EXC_BAD_ACCESS(code=2, address=...)
+    // in JSValueToStringCopy?
+    //const std::string js_object_str = to_string(js_object);
+    const std::string js_object_str = std::to_string(reinterpret_cast<intptr_t>(js_object.GetPrivate()));
+
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::SetProperty: callback found = ", callback_found, " for ", js_object_str, ".", property_name);
     
     // precondition
     assert(callback_found);
@@ -397,7 +409,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     auto native_object_ptr = reinterpret_cast<T*>(js_object.GetPrivate());
     const auto result      = callback(*native_object_ptr, property_name, JSValue(js_context, value_ref));
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::SetProperty: result = ", result, " for ", to_string(js_object), ".", property_name);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::SetProperty: result = ", result, " for ", js_object_str, ".", property_name);
     
     return result;
     
@@ -453,7 +465,13 @@ namespace JavaScriptCoreCPP { namespace detail {
     auto       callback       = js_export_class_definition__.get_property_names_callback__;
     const bool callback_found = callback != nullptr;
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::GetPropertyNames: callback found = ", callback_found, " for ", to_string(js_object));
+    // FIXME: Why does to_string(js_object) cause an
+    // 'EXC_BAD_ACCESS(code=2, address=...)
+    // in JSValueToStringCopy?
+    //const std::string js_object_str = to_string(js_object);
+    const std::string js_object_str = std::to_string(reinterpret_cast<intptr_t>(js_object.GetPrivate()));
+
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::GetPropertyNames: callback found = ", callback_found, " for ", js_object_str);
     
     // precondition
     assert(callback_found);

@@ -32,6 +32,7 @@ namespace JavaScriptCoreCPP {
     // that derived classes can implement for custom access control
     // (e.g. to enforce security policies)."
     
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportObject::HasProperty: ", property_name, " = ", std::to_string(js_object__.HasProperty(property_name)));
     return js_object__.HasProperty(property_name);
   }
   
@@ -43,6 +44,7 @@ namespace JavaScriptCoreCPP {
     // that derived classes can implement for custom access control
     // (e.g. to enforce security policies)."
     
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportObject::GetProperty: ", property_name, " = ", to_string(js_object__.GetProperty(property_name)));
     return js_object__.GetProperty(property_name);
   }
   
