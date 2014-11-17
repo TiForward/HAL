@@ -530,11 +530,6 @@ namespace JavaScriptCoreCPP { namespace detail {
     
     auto new_object = js_context.CreateObject(JSExport<T>::Class());
     
-    // Delete the "default constructed" native object pointer that
-    // comes from the Initialize callback and replace it with the
-    // constructor call that takes a vector of arguments.
-    delete reinterpret_cast<T*>(new_object.GetPrivate());
-
     const auto native_object_ptr = reinterpret_cast<const T*>(js_object.GetPrivate());
     const bool result            = new_object.SetPrivate(new T(*native_object_ptr, to_vector(js_context, argument_count, arguments_array)));
     
