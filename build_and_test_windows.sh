@@ -28,7 +28,7 @@ cmd+="cmake"
 #cmd+=" --debug-output"
 cmd+=" ../"
 
-#echo_and_eval "rm -rf \"${BUILD_DIR}\""
+echo_and_eval "rm -rf \"${BUILD_DIR}\""
 echo_and_eval "mkdir -p \"${BUILD_DIR}\""
 echo_and_eval "pushd \"${BUILD_DIR}\""
 echo_and_eval "${cmd}"
