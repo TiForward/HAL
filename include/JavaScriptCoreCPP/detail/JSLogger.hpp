@@ -138,8 +138,8 @@ namespace JavaScriptCoreCPP { namespace detail {
   
 #define JAVASCRIPTCORECPP_LOG_DEBUG JavaScriptCoreCPP::detail::js_logger_instance.Print<JavaScriptCoreCPP::detail::JSLoggerSeverityType::JS_DEBUG>
 #define JAVASCRIPTCORECPP_LOG_INFO  JavaScriptCoreCPP::detail::js_logger_instance.Print<JavaScriptCoreCPP::detail::JSLoggerSeverityType::JS_INFO>
-#define JAVASCRIPTCORECPP_LOG_ERROR JavaScriptCoreCPP::detail::js_logger_instance.Print<JavaScriptCoreCPP::detail::JSLoggerSeverityType::JS_WARN>
-#define JAVASCRIPTCORECPP_LOG_WARN  JavaScriptCoreCPP::detail::js_logger_instance.Print<JavaScriptCoreCPP::detail::JSLoggerSeverityType::JS_ERROR>
+#define JAVASCRIPTCORECPP_LOG_WARN  JavaScriptCoreCPP::detail::js_logger_instance.Print<JavaScriptCoreCPP::detail::JSLoggerSeverityType::JS_WARN>
+#define JAVASCRIPTCORECPP_LOG_ERROR JavaScriptCoreCPP::detail::js_logger_instance.Print<JavaScriptCoreCPP::detail::JSLoggerSeverityType::JS_ERROR>
 #else
 #define JAVASCRIPTCORECPP_LOG_DEBUG(...)
 #define JAVASCRIPTCORECPP_LOG_INFO(...)
