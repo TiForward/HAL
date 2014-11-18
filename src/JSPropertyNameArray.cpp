@@ -38,36 +38,50 @@ namespace JavaScriptCoreCPP {
   }
   
   JSPropertyNameArray::~JSPropertyNameArray() JAVASCRIPTCORECPP_NOEXCEPT {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSPropertyNameArray:: dtor");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSPropertyNameArray:: release ", js_property_name_array_ref__);
     JSPropertyNameArrayRelease(js_property_name_array_ref__);
   }
   
   JSPropertyNameArray::JSPropertyNameArray(const JSPropertyNameArray& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : js_property_name_array_ref__(rhs.js_property_name_array_ref__) {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSPropertyNameArray:: copy ctor");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSPropertyNameArray:: retain ", js_property_name_array_ref__);
     JSPropertyNameArrayRetain(js_property_name_array_ref__);
   }
   
   JSPropertyNameArray::JSPropertyNameArray(JSPropertyNameArray&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
-    : js_property_name_array_ref__(rhs.js_property_name_array_ref__) {
-      JSPropertyNameArrayRetain(js_property_name_array_ref__);
+  : js_property_name_array_ref__(rhs.js_property_name_array_ref__) {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSValue:: move ctor");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSPropertyNameArray:: retain ", js_property_name_array_ref__);
+    JSPropertyNameArrayRetain(js_property_name_array_ref__);
   }
   
   JSPropertyNameArray& JSPropertyNameArray::operator=(const JSPropertyNameArray& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSPROPERTYNAMEARRAY_LOCK_GUARD;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSValue:: copy assignment");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSPropertyNameArray:: release ", js_property_name_array_ref__);
     JSPropertyNameArrayRelease(js_property_name_array_ref__);
     js_property_name_array_ref__ = rhs.js_property_name_array_ref__;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSPropertyNameArray:: retain ", js_property_name_array_ref__);
     JSPropertyNameArrayRetain(js_property_name_array_ref__);
     return *this;
   }
   
   JSPropertyNameArray& JSPropertyNameArray::operator=(JSPropertyNameArray&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSPROPERTYNAMEARRAY_LOCK_GUARD;
-    swap(rhs);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSPropertyNameArray:: move assignment");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSPropertyNameArray:: release ", js_property_name_array_ref__);
+    JSPropertyNameArrayRelease(js_property_name_array_ref__);
+    js_property_name_array_ref__ = rhs.js_property_name_array_ref__;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSPropertyNameArray:: retain ", js_property_name_array_ref__);
     JSPropertyNameArrayRetain(js_property_name_array_ref__);
     return *this;
   }
   
   void JSPropertyNameArray::swap(JSPropertyNameArray& other) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSPROPERTYNAMEARRAY_LOCK_GUARD;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSPropertyNameArray:: swap");
     using std::swap;
     
     // By swapping the members of two classes, the two classes are
@@ -77,6 +91,8 @@ namespace JavaScriptCoreCPP {
   
   JSPropertyNameArray::JSPropertyNameArray(const JSObject& js_object) JAVASCRIPTCORECPP_NOEXCEPT
   : js_property_name_array_ref__(JSObjectCopyPropertyNames(js_object.get_context(), js_object)) {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSPropertyNameArray:: ctor");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSPropertyNameArray:: retain ", js_property_name_array_ref__);
   }
   
 } // namespace JavaScriptCoreCPP {

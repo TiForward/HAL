@@ -217,38 +217,54 @@ namespace JavaScriptCoreCPP {
 #endif
   
   JSContext::~JSContext() JAVASCRIPTCORECPP_NOEXCEPT {
-    JSGlobalContextRelease(const_cast<JSGlobalContextRef>(js_global_context_ref__));
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: dtor");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: release ", js_global_context_ref__);
+    JSGlobalContextRelease(js_global_context_ref__);
   }
   
   JSContext::JSContext(const JSContext& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : js_context_group__(rhs.js_context_group__)
   , js_global_context_ref__(rhs.js_global_context_ref__) {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: copy ctor");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: retain ", js_global_context_ref__);
     JSGlobalContextRetain(js_global_context_ref__);
   }
   
   JSContext::JSContext(JSContext&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : js_context_group__(std::move(rhs.js_context_group__))
   , js_global_context_ref__(rhs.js_global_context_ref__) {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: move ctor");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: retain ", js_global_context_ref__);
     JSGlobalContextRetain(js_global_context_ref__);
   }
   
   JSContext& JSContext::operator=(const JSContext& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: copy assignment");
     JSGlobalContextRelease(js_global_context_ref__);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: release ", js_global_context_ref__);
     js_context_group__      = rhs.js_context_group__;
     js_global_context_ref__ = rhs.js_global_context_ref__;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: retain ", js_global_context_ref__);
     JSGlobalContextRetain(js_global_context_ref__);
     return *this;
   }
   
   JSContext& JSContext::operator=(JSContext&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: move assignment");
+    JSGlobalContextRelease(js_global_context_ref__);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: release ", js_global_context_ref__);
+    js_context_group__      = std::move(rhs.js_context_group__);
+    js_global_context_ref__ = rhs.js_global_context_ref__;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: retain ", js_global_context_ref__);
     JSGlobalContextRetain(js_global_context_ref__);
     return *this;
   }
   
   void JSContext::swap(JSContext& other) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: swap");
     using std::swap;
     
     // By swapping the members of two classes, the two classes are
@@ -260,6 +276,8 @@ namespace JavaScriptCoreCPP {
   JSContext::JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class) JAVASCRIPTCORECPP_NOEXCEPT
   : js_context_group__(js_context_group)
   , js_global_context_ref__(JSGlobalContextCreateInGroup(js_context_group, global_object_class)) {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: ctor");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: retain ", js_global_context_ref__);
   }
   
   JSContext::JSContext(JSContextRef js_context_ref) JAVASCRIPTCORECPP_NOEXCEPT
@@ -270,7 +288,9 @@ namespace JavaScriptCoreCPP {
   JSContext::JSContext(JSGlobalContextRef js_global_context_ref) JAVASCRIPTCORECPP_NOEXCEPT
   : js_context_group__(JSContextGetGroup(js_global_context_ref))
   , js_global_context_ref__(js_global_context_ref) {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: ctor");
     assert(js_global_context_ref__);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: retain ", js_global_context_ref__);
     JSGlobalContextRetain(js_global_context_ref__);
   }
   

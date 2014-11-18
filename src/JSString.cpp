@@ -14,13 +14,15 @@
 namespace JavaScriptCoreCPP {
   
   JSString::JSString() JAVASCRIPTCORECPP_NOEXCEPT
-  : js_string_ref__(JSStringCreateWithUTF8CString(nullptr)) {
+  : JSString("") {
     //JAVASCRIPTCORECPP_LOG_DEBUG("JSString::JSString()");
   }
   
   JSString::JSString(const char* string) JAVASCRIPTCORECPP_NOEXCEPT
   : js_string_ref__(JSStringCreateWithUTF8CString(string))
   , string__(string) {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: ctor");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: retain ", js_string_ref__);
     const JSChar* string_ptr = JSStringGetCharactersPtr(js_string_ref__);
     u16string__ = std::u16string(string_ptr, string_ptr + length());
     
@@ -32,6 +34,8 @@ namespace JavaScriptCoreCPP {
   JSString::JSString(const std::string& string) JAVASCRIPTCORECPP_NOEXCEPT
   : js_string_ref__(JSStringCreateWithUTF8CString(string.c_str()))
   , string__(string) {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: ctor");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: retain ", js_string_ref__);
     const JSChar* string_ptr = JSStringGetCharactersPtr(js_string_ref__);
     u16string__ = std::u16string(string_ptr, string_ptr + length());
 
@@ -66,6 +70,8 @@ namespace JavaScriptCoreCPP {
   }
   
   JSString::~JSString() JAVASCRIPTCORECPP_NOEXCEPT {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: dtor");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: release ", js_string_ref__);
     JSStringRelease(js_string_ref__);
   }
   
@@ -74,8 +80,9 @@ namespace JavaScriptCoreCPP {
   , string__(rhs.string__)
   , u16string__(rhs.u16string__)
   , hash_value__(rhs.hash_value__) {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: copy ctor");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: retain ", js_string_ref__);
     JSStringRetain(js_string_ref__);
-    //JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: copy ctor");
   }
   
   JSString::JSString(JSString&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
@@ -83,32 +90,42 @@ namespace JavaScriptCoreCPP {
   , string__(std::move(rhs.string__))
   , u16string__(std::move(rhs.u16string__))
   , hash_value__(std::move(rhs.hash_value__)) {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: move ctor");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: retain ", js_string_ref__);
     JSStringRetain(js_string_ref__);
-    //JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: move ctor");
   }
   
   JSString& JSString::operator=(const JSString& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: copy assignment");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: release ", js_string_ref__);
     JSStringRelease(js_string_ref__);
     js_string_ref__ = rhs.js_string_ref__;
     string__        = rhs.string__;
     u16string__     = rhs.u16string__;
     hash_value__    = rhs.hash_value__;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: retain ", js_string_ref__);
     JSStringRetain(js_string_ref__);
-    //JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: copy assignment");
     return *this;
   }
   
   JSString& JSString::operator=(JSString&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD;
-    swap(rhs);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: move assignment");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: release ", js_string_ref__);
+    JSStringRelease(js_string_ref__);
+    js_string_ref__ = rhs.js_string_ref__;
+    string__        = std::move(rhs.string__);
+    u16string__     = std::move(rhs.u16string__);
+    hash_value__    = std::move(rhs.hash_value__);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: retain ", js_string_ref__);
     JSStringRetain(js_string_ref__);
-    //JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: move assignment");
     return *this;
   }
   
   void JSString::swap(JSString& other) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: swap");
     using std::swap;
     
     // By swapping the members of two classes, the two classes are
@@ -125,6 +142,8 @@ namespace JavaScriptCoreCPP {
     static std::wstring_convert<std::codecvt_utf8_utf16<char16_t>,char16_t> converter;
     assert(js_string_ref__);
     JSStringRetain(js_string_ref__);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: ctor");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSString:: retain ", js_string_ref__);
 
     const JSChar* string_ptr = JSStringGetCharactersPtr(js_string_ref__);
     u16string__ = std::u16string(string_ptr, string_ptr + length());

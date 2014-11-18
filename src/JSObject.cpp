@@ -166,52 +166,66 @@ namespace JavaScriptCoreCPP {
   }
   
   JSObject::~JSObject() JAVASCRIPTCORECPP_NOEXCEPT {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: dtor");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: release ", js_object_ref__);
     JSValueUnprotect(js_context__, js_object_ref__);
   }
   
   JSObject::JSObject(const JSObject& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : js_context__(rhs.js_context__)
   , js_object_ref__(rhs.js_object_ref__) {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: copy ctor");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: retain ", js_object_ref__);
     JSValueProtect(js_context__, js_object_ref__);
   }
   
   JSObject::JSObject(JSObject&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : js_context__(std::move(rhs.js_context__))
   , js_object_ref__(rhs.js_object_ref__) {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: move ctor");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: retain ", js_object_ref__);
     JSValueProtect(js_context__, js_object_ref__);
   }
   
   JSObject& JSObject::operator=(const JSObject& rhs) {
     JAVASCRIPTCORECPP_JSOBJECT_LOCK_GUARD;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: copy assignment");
     // JSValues can only be copied between contexts within the same
     // context group.
     if (js_context__.get_context_group() != rhs.js_context__.get_context_group()) {
       detail::ThrowRuntimeError("JSObject", "JSObjects must belong to JSContexts within the same JSContextGroup to be shared and exchanged.");
     }
     
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: release ", js_object_ref__);
     JSValueUnprotect(js_context__, js_object_ref__);
     js_context__    = rhs.js_context__;
     js_object_ref__ = rhs.js_object_ref__;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: retain ", js_object_ref__);
     JSValueProtect(js_context__, js_object_ref__);
-    
     return *this;
   }
   
   JSObject& JSObject::operator=(JSObject&& rhs) {
     JAVASCRIPTCORECPP_JSOBJECT_LOCK_GUARD;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: move assignment");
     // JSValues can only be copied between contexts within the same
     // context group.
     if (js_context__.get_context_group() != rhs.js_context__.get_context_group()) {
       detail::ThrowRuntimeError("JSObject", "JSObjects must belong to JSContexts within the same JSContextGroup to be shared and exchanged.");
     }
     
-    swap(rhs);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: release ", js_object_ref__);
+    JSValueUnprotect(js_context__, js_object_ref__);
+    js_context__    = std::move(rhs.js_context__);
+    js_object_ref__ = rhs.js_object_ref__;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: retain ", js_object_ref__);
     JSValueProtect(js_context__, js_object_ref__);
     return *this;
   }
   
   void JSObject::swap(JSObject& other) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSOBJECT_LOCK_GUARD;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: swap");
     using std::swap;
     
     // By swapping the members of two classes, the two classes are
@@ -222,12 +236,16 @@ namespace JavaScriptCoreCPP {
   
   JSObject::JSObject(const JSContext& js_context, const JSClass& js_class, void* private_data)
   : JSObject(js_context, JSObjectMake(js_context, js_class, private_data)) {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: ctor");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: retain ", js_object_ref__);
   }
-  
+
   // For interoperability with the JavaScriptCore C API.
   JSObject::JSObject(const JSContext& js_context, JSObjectRef js_object_ref)
   : js_context__(js_context)
   , js_object_ref__(js_object_ref) {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: ctor");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: retain ", js_object_ref__);
     JSValueProtect(js_context__, js_object_ref__);
   }
   

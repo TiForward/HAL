@@ -212,51 +212,66 @@ namespace JavaScriptCoreCPP {
   }
   
   JSValue::~JSValue() JAVASCRIPTCORECPP_NOEXCEPT {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSValue:: dtor");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSValue:: release ", js_value_ref__);
     JSValueUnprotect(js_context__, js_value_ref__);
   }
   
   JSValue::JSValue(const JSValue& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : js_context__(rhs.js_context__)
   , js_value_ref__(rhs.js_value_ref__) {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSValue:: copy ctor");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSValue:: retain ", js_value_ref__);
     JSValueProtect(js_context__, js_value_ref__);
   }
   
   JSValue::JSValue(JSValue&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : js_context__(std::move(rhs.js_context__))
   , js_value_ref__(rhs.js_value_ref__) {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSValue:: move ctor");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSValue:: retain ", js_value_ref__);
     JSValueProtect(js_context__, js_value_ref__);
   }
   
   JSValue& JSValue::operator=(const JSValue& rhs) {
     JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSValue:: copy assignment");
     // JSValues can only be copied between contexts within the same
     // context group.
     if (js_context__.get_context_group() != rhs.js_context__.get_context_group()) {
       detail::ThrowRuntimeError("JSValue", "JSValues must belong to JSContexts within the same JSContextGroup to be shared and exchanged.");
     }
     
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSValue:: release ", js_value_ref__);
     JSValueUnprotect(js_context__, js_value_ref__);
     js_context__   = rhs.js_context__;
     js_value_ref__ = rhs.js_value_ref__;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSValue:: retain ", js_value_ref__);
     JSValueProtect(js_context__, js_value_ref__);
     return *this;
   }
   
   JSValue& JSValue::operator=(JSValue&& rhs) {
     JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSValue:: move assignment");
     // JSValues can only be copied between contexts within the same
     // context group.
     if (js_context__.get_context_group() != rhs.js_context__.get_context_group()) {
       detail::ThrowRuntimeError("JSValue", "JSValues must belong to JSContexts within the same JSContextGroup to be shared and exchanged.");
     }
 
-    swap(rhs);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSValue:: release ", js_value_ref__);
+    JSValueUnprotect(js_context__, js_value_ref__);
+    js_context__   = std::move(rhs.js_context__);
+    js_value_ref__ = rhs.js_value_ref__;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSValue:: retain ", js_value_ref__);
     JSValueProtect(js_context__, js_value_ref__);
     return *this;
   }
   
   void JSValue::swap(JSValue& other) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSValue:: swap");
     using std::swap;
     
     // By swapping the members of two classes, the two classes are
@@ -267,6 +282,7 @@ namespace JavaScriptCoreCPP {
   
   JSValue::JSValue(const JSContext& js_context, const JSString& js_string, bool parse_as_json)
   : js_context__(js_context) {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSValue:: ctor");
     if (parse_as_json) {
       js_value_ref__ = JSValueMakeFromJSONString(js_context, js_string);
       if (!js_value_ref__) {
@@ -276,13 +292,16 @@ namespace JavaScriptCoreCPP {
     } else {
       js_value_ref__ = JSValueMakeString(js_context__, js_string);
     }
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSValue:: retain ", js_value_ref__);
   }
   
   // For interoperability with the JavaScriptCore C API.
   JSValue::JSValue(const JSContext& js_context, JSValueRef js_value_ref) JAVASCRIPTCORECPP_NOEXCEPT
   : js_context__(js_context)
   , js_value_ref__(js_value_ref)  {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSValue:: ctor");
     assert(js_value_ref__);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSValue:: retain ", js_value_ref__);
     JSValueProtect(js_context__, js_value_ref__);
   }
   

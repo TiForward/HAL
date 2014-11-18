@@ -17,49 +17,68 @@
 namespace JavaScriptCoreCPP {
   
   JSClass::JSClass() JAVASCRIPTCORECPP_NOEXCEPT
-  : name__("Default")
+  : name__("Empty")
   , js_class_ref__(JSClassCreate(&kJSClassDefinitionEmpty)) {
+//    JAVASCRIPTCORECPP_LOG_DEBUG("JSClass:: ctor");
+//    JAVASCRIPTCORECPP_LOG_DEBUG("JSClass:: retain ", js_class_ref__);
   }
   
   JSClass::JSClass(const JSClassDefinition& js_class_definition) JAVASCRIPTCORECPP_NOEXCEPT
   : name__(js_class_definition.name__)
   , js_class_ref__(JSClassCreate(&js_class_definition.js_class_definition__)) {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClass:: ctor");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClass:: retain ", js_class_ref__);
   }
   
   JSClass::~JSClass() JAVASCRIPTCORECPP_NOEXCEPT {
+//    JAVASCRIPTCORECPP_LOG_DEBUG("JSClass:: dtor");
+//    JAVASCRIPTCORECPP_LOG_DEBUG("JSClass:: release ", js_class_ref__);
     JSClassRelease(js_class_ref__);
   }
   
   JSClass::JSClass(const JSClass& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : name__(rhs.name__)
   , js_class_ref__(rhs.js_class_ref__) {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClass:: copy ctor");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClass:: retain ", js_class_ref__);
     JSClassRetain(js_class_ref__);
   }
   
   JSClass::JSClass(JSClass&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
   : name__(std::move(rhs.name__))
   , js_class_ref__(rhs.js_class_ref__) {
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClass:: move ctor");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClass:: retain ", js_class_ref__);
     JSClassRetain(js_class_ref__);
   }
   
   JSClass& JSClass::operator=(const JSClass& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClass:: copy assignment");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClass:: release ", js_class_ref__);
     JSClassRelease(js_class_ref__);
     name__         = rhs.name__;
     js_class_ref__ = rhs.js_class_ref__;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClass:: retain ", js_class_ref__);
     JSClassRetain(js_class_ref__);
     return *this;
   }
   
   JSClass& JSClass::operator=(JSClass&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD;
-    swap(rhs);
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClass:: move assignment");
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClass:: release ", js_class_ref__);
+    JSClassRelease(js_class_ref__);
+    name__         = std::move(rhs.name__);
+    js_class_ref__ = rhs.js_class_ref__;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClass:: retain ", js_class_ref__);
     JSClassRetain(js_class_ref__);
     return *this;
   }
   
   void JSClass::swap(JSClass& other) JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSCLASS_LOCK_GUARD;
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSClass:: swap");
     using std::swap;
     swap(name__        , other.name__);
     swap(js_class_ref__, other.js_class_ref__);
