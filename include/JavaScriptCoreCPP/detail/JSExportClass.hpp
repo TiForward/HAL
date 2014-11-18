@@ -298,7 +298,19 @@ namespace JavaScriptCoreCPP { namespace detail {
     const auto callback          = (callback_position -> second).function_callback();
     const auto result            = callback(*native_object_ptr, to_vector(js_context, argument_count, arguments_array));
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallNamedFunction: result = ", to_string(result), " for ", this_object_str, ".", function_name, "(...)");
+    // FIXME: Why does to_string(js_object) cause an
+    // 'EXC_BAD_ACCESS(code=2, address=...)
+    // in JSValueToStringCopy?
+    //const std::string js_object_str = to_string(js_object);
+    std::string js_value_str;
+    if (result.IsObject()) {
+      JSObject js_object = result;
+      js_value_str = std::to_string(reinterpret_cast<intptr_t>(js_object.GetPrivate()));
+    }
+    else {
+      js_value_str = to_string(result);
+    }
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallNamedFunction: result = ", js_value_str, " for ", this_object_str, ".", function_name, "(...)");
     
     return result;
     
@@ -370,7 +382,19 @@ namespace JavaScriptCoreCPP { namespace detail {
     const auto native_object_ptr = reinterpret_cast<const T*>(js_object.GetPrivate());
     const auto result            = callback(*native_object_ptr, property_name);
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::GetProperty: result = ", to_string(result), " for ", js_object_str, ".", property_name);
+    // FIXME: Why does to_string(js_object) cause an
+    // 'EXC_BAD_ACCESS(code=2, address=...)
+    // in JSValueToStringCopy?
+    //const std::string js_object_str = to_string(js_object);
+    std::string js_value_str;
+    if (result.IsObject()) {
+      JSObject js_object = result;
+      js_value_str = std::to_string(reinterpret_cast<intptr_t>(js_object.GetPrivate()));
+    }
+    else {
+      js_value_str = to_string(result);
+    }
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::GetProperty: result = ", js_value_str, " for ", js_object_str, ".", property_name);
     
     return result;
     
@@ -526,14 +550,24 @@ namespace JavaScriptCoreCPP { namespace detail {
     JSContext js_context(context_ref);
     JSObject  js_object(js_context, constructor_ref);
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallAsConstructor: new ", to_string(js_object));
+    // FIXME: Why does to_string(js_object) cause an
+    // 'EXC_BAD_ACCESS(code=2, address=...)
+    // in JSValueToStringCopy?
+    //const std::string js_object_str = to_string(js_object);
+    const std::string js_object_str = std::to_string(reinterpret_cast<intptr_t>(js_object.GetPrivate()));
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallAsConstructor: new ", js_object_str);
     
     auto new_object = js_context.CreateObject(JSExport<T>::Class());
     
     const auto native_object_ptr = reinterpret_cast<const T*>(js_object.GetPrivate());
     const bool result            = new_object.SetPrivate(new T(*native_object_ptr, to_vector(js_context, argument_count, arguments_array)));
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallAsConstructor: result = ", to_string(new_object), "(private data set to ", new_object.GetPrivate(), ") for new ", to_string(js_object));
+    // FIXME: Why does to_string(js_object) cause an
+    // 'EXC_BAD_ACCESS(code=2, address=...)
+    // in JSValueToStringCopy?
+    //const std::string js_object_str = to_string(js_object);
+    const std::string new_object_str = std::to_string(reinterpret_cast<intptr_t>(new_object.GetPrivate()));
+    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallAsConstructor: result = ", new_object_str, "(private data set to ", new_object.GetPrivate(), ") for new ", js_object_str);
     assert(result);
     
     return new_object;
