@@ -295,7 +295,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     assert(callback_found);
     
     const auto callback = (callback_position -> second).function_callback();
-    const auto result   = callback(*native_this_ptr, to_vector(js_context, argument_count, arguments_array));
+    const auto result   = callback(*native_this_ptr, to_vector(js_context, argument_count, arguments_array), this_object);
     
     std::string js_value_str;
     if (result.IsObject()) {

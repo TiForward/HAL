@@ -99,10 +99,13 @@ namespace JavaScriptCoreCPP { namespace detail {
    @param 2 A const rvalue reference to the JSValue array of arguments
    to pass to the function.
    
+   @param 3 An non-const rvalue reference to the 'this' JavaScript
+   object.
+   
    @result Return the function's value.
    */
   template<typename T>
-  using CallNamedFunctionCallback = std::function<JSValue(T&, const std::vector<JSValue>&)>;
+  using CallNamedFunctionCallback = std::function<JSValue(T&, const std::vector<JSValue>&, JSObject&)>;
   
   /*!
    @typedef HasPropertyCallback

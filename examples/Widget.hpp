@@ -57,7 +57,7 @@ public:
   
   JSValue pi() const;
   
-  JSValue sayHello(const std::vector<JSValue>& arguments);
+  JSValue sayHello(const std::vector<JSValue>& arguments, JSObject& this_object);
   
   std::string get_name_native() const;
   void        set_name_native(const std::string& name);

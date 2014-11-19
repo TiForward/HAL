@@ -75,7 +75,7 @@ JSValue Widget::pi() const {
   return get_context().CreateNumber(pi__);
 }
 
-JSValue Widget::sayHello(const std::vector<JSValue>& arguments) {
+JSValue Widget::sayHello(const std::vector<JSValue>& arguments, JSObject& this_object) {
   std::ostringstream os;
   os << "Hello";
   
