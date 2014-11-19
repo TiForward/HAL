@@ -351,7 +351,7 @@ namespace JavaScriptCoreCPP {
      JavaScript exception.
      */
     virtual JSValue CallAsFunction(const std::vector<JSValue>&  arguments, JSObject this_object);
-    
+
     /*!
      @method
      
@@ -360,7 +360,10 @@ namespace JavaScriptCoreCPP {
      @result A void* that is this object's private data, if the object
      has private data, otherwise nullptr.
      */
+  public:
+    // FIXME: This should be private.
     virtual void* GetPrivate() const JAVASCRIPTCORECPP_NOEXCEPT final;
+  private:
     
     /*!
      @method
