@@ -41,6 +41,6 @@ include_directories(
 add_subdirectory(src)
 
 if (NOT JavaScriptCoreCPP_DISABLE_TESTS)
-	add_subdirectory(examples)
-	add_subdirectory(test)
+  add_subdirectory(examples)
+  add_subdirectory(test)
 endif()

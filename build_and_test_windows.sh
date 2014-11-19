@@ -35,7 +35,7 @@ echo_and_eval "${cmd}"
 echo_and_eval "\"${MSBUILD_PATH}\" ${SLN_FILE_NAME}"
 
 if [ "${JavaScriptCoreCPP_DISABLE_TESTS}" != "ON" ]; then
-		echo_and_eval "ctest -VV --output-on-failure"
+    echo_and_eval "ctest -VV --output-on-failure"
 fi
 
 echo_and_eval "popd"
