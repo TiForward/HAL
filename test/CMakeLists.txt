@@ -5,10 +5,7 @@
 # Licensed under the terms of the Apache Public License.
 # Please see the LICENSE included with this distribution for details.
 
-include_directories(
-  ${GTEST_INCLUDE_DIRS}
-  ${PROJECT_SOURCE_DIR}/examples
-  )
+include_directories(${PROJECT_SOURCE_DIR}/examples)
 
 #add_executable(foo foo.cc)
 #target_link_libraries(foo ${GTEST_BOTH_LIBRARIES})
