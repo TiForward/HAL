@@ -16,6 +16,7 @@ declare -rx VERBOSE=1
 
 declare -r SLN_FILE_NAME="JavaScriptCoreCPP.sln"
 declare -r MSBUILD_PATH="c:/Program Files (x86)/MSBuild/12.0/Bin/MSBuild.exe"
+declare -r JavaScriptCoreCPP_DISABLE_TESTS="OFF"
 declare -r BUILD_DIR="build"
 
 function echo_and_eval {
@@ -24,8 +25,7 @@ function echo_and_eval {
 }
 
 cmd+="cmake"
-#cmd+=" -DGTEST_MSVC_SEARCH=MT"
-#cmd+=" --debug-output"
+cmd+=" -DJavaScriptCoreCPP_DISABLE_TESTS=${JavaScriptCoreCPP_DISABLE_TESTS}"
 cmd+=" ../"
 
 echo_and_eval "rm -rf \"${BUILD_DIR}\""
@@ -33,5 +33,9 @@ echo_and_eval "mkdir -p \"${BUILD_DIR}\""
 echo_and_eval "pushd \"${BUILD_DIR}\""
 echo_and_eval "${cmd}"
 echo_and_eval "\"${MSBUILD_PATH}\" ${SLN_FILE_NAME}"
-echo_and_eval "ctest"
+
+if [ "${JavaScriptCoreCPP_DISABLE_TESTS}" != "ON" ]; then
+		echo_and_eval "ctest -VV --output-on-failure"
+fi
+
 echo_and_eval "popd"

@@ -14,6 +14,7 @@ fi
 
 declare -rx VERBOSE=1
 
+declare -r JavaScriptCoreCPP_DISABLE_TESTS="OFF"
 declare -r CMAKE_BUILD_TYPE=Debug
 declare -r BUILD_DIR=build.$(echo ${CMAKE_BUILD_TYPE} | tr '[:upper:]' '[:lower:]')
 
@@ -23,7 +24,8 @@ function echo_and_eval {
 }
 
 cmd+="cmake"
-cmd+=" -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} ../"
+cmd+=" -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
+cmd+=" -DJavaScriptCoreCPP_DISABLE_TESTS=${JavaScriptCoreCPP_DISABLE_TESTS}"
 cmd+=" ../"
 
 echo_and_eval "rm -rf \"${BUILD_DIR}\""
@@ -31,5 +33,9 @@ echo_and_eval "mkdir -p \"${BUILD_DIR}\""
 echo_and_eval "pushd \"${BUILD_DIR}\""
 echo_and_eval "${cmd}"
 echo_and_eval "make -j 4"
-echo_and_eval "ctest -VV --output-on-failure"
+
+if [ "${JavaScriptCoreCPP_DISABLE_TESTS}" != "ON" ]; then
+		echo_and_eval "ctest -VV --output-on-failure"
+fi
+
 echo_and_eval "popd"

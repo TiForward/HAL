@@ -8,6 +8,8 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(JavaScriptCoreCPP)
 
+option(JavaScriptCoreCPP_DISABLE_TESTS "Disable compiling the tests" OFF)
+
 get_filename_component(APPCELERATOR_CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../cmake ABSOLUTE)
 list(INSERT CMAKE_MODULE_PATH 0 ${APPCELERATOR_CMAKE_MODULE_PATH})
 
@@ -37,5 +39,8 @@ include_directories(
   )
 
 add_subdirectory(src)
-add_subdirectory(examples)
-add_subdirectory(test)
+
+if (NOT JavaScriptCoreCPP_DISABLE_TESTS)
+	add_subdirectory(examples)
+	add_subdirectory(test)
+endif()
