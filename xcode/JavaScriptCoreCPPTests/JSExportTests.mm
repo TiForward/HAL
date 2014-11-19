@@ -154,8 +154,8 @@ using namespace JavaScriptCoreCPP;
 
   // FIXME: We whould get a nullptr if JSObject::GetPrivate() isn't of the
   // correct type.
-//  auto string_ptr = widget.GetPrivate<std::string>();
-//  XCTAssertFalse(string_ptr.get());
+  auto string_ptr = widget.GetPrivate<std::string>();
+  XCTAssertFalse(string_ptr.get());
 }
 
 @end

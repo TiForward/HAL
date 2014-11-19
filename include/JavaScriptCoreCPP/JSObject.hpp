@@ -26,13 +26,13 @@ namespace JavaScriptCoreCPP {
   class JSPropertyNameAccumulator;
   class JSPropertyNameArray;
   
-  template<typename T>
-  class JSExport;
+  class JSExportObject;
   
   namespace detail {
     template<typename T>
     class JSExportClass;
-  }}
+  }
+}
 
 namespace JavaScriptCoreCPP {
   
@@ -419,8 +419,7 @@ namespace JavaScriptCoreCPP {
   
   template<typename T>
   std::shared_ptr<T> JSObject::GetPrivate() const JAVASCRIPTCORECPP_NOEXCEPT {
-    //return std::shared_ptr<T>(std::make_shared<JSObject>(*this), dynamic_cast<T*>(reinterpret_cast<JSExport<T>*>(GetPrivate())));
-    return std::shared_ptr<T>(std::make_shared<JSObject>(*this), dynamic_cast<T*>(reinterpret_cast<T*>(GetPrivate())));
+    return std::shared_ptr<T>(std::make_shared<JSObject>(*this), dynamic_cast<T*>(reinterpret_cast<JSExportObject*>(GetPrivate())));
   }
   
 } // namespace JavaScriptCoreCPP {

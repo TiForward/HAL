@@ -31,10 +31,13 @@
 #include <memory>
 #include <utility>
 
+namespace JavaScriptCoreCPP {
+  template<typename T>
+  class JSExport;
+}
+
 namespace JavaScriptCoreCPP { namespace detail {
   
-  template<typename T>
-  class JSExportClass;
   
   template<typename T>
   class JSExportClassDefinitionBuilder;
