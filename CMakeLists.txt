@@ -4,17 +4,19 @@
 # Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
 # Licensed under the terms of the Apache Public License.
 # Please see the LICENSE included with this distribution for details.
-
 cmake_minimum_required(VERSION 3.0.0)
+
 project(JavaScriptCoreCPP)
+
+set(JavaScriptCoreCPP_VERSION 0.5.0)
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_INCLUDE_CURRENT_DIR_IN_INTERFACE ON)
 
 option(JavaScriptCoreCPP_DISABLE_TESTS "Disable compiling the tests" OFF)
 
-get_filename_component(APPCELERATOR_CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../cmake ABSOLUTE)
-list(INSERT CMAKE_MODULE_PATH 0 ${APPCELERATOR_CMAKE_MODULE_PATH})
-
 # Define helper functions and macros.
-include(${APPCELERATOR_CMAKE_MODULE_PATH}/internal_utils.cmake)
+include(${PROJECT_SOURCE_DIR}/cmake/internal_utils.cmake)
 
 # Defined in internal_utils.cmake.
 config_compiler_and_linker()
@@ -23,14 +25,16 @@ config_compiler_and_linker()
 # Allow "make test" to work.
 enable_testing()
 
+# We have a custom finder for JavaScriptCoreCPP.
+list(INSERT CMAKE_MODULE_PATH 0 ${PROJECT_SOURCE_DIR}/cmake)
 find_package(JavaScriptCore REQUIRED)
 
-set( Boost_USE_STATIC_LIBS    ON  )
-set( Boost_USE_MULTITHREADED  ON  )
-set( Boost_USE_STATIC_RUNTIME OFF )
+set(Boost_USE_STATIC_LIBS    ON )
+set(Boost_USE_MULTITHREADED  ON )
+set(Boost_USE_STATIC_RUNTIME OFF)
 
 # Travis only supports Boost 1.55, which is good enough for now.
-find_package( Boost 1.55.0 REQUIRED )
+find_package(Boost 1.55.0 REQUIRED)
 
 set(SOURCE_JavaScriptCoreCPP
   include/JavaScriptCoreCPP/JavaScriptCoreCPP.hpp
@@ -171,3 +175,60 @@ if (NOT JavaScriptCoreCPP_DISABLE_TESTS)
   add_subdirectory(examples)
   add_subdirectory(test)
 endif()
+
+
+# Support find_package(JavaScriptCoreCPP 0.5 REQUIRED)
+
+set_property(TARGET JavaScriptCoreCPP PROPERTY VERSION ${JavaScriptCoreCPP_VERSION})
+set_property(TARGET JavaScriptCoreCPP PROPERTY SOVERSION 0)
+set_property(TARGET JavaScriptCoreCPP PROPERTY INTERFACE_JavaScriptCoreCPP_MAJOR_VERSION 0)
+set_property(TARGET JavaScriptCoreCPP APPEND PROPERTY
+  COMPATIBLE_INTERFACE_STRING JavaScriptCoreCPP_MAJOR_VERSION
+  )
+
+#include(GenerateExportHeader)
+#generate_export_header(JavaScriptCoreCPP)
+
+install(TARGETS JavaScriptCoreCPP EXPORT JavaScriptCoreCPPTargets
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
+  )
+
+export(EXPORT JavaScriptCoreCPPTargets
+  FILE "${CMAKE_BINARY_DIR}/JavaScriptCoreCPPTargets.cmake"
+)
+
+configure_file(cmake/JavaScriptCoreCPPConfig.cmake
+  "${CMAKE_BINARY_DIR}/JavaScriptCoreCPPConfig.cmake"
+  COPY_ONLY
+  )
+
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+  "${CMAKE_BINARY_DIR}/JavaScriptCoreCPPConfigVersion.cmake"
+  VERSION ${JavaScriptCoreCPP_VERSION}
+  COMPATIBILITY AnyNewerVersion
+  )
+
+# Store the current build directory in the CMake user package registry
+# so that find_package(JavaScriptCoreCPP) works.
+export(PACKAGE JavaScriptCoreCPP)
+
+#[[
+# TODO: Install files to external locations.
+
+set(ConfigPackageLocation lib/cmake/JavaScriptCoreCPP)
+install(EXPORT JavaScriptCoreCPPTargets
+  DESTINATION ${ConfigPackageLocation}
+  )
+
+install(
+  FILES
+  "${CMAKE_CURRENT_BINARY_DIR}/JavaScriptCoreCPPConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/JavaScriptCoreCPPConfigVersion.cmake"
+  DESTINATION ${ConfigPackageLocation}
+  COMPONENT Devel
+  )
+]]
