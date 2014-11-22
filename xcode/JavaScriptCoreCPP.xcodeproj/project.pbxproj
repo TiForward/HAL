@@ -74,6 +74,7 @@
 		C97455021A0D23AD00CB4CA9 /* JSClassDefinition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97455001A0D23AD00CB4CA9 /* JSClassDefinition.cpp */; };
 		C97455041A0D292500CB4CA9 /* JSBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97455031A0D292500CB4CA9 /* JSBase.cpp */; };
 		C97455061A0D55E200CB4CA9 /* JSExportClassDefinition.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C97455051A0D55E200CB4CA9 /* JSExportClassDefinition.hpp */; };
+		C98091991A21491300AE5930 /* JavaScriptCoreCPP_EXPORT.h in Headers */ = {isa = PBXBuildFile; fileRef = C98091981A21491300AE5930 /* JavaScriptCoreCPP_EXPORT.h */; };
 		C985CB091A107E96004D4163 /* Widget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C985CB081A107E96004D4163 /* Widget.cpp */; };
 		C9E6AFA51A11653A00FED053 /* JSExportObject.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9E6AFA31A11653A00FED053 /* JSExportObject.hpp */; };
 		C9E6AFA61A11653A00FED053 /* JSExportObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9E6AFA41A11653A00FED053 /* JSExportObject.cpp */; };
@@ -170,6 +171,7 @@
 		C97455001A0D23AD00CB4CA9 /* JSClassDefinition.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSClassDefinition.cpp; path = src/JSClassDefinition.cpp; sourceTree = "<group>"; };
 		C97455031A0D292500CB4CA9 /* JSBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSBase.cpp; path = src/detail/JSBase.cpp; sourceTree = "<group>"; };
 		C97455051A0D55E200CB4CA9 /* JSExportClassDefinition.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSExportClassDefinition.hpp; path = include/JavaScriptCoreCPP/detail/JSExportClassDefinition.hpp; sourceTree = "<group>"; };
+		C98091981A21491300AE5930 /* JavaScriptCoreCPP_EXPORT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JavaScriptCoreCPP_EXPORT.h; path = xcode/JavaScriptCoreCPP_EXPORT.h; sourceTree = "<group>"; };
 		C985CB081A107E96004D4163 /* Widget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Widget.cpp; path = ../../examples/Widget.cpp; sourceTree = "<group>"; };
 		C9E6AFA31A11653A00FED053 /* JSExportObject.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSExportObject.hpp; path = include/JavaScriptCoreCPP/JSExportObject.hpp; sourceTree = "<group>"; };
 		C9E6AFA41A11653A00FED053 /* JSExportObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSExportObject.cpp; path = src/JSExportObject.cpp; sourceTree = "<group>"; };
@@ -224,6 +226,7 @@
 		C936FD3319CB95BE0082CB08 /* JavaScriptCoreCPP */ = {
 			isa = PBXGroup;
 			children = (
+				C98091981A21491300AE5930 /* JavaScriptCoreCPP_EXPORT.h */,
 				C974543F1A0282FD00CB4CA9 /* JavaScriptCoreCPP.hpp */,
 				C97453D71A02797E00CB4CA9 /* JSString.hpp */,
 				C97454971A07534700CB4CA9 /* JSString.cpp */,
@@ -318,11 +321,11 @@
 			children = (
 				C97454FD1A0D211E00CB4CA9 /* JSBase.hpp */,
 				C97455031A0D292500CB4CA9 /* JSBase.cpp */,
-				C97454201A02806300CB4CA9 /* JSPerformanceCounter.hpp */,
-				C974541F1A02806300CB4CA9 /* JSPerformanceCounterPrinter.hpp */,
-				C97454241A02807900CB4CA9 /* HashUtilities.hpp */,
 				C97454231A02807900CB4CA9 /* JSUtil.hpp */,
 				C97454251A02807900CB4CA9 /* JSUtil.cpp */,
+				C97454241A02807900CB4CA9 /* HashUtilities.hpp */,
+				C97454201A02806300CB4CA9 /* JSPerformanceCounter.hpp */,
+				C974541F1A02806300CB4CA9 /* JSPerformanceCounterPrinter.hpp */,
 			);
 			name = detail;
 			sourceTree = "<group>";
@@ -399,11 +402,11 @@
 				C97455051A0D55E200CB4CA9 /* JSExportClassDefinition.hpp */,
 				C97454E51A09C71200CB4CA9 /* JSExportClassDefinitionBuilder.hpp */,
 				C97454D81A09C6D500CB4CA9 /* JSExportClass.hpp */,
-				C9E6AFA71A11808800FED053 /* JSValueUtil.hpp */,
-				C9E6AFA81A11808800FED053 /* JSValueUtil.cpp */,
+				C97454DB1A09C6D500CB4CA9 /* JSExportCallbacks.hpp */,
 				C97454D91A09C6D500CB4CA9 /* JSExportNamedValuePropertyCallback.hpp */,
 				C97454DA1A09C6D500CB4CA9 /* JSExportNamedFunctionPropertyCallback.hpp */,
-				C97454DB1A09C6D500CB4CA9 /* JSExportCallbacks.hpp */,
+				C9E6AFA71A11808800FED053 /* JSValueUtil.hpp */,
+				C9E6AFA81A11808800FED053 /* JSValueUtil.cpp */,
 			);
 			name = detail;
 			sourceTree = "<group>";
@@ -434,6 +437,7 @@
 				C97455011A0D23AD00CB4CA9 /* JSClassDefinition.hpp in Headers */,
 				C97453E01A027A1800CB4CA9 /* JSContextGroup.hpp in Headers */,
 				C97453DF1A027A1800CB4CA9 /* JSContext.hpp in Headers */,
+				C98091991A21491300AE5930 /* JavaScriptCoreCPP_EXPORT.h in Headers */,
 				C97453EE1A027E3D00CB4CA9 /* JSValue.hpp in Headers */,
 				C97453ED1A027E3D00CB4CA9 /* JSUndefined.hpp in Headers */,
 				C97453EB1A027E3D00CB4CA9 /* JSNull.hpp in Headers */,
@@ -656,7 +660,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = "../include ../examples ../../Util/include";
+				USER_HEADER_SEARCH_PATHS = ". ../include ../examples";
 			};
 			name = Debug;
 		};
@@ -695,7 +699,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = "../include ../examples ../../Util/include";
+				USER_HEADER_SEARCH_PATHS = ". ../include ../examples";
 			};
 			name = Release;
 		};
