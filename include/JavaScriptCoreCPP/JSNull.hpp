@@ -22,11 +22,7 @@ namespace JavaScriptCoreCPP {
   The only way to create a JSNull is by using the
   JSContext::CreateNull member function.
 */
-#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
-class JSNull final : public JSValue, public detail::JSPerformanceCounter<JSNull> {
-#else
-class JSNull final : public JSValue {
-#endif
+class JAVASCRIPTCORECPP_EXPORT JSNull final : public JSValue JAVASCRIPTCORECPP_PERFORMANCE_COUNTER2(JSNull) {
 	
 private:
 

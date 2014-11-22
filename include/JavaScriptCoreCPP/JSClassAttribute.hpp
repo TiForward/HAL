@@ -25,7 +25,7 @@ namespace JavaScriptCoreCPP {
   objects. Use NoAutomaticPrototype in combination with
   JSObject::SetPrototype to manage prototypes manually.
 */
-enum class JSClassAttribute : std::uint32_t /* typedef unsigned JSClassAttributes */ {
+enum class JAVASCRIPTCORECPP_EXPORT JSClassAttribute : std::uint32_t /* typedef unsigned JSClassAttributes */ {
 	None,
 	NoAutomaticPrototype
 };

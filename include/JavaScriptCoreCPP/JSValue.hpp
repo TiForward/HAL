@@ -32,8 +32,8 @@ namespace JavaScriptCoreCPP {
     template<typename T>
     class JSExportClass;
     
-    std::vector<JSValue>    to_vector(const JSContext&, size_t, const JSValueRef[]);
-    std::vector<JSValueRef> to_vector(const std::vector<JSValue>&);
+    JAVASCRIPTCORECPP_EXPORT std::vector<JSValue>    to_vector(const JSContext&, size_t, const JSValueRef[]);
+    JAVASCRIPTCORECPP_EXPORT std::vector<JSValueRef> to_vector(const std::vector<JSValue>&);
   }}
 
 namespace JavaScriptCoreCPP {
@@ -54,7 +54,7 @@ namespace JavaScriptCoreCPP {
    The only way to create a JSValue is by using the
    JSContext::CreateXXX member functions.
    */
-  class JSValue JAVASCRIPTCORECPP_PERFORMANCE_COUNTER1(JSValue) {
+  class JAVASCRIPTCORECPP_EXPORT JSValue JAVASCRIPTCORECPP_PERFORMANCE_COUNTER1(JSValue) {
     
   public:
     
@@ -355,10 +355,10 @@ namespace JavaScriptCoreCPP {
     
     // These classes and functions need access to operator
     // JSValueRef().
-    friend bool operator==(const JSValue& lhs, const JSValue& rhs) JAVASCRIPTCORECPP_NOEXCEPT;
+    JAVASCRIPTCORECPP_EXPORT friend bool operator==(const JSValue& lhs, const JSValue& rhs) JAVASCRIPTCORECPP_NOEXCEPT;
     
-    friend std::vector<JSValue>    detail::to_vector(const JSContext&, size_t, const JSValueRef[]);
-    friend std::vector<JSValueRef> detail::to_vector(const std::vector<JSValue>&);
+    JAVASCRIPTCORECPP_EXPORT friend std::vector<JSValue>    detail::to_vector(const JSContext&, size_t, const JSValueRef[]);
+    JAVASCRIPTCORECPP_EXPORT friend std::vector<JSValueRef> detail::to_vector(const std::vector<JSValue>&);
     
   private:
     
@@ -367,7 +367,13 @@ namespace JavaScriptCoreCPP {
     static void * operator new [] (std::size_t); // #2: To prevent allocation of array of objects
     
     JSContext  js_context__;
+
+    // Silence 4251 on Windows since private member variables do not
+    // need to be exxported from a DLL.
+#pragma warning(push)
+#pragma warning(disable: 4251)
     JSValueRef js_value_ref__ { nullptr };
+#pragma warning(pop)
     
 #undef  JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD
 #ifdef  JAVASCRIPTCORECPP_THREAD_SAFE
@@ -388,7 +394,7 @@ namespace JavaScriptCoreCPP {
     return static_cast<std::string>(js_value);
   }
   
-  std::string to_string(const JSValue::Type& js_value_type) JAVASCRIPTCORECPP_NOEXCEPT;
+  JAVASCRIPTCORECPP_EXPORT std::string to_string(const JSValue::Type& js_value_type) JAVASCRIPTCORECPP_NOEXCEPT;
   
   /*!
    @function
@@ -403,7 +409,7 @@ namespace JavaScriptCoreCPP {
    @result true if the two values are equal, false if they are not
    equal.
    */
-  bool operator==(const JSValue& lhs, const JSValue& rhs) JAVASCRIPTCORECPP_NOEXCEPT;
+  JAVASCRIPTCORECPP_EXPORT bool operator==(const JSValue& lhs, const JSValue& rhs) JAVASCRIPTCORECPP_NOEXCEPT;
   
   // Return true if the two JSValues are not strict equal, as compared by the JS === operator.
   inline
@@ -424,7 +430,7 @@ namespace JavaScriptCoreCPP {
    @result true if the two values are equal, false if they are not
    equal.
    */
-  bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs);
+  JAVASCRIPTCORECPP_EXPORT bool IsEqualWithTypeCoercion(const JSValue& lhs, const JSValue& rhs);
   
   inline
   std::ostream& operator << (std::ostream& ostream, const JSValue& js_value) {

@@ -52,7 +52,7 @@ namespace JavaScriptCoreCPP {
    The only way to create a JSObject is by using the
    JSContext::CreateObject member functions.
    */
-  class JSObject JAVASCRIPTCORECPP_PERFORMANCE_COUNTER1(JSObject) {
+  class JAVASCRIPTCORECPP_EXPORT JSObject JAVASCRIPTCORECPP_PERFORMANCE_COUNTER1(JSObject) {
     
   public:
     
@@ -401,7 +401,13 @@ namespace JavaScriptCoreCPP {
     virtual void GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const JAVASCRIPTCORECPP_NOEXCEPT final;
     
     JSContext   js_context__;
+
+    // Silence 4251 on Windows since private member variables do not
+    // need to be exxported from a DLL.
+#pragma warning(push)
+#pragma warning(disable: 4251)
     JSObjectRef js_object_ref__;
+#pragma warning(pop)
     
 #undef  JAVASCRIPTCORECPP_JSOBJECT_LOCK_GUARD
 #ifdef  JAVASCRIPTCORECPP_THREAD_SAFE

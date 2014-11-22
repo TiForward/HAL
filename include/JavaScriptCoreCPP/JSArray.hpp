@@ -23,11 +23,7 @@ namespace JavaScriptCoreCPP {
   The only way to create a JSArray is by using the
   JSContext::CreateArray member function.
 */
-#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
-class JSArray final : public JSObject, public detail::JSPerformanceCounter<JSArray> {
-#else
-class JSArray final : public JSObject {
-#endif
+class JAVASCRIPTCORECPP_EXPORT JSArray final : public JSObject JAVASCRIPTCORECPP_PERFORMANCE_COUNTER2(JSArray) {
 	
  private:
 

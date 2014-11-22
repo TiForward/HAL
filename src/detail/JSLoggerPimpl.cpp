@@ -23,7 +23,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     std::time_t t = std::chrono::system_clock::to_time_t(tp);
     
 #pragma warning(push)
-#pragma warning(disable: 4996) //4996 for _CRT_SECURE_NO_WARNINGS equivalent
+#pragma warning(disable: 4996) // 4996 for _CRT_SECURE_NO_WARNINGS equivalent
     // Convert to calendar time.
     //std::string ts = std::ctime(&t);
     std::string ts = std::asctime(std::localtime(&t));

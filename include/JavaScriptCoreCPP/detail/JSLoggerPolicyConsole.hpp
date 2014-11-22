@@ -15,7 +15,7 @@
 
 namespace JavaScriptCoreCPP { namespace detail {
   
-  class JSLoggerPolicyConsole final : public JSLoggerPolicyInterface {
+  class JAVASCRIPTCORECPP_EXPORT JSLoggerPolicyConsole final : public JSLoggerPolicyInterface {
   public:
     
     JSLoggerPolicyConsole(const std::string& name) {

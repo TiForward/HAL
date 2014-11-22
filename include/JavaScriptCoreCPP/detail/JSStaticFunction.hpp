@@ -23,7 +23,7 @@ namespace JavaScriptCoreCPP { namespace detail {
    property of a JavaScript object.
    */
   
-  class JSStaticFunction final : public JSPropertyCallback JAVASCRIPTCORECPP_PERFORMANCE_COUNTER2(JSStaticFunction) {
+  class JAVASCRIPTCORECPP_EXPORT JSStaticFunction final : public JSPropertyCallback JAVASCRIPTCORECPP_PERFORMANCE_COUNTER2(JSStaticFunction) {
       
     public:
       

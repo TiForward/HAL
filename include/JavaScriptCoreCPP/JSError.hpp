@@ -22,11 +22,7 @@ namespace JavaScriptCoreCPP {
   The only way to create a JSError is by using the
   JSContext::CreateError member function.
 */
-#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
-class JSError final : public JSObject, public detail::JSPerformanceCounter<JSError> {
-#else
-class JSError final : public JSObject {
-#endif
+class JAVASCRIPTCORECPP_EXPORT JSError final : public JSObject JAVASCRIPTCORECPP_PERFORMANCE_COUNTER2(JSError) {
 	
  private:
 	

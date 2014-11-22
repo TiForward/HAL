@@ -35,11 +35,7 @@ namespace JavaScriptCoreCPP {
    an ordered set used to collect the names of a JavaScript object's
    properties
    */
-#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
-  class JSPropertyNameAccumulator : public detail::JSPerformanceCounter<JSPropertyNameAccumulator> {
-#else
-    class JSPropertyNameAccumulator {
-#endif
+  class JSPropertyNameAccumulator JAVASCRIPTCORECPP_PERFORMANCE_COUNTER2(JSPropertyNameAccumulator) {
       
     public:
       

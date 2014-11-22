@@ -22,7 +22,7 @@ namespace JavaScriptCoreCPP { namespace detail {
    JavaScriptCore C API JSStaticValue, which describes a value property
    of a JavaScript object.
    */
-  class JSStaticValue final : public JSPropertyCallback JAVASCRIPTCORECPP_PERFORMANCE_COUNTER2(JSStaticValue) {
+  class JAVASCRIPTCORECPP_EXPORT JSStaticValue final : public JSPropertyCallback JAVASCRIPTCORECPP_PERFORMANCE_COUNTER2(JSStaticValue) {
     
   public:
     

@@ -119,23 +119,26 @@ namespace JavaScriptCoreCPP { namespace detail {
   }
   
   std::string to_string(JSPropertyAttribute attribute) JAVASCRIPTCORECPP_NOEXCEPT {
+    std::string string = "Unknown";
     switch (attribute) {
       case JSPropertyAttribute::None:
-        return "None";
+        string = "None";
         break;
         
       case JSPropertyAttribute::ReadOnly:
-        return "ReadOnly";
+        string = "ReadOnly";
         break;
         
       case JSPropertyAttribute::DontEnum:
-        return "DontEnum";
+        string = "DontEnum";
         break;
         
       case JSPropertyAttribute::DontDelete:
-        return "DontDelete";
+        string = "DontDelete";
         break;
     }
+
+    return string;
   }
   
   std::string to_string(const std::unordered_set<JSPropertyAttribute>& attributes) JAVASCRIPTCORECPP_NOEXCEPT {
@@ -181,15 +184,18 @@ namespace JavaScriptCoreCPP { namespace detail {
   
   
   std::string to_string(JSClassAttribute attribute) JAVASCRIPTCORECPP_NOEXCEPT {
+    std::string string = "Unknown";
     switch (attribute) {
       case JSClassAttribute::None:
-        return "None";
+        string = "None";
         break;
         
       case JSClassAttribute::NoAutomaticPrototype:
-        return "NoAutomaticPrototype";
+        string = "NoAutomaticPrototype";
         break;
     }
+
+    return string;
   }
   
   std::string to_string(const std::unordered_set<JSClassAttribute>& attributes) JAVASCRIPTCORECPP_NOEXCEPT {

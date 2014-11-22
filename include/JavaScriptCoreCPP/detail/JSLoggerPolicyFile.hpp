@@ -15,7 +15,7 @@
 
 namespace JavaScriptCoreCPP { namespace detail {
   
-  class JSLoggerPolicyFile final : public JSLoggerPolicyInterface {
+  class JAVASCRIPTCORECPP_EXPORT JSLoggerPolicyFile final : public JSLoggerPolicyInterface {
   public:
     
     JSLoggerPolicyFile(const std::string& name) {
@@ -44,7 +44,12 @@ namespace JavaScriptCoreCPP { namespace detail {
       
     private:
       
+    // Silence 4251 on Windows since private member variables do not
+    // need to be exxported from a DLL.
+#pragma warning(push)
+#pragma warning(disable: 4251)
       std::ofstream ofstream__;
+#pragma warning(pop)
   };
       
 }} // namespace JavaScriptCoreCPP { namespace detail {

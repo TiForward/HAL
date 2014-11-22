@@ -28,7 +28,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   template<typename T>
   class JSExportClass;
   
-  std::vector<JSStringRef> to_vector(const std::vector<JSString>&);
+  JAVASCRIPTCORECPP_EXPORT std::vector<JSStringRef> to_vector(const std::vector<JSString>&);
 }}
 
 namespace JavaScriptCoreCPP {
@@ -47,7 +47,7 @@ namespace JavaScriptCoreCPP {
    provides a strict weak ordering, and provides a custom hash
    function.
    */
-    class JSString final JAVASCRIPTCORECPP_PERFORMANCE_COUNTER1(JSString) {
+    class JAVASCRIPTCORECPP_EXPORT JSString final JAVASCRIPTCORECPP_PERFORMANCE_COUNTER1(JSString) {
       
     public:
       
@@ -180,12 +180,17 @@ namespace JavaScriptCoreCPP {
       static void * operator new [] (std::size_t); // #2: To prevent allocation of array of objects
       
       friend void swap(JSString& first, JSString& second) JAVASCRIPTCORECPP_NOEXCEPT;
-      friend bool operator==(const JSString& lhs, const JSString& rhs);
+      JAVASCRIPTCORECPP_EXPORT friend bool operator==(const JSString& lhs, const JSString& rhs);
       
+    // Silence 4251 on Windows since private member variables do not
+    // need to be exxported from a DLL.
+#pragma warning(push)
+#pragma warning(disable: 4251)
       JSStringRef    js_string_ref__ { nullptr };
       std::string    string__;
       std::u16string u16string__;
       std::size_t    hash_value__;
+#pragma warning(pop)
       
 #undef JAVASCRIPTCORECPP_JSSTRING_LOCK_GUARD
 #ifdef  JAVASCRIPTCORECPP_THREAD_SAFE
@@ -202,11 +207,11 @@ namespace JavaScriptCoreCPP {
     }
     
     // Return true if the two JSStrings are equal.
-    bool operator==(const JSString& lhs, const JSString& rhs);
+    JAVASCRIPTCORECPP_EXPORT bool operator==(const JSString& lhs, const JSString& rhs);
     
     // Return true if the two JSStrings are not equal.
     inline
-    bool operator!=(const JSString& lhs, const JSString& rhs) {
+    JAVASCRIPTCORECPP_EXPORT bool operator!=(const JSString& lhs, const JSString& rhs) {
       return ! (lhs == rhs);
     }
     

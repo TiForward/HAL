@@ -22,11 +22,7 @@ namespace JavaScriptCoreCPP {
   The only way to create a JSUndefined is by using the
   JSContext::CreateUndefined member function.
 */
-#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
-class JSUndefined final : public JSValue, public detail::JSPerformanceCounter<JSUndefined> {
-#else
-class JSUndefined final : public JSValue {
-#endif
+class JAVASCRIPTCORECPP_EXPORT JSUndefined final : public JSValue JAVASCRIPTCORECPP_PERFORMANCE_COUNTER2(JSUndefined) {
 	
 private:
 

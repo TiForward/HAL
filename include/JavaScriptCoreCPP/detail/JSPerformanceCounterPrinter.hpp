@@ -17,7 +17,7 @@
 
 namespace JavaScriptCoreCPP { namespace detail {
   
-  class JSPerformanceCounterPrinter {
+  class JAVASCRIPTCORECPP_EXPORT JSPerformanceCounterPrinter {
   public:
     
     JSPerformanceCounterPrinter()                                              = default;

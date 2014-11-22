@@ -44,7 +44,7 @@ namespace JavaScriptCoreCPP { namespace detail {
    JAVASCRIPTCORECPP_LOG_ERROR("All good things come to an end.");
    */
   
-  enum class JSLoggerSeverityType {
+  enum class JAVASCRIPTCORECPP_EXPORT JSLoggerSeverityType {
     JS_DEBUG,
     JS_INFO,
     JS_WARN,

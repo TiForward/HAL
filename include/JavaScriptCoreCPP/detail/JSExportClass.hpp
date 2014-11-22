@@ -209,10 +209,12 @@ namespace JavaScriptCoreCPP { namespace detail {
     JSContext js_context(context_ref);
     JSString message(LogStdException("JSExportClass::GetNamedProperty", JSObject(js_context, object_ref), e));
     *exception = JSValue(js_context, message);
+    return nullptr;
   } catch (...) {
     JSContext js_context(context_ref);
     JSString message(LogUnknownException("JSExportClass::GetNamedProperty", JSObject(js_context, object_ref)));
     *exception = JSValue(js_context, message);
+    return nullptr;
   }
   
   template<typename T>
@@ -244,10 +246,12 @@ namespace JavaScriptCoreCPP { namespace detail {
     JSContext js_context(context_ref);
     JSString message(LogStdException("JSExportClass::SetNamedProperty", JSObject(js_context, object_ref), e));
     *exception = JSValue(js_context, message);
+    return false;
   } catch (...) {
     JSContext js_context(context_ref);
     JSString message(LogUnknownException("JSExportClass::SetNamedProperty", JSObject(js_context, object_ref)));
     *exception = JSValue(js_context, message);
+    return false;
   }
   
   template<typename T>
@@ -315,10 +319,12 @@ namespace JavaScriptCoreCPP { namespace detail {
     JSContext js_context(context_ref);
     JSString message(LogStdException("JSExportClass::CallNamedFunction", JSObject(js_context, function_ref), e));
     *exception = JSValue(js_context, message);
+    return nullptr;
   } catch (...) {
     JSContext js_context(context_ref);
     JSString message(LogUnknownException("JSExportClass::CallNamedFunction", JSObject(js_context, function_ref)));
     *exception = JSValue(js_context, message);
+    return nullptr;
   }
   
   template<typename T>
@@ -345,8 +351,10 @@ namespace JavaScriptCoreCPP { namespace detail {
     
   } catch (const std::exception& e) {
     LogStdException("JSExportClass::HasProperty", JSObject(JSContext(context_ref), object_ref), e);
+    return false;
   } catch (...) {
     LogUnknownException("JSExportClass::HasProperty", JSObject(JSContext(context_ref), object_ref));
+    return false;
   }
   
   template<typename T>
@@ -384,10 +392,12 @@ namespace JavaScriptCoreCPP { namespace detail {
     JSContext js_context(context_ref);
     JSString message(LogStdException("JSExportClass::GetProperty", JSObject(js_context, object_ref), e));
     *exception = JSValue(js_context, message);
+    return nullptr;
   } catch (...) {
     JSContext js_context(context_ref);
     JSString message(LogUnknownException("JSExportClass::GetProperty", JSObject(js_context, object_ref)));
     *exception = JSValue(js_context, message);
+    return nullptr;
   }
   
   template<typename T>
@@ -417,10 +427,12 @@ namespace JavaScriptCoreCPP { namespace detail {
     JSContext js_context(context_ref);
     JSString message(LogStdException("JSExportClass::SetProperty", JSObject(js_context, object_ref), e));
     *exception = JSValue(js_context, message);
+    return false;
   } catch (...) {
     JSContext js_context(context_ref);
     JSString message(LogUnknownException("JSExportClass::SetProperty", JSObject(js_context, object_ref)));
     *exception = JSValue(js_context, message);
+    return false;
   }
   
   template<typename T>
@@ -449,10 +461,12 @@ namespace JavaScriptCoreCPP { namespace detail {
     JSContext js_context(context_ref);
     JSString message(LogStdException("JSExportClass::DeleteProperty", JSObject(js_context, object_ref), e));
     *exception = JSValue(js_context, message);
+    return false;
   } catch (...) {
     JSContext js_context(context_ref);
     JSString message(LogUnknownException("JSExportClass::DeleteProperty", JSObject(js_context, object_ref)));
     *exception = JSValue(js_context, message);
+    return false;
   }
   
   template<typename T>
@@ -500,7 +514,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     // precondition
     assert(callback_found);
     
-    const auto result      = callback(*native_object_ptr, to_vector(js_context, argument_count, arguments_array), this_object);
+    const auto result = callback(*native_object_ptr, to_vector(js_context, argument_count, arguments_array), this_object);
     
     JAVASCRIPTCORECPP_LOG_DEBUG("JSExportClass::CallAsFunction: result = ", to_string(result), " for this[", native_this_ptr, "].this[", native_object_ptr, "](...)");
     
@@ -510,10 +524,12 @@ namespace JavaScriptCoreCPP { namespace detail {
     JSContext js_context(context_ref);
     JSString message(LogStdException("JSExportClass::CallAsFunction", JSObject(js_context, function_ref), e));
     *exception = JSValue(js_context, message);
+    return nullptr;
   } catch (...) {
     JSContext js_context(context_ref);
     JSString message(LogUnknownException("JSExportClass::CallAsFunction", JSObject(js_context, function_ref)));
     *exception = JSValue(js_context, message);
+    return nullptr;
   }
   
   template<typename T>
@@ -539,10 +555,12 @@ namespace JavaScriptCoreCPP { namespace detail {
     JSContext js_context(context_ref);
     JSString message(LogStdException("JSObjectCallAsConstructorCallback", JSObject(js_context, constructor_ref), e));
     *exception = JSValue(js_context, message);
+    return nullptr;
   } catch (...) {
     JSContext js_context(context_ref);
     JSString message(LogUnknownException("JSObjectCallAsConstructorCallback", JSObject(js_context, constructor_ref)));
     *exception = JSValue(js_context, message);
+    return nullptr;
   }
   
   template<typename T>
@@ -572,10 +590,12 @@ namespace JavaScriptCoreCPP { namespace detail {
     JSContext js_context(context_ref);
     JSString message(LogStdException("JSObjectHasInstanceCallback", JSObject(js_context, constructor_ref), e));
     *exception = JSValue(js_context, message);
+    return false;
   } catch (...) {
     JSContext js_context(context_ref);
     JSString message(LogUnknownException("JSObjectHasInstanceCallback", JSObject(js_context, constructor_ref)));
     *exception = JSValue(js_context, message);
+    return false;
   }
   
   template<typename T>
@@ -603,10 +623,12 @@ namespace JavaScriptCoreCPP { namespace detail {
     JSContext js_context(context_ref);
     JSString message(LogStdException("JSObjectConvertToTypeCallback", JSObject(js_context, object_ref), e));
     *exception = JSValue(js_context, message);
+    return nullptr;
   } catch (...) {
     JSContext js_context(context_ref);
     JSString message(LogUnknownException("JSObjectConvertToTypeCallback", JSObject(js_context, object_ref)));
     *exception = JSValue(js_context, message);
+    return nullptr;
   }
   
   template<typename T>

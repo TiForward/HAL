@@ -25,11 +25,7 @@ namespace JavaScriptCoreCPP {
   The only way to create a JSFunction is by using the
   JSContext::CreateFunction member function.
 */
-#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
-class JSFunction final : public JSObject, public detail::JSPerformanceCounter<JSFunction> {
-#else
-class JSFunction final : public JSObject {
-#endif
+class JAVASCRIPTCORECPP_EXPORT JSFunction final : public JSObject JAVASCRIPTCORECPP_PERFORMANCE_COUNTER2(JSFunction) {
 	
  private:
 	

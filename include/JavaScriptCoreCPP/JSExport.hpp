@@ -563,7 +563,7 @@ namespace JavaScriptCoreCPP {
   
   template<typename T>
   void JSExport<T>::AddConvertToTypeCallback(const detail::ConvertToTypeCallback<T>& convert_to_type_callback) {
-    builder__.ConvertTotype(convert_to_type_callback);
+    builder__.ConvertToType(convert_to_type_callback);
   }
   
   template<typename T>

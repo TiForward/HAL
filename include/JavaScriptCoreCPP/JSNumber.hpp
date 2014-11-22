@@ -23,11 +23,7 @@ namespace JavaScriptCoreCPP {
   The only way to create a JSNumber is by using the
   JSContext::CreateNumber member function.
 */
-#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
-class JSNumber final : public JSValue, public detail::JSPerformanceCounter<JSNumber> {
-#else
-class JSNumber final : public JSValue {
-#endif
+class JAVASCRIPTCORECPP_EXPORT JSNumber final : public JSValue JAVASCRIPTCORECPP_PERFORMANCE_COUNTER2(JSNumber) {
 	
 public:
 	

@@ -35,7 +35,7 @@ namespace JavaScriptCoreCPP {
     template<typename T>
     class JSExportClass;
     
-    std::vector<JSValue> to_vector(const JSContext&, size_t, const JSValueRef[]);
+    JAVASCRIPTCORECPP_EXPORT std::vector<JSValue> to_vector(const JSContext&, size_t, const JSValueRef[]);
   }}
 
 namespace JavaScriptCoreCPP {
@@ -57,7 +57,7 @@ namespace JavaScriptCoreCPP {
    When JavaScript objects within the same context group are used in
    multiple threads, explicit synchronization is required.
    */
-  class JSContext final JAVASCRIPTCORECPP_PERFORMANCE_COUNTER1(JSContext) {
+  class JAVASCRIPTCORECPP_EXPORT JSContext final JAVASCRIPTCORECPP_PERFORMANCE_COUNTER1(JSContext) {
     
   public:
     
@@ -439,9 +439,8 @@ namespace JavaScriptCoreCPP {
     friend class JSFunction;
     friend class JSPropertyNameArray;
     
-    friend bool operator==(const JSValue& lhs, const JSValue& rhs) JAVASCRIPTCORECPP_NOEXCEPT;
-    
-    friend std::vector<JSValue> detail::to_vector(const JSContext&, size_t, const JSValueRef[]);
+    JAVASCRIPTCORECPP_EXPORT friend bool operator==(const JSValue& lhs, const JSValue& rhs) JAVASCRIPTCORECPP_NOEXCEPT;
+    JAVASCRIPTCORECPP_EXPORT friend std::vector<JSValue> detail::to_vector(const JSContext&, size_t, const JSValueRef[]);
     
     // For interoperability with the JavaScriptCore C API.
     operator JSContextRef() const JAVASCRIPTCORECPP_NOEXCEPT {
@@ -462,10 +461,15 @@ namespace JavaScriptCoreCPP {
     static void * operator new(std::size_t);       // #1: To prevent allocation of scalar objects
     static void * operator new [] (std::size_t);   // #2: To prevent allocation of array of objects
     
-    friend bool operator==(const JSContext& lhs, const JSContext& rhs);
+    JAVASCRIPTCORECPP_EXPORT friend bool operator==(const JSContext& lhs, const JSContext& rhs);
     
+    // Silence 4251 on Windows since private member variables do not
+    // need to be exxported from a DLL.
+#pragma warning(push)
+#pragma warning(disable: 4251)
     JSContextGroup     js_context_group__;
     JSGlobalContextRef js_global_context_ref__ { nullptr };
+#pragma warning(pop)
     
 #undef  JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD
 #ifdef  JAVASCRIPTCORECPP_THREAD_SAFE

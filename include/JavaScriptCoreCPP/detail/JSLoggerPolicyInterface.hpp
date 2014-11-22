@@ -10,9 +10,11 @@
 #ifndef _JAVASCRIPTCORECPP_DETAIL_JSLOGGERPOLICYINTERFACE_HPP_
 #define _JAVASCRIPTCORECPP_DETAIL_JSLOGGERPOLICYINTERFACE_HPP_
 
+#include "JavaScriptCoreCPP_EXPORT.h"
+
 namespace JavaScriptCoreCPP { namespace detail {
   
-  class JSLoggerPolicyInterface {
+  class JAVASCRIPTCORECPP_EXPORT JSLoggerPolicyInterface {
   public:
     
     JSLoggerPolicyInterface()                                          = default;

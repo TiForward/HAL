@@ -52,6 +52,8 @@
 #include <mutex>
 #endif
 
+#include "JavaScriptCoreCPP_EXPORT.h"
+
 #include "JavaScriptCoreCPP/detail/JSLogger.hpp"
 #include "JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp"
 #include <JavaScriptCore/JavaScript.h>

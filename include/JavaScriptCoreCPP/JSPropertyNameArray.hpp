@@ -26,7 +26,7 @@ namespace JavaScriptCoreCPP {
    JSPropertyNameArrayRef, the JavaScriptCore C API representation of
    an array of JavaScript property names.
    */
-  class JSPropertyNameArray final JAVASCRIPTCORECPP_PERFORMANCE_COUNTER1(JSPropertyNameArray) {
+  class JAVASCRIPTCORECPP_EXPORT JSPropertyNameArray final JAVASCRIPTCORECPP_PERFORMANCE_COUNTER1(JSPropertyNameArray) {
     
   public:
     
@@ -98,7 +98,12 @@ namespace JavaScriptCoreCPP {
     static void * operator new(std::size_t);       // #1: To prevent allocation of scalar objects
     static void * operator new [] (std::size_t);   // #2: To prevent allocation of array of objects
     
+    // Silence 4251 on Windows since private member variables do not
+    // need to be exxported from a DLL.
+#pragma warning(push)
+#pragma warning(disable: 4251)
     JSPropertyNameArrayRef js_property_name_array_ref__;
+#pragma warning(pop)
     
 #undef  JAVASCRIPTCORECPP_JSPROPERTYNAMEARRAY_LOCK_GUARD
 #ifdef  JAVASCRIPTCORECPP_THREAD_SAFE

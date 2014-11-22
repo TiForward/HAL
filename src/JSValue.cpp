@@ -122,32 +122,35 @@ namespace JavaScriptCoreCPP {
   
   JSValue::Type JSValue::GetType() const JAVASCRIPTCORECPP_NOEXCEPT {
     JAVASCRIPTCORECPP_JSVALUE_LOCK_GUARD;
+    auto type = Type::Undefined;
     const JSType js_type = JSValueGetType(js_context__, js_value_ref__);
     switch (js_type) {
       case kJSTypeUndefined:
-        return Type::Undefined;
+        type = Type::Undefined;
         break;
         
       case kJSTypeNull:
-        return Type::Null;
+        type = Type::Null;
         break;
         
       case kJSTypeBoolean:
-        return Type::Boolean;
+        type = Type::Boolean;
         break;
         
       case kJSTypeNumber:
-        return Type::Number;
+        type = Type::Number;
         break;
         
       case kJSTypeString:
-        return Type::String;
+        type = Type::String;
         break;
         
       case kJSTypeObject:
-        return Type::Object;
+        type = Type::Object;
         break;
     }
+
+    return type;
   }
   
   bool JSValue::IsUndefined() const JAVASCRIPTCORECPP_NOEXCEPT {
@@ -306,26 +309,28 @@ namespace JavaScriptCoreCPP {
   }
   
   std::string to_string(const JSValue::Type& js_value_type) JAVASCRIPTCORECPP_NOEXCEPT {
+	  std::string string = "Unknown";
     switch (js_value_type) {
       case JSValue::Type::Undefined:
-        return "Undefined";
+        string = "Undefined";
         break;
       case JSValue::Type::Null:
-        return "Null";
+        string = "Null";
         break;
       case JSValue::Type::Boolean:
-        return "Boolean";
+        string = "Boolean";
         break;
       case JSValue::Type::Number:
-        return "Number";
+        string = "Number";
         break;
       case JSValue::Type::String:
-        return "String";
+        string = "String";
         break;
       case JSValue::Type::Object:
-        return "Object";
+        string = "Object";
         break;
     }
+    return string;
   }
   
   bool operator==(const JSValue& lhs, const JSValue& rhs) JAVASCRIPTCORECPP_NOEXCEPT {

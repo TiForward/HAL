@@ -22,11 +22,7 @@ namespace JavaScriptCoreCPP {
   The only way to create a JSRegExp is by using the
   JSContext::CreateRegExp member function.
 */
-#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
-class JSRegExp final : public JSObject, public detail::JSPerformanceCounter<JSRegExp> {
-#else
-class JSRegExp final : public JSObject {
-#endif
+class JAVASCRIPTCORECPP_EXPORT JSRegExp final : public JSObject JAVASCRIPTCORECPP_PERFORMANCE_COUNTER2(JSRegExp) {
 	
  private:
 	

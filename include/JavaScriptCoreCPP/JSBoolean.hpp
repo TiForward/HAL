@@ -22,11 +22,7 @@ namespace JavaScriptCoreCPP {
   The only way to create a JSBoolean is by using the
   JSContext::CreateBoolean member function.
 */
-#ifdef JAVASCRIPTCORECPP_PERFORMANCE_COUNTER_ENABLE
-class JSBoolean final : public JSValue, public detail::JSPerformanceCounter<JSBoolean> {
-#else
-class JSBoolean final : public JSValue {
-#endif
+class JAVASCRIPTCORECPP_EXPORT JSBoolean final : public JSValue JAVASCRIPTCORECPP_PERFORMANCE_COUNTER2(JSBoolean) {
 	
  public:
 	

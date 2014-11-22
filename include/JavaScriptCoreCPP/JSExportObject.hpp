@@ -31,7 +31,7 @@ namespace JavaScriptCoreCPP {
    @discussion A JSExportObject is a convenience base class for
    integrating your own C++ classes into JavaScriptCore.
    */
-  class JSExportObject : public JSExport<JSExportObject> JAVASCRIPTCORECPP_PERFORMANCE_COUNTER2(JSExportObject) {
+  class JAVASCRIPTCORECPP_EXPORT JSExportObject : public JSExport<JSExportObject> JAVASCRIPTCORECPP_PERFORMANCE_COUNTER2(JSExportObject) {
     
   public:
     

@@ -40,7 +40,7 @@ namespace JavaScriptCoreCPP {
    global objects. See the individual JSContextGroup constructors for
    more details.
    */
-  class JSContextGroup final JAVASCRIPTCORECPP_PERFORMANCE_COUNTER1(JSContextGroup) {
+  class JAVASCRIPTCORECPP_EXPORT JSContextGroup final JAVASCRIPTCORECPP_PERFORMANCE_COUNTER1(JSContextGroup) {
     
   public:
     
@@ -101,9 +101,14 @@ namespace JavaScriptCoreCPP {
     void* operator new(std::size_t)     = delete; // #1: To prevent allocation of scalar objects
     void* operator new [] (std::size_t) = delete; // #2: To prevent allocation of array of objects
     
-    friend bool operator==(const JSContextGroup& lhs, const JSContextGroup& rhs);
+    JAVASCRIPTCORECPP_EXPORT friend bool operator==(const JSContextGroup& lhs, const JSContextGroup& rhs);
     
+    // Silence 4251 on Windows since private member variables do not
+    // need to be exxported from a DLL.
+#pragma warning(push)
+#pragma warning(disable: 4251)
     JSContextGroupRef js_context_group_ref__;
+#pragma warning(pop)
     
 #undef JAVASCRIPTCORECPP_JSCONTEXTGROUP_LOCK_GUARD
 #ifdef JAVASCRIPTCORECPP_THREAD_SAFE

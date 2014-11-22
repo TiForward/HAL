@@ -145,7 +145,10 @@ source_group(JavaScriptCoreCPP\\JSObject         FILES ${SOURCE_JSObject})
 source_group(JavaScriptCoreCPP\\JSObject\\detail FILES ${SOURCE_JSObject_detail})
 source_group(JavaScriptCoreCPP\\JSLogger\\detail FILES ${SOURCE_JSLogger_detail})
 
-add_library(JavaScriptCoreCPP
+#set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+#set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
+
+add_library(JavaScriptCoreCPP SHARED
   ${SOURCE_JavaScriptCoreCPP}
   ${SOURCE_JavaScriptCoreCPP_detail}
   ${SOURCE_JSExport}
@@ -159,7 +162,12 @@ add_library(JavaScriptCoreCPP
   ${SOURCE_JSLogger_detail}
   )
 
-target_compile_definitions(JavaScriptCoreCPP PUBLIC STATICALLY_LINKED_WITH_JavaScriptCore)
+include(GenerateExportHeader)
+generate_export_header(JavaScriptCoreCPP)
+target_compile_definitions(JavaScriptCoreCPP PRIVATE JavaScriptCoreCPP_EXPORTS)
+#target_compile_definitions(JavaScriptCoreCPP PUBLIC JAVASCRIPTCORECPP_STATIC_DEFINE)
+
+target_compile_definitions(JavaScriptCoreCPP PRIVATE STATICALLY_LINKED_WITH_JavaScriptCore)
 target_include_directories(JavaScriptCoreCPP PUBLIC
   ${PROJECT_SOURCE_DIR}/include
   ${JavaScriptCore_INCLUDE_DIRS}
@@ -178,6 +186,38 @@ endif()
 
 
 # Support find_package(JavaScriptCoreCPP 0.5 REQUIRED)
+
+if (WIN32)
+	# Silence this warning when lnking with the JavaScriptCore static
+	# library:
+	#
+	# "warning LNK4099: PDB 'vc120.pdb' was not found with
+	# 'JavaScriptCore-Debug.lib(...)' ...".
+	set_property(TARGET JavaScriptCoreCPP PROPERTY LINK_FLAGS "/IGNORE:4099")
+	
+	# Silence this warning when lnking with the JavaScriptCore static
+	# library for the i386 emulator:
+	#
+	# "JavaScriptCore-Debug.lib(JSStringRef.obj) : warning LNK4075:
+	# ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification".
+	#
+	# According to "/IGNORE (Ignore Specific Warnings)" (see
+	# http://msdn.microsoft.com/en-us/library/dn782850.aspx) some linker
+	# warnings cannot be ignored and LNK4075 is one of them. However,
+	# according to "/SAFESEH (Image has Safe Exception Handlers)" (see
+	# http://msdn.microsoft.com/en-us/library/9a89h429.aspx):
+	#
+	# "/SAFESEH is only valid when linking for x86 targets."
+	#
+	# Therefore we test for the processor architecture we are targeting
+	# and if its i386 (i.e. the emulator) then we pass /SAFESEH:NO to
+	# the linker.
+	include(${PROJECT_SOURCE_DIR}/cmake/TargetArch.cmake)
+	target_architecture(target_architecture)
+	if (${target_architecture} STREQUAL i386)
+		set_property(TARGET JavaScriptCoreCPP APPEND_STRING PROPERTY LINK_FLAGS " /SAFESEH:NO")
+	endif()
+endif()
 
 set_property(TARGET JavaScriptCoreCPP PROPERTY VERSION ${JavaScriptCoreCPP_VERSION})
 set_property(TARGET JavaScriptCoreCPP PROPERTY SOVERSION 0)

@@ -35,7 +35,7 @@ namespace JavaScriptCoreCPP {
    
    This class is thread safe and immutable by design.
    */
-  class JSClassDefinition JAVASCRIPTCORECPP_PERFORMANCE_COUNTER1(JSClassDefinition) {
+  class JAVASCRIPTCORECPP_EXPORT JSClassDefinition JAVASCRIPTCORECPP_PERFORMANCE_COUNTER1(JSClassDefinition) {
   public:
     
     JSClassDefinition() JAVASCRIPTCORECPP_NOEXCEPT;
@@ -74,8 +74,14 @@ namespace JavaScriptCoreCPP {
     
     virtual void Initialize(const ::JSClassDefinition& other) JAVASCRIPTCORECPP_NOEXCEPT final;
     virtual void InitializePropertyCallbacks() JAVASCRIPTCORECPP_NOEXCEPT final;
+
+    // Silence 4251 on Windows since private member variables do not
+    // need to be exxported from a DLL.
+#pragma warning(push)
+#pragma warning(disable: 4251)
     std::vector<detail::JSStaticValue>    js_value_properties__;
     std::vector<detail::JSStaticFunction> js_function_properties__;
+#pragma warning(pop)
     
   protected:
     
@@ -85,10 +91,15 @@ namespace JavaScriptCoreCPP {
     template<typename T>
     friend class detail::JSExportClass;
     
+    // Silence 4251 on Windows since private member variables do not
+    // need to be exxported from a DLL.
+#pragma warning(push)
+#pragma warning(disable: 4251)
     std::string                           name__;
     std::vector<::JSStaticValue>          static_values__;
     std::vector<::JSStaticFunction>       static_functions__;
     ::JSClassDefinition                   js_class_definition__;
+#pragma warning(pop)
     
 #undef  JAVASCRIPTCORECPP_JSCLASSDEFINITION_LOCK_GUARD
 #ifdef  JAVASCRIPTCORECPP_THREAD_SAFE

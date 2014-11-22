@@ -11,21 +11,30 @@
 
 namespace JavaScriptCoreCPP { namespace detail {
   
-  JSValue::Type ToJSValueType(JSType type) JAVASCRIPTCORECPP_NOEXCEPT {
-    switch (type) {
+  JSValue::Type ToJSValueType(JSType js_type) JAVASCRIPTCORECPP_NOEXCEPT {
+	  auto type = JSValue::Type::Undefined;
+    switch (js_type) {
       case kJSTypeUndefined:
-        return JSValue::Type::Undefined;
+        type = JSValue::Type::Undefined;
+        break;
       case kJSTypeNull:
-        return JSValue::Type::Null;
+        type = JSValue::Type::Null;
+        break;
       case kJSTypeBoolean:
-        return JSValue::Type::Boolean;
+        type = JSValue::Type::Boolean;
+        break;
       case kJSTypeNumber:
-        return JSValue::Type::Number;
+        type = JSValue::Type::Number;
+        break;
       case kJSTypeString:
-        return JSValue::Type::String;
+        type = JSValue::Type::String;
+        break;
       case kJSTypeObject:
-        return JSValue::Type::Object;
+        type = JSValue::Type::Object;
+        break;
     }
+
+    return type;
   }
   
  

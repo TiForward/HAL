@@ -28,7 +28,7 @@ namespace JavaScriptCoreCPP {
   @constant DontDelete Specifies that the delete operation should fail
   on a property.
 */
-enum class JSPropertyAttribute : std::uint32_t /* typedef unsigned JSPropertyAttributes; */ {
+enum class JAVASCRIPTCORECPP_EXPORT JSPropertyAttribute : std::uint32_t /* typedef unsigned JSPropertyAttributes; */ {
 	None,
 	ReadOnly,
 	DontEnum,

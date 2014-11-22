@@ -45,7 +45,7 @@ namespace JavaScriptCoreCPP {
    constructor to create a custom JavaScript global object for all
    contexts in that group.
    */
-  class JSClass JAVASCRIPTCORECPP_PERFORMANCE_COUNTER1(JSClass) {
+  class JAVASCRIPTCORECPP_EXPORT JSClass JAVASCRIPTCORECPP_PERFORMANCE_COUNTER1(JSClass) {
   public:
     
     /*!
@@ -103,8 +103,13 @@ namespace JavaScriptCoreCPP {
       return js_class_ref__;
     }
     
+    // Silence 4251 on Windows since private member variables do not
+    // need to be exxported from a DLL.
+#pragma warning(push)
+#pragma warning(disable: 4251)
     std::string name__;
     JSClassRef  js_class_ref__ { nullptr };
+#pragma warning(pop)
     
   protected:
     

@@ -10,6 +10,7 @@
 #ifndef _JAVASCRIPTCORECPP_DETAIL_JSLOGGERPIMPL_HPP_
 #define _JAVASCRIPTCORECPP_DETAIL_JSLOGGERPIMPL_HPP_
 
+#include "JavaScriptCoreCPP_EXPORT.h"
 #include <string>
 #include <cstdint>
 
@@ -20,15 +21,9 @@ namespace JavaScriptCoreCPP {
 
 namespace JavaScriptCoreCPP { namespace detail {
   
-  class JSLoggerPimpl final {
+  class JAVASCRIPTCORECPP_EXPORT JSLoggerPimpl final {
     
   public:
-    
-    // private:
-    
-    //  // We are used exclusively JSLogger<T>.
-    //  template<typename JSLoggerPolicy>
-    //  friend class JSLogger;
     
     JSLoggerPimpl()                                = delete;
     ~JSLoggerPimpl()                               = delete;

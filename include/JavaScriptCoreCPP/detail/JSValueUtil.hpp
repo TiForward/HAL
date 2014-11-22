@@ -17,7 +17,7 @@
 
 namespace JavaScriptCoreCPP { namespace detail {
   
-  JSValue::Type ToJSValueType(JSType type) JAVASCRIPTCORECPP_NOEXCEPT;
+  JAVASCRIPTCORECPP_EXPORT JSValue::Type ToJSValueType(JSType type) JAVASCRIPTCORECPP_NOEXCEPT;
   
 }} // namespace JavaScriptCoreCPP { namespace detail {
 
