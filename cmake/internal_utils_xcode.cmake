@@ -11,7 +11,6 @@
 # may obtain a copy of the License at
 # 
 # http://www.apache.org/licenses/LICENSE-2.0
-#
 
 find_program(XCODEBUILD xcodebuild)
 if ("${XCODEBUILD}" MATCHES "-NOTFOUND$")

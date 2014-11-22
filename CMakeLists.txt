@@ -226,9 +226,6 @@ set_property(TARGET JavaScriptCoreCPP APPEND PROPERTY
   COMPATIBLE_INTERFACE_STRING JavaScriptCoreCPP_MAJOR_VERSION
   )
 
-#include(GenerateExportHeader)
-#generate_export_header(JavaScriptCoreCPP)
-
 install(TARGETS JavaScriptCoreCPP EXPORT JavaScriptCoreCPPTargets
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
