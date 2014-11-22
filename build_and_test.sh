@@ -40,7 +40,7 @@ fi
 
 function echo_and_eval {
     local -r cmd="${1:?}"
-    echo "${cmd}" #&& eval "${cmd}"
+    echo "${cmd}" && eval "${cmd}"
 }
 
 echo_and_eval "rm -rf \"${BUILD_DIR}\""
