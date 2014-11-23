@@ -193,7 +193,7 @@ if (WIN32)
 	#
 	# "warning LNK4099: PDB 'vc120.pdb' was not found with
 	# 'JavaScriptCore-Debug.lib(...)' ...".
-	set_property(TARGET JavaScriptCoreCPP PROPERTY LINK_FLAGS "/IGNORE:4099")
+	set_property(TARGET JavaScriptCoreCPP APPEND PROPERTY LINK_FLAGS "/IGNORE:4099")
 	
 	# Silence this warning when lnking with the JavaScriptCore static
 	# library for the i386 emulator:
