@@ -179,45 +179,78 @@ target_link_libraries(JavaScriptCoreCPP
   ${Boost_LIBRARIES}
   )
 
+if (WIN32)
+  # Silence this warning when lnking with the JavaScriptCore static
+  # library:
+  #
+  # "warning LNK4099: PDB 'vc120.pdb' was not found with
+  # 'JavaScriptCore-Debug.lib(...)' ...".
+  set_property(TARGET JavaScriptCoreCPP APPEND PROPERTY LINK_FLAGS "/IGNORE:4099")
+  
+  # Silence this warning when lnking with the JavaScriptCore static
+  # library for the i386 emulator:
+  #
+  # "JavaScriptCore-Debug.lib(JSStringRef.obj) : warning LNK4075:
+  # ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification".
+  #
+  # According to "/IGNORE (Ignore Specific Warnings)" (see
+  # http://msdn.microsoft.com/en-us/library/dn782850.aspx) some linker
+  # warnings cannot be ignored and LNK4075 is one of them. However,
+  # according to "/SAFESEH (Image has Safe Exception Handlers)" (see
+  # http://msdn.microsoft.com/en-us/library/9a89h429.aspx):
+  #
+  # "/SAFESEH is only valid when linking for x86 targets."
+  #
+  # Therefore we test for the processor architecture we are targeting
+  # and if its i386 (i.e. the emulator) then we pass /SAFESEH:NO to
+  # the linker.
+  include(${PROJECT_SOURCE_DIR}/cmake/TargetArch.cmake)
+  target_architecture(target_architecture)
+  if (${target_architecture} STREQUAL i386)
+    set_property(TARGET JavaScriptCoreCPP APPEND_STRING PROPERTY LINK_FLAGS " /SAFESEH:NO")
+  endif()
+
+  # Silence this warning when lnking the Debug configuration:
+  #
+  # "LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/OPT:ICF'
+  # specification ..."
+  #
+  # According to "/IGNORE (Ignore Specific Warnings)" (see
+  # http://msdn.microsoft.com/en-us/library/dn782850.aspx) some linker
+  # warnings cannot be ignored and LNK4075 is one of them. However,
+  # according to "/INCREMENTAL (Link Incrementally)" (see
+  # http://msdn.microsoft.com/en-us/library/4khtbfyf.aspx):
+  #
+  # "Most programs can be linked incrementally. However, some changes
+  # are too great, and some options are incompatible with incremental
+  # linking. LINK performs a full link if any of the following options
+  # are specified:
+  # ...
+  # /OPT:REF is selected
+  # /OPT:ICF is selected
+  # ..."
+  #
+  # And according to "/OPT (Optimizations)" (see
+  # http://msdn.microsoft.com/en-us/library/bxwfs976.aspx):
+  #
+  # "If /DEBUG is specified, the default for /OPT is NOREF, and all
+  # functions are preserved in the image."
+  #
+  # As well as:
+  #
+  # "... we do not recommend that you use /OPT:ICF in debug builds ..."
+  #
+  # Therefore we disable /OPT:REF and /OPT:ICF for the Debug
+  # configuration.
+  set_property(TARGET JavaScriptCoreCPP APPEND_STRING PROPERTY LINK_FLAGS_DEBUG "/OPT:NOREF /OPT:NOICF")
+endif()
+
 if (NOT JavaScriptCoreCPP_DISABLE_TESTS)
   add_subdirectory(examples)
   add_subdirectory(test)
 endif()
 
-
 # Support find_package(JavaScriptCoreCPP 0.5 REQUIRED)
-
-if (WIN32)
-	# Silence this warning when lnking with the JavaScriptCore static
-	# library:
-	#
-	# "warning LNK4099: PDB 'vc120.pdb' was not found with
-	# 'JavaScriptCore-Debug.lib(...)' ...".
-	set_property(TARGET JavaScriptCoreCPP APPEND PROPERTY LINK_FLAGS "/IGNORE:4099")
-	
-	# Silence this warning when lnking with the JavaScriptCore static
-	# library for the i386 emulator:
-	#
-	# "JavaScriptCore-Debug.lib(JSStringRef.obj) : warning LNK4075:
-	# ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification".
-	#
-	# According to "/IGNORE (Ignore Specific Warnings)" (see
-	# http://msdn.microsoft.com/en-us/library/dn782850.aspx) some linker
-	# warnings cannot be ignored and LNK4075 is one of them. However,
-	# according to "/SAFESEH (Image has Safe Exception Handlers)" (see
-	# http://msdn.microsoft.com/en-us/library/9a89h429.aspx):
-	#
-	# "/SAFESEH is only valid when linking for x86 targets."
-	#
-	# Therefore we test for the processor architecture we are targeting
-	# and if its i386 (i.e. the emulator) then we pass /SAFESEH:NO to
-	# the linker.
-	include(${PROJECT_SOURCE_DIR}/cmake/TargetArch.cmake)
-	target_architecture(target_architecture)
-	if (${target_architecture} STREQUAL i386)
-		set_property(TARGET JavaScriptCoreCPP APPEND_STRING PROPERTY LINK_FLAGS " /SAFESEH:NO")
-	endif()
-endif()
 
 set_property(TARGET JavaScriptCoreCPP PROPERTY VERSION ${JavaScriptCoreCPP_VERSION})
 set_property(TARGET JavaScriptCoreCPP PROPERTY SOVERSION 0)
