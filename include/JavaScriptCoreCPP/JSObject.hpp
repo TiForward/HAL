@@ -360,10 +360,7 @@ namespace JavaScriptCoreCPP {
      @result A void* that is this object's private data, if the object
      has private data, otherwise nullptr.
      */
-  public:
-    // FIXME: This should be private.
     virtual void* GetPrivate() const JAVASCRIPTCORECPP_NOEXCEPT final;
-  private:
     
     /*!
      @method
@@ -400,7 +397,7 @@ namespace JavaScriptCoreCPP {
      */
     virtual void GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const JAVASCRIPTCORECPP_NOEXCEPT final;
     
-    JSContext   js_context__;
+    JSContext js_context__;
 
     // Silence 4251 on Windows since private member variables do not
     // need to be exxported from a DLL.
@@ -425,7 +422,7 @@ namespace JavaScriptCoreCPP {
   
   template<typename T>
   std::shared_ptr<T> JSObject::GetPrivate() const JAVASCRIPTCORECPP_NOEXCEPT {
-    return std::shared_ptr<T>(std::make_shared<JSObject>(*this), dynamic_cast<T*>(reinterpret_cast<JSExportObject*>(GetPrivate())));
+    return std::shared_ptr<T>(std::make_shared<JSObject>(*this), dynamic_cast<T*>(static_cast<T*>(GetPrivate())));
   }
   
 } // namespace JavaScriptCoreCPP {

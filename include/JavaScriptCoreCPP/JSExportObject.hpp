@@ -118,9 +118,9 @@ namespace JavaScriptCoreCPP {
      */
     virtual JSValue CallAsFunction(const std::vector<JSValue>& arguments, JSObject this_object);
     
+    virtual JSContext get_context() const JAVASCRIPTCORECPP_NOEXCEPT final;
+    
     /*!
-     @method
-     
      @method
      
      @abstract This mandatory constructor is invoked when your
@@ -144,13 +144,17 @@ namespace JavaScriptCoreCPP {
      JavaScript 'new' expression.
      */
     JSExportObject(const JSExportObject&, const std::vector<JSValue>& arguments) JAVASCRIPTCORECPP_NOEXCEPT;
-    
-    virtual JSContext get_context() const JAVASCRIPTCORECPP_NOEXCEPT final;
+    virtual ~JSExportObject()  JAVASCRIPTCORECPP_NOEXCEPT;
+    JSExportObject(const JSExportObject&)            = default;
+    JSExportObject& operator=(const JSExportObject&) = default;
+#ifdef TITANIUM_MOVE_CTOR_AND_ASSIGN_DEFAULT_ENABLE
+    JSExportObject(JSExportObject&&)                 = default;
+    JSExportObject& operator=(JSExportObject&&)      = default;
+#endif
+
+    void swap(JSExportObject&) JAVASCRIPTCORECPP_NOEXCEPT;
     
     static void JSExportInitialize();
-    
-    virtual ~JSExportObject()  JAVASCRIPTCORECPP_NOEXCEPT;
-    void swap(JSExportObject&) JAVASCRIPTCORECPP_NOEXCEPT;
     
   private:
     
