@@ -22,6 +22,7 @@ namespace JavaScriptCoreCPP {
     AddDeletePropertyCallback(std::mem_fn(&JSExportObject::DeleteProperty));
     AddGetPropertyNamesCallback(std::mem_fn(&JSExportObject::GetPropertyNames));
     AddCallAsFunctionCallback(std::mem_fn(&JSExportObject::CallAsFunction));
+    AddValueProperty("prototype", std::mem_fn(&JSExportObject::GetPrototype), std::mem_fn(&JSExportObject::SetPrototype));
   }
   
   bool JSExportObject::HasProperty(const JSString& property_name) const JAVASCRIPTCORECPP_NOEXCEPT {
@@ -122,6 +123,15 @@ namespace JavaScriptCoreCPP {
   
   JSValue JSExportObject::CallAsFunction(const std::vector<JSValue>& arguments, JSObject this_object) {
     return get_context().CreateUndefined();
+  }
+  
+  JSValue JSExportObject::GetPrototype() const JAVASCRIPTCORECPP_NOEXCEPT {
+    return js_object__.GetPrototype();
+  }
+  
+  bool JSExportObject::SetPrototype(const JSValue& js_value) JAVASCRIPTCORECPP_NOEXCEPT {
+    js_object__.SetPrototype(js_value);
+    return true;
   }
   
   JSContext JSExportObject::get_context() const JAVASCRIPTCORECPP_NOEXCEPT {

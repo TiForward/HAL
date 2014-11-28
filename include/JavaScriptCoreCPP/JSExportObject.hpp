@@ -118,6 +118,32 @@ namespace JavaScriptCoreCPP {
      */
     virtual JSValue CallAsFunction(const std::vector<JSValue>& arguments, JSObject this_object);
     
+    /*!
+     @method
+     
+     @abstract Return this JavaScript object's prototype.
+     
+     @result This JavaScript object's prototype.
+     */
+    virtual JSValue GetPrototype() const JAVASCRIPTCORECPP_NOEXCEPT final;
+    
+    /*!
+     @method
+     
+     @abstract Sets this JavaScript object's prototype.
+     
+     @param value The value to set as this JavaScript object's
+     prototype.
+     */
+    virtual bool SetPrototype(const JSValue& js_value) JAVASCRIPTCORECPP_NOEXCEPT final;
+
+    /*!
+     @method
+     
+     @abstract Return the execution context of this JavaScript value.
+     
+     @result The the execution context of this JavaScript value.
+     */
     virtual JSContext get_context() const JAVASCRIPTCORECPP_NOEXCEPT final;
     
     /*!
