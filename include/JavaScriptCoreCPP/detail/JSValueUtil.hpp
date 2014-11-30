@@ -7,8 +7,8 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_JSVALUEUTIL_HPP_
-#define _JAVASCRIPTCORECPP_JSVALUEUTIL_HPP_
+#ifndef _JAVASCRIPTCORECPP_DETAIL_JSVALUEUTIL_HPP_
+#define _JAVASCRIPTCORECPP_DETAIL_JSVALUEUTIL_HPP_
 
 #include "JavaScriptCoreCPP/detail/JSBase.hpp"
 #include "JavaScriptCoreCPP/JSValue.hpp"
@@ -21,4 +21,4 @@ namespace JavaScriptCoreCPP { namespace detail {
   
 }} // namespace JavaScriptCoreCPP { namespace detail {
 
-#endif // _JAVASCRIPTCORECPP_JSVALUEUTIL_HPP_
+#endif // _JAVASCRIPTCORECPP_DETAIL_JSVALUEUTIL_HPP_
