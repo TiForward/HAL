@@ -10,6 +10,7 @@
 #ifndef _JAVASCRIPTCORECPP_DETAIL_VIRTUAL_ENABLE_SHARED_FROM_THIS_BASE_HPP_
 #define _JAVASCRIPTCORECPP_DETAIL_VIRTUAL_ENABLE_SHARED_FROM_THIS_BASE_HPP_
 
+#include "JavaScriptCoreCPP/detail/JSBase.hpp"
 #include <memory>
 
 namespace JavaScriptCoreCPP { namespace detail {
@@ -26,7 +27,7 @@ namespace JavaScriptCoreCPP { namespace detail {
 //   using enable_shared_from_this<C>::shared_from_this;
 // }
 
-struct virtual_enable_shared_from_this_base : std::enable_shared_from_this<virtual_enable_shared_from_this_base> {
+struct JAVASCRIPTCORECPP_EXPORT virtual_enable_shared_from_this_base : std::enable_shared_from_this<virtual_enable_shared_from_this_base> {
   virtual ~virtual_enable_shared_from_this_base() {
   }
 };
