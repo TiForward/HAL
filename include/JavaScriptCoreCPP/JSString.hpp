@@ -183,7 +183,7 @@ namespace JavaScriptCoreCPP {
       JAVASCRIPTCORECPP_EXPORT friend bool operator==(const JSString& lhs, const JSString& rhs);
       
     // Silence 4251 on Windows since private member variables do not
-    // need to be exxported from a DLL.
+    // need to be exported from a DLL.
 #pragma warning(push)
 #pragma warning(disable: 4251)
       JSStringRef    js_string_ref__ { nullptr };

@@ -27,13 +27,28 @@ namespace JavaScriptCoreCPP { namespace detail {
 //   using enable_shared_from_this<C>::shared_from_this;
 // }
 
+// Silence 4251 on Windows since private member variables do not need
+// to be exported from a DLL. This is the (cleaned up) error message
+// from MSVC 18.0.30723.0 (the version that ships with Visual Studio
+// 2013 Update 3 RTM):
+//
+// std::enable_shared_from_this<virtual_enable_shared_from_this_base>::_Wptr' : class 'std::weak_ptr<_Ty>'
+// needs to have dll-interface to be used by clients of class
+// 'std::enable_shared_from_this<virtual_enable_shared_from_this_base>'
+// with
+// [
+// _Ty=virtual_enable_shared_from_this_base
+// ]
+#pragma warning(push)
+#pragma warning(disable: 4251)
 struct JAVASCRIPTCORECPP_EXPORT virtual_enable_shared_from_this_base : public std::enable_shared_from_this<virtual_enable_shared_from_this_base> {
   virtual ~virtual_enable_shared_from_this_base() {
   }
 };
+#pragma warning(pop)
 
 template<typename T>
-struct JAVASCRIPTCORECPP_EXPORT virtual_enable_shared_from_this : virtual public virtual_enable_shared_from_this_base {
+struct virtual_enable_shared_from_this : virtual public virtual_enable_shared_from_this_base {
   std::shared_ptr<T> shared_from_this() {
     return std::dynamic_pointer_cast<T>(virtual_enable_shared_from_this_base::shared_from_this());
   }

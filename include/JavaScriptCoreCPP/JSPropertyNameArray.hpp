@@ -99,7 +99,7 @@ namespace JavaScriptCoreCPP {
     static void * operator new [] (std::size_t);   // #2: To prevent allocation of array of objects
     
     // Silence 4251 on Windows since private member variables do not
-    // need to be exxported from a DLL.
+    // need to be exported from a DLL.
 #pragma warning(push)
 #pragma warning(disable: 4251)
     JSPropertyNameArrayRef js_property_name_array_ref__;

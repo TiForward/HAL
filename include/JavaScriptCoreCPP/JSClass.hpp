@@ -104,7 +104,7 @@ namespace JavaScriptCoreCPP {
     }
     
     // Silence 4251 on Windows since private member variables do not
-    // need to be exxported from a DLL.
+    // need to be exported from a DLL.
 #pragma warning(push)
 #pragma warning(disable: 4251)
     std::string name__;
