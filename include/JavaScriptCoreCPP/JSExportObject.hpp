@@ -14,7 +14,6 @@
 #include "JavaScriptCoreCPP/JSContext.hpp"
 #include "JavaScriptCoreCPP/JSString.hpp"
 #include "JavaScriptCoreCPP/JSValue.hpp"
-#include "JavaScriptCoreCPP/detail/virtual_enable_shared_from_this_base.hpp"
 
 #include <vector>
 #include <unordered_set>
@@ -32,7 +31,7 @@ namespace JavaScriptCoreCPP {
    @discussion A JSExportObject is a convenience base class for
    integrating your own C++ classes into JavaScriptCore.
    */
-  class JAVASCRIPTCORECPP_EXPORT JSExportObject : public JSExport<JSExportObject>, public detail::virtual_enable_shared_from_this<JSExportObject> JAVASCRIPTCORECPP_PERFORMANCE_COUNTER2(JSExportObject) {
+  class JAVASCRIPTCORECPP_EXPORT JSExportObject : public JSExport<JSExportObject> JAVASCRIPTCORECPP_PERFORMANCE_COUNTER2(JSExportObject) {
     
   public:
     
