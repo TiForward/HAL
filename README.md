@@ -1,23 +1,30 @@
-# JavaScriptCoreCPP [![Build Status](https://magnum.travis-ci.com/appcelerator/titanium_mobile_windows.svg?token=SxTZxbWRYYpcfE9jALXb&branch=master)](https://magnum.travis-ci.com/appcelerator/titanium_mobile_windows)
+# Hyperloop Abstraction Layer (HAL) [![Build Status](https://magnum.travis-ci.com/appcelerator/HAL.svg?token=SxTZxbWRYYpcfE9jALXb)](https://magnum.travis-ci.com/appcelerator/HAL)
 
-JavaScriptCoreCPP: C++11 wrapper around the JavaScriptCore C API.
+The Hyperloop Abstraction Layer (HAL) library is a C++11 wrapper around the JavaScriptCore C API.
 
 ## Quick Start
 
-Run our 237 (and counting) unit tests.
+To run our 255 (and counting) unit tests.
 
-On Windows:
+Step 1. Install Xcode 6
+
+Step 2. Install cmake using either `sudo port install cmake` or `sudo brew install cmake`.
+
+Step 3. Install boost using either `sudo port install boost` or `sudo brew install boost`.
+
+Step 4. Download our pre-compiled version of Google Test [gtest-1.7.0-osx.zip (3 MB)](http://timobile.appcelerator.com.s3.amazonaws.com/gtest-1.7.0-osx.zip), unzip anywhere (the location doesn't matter) and set the environment variable GTEST_ROOT to where you unzipped it.
+
+Just run the following commands from your bash prompt to setup your development environment for Google Test before proceeding:
 
 ```bash
-pushd Source/JavaScriptCoreCPP/
-build_and_test_windows.sh
+$ curl -O http://timobile.appcelerator.com.s3.amazonaws.com/gtest-1.7.0-osx.zip
+$ unzip gtest-1.7.0-osx.zip
 ```
 
-On OSX:
+Then, on both OS X and Windows:
 
 ```bash
-pushd Source/JavaScriptCoreCPP/
-build_and_test_osx.sh
+build_and_test.sh
 ```
 
 Here is [EvaluateScript.cpp](examples/EvaluateScript.cpp), a simple main program that evaluates the JavaScript expression `21 / 7` and prints `3` to the terminal. To run it on Windows type `./build.debug/examples/EvaluateScript.exe` and to run it on OS X type `./build.debug/examples/EvaluateScript`.
@@ -49,7 +56,7 @@ Widget.sayHello(); // outputs 'Hello, foo. Your number is 21.'
 
 ## Description
 
-This is JavaScriptCoreCPP, a C++11 library that wraps the JavaScriptCore C API. This will be the foundation for building Titanium on Windows and perhaps other Appcelerator products.
+This is HAL, a C++11 library that wraps the JavaScriptCore C API. This will be the foundation for building Titanium on Windows and perhaps other Appcelerator products.
 
 The design and implementation of this library has currently gone through several experimental iterations by only one senior Appcelerator software engineer, and it is critical that it be critically peer reviewed by Appcelerator business owners, Appcelerator's senior technical staff, and the entire Appcelerator engineering staff as a whole. There are sure to be bugs and room for improvement, and all empirical critical feedback is essential and welcome for the library's success.
 
@@ -112,15 +119,15 @@ A [JSObject](include/JavaScriptCoreCPP/JSObject.hpp) is an RAII wrapper around a
 7. Performance counters are built-in for testability.
 8. The library's public API is 100% thoroughly documented.
 9. The library comes with a suite of unit tests that covers a minimum of 80% of the API.
-10. The library uses only C++11. What this means practically is that it uses nothing platform specific. This allows the JavaScriptCoreCPP library to be used on the largest number of devices possible (e.g. iOS, Android, Windows Phone, etc.).
+10. The library uses only C++11. What this means practically is that it uses nothing platform specific. This allows the HAL library to be used on the largest number of devices possible (e.g. iOS, Android, Windows Phone, etc.).
 
 ## Lessons Learned and Future Direction
 
-Here are some valuable lessons we have learned during the development of the JavaScriptCoreCPP library and possible areas of future exploration and R&D:
+Here are some valuable lessons we have learned during the development of the HAL library and possible areas of future exploration and R&D:
 
-1. The JavaScriptCoreCPP library expose 100% of the JavaScript AST object model when used in 'strict' mode. What this means practically is that in principle a JavaScript compiler can compile JavaScript source code directly to C++ without the need of any "JavaScript Engine" for interpretation. We suggest that this is a useful avenue of Appcelerator R&D.
+1. The HAL library expose 100% of the JavaScript AST object model when used in 'strict' mode. What this means practically is that in principle a JavaScript compiler can compile JavaScript source code directly to C++ without the need of any "JavaScript Engine" for interpretation. We suggest that this is a useful avenue of Appcelerator R&D.
 2. The library offers the capability of a pure C++ implementation of Ti.Next, a pure JavaScript implementation of Ti.next, or a hybrid of the two. We suggest that this is a useful avenue of Appcelerator R&D to determine the correct mix.
-3. The JavaScriptCoreCPP library is a practical backend target for the Hyperloop compiler. Again, we suggest that this is a useful avenue of Appcelerator R&D.
+3. The HAL library is a practical backend target for the Hyperloop compiler. Again, we suggest that this is a useful avenue of Appcelerator R&D.
 
 ## One Last Note
 
