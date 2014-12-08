@@ -8,7 +8,7 @@ The Hyperloop Abstraction Layer (HAL) library is a C++11 wrapper around the Java
 
 Step 1. Install Xcode 6
 
-Step 2. Install cmake version 3.0 (or higher) using either `sudo port install cmake` or `brew install cmake`.
+Step 2. Install cmake version 3.0 (or higher) using either `sudo port install cmake` or `brew unlink cmake; brew install cmake`.
 
 Step 3. Install boost using either `sudo port install boost` or `brew install boost`.
 
@@ -108,7 +108,7 @@ Widget.sayHello(); // outputs 'Hello, foo. Your number is 21.'
 
 ## Description
 
-This is HAL, a C++11 library that wraps the JavaScriptCore C API. This will be the foundation for building Titanium on Windows and perhaps other Appcelerator products.
+This is HAL, a cross-platform standards-compliant C++11 library that wraps the JavaScriptCore C API. This will be the foundation for building Titanium on Windows and perhaps other Appcelerator products.
 
 The design and implementation of this library has currently gone through several experimental iterations by only one senior Appcelerator software engineer, and it is critical that it be critically peer reviewed by Appcelerator business owners, Appcelerator's senior technical staff, and the entire Appcelerator engineering staff as a whole. There are sure to be bugs and room for improvement, and all empirical critical feedback is essential and welcome for the library's success.
 
