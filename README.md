@@ -8,9 +8,9 @@ The Hyperloop Abstraction Layer (HAL) library is a C++11 wrapper around the Java
 
 Step 1. Install Xcode 6
 
-Step 2. Install cmake using either `sudo port install cmake` or `sudo brew install cmake`.
+Step 2. Install cmake version 3.0 (or higher) using either `sudo port install cmake` or `brew install cmake`.
 
-Step 3. Install boost using either `sudo port install boost` or `sudo brew install boost`.
+Step 3. Install boost using either `sudo port install boost` or `brew install boost`.
 
 Step 4. Download our pre-compiled version of Google Test [gtest-1.7.0-osx.zip (3 MB)](http://timobile.appcelerator.com.s3.amazonaws.com/gtest-1.7.0-osx.zip), unzip anywhere (the location doesn't matter) and set the environment variable GTEST_ROOT to where you unzipped it.
 
