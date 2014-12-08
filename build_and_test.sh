@@ -7,9 +7,25 @@
 # Licensed under the terms of the Apache Public License.
 # Please see the LICENSE included with this distribution for details.
 
+# check and see if we already have it installed in our local directory
+if test -d "`pwd`/gtest-1.7.0"; then
+    echo "Found local gtest-1.7.0, setting GTEST_ROOT"
+    declare -x GTEST_ROOT="`pwd`/gtest-1.7.0"
+fi
+
+# if not found, install it
 if ! test -d "${GTEST_ROOT}"; then
-    echo "GTEST_ROOT must point to your Google Test installation."
-    exit 1
+    if [[ ${CMAKE_HOST_WIN32} != 0 ]]; then
+        echo "Installing GTest ... one moment"
+        echo
+        curl -O http://timobile.appcelerator.com.s3.amazonaws.com/gtest-1.7.0-osx.zip
+        unzip gtest-1.7.0-osx.zip
+        rm -rf gtest-1.7.0-osx.zip
+        declare -x GTEST_ROOT="`pwd`/gtest-1.7.0"
+    else
+        echo "GTEST_ROOT must point to your Google Test installation."
+        exit 1
+    fi
 fi
 
 declare -rx VERBOSE=1

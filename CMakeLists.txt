@@ -286,19 +286,19 @@ write_basic_package_version_file(
 # so that find_package(JavaScriptCoreCPP) works.
 export(PACKAGE JavaScriptCoreCPP)
 
-#[[
-# TODO: Install files to external locations.
-
-set(ConfigPackageLocation lib/cmake/JavaScriptCoreCPP)
-install(EXPORT JavaScriptCoreCPPTargets
-  DESTINATION ${ConfigPackageLocation}
-  )
-
-install(
-  FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/JavaScriptCoreCPPConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/JavaScriptCoreCPPConfigVersion.cmake"
-  DESTINATION ${ConfigPackageLocation}
-  COMPONENT Devel
-  )
-]]
+##[[
+## TODO: Install files to external locations.
+##
+##set(ConfigPackageLocation lib/cmake/JavaScriptCoreCPP)
+##install(EXPORT JavaScriptCoreCPPTargets
+##  DESTINATION ${ConfigPackageLocation}
+##  )
+##
+##install(
+##  FILES
+##  "${CMAKE_CURRENT_BINARY_DIR}/JavaScriptCoreCPPConfig.cmake"
+##  "${CMAKE_CURRENT_BINARY_DIR}/JavaScriptCoreCPPConfigVersion.cmake"
+##  DESTINATION ${ConfigPackageLocation}
+##  COMPONENT Devel
+##  )
+##]]
