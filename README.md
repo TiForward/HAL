@@ -2,9 +2,9 @@
 
 The Hyperloop Abstraction Layer (HAL) library is a C++11 wrapper around the JavaScriptCore C API.
 
-## Quick Start
+## Prerequisites
 
-To run our 255 (and counting) unit tests.
+### OS X
 
 Step 1. Install Xcode 6
 
@@ -21,7 +21,59 @@ $ curl -O http://timobile.appcelerator.com.s3.amazonaws.com/gtest-1.7.0-osx.zip
 $ unzip gtest-1.7.0-osx.zip
 ```
 
-Then, on both OS X and Windows:
+### Windows
+
+Step 1. Install Visual Studio 2013
+
+Step 2. Install this version of [CMake](https://cmakems.codeplex.com/releases/view/126914) in order to generate VS 2013 project files.
+
+Step 3. Install [64-bit Cygwin](http://cygwin.com/setup-x86_64.exe).
+
+* Choose the mirror http://mirrors.kernel.org which we have measured is at least 100x faster than the default selected mirror.
+* Select both ```curl``` and ```unzip``` in addition to the defaults.
+
+Step 4. Install JavascriptCore
+
+Download our pre-compiled version of JavascriptCore [JavaScriptCore-Windows-1411436814.zip (276 MB)](http://timobile.appcelerator.com.s3.amazonaws.com/jscore/JavaScriptCore-Windows-1411436814.zip), unzip anywhere (the location doesn't matter) and set the environment variable JavaScriptCore_HOME to where you unzipped it.
+
+Just run the following commands from your Cygwin bash prompt to setup your development environment for JavaScriptCore_HOME before
+proceeding:
+
+```bash
+$ curl -O http://timobile.appcelerator.com.s3.amazonaws.com/jscore/JavaScriptCore-Windows-1411436814.zip
+$ unzip JavaScriptCore-Windows-1411436814.zip
+```
+
+step 5. Install Google Test
+
+Download our pre-compiled version of Google Test [gtest-1.7.0-windows.zip (3 MB)](http://timobile.appcelerator.com.s3.amazonaws.com/gtest-1.7.0-windows.zip), unzip anywhere (the location doesn't matter) and set the environment variable GTEST_ROOT to where you unzipped it.
+
+Just run the following commands from your Cygwin bash prompt to setup your development environment for Google Test before proceeding:
+
+```bash
+$ curl -O http://timobile.appcelerator.com.s3.amazonaws.com/gtest-1.7.0-windows.zip
+$ unzip gtest-1.7.0-windows.zip
+```
+
+Step 6. Install Boost
+
+Microsoft officially supports and encourages the use of the Boost C++ open source library for Windows Store and Windows Phone apps, and they have contributed a great deal of open source code to the Boost project. Please read the Microsoft article [Using Boost Libraries in Windows Store and Phone Applications](http://blogs.msdn.com/b/vcblog/archive/2014/07/18/using-boost-libraries-in-windows-store-and-phone-applications.aspx) and follow their instructions.
+
+Microsoft instructs us to create the folders named WPSDK\WP81 under the VC Visual Studio installation directory, `C:\Program Files
+(x86)\Microsoft Visual Studio 12.0\VC\`, and copy their [phone setup script files](http://blogs.msdn.com/cfs-file.ashx/__key/communityserver-components-postattachments/00-10-54-33-32/BoostSample-.zip) to it. This has been verified to work well with our CMake build infrastructure.
+
+After following Microsoft's instructions, define the environment variable `BOOST_ROOT` to point to where you cloned the boost git repository and add it to your `PATH`. If you are using PowerShell something like the following works:
+```
+setx.exe BOOST_ROOT $env:HOME\Documents\GitHub\boost
+$env:Path += ";$env:BOOST_ROOT";
+cd $env:BOOST_ROOT\libs\thread\build
+b2 toolset=msvc-12.0 link=static windows-api=store
+b2 toolset=msvc-12.0 link=static windows-api=phone
+```
+
+## Quick Start
+
+To run our 255 (and counting) unit tests on both both OS X and Windows:
 
 ```bash
 build_and_test.sh
