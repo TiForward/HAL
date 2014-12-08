@@ -1,0 +1,5 @@
+language: objective-c
+before_script:
+  - brew update
+script:
+  - ./build_and_test_travis.sh "${PWD}"
