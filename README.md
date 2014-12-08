@@ -1,6 +1,6 @@
 # Hyperloop Abstraction Layer (HAL) [![Build Status](https://magnum.travis-ci.com/appcelerator/HAL.svg?token=SxTZxbWRYYpcfE9jALXb)](https://magnum.travis-ci.com/appcelerator/HAL)
 
-The Hyperloop Abstraction Layer (HAL) library is a C++11 wrapper around the JavaScriptCore C API.
+The Hyperloop Abstraction Layer (HAL) library is a cross-platform standards-compliant C++11 library wrapper around the JavaScriptCore C API.
 
 ## Prerequisites
 
