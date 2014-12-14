@@ -1,18 +1,17 @@
 /**
- * JavaScriptCoreCPP
- * Author: Matthew D. Langston
+ * HAL
  *
  * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License.
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/detail/JSStaticValue.hpp"
-#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
+#include "HAL/detail/JSStaticValue.hpp"
+#include "HAL/detail/JSUtil.hpp"
 
 #include <string>
 
-namespace JavaScriptCoreCPP { namespace detail {
+namespace HAL { namespace detail {
   
   JSStaticValue::JSStaticValue(const ::JSStaticValue& js_static_value)
   : JSPropertyCallback(js_static_value.name, FromJSPropertyAttributes(js_static_value.attributes))
@@ -40,37 +39,37 @@ namespace JavaScriptCoreCPP { namespace detail {
     }
   }
   
-  JSStaticValue::JSStaticValue(const JSStaticValue& rhs) JAVASCRIPTCORECPP_NOEXCEPT
+  JSStaticValue::JSStaticValue(const JSStaticValue& rhs) HAL_NOEXCEPT
   : JSPropertyCallback(rhs)
   , get_callback__(rhs.get_callback__)
   , set_callback__(rhs.set_callback__) {
   }
   
   
-  JSStaticValue::JSStaticValue(JSStaticValue&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
+  JSStaticValue::JSStaticValue(JSStaticValue&& rhs) HAL_NOEXCEPT
   : JSPropertyCallback(rhs)
   , get_callback__(std::move(rhs.get_callback__))
   , set_callback__(std::move(rhs.set_callback__)) {
   }
   
   
-  JSStaticValue& JSStaticValue::operator=(const JSStaticValue& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
+  JSStaticValue& JSStaticValue::operator=(const JSStaticValue& rhs) HAL_NOEXCEPT {
+    HAL_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
     JSPropertyCallback::operator=(rhs);
     get_callback__ = rhs.get_callback__;
     set_callback__ = rhs.set_callback__;
     return *this;
   }
   
-  JSStaticValue& JSStaticValue::operator=(JSStaticValue&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
+  JSStaticValue& JSStaticValue::operator=(JSStaticValue&& rhs) HAL_NOEXCEPT {
+    HAL_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
     swap(rhs);
     return *this;
   }
   
   
-  void JSStaticValue::swap(JSStaticValue& other) JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
+  void JSStaticValue::swap(JSStaticValue& other) HAL_NOEXCEPT {
+    HAL_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
     JSPropertyCallback::swap(other);
     using std::swap;
     
@@ -81,7 +80,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   }
   
   
-  bool operator==(const JSStaticValue& lhs, const JSStaticValue& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
+  bool operator==(const JSStaticValue& lhs, const JSStaticValue& rhs) HAL_NOEXCEPT {
     // get_callback__
     if (lhs.get_callback__ && !rhs.get_callback__) {
       return false;
@@ -103,4 +102,4 @@ namespace JavaScriptCoreCPP { namespace detail {
     return static_cast<JSPropertyCallback>(lhs) == static_cast<JSPropertyCallback>(rhs);
   }
   
-}} // namespace JavaScriptCoreCPP { namespace detail {
+}} // namespace HAL { namespace detail {

@@ -81,11 +81,11 @@ build_and_test.sh
 
 Here is [EvaluateScript.cpp](examples/EvaluateScript.cpp), a simple main program that evaluates the JavaScript expression `21 / 7` and prints `3` to the terminal. To run it on Windows type `./build.debug/examples/EvaluateScript.exe` and to run it on OS X type `./build.debug/examples/EvaluateScript`.
 ```
-#include "JavaScriptCoreCPP/JavaScriptCoreCPP.hpp"
+#include "HAL/HAL.hpp"
 #include <iostream>
 
 int main () {
-	using namespace JavaScriptCoreCPP;
+	using namespace HAL;
 	JSContextGroup js_context_group;
 	JSContext js_context = js_context_group.CreateContext();
 	auto js_result       = js_context.JSEvaluateScript("21 / 7");
@@ -118,46 +118,46 @@ This library was initially created using both iOS 8 (i.e. Apple LLVM version 6.0
 
 To use the library you will always want to include the main header:
 
-`#include "JavaScriptCoreCPP/JavaScriptCoreCPP.hpp"`
+`#include "HAL/HAL.hpp"`
 
 These are the main C++ classes in the library and their inheritance hierarchy:
 
 ### JSContextGroup and JSContext 
 
-A [JSContext](include/JavaScriptCoreCPP/JSContext.hpp) is an RAII wrapper around a [JSContextRef](https://github.com/WebKit/webkit/blob/master/Source/JavaScriptCore/API/JSContext.h), the JavaScriptCore C API representation of a JavaScript execution context that holds the global object and other execution state.
+A [JSContext](include/HAL/JSContext.hpp) is an RAII wrapper around a [JSContextRef](https://github.com/WebKit/webkit/blob/master/Source/JavaScriptCore/API/JSContext.h), the JavaScriptCore C API representation of a JavaScript execution context that holds the global object and other execution state.
 
-JSContexts are created by the [JSContextGroup](include/JavaScriptCoreCPP/JSContextGroup.hpp) `CreateContext` member function. JSContextGroups may be created with either the default or custom global objects. See the individual JSContextGroup constructors for more details.
+JSContexts are created by the [JSContextGroup](include/HAL/JSContextGroup.hpp) `CreateContext` member function. JSContextGroups may be created with either the default or custom global objects. See the individual JSContextGroup constructors for more details.
    
 JavaScript scripts may execute concurrently with scripts executing in other JSContexts, and JSContexts within the same JSContextGroup may share and exchange their JSValues anad JSObjects with one another.
    
-A JSContext is the only way to create a [JSValue](include/JavaScriptCoreCPP/JSValue.hpp) and a [JSObject](include/JavaScriptCoreCPP/JSObject.hpp).
+A JSContext is the only way to create a [JSValue](include/HAL/JSValue.hpp) and a [JSObject](include/HAL/JSObject.hpp).
 
 ### JSValue
 
-A [JSValue](include/JavaScriptCoreCPP/JSValue.hpp) is an RAII wrapper around a [JSValueRef](https://github.com/WebKit/webkit/blob/master/Source/JavaScriptCore/API/JSValueRef.h), the JavaScriptCore C API representation of a JavaScript value. This is the base class for all JavaScript values in the library. These are the direct descendants of JSValue:
+A [JSValue](include/HAL/JSValue.hpp) is an RAII wrapper around a [JSValueRef](https://github.com/WebKit/webkit/blob/master/Source/JavaScriptCore/API/JSValueRef.h), the JavaScriptCore C API representation of a JavaScript value. This is the base class for all JavaScript values in the library. These are the direct descendants of JSValue:
 
-1. [JSUndefined](include/JavaScriptCoreCPP/JSUndefined.hpp)
-2. [JSNull](include/JavaScriptCoreCPP/JSNull.hpp)
-3. [JSBoolean](include/JavaScriptCoreCPP/JSBoolean.hpp)
-4. [JSNumber](include/JavaScriptCoreCPP/JSNumber.hpp)
+1. [JSUndefined](include/HAL/JSUndefined.hpp)
+2. [JSNull](include/HAL/JSNull.hpp)
+3. [JSBoolean](include/HAL/JSBoolean.hpp)
+4. [JSNumber](include/HAL/JSNumber.hpp)
 
-Although not a JSValue, the [JSString](include/JavaScriptCoreCPP/JSString.hpp) class is used throughout the library, and seamlessly bridges JavaScriptCore's strings and C++ strings. A JSString is an RAII wrapper around a [JSStringRef](https://github.com/WebKit/webkit/blob/master/Source/JavaScriptCore/API/JSStringRef.h), the JavaScriptCore C API representation of a JavaScript string.
+Although not a JSValue, the [JSString](include/HAL/JSString.hpp) class is used throughout the library, and seamlessly bridges JavaScriptCore's strings and C++ strings. A JSString is an RAII wrapper around a [JSStringRef](https://github.com/WebKit/webkit/blob/master/Source/JavaScriptCore/API/JSStringRef.h), the JavaScriptCore C API representation of a JavaScript string.
    
 A JSString satisfies satisfies all the requirements for use in all STL containers. For example, a JSString can be used as a key in a [std::unordered_map](http://en.cppreference.com/w/cpp/container/unordered_map). Specifically, a JSString is comparable with an equivalence relation, provides a strict weak ordering, and provides a custom hash function.
 
 ### JSObject
 
-A [JSObject](include/JavaScriptCoreCPP/JSObject.hpp) is an RAII wrapper around a [JSObjectRef](https://github.com/WebKit/webkit/blob/master/Source/JavaScriptCore/API/JSObjectRef.h), the JavaScriptCore C API representation of a JavaScript object. This is the base class for all JavaScript objects in the library. These are JSObject's direct descendants:
+A [JSObject](include/HAL/JSObject.hpp) is an RAII wrapper around a [JSObjectRef](https://github.com/WebKit/webkit/blob/master/Source/JavaScriptCore/API/JSObjectRef.h), the JavaScriptCore C API representation of a JavaScript object. This is the base class for all JavaScript objects in the library. These are JSObject's direct descendants:
    
-1. [JSArray](include/JavaScriptCoreCPP/JSArray.hpp)
-2. [JSDate](include/JavaScriptCoreCPP/JSDate.hpp)
-3. [JSError](include/JavaScriptCoreCPP/JSError.hpp)
-4. [JSRegExp](include/JavaScriptCoreCPP/JSRegExp.hpp)
-5. [JSFunction](include/JavaScriptCoreCPP/JSFunction.hpp)
+1. [JSArray](include/HAL/JSArray.hpp)
+2. [JSDate](include/HAL/JSDate.hpp)
+3. [JSError](include/HAL/JSError.hpp)
+4. [JSRegExp](include/HAL/JSRegExp.hpp)
+5. [JSFunction](include/HAL/JSFunction.hpp)
 
 ## JSExport
 
-[JSExport](include/JavaScriptCoreCPP/JSExport.hpp) is a CRTP (i.e. Curiously Recurring Template Pattern) base class that allows any C++ class derived from it to be seamlessly integrated into JavaScriptCore. This is what we used to create our Widget example in [Widget.hpp](examples/Widget.hpp) and [Widget.cpp](examples/Widget.cpp). JSExport is fully documented and the Widget example is what you want to study to learn how to seamlessly integrate your own C++ classes into the JavaScriptCore runtime execution environment.
+[JSExport](include/HAL/JSExport.hpp) is a CRTP (i.e. Curiously Recurring Template Pattern) base class that allows any C++ class derived from it to be seamlessly integrated into JavaScriptCore. This is what we used to create our Widget example in [Widget.hpp](examples/Widget.hpp) and [Widget.cpp](examples/Widget.cpp). JSExport is fully documented and the Widget example is what you want to study to learn how to seamlessly integrate your own C++ classes into the JavaScriptCore runtime execution environment.
 
 
 ## Project Goals

@@ -1,17 +1,16 @@
 /**
- * JavaScriptCoreCPP
- * Author: Matthew D. Langston
+ * HAL
  *
  * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License.
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/detail/JSValueUtil.hpp"
+#include "HAL/detail/JSValueUtil.hpp"
 
-namespace JavaScriptCoreCPP { namespace detail {
+namespace HAL { namespace detail {
   
-  JSValue::Type ToJSValueType(JSType js_type) JAVASCRIPTCORECPP_NOEXCEPT {
+  JSValue::Type ToJSValueType(JSType js_type) HAL_NOEXCEPT {
 	  auto type = JSValue::Type::Undefined;
     switch (js_type) {
       case kJSTypeUndefined:
@@ -38,4 +37,4 @@ namespace JavaScriptCoreCPP { namespace detail {
   }
   
  
-}} // namespace JavaScriptCoreCPP { namespace detail {
+}} // namespace HAL { namespace detail {

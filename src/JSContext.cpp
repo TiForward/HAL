@@ -1,140 +1,139 @@
 /**
- * JavaScriptCoreCPP
- * Author: Matthew D. Langston
+ * HAL
  *
  * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License.
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/JSContext.hpp"
+#include "HAL/JSContext.hpp"
 
-#include "JavaScriptCoreCPP/JSClass.hpp"
-#include "JavaScriptCoreCPP/JSString.hpp"
+#include "HAL/JSClass.hpp"
+#include "HAL/JSString.hpp"
 
-#include "JavaScriptCoreCPP/JSValue.hpp"
-#include "JavaScriptCoreCPP/JSUndefined.hpp"
-#include "JavaScriptCoreCPP/JSNull.hpp"
-#include "JavaScriptCoreCPP/JSBoolean.hpp"
-#include "JavaScriptCoreCPP/JSNumber.hpp"
+#include "HAL/JSValue.hpp"
+#include "HAL/JSUndefined.hpp"
+#include "HAL/JSNull.hpp"
+#include "HAL/JSBoolean.hpp"
+#include "HAL/JSNumber.hpp"
 
-#include "JavaScriptCoreCPP/JSObject.hpp"
-#include "JavaScriptCoreCPP/JSArray.hpp"
-#include "JavaScriptCoreCPP/JSDate.hpp"
-#include "JavaScriptCoreCPP/JSError.hpp"
-#include "JavaScriptCoreCPP/JSFunction.hpp"
-#include "JavaScriptCoreCPP/JSRegExp.hpp"
+#include "HAL/JSObject.hpp"
+#include "HAL/JSArray.hpp"
+#include "HAL/JSDate.hpp"
+#include "HAL/JSError.hpp"
+#include "HAL/JSFunction.hpp"
+#include "HAL/JSRegExp.hpp"
 
-#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
+#include "HAL/detail/JSUtil.hpp"
 
 #include <cassert>
 
-namespace JavaScriptCoreCPP {
+namespace HAL {
   
-  JSObject JSContext::get_global_object() const JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+  JSObject JSContext::get_global_object() const HAL_NOEXCEPT {
+    HAL_JSCONTEXT_LOCK_GUARD;
     return JSObject(JSContext(js_global_context_ref__), JSContextGetGlobalObject(js_global_context_ref__));
   }
   
   JSValue JSContext::CreateValueFromJSON(const JSString& js_string) const {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+    HAL_JSCONTEXT_LOCK_GUARD;
     return JSValue(JSContext(js_global_context_ref__), js_string, true);
   }
   
-  JSValue JSContext::CreateString() const JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+  JSValue JSContext::CreateString() const HAL_NOEXCEPT {
+    HAL_JSCONTEXT_LOCK_GUARD;
     return JSValue(JSContext(js_global_context_ref__), JSString(), false);
   }
   
-  JSValue JSContext::CreateString(const JSString& js_string) const JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+  JSValue JSContext::CreateString(const JSString& js_string) const HAL_NOEXCEPT {
+    HAL_JSCONTEXT_LOCK_GUARD;
     return JSValue(JSContext(js_global_context_ref__), js_string, false);
   }
   
-  JSValue JSContext::CreateString(const char* string) const JAVASCRIPTCORECPP_NOEXCEPT {
+  JSValue JSContext::CreateString(const char* string) const HAL_NOEXCEPT {
     return CreateString(JSString(string));
   }
   
-  JSValue JSContext::CreateString(const std::string& string) const JAVASCRIPTCORECPP_NOEXCEPT {
+  JSValue JSContext::CreateString(const std::string& string) const HAL_NOEXCEPT {
     return CreateString(JSString(string));
   }
   
-  JSUndefined JSContext::CreateUndefined() const JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+  JSUndefined JSContext::CreateUndefined() const HAL_NOEXCEPT {
+    HAL_JSCONTEXT_LOCK_GUARD;
     return JSUndefined(JSContext(js_global_context_ref__));
   }
   
-  JSNull JSContext::CreateNull() const JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+  JSNull JSContext::CreateNull() const HAL_NOEXCEPT {
+    HAL_JSCONTEXT_LOCK_GUARD;
     return JSNull(JSContext(js_global_context_ref__));
   }
   
-  JSBoolean JSContext::CreateBoolean(bool boolean) const JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+  JSBoolean JSContext::CreateBoolean(bool boolean) const HAL_NOEXCEPT {
+    HAL_JSCONTEXT_LOCK_GUARD;
     return JSBoolean(JSContext(js_global_context_ref__), boolean);
   }
   
-  JSNumber JSContext::CreateNumber(double number) const JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+  JSNumber JSContext::CreateNumber(double number) const HAL_NOEXCEPT {
+    HAL_JSCONTEXT_LOCK_GUARD;
     return JSNumber(JSContext(js_global_context_ref__), number);
   }
   
-  JSNumber JSContext::CreateNumber(int32_t number) const JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+  JSNumber JSContext::CreateNumber(int32_t number) const HAL_NOEXCEPT {
+    HAL_JSCONTEXT_LOCK_GUARD;
     return JSNumber(JSContext(js_global_context_ref__), number);
   }
   
-  JSNumber JSContext::CreateNumber(uint32_t number) const JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+  JSNumber JSContext::CreateNumber(uint32_t number) const HAL_NOEXCEPT {
+    HAL_JSCONTEXT_LOCK_GUARD;
     return JSNumber(JSContext(js_global_context_ref__), number);
   }
   
-  JSObject JSContext::CreateObject() const JAVASCRIPTCORECPP_NOEXCEPT {
+  JSObject JSContext::CreateObject() const HAL_NOEXCEPT {
     return CreateObject(JSClass());
   }
   
-  JSObject JSContext::CreateObject(const JSClass& js_class) const JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+  JSObject JSContext::CreateObject(const JSClass& js_class) const HAL_NOEXCEPT {
+    HAL_JSCONTEXT_LOCK_GUARD;
     return JSObject(JSContext(js_global_context_ref__), js_class);
   }
   
-  JSArray JSContext::CreateArray() const JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+  JSArray JSContext::CreateArray() const HAL_NOEXCEPT {
+    HAL_JSCONTEXT_LOCK_GUARD;
     return JSArray(JSContext(js_global_context_ref__));
   }
   
   JSArray JSContext::CreateArray(const std::vector<JSValue>& arguments) const {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+    HAL_JSCONTEXT_LOCK_GUARD;
     return JSArray(JSContext(js_global_context_ref__), arguments);
   }
   
-  JSDate JSContext::CreateDate() const JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+  JSDate JSContext::CreateDate() const HAL_NOEXCEPT {
+    HAL_JSCONTEXT_LOCK_GUARD;
     return JSDate(JSContext(js_global_context_ref__));
   }
   
   JSDate JSContext::CreateDate(const std::vector<JSValue>& arguments) const {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+    HAL_JSCONTEXT_LOCK_GUARD;
     return JSDate(JSContext(js_global_context_ref__), arguments);
   }
   
-  JSError JSContext::CreateError() const JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+  JSError JSContext::CreateError() const HAL_NOEXCEPT {
+    HAL_JSCONTEXT_LOCK_GUARD;
     return JSError(JSContext(js_global_context_ref__));
   }
   
   JSError JSContext::CreateError(const std::vector<JSValue>& arguments) const {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+    HAL_JSCONTEXT_LOCK_GUARD;
     return JSError(JSContext(js_global_context_ref__), arguments);
   }
   
-  JSRegExp JSContext::CreateRegExp() const JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+  JSRegExp JSContext::CreateRegExp() const HAL_NOEXCEPT {
+    HAL_JSCONTEXT_LOCK_GUARD;
     return JSRegExp(JSContext(js_global_context_ref__));
   }
   
   JSRegExp JSContext::CreateRegExp(const std::vector<JSValue>& arguments) const {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+    HAL_JSCONTEXT_LOCK_GUARD;
     return JSRegExp(JSContext(js_global_context_ref__), arguments);
   }
   
@@ -151,7 +150,7 @@ namespace JavaScriptCoreCPP {
   }
   
   JSFunction JSContext::CreateFunction(const JSString& body, const std::vector<JSString>& parameter_names, const JSString& function_name, const JSString& source_url, int starting_line_number) const {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+    HAL_JSCONTEXT_LOCK_GUARD;
     return JSFunction(JSContext(js_global_context_ref__), body, parameter_names, function_name, source_url, starting_line_number);
   }
   
@@ -160,7 +159,7 @@ namespace JavaScriptCoreCPP {
   }
   
   JSValue JSContext::JSEvaluateScript(const JSString& script, const JSString& source_url, int starting_line_number) const {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+    HAL_JSCONTEXT_LOCK_GUARD;
     return JSEvaluateScript(script, get_global_object(), source_url, starting_line_number);
   }
   
@@ -169,7 +168,7 @@ namespace JavaScriptCoreCPP {
   }
   
   JSValue JSContext::JSEvaluateScript(const JSString& script, JSObject this_object, const JSString& source_url, int starting_line_number) const {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+    HAL_JSCONTEXT_LOCK_GUARD;
     JSValueRef js_value_ref { nullptr };
     const JSStringRef source_url_ref = (source_url.length() > 0) ? static_cast<JSStringRef>(source_url) : nullptr;
     JSValueRef exception { nullptr };
@@ -185,12 +184,12 @@ namespace JavaScriptCoreCPP {
     return JSValue(JSContext(js_global_context_ref__), js_value_ref);
   }
   
-  bool JSContext::JSCheckScriptSyntax(const JSString& script) const JAVASCRIPTCORECPP_NOEXCEPT {
+  bool JSContext::JSCheckScriptSyntax(const JSString& script) const HAL_NOEXCEPT {
     return JSCheckScriptSyntax(script, JSString());
   }
   
-  bool JSContext::JSCheckScriptSyntax(const JSString& script, const JSString& source_url, int starting_line_number) const JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+  bool JSContext::JSCheckScriptSyntax(const JSString& script, const JSString& source_url, int starting_line_number) const HAL_NOEXCEPT {
+    HAL_JSCONTEXT_LOCK_GUARD;
     const JSStringRef source_url_ref = (source_url.length() > 0) ? static_cast<JSStringRef>(source_url) : nullptr;
     JSValueRef exception { nullptr };
     bool result = ::JSCheckScriptSyntax(js_global_context_ref__, script, source_url_ref, starting_line_number, &exception);
@@ -202,8 +201,8 @@ namespace JavaScriptCoreCPP {
     return result;
   }
   
-  void JSContext::GarbageCollect() const JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+  void JSContext::GarbageCollect() const HAL_NOEXCEPT {
+    HAL_JSCONTEXT_LOCK_GUARD;
     JSGarbageCollect(js_global_context_ref__);
   }
   
@@ -211,60 +210,60 @@ namespace JavaScriptCoreCPP {
   extern "C" void JSSynchronousGarbageCollectForDebugging(JSContextRef);
   
   void JSContext::SynchronousGarbageCollectForDebugging() const {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
+    HAL_JSCONTEXT_LOCK_GUARD;
     JSSynchronousGarbageCollectForDebugging(js_global_context_ref__);
   }
 #endif
   
-  JSContext::~JSContext() JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: dtor");
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: release ", js_global_context_ref__);
+  JSContext::~JSContext() HAL_NOEXCEPT {
+    HAL_LOG_DEBUG("JSContext:: dtor");
+    HAL_LOG_DEBUG("JSContext:: release ", js_global_context_ref__);
     JSGlobalContextRelease(js_global_context_ref__);
   }
   
-  JSContext::JSContext(const JSContext& rhs) JAVASCRIPTCORECPP_NOEXCEPT
+  JSContext::JSContext(const JSContext& rhs) HAL_NOEXCEPT
   : js_context_group__(rhs.js_context_group__)
   , js_global_context_ref__(rhs.js_global_context_ref__) {
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: copy ctor");
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: retain ", js_global_context_ref__);
+    HAL_LOG_DEBUG("JSContext:: copy ctor");
+    HAL_LOG_DEBUG("JSContext:: retain ", js_global_context_ref__);
     JSGlobalContextRetain(js_global_context_ref__);
   }
   
-  JSContext::JSContext(JSContext&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
+  JSContext::JSContext(JSContext&& rhs) HAL_NOEXCEPT
   : js_context_group__(std::move(rhs.js_context_group__))
   , js_global_context_ref__(rhs.js_global_context_ref__) {
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: move ctor");
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: retain ", js_global_context_ref__);
+    HAL_LOG_DEBUG("JSContext:: move ctor");
+    HAL_LOG_DEBUG("JSContext:: retain ", js_global_context_ref__);
     JSGlobalContextRetain(js_global_context_ref__);
   }
   
-  JSContext& JSContext::operator=(const JSContext& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: copy assignment");
+  JSContext& JSContext::operator=(const JSContext& rhs) HAL_NOEXCEPT {
+    HAL_JSCONTEXT_LOCK_GUARD;
+    HAL_LOG_DEBUG("JSContext:: copy assignment");
     JSGlobalContextRelease(js_global_context_ref__);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: release ", js_global_context_ref__);
+    HAL_LOG_DEBUG("JSContext:: release ", js_global_context_ref__);
     js_context_group__      = rhs.js_context_group__;
     js_global_context_ref__ = rhs.js_global_context_ref__;
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: retain ", js_global_context_ref__);
+    HAL_LOG_DEBUG("JSContext:: retain ", js_global_context_ref__);
     JSGlobalContextRetain(js_global_context_ref__);
     return *this;
   }
   
-  JSContext& JSContext::operator=(JSContext&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: move assignment");
+  JSContext& JSContext::operator=(JSContext&& rhs) HAL_NOEXCEPT {
+    HAL_JSCONTEXT_LOCK_GUARD;
+    HAL_LOG_DEBUG("JSContext:: move assignment");
     JSGlobalContextRelease(js_global_context_ref__);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: release ", js_global_context_ref__);
+    HAL_LOG_DEBUG("JSContext:: release ", js_global_context_ref__);
     js_context_group__      = std::move(rhs.js_context_group__);
     js_global_context_ref__ = rhs.js_global_context_ref__;
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: retain ", js_global_context_ref__);
+    HAL_LOG_DEBUG("JSContext:: retain ", js_global_context_ref__);
     JSGlobalContextRetain(js_global_context_ref__);
     return *this;
   }
   
-  void JSContext::swap(JSContext& other) JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSCONTEXT_LOCK_GUARD;
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: swap");
+  void JSContext::swap(JSContext& other) HAL_NOEXCEPT {
+    HAL_JSCONTEXT_LOCK_GUARD;
+    HAL_LOG_DEBUG("JSContext:: swap");
     using std::swap;
     
     // By swapping the members of two classes, the two classes are
@@ -273,25 +272,25 @@ namespace JavaScriptCoreCPP {
     swap(js_global_context_ref__, other.js_global_context_ref__);
   }
   
-  JSContext::JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class) JAVASCRIPTCORECPP_NOEXCEPT
+  JSContext::JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class) HAL_NOEXCEPT
   : js_context_group__(js_context_group)
   , js_global_context_ref__(JSGlobalContextCreateInGroup(js_context_group, global_object_class)) {
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: ctor");
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: retain ", js_global_context_ref__);
+    HAL_LOG_DEBUG("JSContext:: ctor");
+    HAL_LOG_DEBUG("JSContext:: retain ", js_global_context_ref__);
   }
   
-  JSContext::JSContext(JSContextRef js_context_ref) JAVASCRIPTCORECPP_NOEXCEPT
+  JSContext::JSContext(JSContextRef js_context_ref) HAL_NOEXCEPT
   : JSContext(const_cast<JSGlobalContextRef>(js_context_ref)) {
   }
   
   // For interoperability with the JavaScriptCore C API.
-  JSContext::JSContext(JSGlobalContextRef js_global_context_ref) JAVASCRIPTCORECPP_NOEXCEPT
+  JSContext::JSContext(JSGlobalContextRef js_global_context_ref) HAL_NOEXCEPT
   : js_context_group__(JSContextGetGroup(js_global_context_ref))
   , js_global_context_ref__(js_global_context_ref) {
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: ctor");
+    HAL_LOG_DEBUG("JSContext:: ctor");
     assert(js_global_context_ref__);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSContext:: retain ", js_global_context_ref__);
+    HAL_LOG_DEBUG("JSContext:: retain ", js_global_context_ref__);
     JSGlobalContextRetain(js_global_context_ref__);
   }
   
-} // namespace JavaScriptCoreCPP {
+} // namespace HAL {

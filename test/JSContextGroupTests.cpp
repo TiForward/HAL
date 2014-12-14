@@ -1,20 +1,19 @@
 /**
- * JavaScriptCoreCPP
- * Author: Matthew D. Langston
+ * HAL
  *
  * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License.
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/JavaScriptCoreCPP.hpp"
+#include "HAL/HAL.hpp"
 
 #include "gtest/gtest.h"
 
 #define XCTAssertEqual    ASSERT_EQ
 #define XCTAssertNotEqual ASSERT_NE
 
-using namespace JavaScriptCoreCPP;
+using namespace HAL;
 
 JSContextGroup makeJSContextGroup() {
   JSContextGroup js_context_group;

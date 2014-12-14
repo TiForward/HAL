@@ -1,18 +1,17 @@
 /**
- * JavaScriptCoreCPP
- * Author: Matthew D. Langston
+ * HAL
  *
  * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License.
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/detail/JSStaticFunction.hpp"
-#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
+#include "HAL/detail/JSStaticFunction.hpp"
+#include "HAL/detail/JSUtil.hpp"
 
 #include <string>
 
-namespace JavaScriptCoreCPP { namespace detail {
+namespace HAL { namespace detail {
   
   JSStaticFunction::JSStaticFunction(const ::JSStaticFunction& js_static_function)
   : JSPropertyCallback(js_static_function.name, FromJSPropertyAttributes(js_static_function.attributes))
@@ -23,35 +22,35 @@ namespace JavaScriptCoreCPP { namespace detail {
     }
   }
   
-  JSStaticFunction::JSStaticFunction(const JSStaticFunction& rhs) JAVASCRIPTCORECPP_NOEXCEPT
+  JSStaticFunction::JSStaticFunction(const JSStaticFunction& rhs) HAL_NOEXCEPT
   : JSPropertyCallback(rhs)
   , function_callback__(rhs.function_callback__) {
   }
   
   
-  JSStaticFunction::JSStaticFunction(JSStaticFunction&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
+  JSStaticFunction::JSStaticFunction(JSStaticFunction&& rhs) HAL_NOEXCEPT
   : JSPropertyCallback(rhs)
   , function_callback__(std::move(rhs.function_callback__)) {
   }
   
   
-  JSStaticFunction& JSStaticFunction::operator=(const JSStaticFunction& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
+  JSStaticFunction& JSStaticFunction::operator=(const JSStaticFunction& rhs) HAL_NOEXCEPT {
+    HAL_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
     JSPropertyCallback::operator=(rhs);
     function_callback__ = rhs.function_callback__;
     return *this;
   }
   
   
-  JSStaticFunction& JSStaticFunction::operator=(JSStaticFunction&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
+  JSStaticFunction& JSStaticFunction::operator=(JSStaticFunction&& rhs) HAL_NOEXCEPT {
+    HAL_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
     swap(rhs);
     return *this;
   }
   
   
-  void JSStaticFunction::swap(JSStaticFunction& other) JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
+  void JSStaticFunction::swap(JSStaticFunction& other) HAL_NOEXCEPT {
+    HAL_DETAIL_JSPROPERTYCALLBACK_LOCK_GUARD;
     JSPropertyCallback::swap(other);
     using std::swap;
     
@@ -64,7 +63,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   // Return true if the two JSStaticFunctions are
   // equal.
   
-  bool operator==(const JSStaticFunction& lhs, const JSStaticFunction& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
+  bool operator==(const JSStaticFunction& lhs, const JSStaticFunction& rhs) HAL_NOEXCEPT {
     if (lhs.function_callback__ && !rhs.function_callback__) {
       return false;
     }
@@ -76,4 +75,4 @@ namespace JavaScriptCoreCPP { namespace detail {
     return static_cast<JSPropertyCallback>(lhs) == static_cast<JSPropertyCallback>(rhs);
   }
   
-}} // namespace JavaScriptCoreCPP { namespace detail {
+}} // namespace HAL { namespace detail {

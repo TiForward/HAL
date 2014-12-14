@@ -1,13 +1,12 @@
 /**
- * JavaScriptCoreCPP
- * Author: Matthew D. Langston
+ * HAL
  *
  * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License.
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/JavaScriptCoreCPP.hpp"
+#include "HAL/HAL.hpp"
 
 #include "gtest/gtest.h"
 
@@ -16,7 +15,7 @@
 #define XCTAssertTrue     ASSERT_TRUE
 #define XCTAssertFalse    ASSERT_FALSE
 
-using namespace JavaScriptCoreCPP;
+using namespace HAL;
 
 namespace UnitTestConstants {
   static const double pi { 3.141592653589793 };

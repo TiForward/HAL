@@ -1,4 +1,4 @@
-# JavaScriptCoreCPP
+# HAL
 # Author: Matt Langston <mlangston@appcelerator.com>
 # Created: 2013.03.12
 # 

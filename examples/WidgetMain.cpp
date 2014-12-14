@@ -1,6 +1,5 @@
 /**
- * JavaScriptCoreCPP
- * Author: Matthew D. Langston
+ * HAL
  *
  * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License.
@@ -12,7 +11,7 @@
 #include <iostream>
 
 int main () {
-  using namespace JavaScriptCoreCPP;
+  using namespace HAL;
   JSContextGroup js_context_group;
 
   JSContext js_context = js_context_group.CreateContext();

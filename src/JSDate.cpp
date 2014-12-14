@@ -1,21 +1,20 @@
 /**
- * JavaScriptCoreCPP
- * Author: Matthew D. Langston
+ * HAL
  *
  * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License.
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/JSDate.hpp"
-#include "JavaScriptCoreCPP/JSValue.hpp"
-#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
+#include "HAL/JSDate.hpp"
+#include "HAL/JSValue.hpp"
+#include "HAL/detail/JSUtil.hpp"
 #include <vector>
 #include <algorithm>
 #include <stdexcept>
 #include <cassert>
 
-namespace JavaScriptCoreCPP {
+namespace HAL {
 
 JSDate::JSDate(const JSContext& js_context, const std::vector<JSValue>& arguments)
 		: JSObject(js_context, MakeDate(js_context, arguments)) {
@@ -41,4 +40,4 @@ JSObjectRef JSDate::MakeDate(const JSContext& js_context, const std::vector<JSVa
 	return js_object_ref;
 }
 
-} // namespace JavaScriptCoreCPP {
+} // namespace HAL {
