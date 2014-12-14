@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# JavaScriptCoreCPP
+# HAL
 # Author: Matthew D. Langston
 #
 # Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
@@ -30,10 +30,10 @@ fi
 
 declare -rx VERBOSE=1
 
-declare -r JavaScriptCoreCPP_DISABLE_TESTS="OFF"
+declare -r HAL_DISABLE_TESTS="OFF"
 
 cmd+="cmake"
-cmd+=" -DJavaScriptCoreCPP_DISABLE_TESTS=${JavaScriptCoreCPP_DISABLE_TESTS}"
+cmd+=" -DHAL_DISABLE_TESTS=${HAL_DISABLE_TESTS}"
 
 cmake -P cmake/IsWin32.cmake 2>&1 | grep -q -e 1
 declare -r CMAKE_HOST_WIN32=${PIPESTATUS[1]}
@@ -76,7 +76,7 @@ if [[ ${CMAKE_HOST_WIN32} == 0 ]]; then
     done
 fi
 
-if [[ "${JavaScriptCoreCPP_DISABLE_TESTS}" != "ON" ]]; then
+if [[ "${HAL_DISABLE_TESTS}" != "ON" ]]; then
     echo_and_eval "ctest -VV --output-on-failure"
 fi
 

@@ -1,5 +1,5 @@
 /**
- * JavaScriptCoreCPP
+ * HAL
  * Author: Matthew D. Langston
  *
  * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
@@ -7,32 +7,32 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/JSObject.hpp"
-#include "JavaScriptCoreCPP/JSValue.hpp"
+#include "HAL/JSObject.hpp"
+#include "HAL/JSValue.hpp"
 
-#include "JavaScriptCoreCPP/JSClass.hpp"
+#include "HAL/JSClass.hpp"
 
-#include "JavaScriptCoreCPP/JSUndefined.hpp"
-#include "JavaScriptCoreCPP/JSNull.hpp"
-#include "JavaScriptCoreCPP/JSBoolean.hpp"
-#include "JavaScriptCoreCPP/JSNumber.hpp"
+#include "HAL/JSUndefined.hpp"
+#include "HAL/JSNull.hpp"
+#include "HAL/JSBoolean.hpp"
+#include "HAL/JSNumber.hpp"
 
-#include "JavaScriptCoreCPP/detail/JSPropertyNameAccumulator.hpp"
-#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
+#include "HAL/detail/JSPropertyNameAccumulator.hpp"
+#include "HAL/detail/JSUtil.hpp"
 
 #include <algorithm>
 #include <type_traits>
 #include <sstream>
 #include <limits>
 
-namespace JavaScriptCoreCPP {
+namespace HAL {
   
-  bool JSObject::HasProperty(const JSString& property_name) const JAVASCRIPTCORECPP_NOEXCEPT {
+  bool JSObject::HasProperty(const JSString& property_name) const HAL_NOEXCEPT {
     return JSObjectHasProperty(js_context__, js_object_ref__, property_name);
   }
   
   JSValue JSObject::GetProperty(const JSString& property_name) const {
-    JAVASCRIPTCORECPP_JSOBJECT_LOCK_GUARD;
+    HAL_JSOBJECT_LOCK_GUARD;
     JSValueRef exception { nullptr };
     JSValueRef js_value_ref = JSObjectGetProperty(js_context__, js_object_ref__, property_name, &exception);
     if (exception) {
@@ -47,7 +47,7 @@ namespace JavaScriptCoreCPP {
   }
   
   JSValue JSObject::GetProperty(unsigned property_index) const {
-    JAVASCRIPTCORECPP_JSOBJECT_LOCK_GUARD;
+    HAL_JSOBJECT_LOCK_GUARD;
     JSValueRef exception { nullptr };
     JSValueRef js_value_ref = JSObjectGetPropertyAtIndex(js_context__, js_object_ref__, property_index, &exception);
     if (exception) {
@@ -62,7 +62,7 @@ namespace JavaScriptCoreCPP {
   }
   
   void JSObject::SetProperty(const JSString& property_name, const JSValue& property_value, const std::unordered_set<JSPropertyAttribute>& attributes) {
-    JAVASCRIPTCORECPP_JSOBJECT_LOCK_GUARD;
+    HAL_JSOBJECT_LOCK_GUARD;
     
     JSValueRef exception { nullptr };
     JSObjectSetProperty(js_context__, js_object_ref__, property_name, property_value, detail::ToJSPropertyAttributes(attributes), &exception);
@@ -72,7 +72,7 @@ namespace JavaScriptCoreCPP {
   }
   
   void JSObject::SetProperty(unsigned property_index, const JSValue& property_value) {
-    JAVASCRIPTCORECPP_JSOBJECT_LOCK_GUARD;
+    HAL_JSOBJECT_LOCK_GUARD;
     
     JSValueRef exception { nullptr };
     JSObjectSetPropertyAtIndex(js_context__, js_object_ref__, property_index, property_value, &exception);
@@ -82,7 +82,7 @@ namespace JavaScriptCoreCPP {
   }
   
   bool JSObject::DeleteProperty(const JSString& property_name) {
-    JAVASCRIPTCORECPP_JSOBJECT_LOCK_GUARD;
+    HAL_JSOBJECT_LOCK_GUARD;
     
     JSValueRef exception { nullptr };
     const bool result = JSObjectDeleteProperty(js_context__, js_object_ref__, property_name, &exception);
@@ -93,12 +93,12 @@ namespace JavaScriptCoreCPP {
     return result;
   }
   
-  JSPropertyNameArray JSObject::GetPropertyNames() const JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSOBJECT_LOCK_GUARD;
+  JSPropertyNameArray JSObject::GetPropertyNames() const HAL_NOEXCEPT {
+    HAL_JSOBJECT_LOCK_GUARD;
     return JSPropertyNameArray(*this);
   }
   
-  bool JSObject::IsFunction() const JAVASCRIPTCORECPP_NOEXCEPT {
+  bool JSObject::IsFunction() const HAL_NOEXCEPT {
     return JSObjectIsFunction(js_context__, js_object_ref__);
   }
   
@@ -113,7 +113,7 @@ namespace JavaScriptCoreCPP {
   JSValue JSObject::operator()(const std::vector<JSValue>&  arguments, JSObject this_object) { return CallAsFunction(arguments                                   , this_object); }
   JSValue JSObject::operator()(const std::vector<JSString>& arguments, JSObject this_object) { return CallAsFunction(detail::to_vector(js_context__, arguments)  , this_object); }
   
-  bool JSObject::IsConstructor() const JAVASCRIPTCORECPP_NOEXCEPT {
+  bool JSObject::IsConstructor() const HAL_NOEXCEPT {
     return JSObjectIsConstructor(js_context__, js_object_ref__);
   }
   
@@ -122,7 +122,7 @@ namespace JavaScriptCoreCPP {
   JSObject JSObject::CallAsConstructor(const JSString&              argument ) { return CallAsConstructor(std::vector<JSString> {argument}); }
   JSObject JSObject::CallAsConstructor(const std::vector<JSString>& arguments) { return CallAsConstructor(detail::to_vector(js_context__, arguments)); }
   JSObject JSObject::CallAsConstructor(const std::vector<JSValue>&  arguments) {
-    JAVASCRIPTCORECPP_JSOBJECT_LOCK_GUARD;
+    HAL_JSOBJECT_LOCK_GUARD;
     
     if (!IsConstructor()) {
       detail::ThrowRuntimeError("JSObject", "This JavaScript object is not a constructor.");
@@ -149,83 +149,83 @@ namespace JavaScriptCoreCPP {
     return JSObject(js_context__, js_object_ref);
   }
   
-  JSValue JSObject::GetPrototype() const JAVASCRIPTCORECPP_NOEXCEPT {
+  JSValue JSObject::GetPrototype() const HAL_NOEXCEPT {
     return JSValue(js_context__, JSObjectGetPrototype(js_context__, js_object_ref__));
   }
   
-  void JSObject::SetPrototype(const JSValue& js_value) JAVASCRIPTCORECPP_NOEXCEPT {
+  void JSObject::SetPrototype(const JSValue& js_value) HAL_NOEXCEPT {
     JSObjectSetPrototype(js_context__, js_object_ref__, js_value);
   }
   
-  void* JSObject::GetPrivate() const JAVASCRIPTCORECPP_NOEXCEPT {
+  void* JSObject::GetPrivate() const HAL_NOEXCEPT {
     return JSObjectGetPrivate(js_object_ref__);
   }
   
-  bool JSObject::SetPrivate(void* data) const JAVASCRIPTCORECPP_NOEXCEPT {
+  bool JSObject::SetPrivate(void* data) const HAL_NOEXCEPT {
     return JSObjectSetPrivate(js_object_ref__, data);
   }
   
-  JSObject::~JSObject() JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: dtor");
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: release ", js_object_ref__);
+  JSObject::~JSObject() HAL_NOEXCEPT {
+    HAL_LOG_DEBUG("JSObject:: dtor");
+    HAL_LOG_DEBUG("JSObject:: release ", js_object_ref__);
     JSValueUnprotect(js_context__, js_object_ref__);
   }
   
-  JSObject::JSObject(const JSObject& rhs) JAVASCRIPTCORECPP_NOEXCEPT
+  JSObject::JSObject(const JSObject& rhs) HAL_NOEXCEPT
   : js_context__(rhs.js_context__)
   , js_object_ref__(rhs.js_object_ref__) {
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: copy ctor");
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: retain ", js_object_ref__);
+    HAL_LOG_DEBUG("JSObject:: copy ctor");
+    HAL_LOG_DEBUG("JSObject:: retain ", js_object_ref__);
     JSValueProtect(js_context__, js_object_ref__);
   }
   
-  JSObject::JSObject(JSObject&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
+  JSObject::JSObject(JSObject&& rhs) HAL_NOEXCEPT
   : js_context__(std::move(rhs.js_context__))
   , js_object_ref__(rhs.js_object_ref__) {
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: move ctor");
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: retain ", js_object_ref__);
+    HAL_LOG_DEBUG("JSObject:: move ctor");
+    HAL_LOG_DEBUG("JSObject:: retain ", js_object_ref__);
     JSValueProtect(js_context__, js_object_ref__);
   }
   
   JSObject& JSObject::operator=(const JSObject& rhs) {
-    JAVASCRIPTCORECPP_JSOBJECT_LOCK_GUARD;
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: copy assignment");
+    HAL_JSOBJECT_LOCK_GUARD;
+    HAL_LOG_DEBUG("JSObject:: copy assignment");
     // JSValues can only be copied between contexts within the same
     // context group.
     if (js_context__.get_context_group() != rhs.js_context__.get_context_group()) {
       detail::ThrowRuntimeError("JSObject", "JSObjects must belong to JSContexts within the same JSContextGroup to be shared and exchanged.");
     }
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: release ", js_object_ref__);
+    HAL_LOG_DEBUG("JSObject:: release ", js_object_ref__);
     JSValueUnprotect(js_context__, js_object_ref__);
     js_context__    = rhs.js_context__;
     js_object_ref__ = rhs.js_object_ref__;
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: retain ", js_object_ref__);
+    HAL_LOG_DEBUG("JSObject:: retain ", js_object_ref__);
     JSValueProtect(js_context__, js_object_ref__);
     return *this;
   }
   
   JSObject& JSObject::operator=(JSObject&& rhs) {
-    JAVASCRIPTCORECPP_JSOBJECT_LOCK_GUARD;
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: move assignment");
+    HAL_JSOBJECT_LOCK_GUARD;
+    HAL_LOG_DEBUG("JSObject:: move assignment");
     // JSValues can only be copied between contexts within the same
     // context group.
     if (js_context__.get_context_group() != rhs.js_context__.get_context_group()) {
       detail::ThrowRuntimeError("JSObject", "JSObjects must belong to JSContexts within the same JSContextGroup to be shared and exchanged.");
     }
     
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: release ", js_object_ref__);
+    HAL_LOG_DEBUG("JSObject:: release ", js_object_ref__);
     JSValueUnprotect(js_context__, js_object_ref__);
     js_context__    = std::move(rhs.js_context__);
     js_object_ref__ = rhs.js_object_ref__;
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: retain ", js_object_ref__);
+    HAL_LOG_DEBUG("JSObject:: retain ", js_object_ref__);
     JSValueProtect(js_context__, js_object_ref__);
     return *this;
   }
   
-  void JSObject::swap(JSObject& other) JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSOBJECT_LOCK_GUARD;
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: swap");
+  void JSObject::swap(JSObject& other) HAL_NOEXCEPT {
+    HAL_JSOBJECT_LOCK_GUARD;
+    HAL_LOG_DEBUG("JSObject:: swap");
     using std::swap;
     
     // By swapping the members of two classes, the two classes are
@@ -236,16 +236,16 @@ namespace JavaScriptCoreCPP {
   
   JSObject::JSObject(const JSContext& js_context, const JSClass& js_class, void* private_data)
   : JSObject(js_context, JSObjectMake(js_context, js_class, private_data)) {
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: ctor");
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: retain ", js_object_ref__);
+    HAL_LOG_DEBUG("JSObject:: ctor");
+    HAL_LOG_DEBUG("JSObject:: retain ", js_object_ref__);
   }
 
   // For interoperability with the JavaScriptCore C API.
   JSObject::JSObject(const JSContext& js_context, JSObjectRef js_object_ref)
   : js_context__(js_context)
   , js_object_ref__(js_object_ref) {
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: ctor");
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSObject:: retain ", js_object_ref__);
+    HAL_LOG_DEBUG("JSObject:: ctor");
+    HAL_LOG_DEBUG("JSObject:: retain ", js_object_ref__);
     JSValueProtect(js_context__, js_object_ref__);
   }
   
@@ -254,7 +254,7 @@ namespace JavaScriptCoreCPP {
   }
   
   JSValue JSObject::CallAsFunction(const std::vector<JSValue>&  arguments, JSObject this_object) {
-    JAVASCRIPTCORECPP_JSOBJECT_LOCK_GUARD;
+    HAL_JSOBJECT_LOCK_GUARD;
     
     if (!IsFunction()) {
       detail::ThrowRuntimeError("JSObject", "This JavaScript object is not a function.");
@@ -280,11 +280,11 @@ namespace JavaScriptCoreCPP {
     return JSValue(js_context__, js_value_ref);
   }
   
-  void JSObject::GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSOBJECT_LOCK_GUARD;
+  void JSObject::GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const HAL_NOEXCEPT {
+    HAL_JSOBJECT_LOCK_GUARD;
     for (const auto& property_name : static_cast<std::vector<JSString>>(GetPropertyNames())) {
       accumulator.AddName(property_name);
     }
   }
   
-} // namespace JavaScriptCoreCPP {
+} // namespace HAL {

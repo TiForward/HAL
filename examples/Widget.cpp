@@ -1,5 +1,5 @@
 /**
- * JavaScriptCoreCPP
+ * HAL
  * Author: Matthew D. Langston
  *
  * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
@@ -23,18 +23,18 @@ void Widget::JSExportInitialize() {
 double Widget::pi__ = 3.141592653589793;
 
 
-Widget::Widget(const JSContext& js_context) JAVASCRIPTCORECPP_NOEXCEPT
+Widget::Widget(const JSContext& js_context) HAL_NOEXCEPT
 : JSExportObject(js_context)
 , name__("world")
 , number__(42) {
-  JAVASCRIPTCORECPP_LOG_DEBUG("Widget ctor");
+  HAL_LOG_DEBUG("Widget ctor");
 }
 
-Widget::Widget(const Widget& rhs, const std::vector<JSValue>& arguments) JAVASCRIPTCORECPP_NOEXCEPT
+Widget::Widget(const Widget& rhs, const std::vector<JSValue>& arguments) HAL_NOEXCEPT
 : JSExportObject(rhs, arguments)
 , name__(rhs.name__)
 , number__(rhs.number__) {
-  JAVASCRIPTCORECPP_LOG_DEBUG("Widget JavaScript constructor");
+  HAL_LOG_DEBUG("Widget JavaScript constructor");
   assert(arguments.size() >= 2);
   const auto _0 = arguments.at(0);
   const auto _1 = arguments.at(1);
@@ -104,39 +104,39 @@ void Widget::set_number_native(int number) {
   number__ = number;
 }
 
-Widget::~Widget() JAVASCRIPTCORECPP_NOEXCEPT {
-  JAVASCRIPTCORECPP_LOG_DEBUG("Widget dtor");
+Widget::~Widget() HAL_NOEXCEPT {
+  HAL_LOG_DEBUG("Widget dtor");
 }
 
-Widget::Widget(const Widget& rhs) JAVASCRIPTCORECPP_NOEXCEPT
+Widget::Widget(const Widget& rhs) HAL_NOEXCEPT
 : JSExportObject(rhs.get_context())
 , name__(rhs.name__)
 , number__(rhs.number__) {
-  JAVASCRIPTCORECPP_LOG_DEBUG("Widget copy ctor");
+  HAL_LOG_DEBUG("Widget copy ctor");
 }
 
-Widget::Widget(Widget&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
+Widget::Widget(Widget&& rhs) HAL_NOEXCEPT
 : JSExportObject(rhs.get_context())
 , name__(rhs.name__)
 , number__(rhs.number__) {
-  JAVASCRIPTCORECPP_LOG_DEBUG("Widget move ctor");
+  HAL_LOG_DEBUG("Widget move ctor");
 }
 
-Widget& Widget::operator=(const Widget& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
+Widget& Widget::operator=(const Widget& rhs) HAL_NOEXCEPT {
   JSExportObject::operator=(rhs);
   name__   = rhs.name__;
   number__ = rhs.number__;
-  JAVASCRIPTCORECPP_LOG_DEBUG("Widget copy assign");
+  HAL_LOG_DEBUG("Widget copy assign");
   return *this;
 }
 
-Widget& Widget::operator=(Widget&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
+Widget& Widget::operator=(Widget&& rhs) HAL_NOEXCEPT {
   swap(rhs);
-  JAVASCRIPTCORECPP_LOG_DEBUG("Widget move assign");
+  HAL_LOG_DEBUG("Widget move assign");
   return *this;
 }
 
-void Widget::swap(Widget& other) JAVASCRIPTCORECPP_NOEXCEPT {
+void Widget::swap(Widget& other) HAL_NOEXCEPT {
   JSExportObject::swap(other);
   using std::swap;
   

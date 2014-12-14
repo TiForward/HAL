@@ -1,5 +1,5 @@
 /**
- * JavaScriptCoreCPP
+ * HAL
  * Author: Matthew D. Langston
  *
  * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
@@ -7,15 +7,15 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/JSClassDefinition.hpp"
-#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
+#include "HAL/JSClassDefinition.hpp"
+#include "HAL/detail/JSUtil.hpp"
 
 #include <string>
 #include <algorithm>
 
-namespace JavaScriptCoreCPP {
+namespace HAL {
   
-  JSClassDefinition::JSClassDefinition() JAVASCRIPTCORECPP_NOEXCEPT {
+  JSClassDefinition::JSClassDefinition() HAL_NOEXCEPT {
     js_class_definition__ = kJSClassDefinitionEmpty;
   }
   
@@ -42,10 +42,10 @@ namespace JavaScriptCoreCPP {
     InitializePropertyCallbacks();
   }
   
-  JSClassDefinition::~JSClassDefinition() JAVASCRIPTCORECPP_NOEXCEPT {
+  JSClassDefinition::~JSClassDefinition() HAL_NOEXCEPT {
   }
   
-  JSClassDefinition::JSClassDefinition(const JSClassDefinition& rhs) JAVASCRIPTCORECPP_NOEXCEPT
+  JSClassDefinition::JSClassDefinition(const JSClassDefinition& rhs) HAL_NOEXCEPT
   : name__(rhs.name__)
   , js_value_properties__(rhs.js_value_properties__)
   , js_function_properties__(rhs.js_function_properties__) {
@@ -53,7 +53,7 @@ namespace JavaScriptCoreCPP {
     InitializePropertyCallbacks();
   }
   
-  JSClassDefinition::JSClassDefinition(JSClassDefinition&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
+  JSClassDefinition::JSClassDefinition(JSClassDefinition&& rhs) HAL_NOEXCEPT
   : name__(std::move(rhs.name__))
   , js_value_properties__(std::move(rhs.js_value_properties__))
   , js_function_properties__(std::move(rhs.js_function_properties__)) {
@@ -61,8 +61,8 @@ namespace JavaScriptCoreCPP {
     InitializePropertyCallbacks();
   }
   
-  JSClassDefinition& JSClassDefinition::operator=(const JSClassDefinition& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSCLASSDEFINITION_LOCK_GUARD;
+  JSClassDefinition& JSClassDefinition::operator=(const JSClassDefinition& rhs) HAL_NOEXCEPT {
+    HAL_JSCLASSDEFINITION_LOCK_GUARD;
     name__                   = rhs.name__;
     js_value_properties__    = rhs.js_value_properties__;
     js_function_properties__ = rhs.js_function_properties__;
@@ -71,14 +71,14 @@ namespace JavaScriptCoreCPP {
     return *this;
   }
   
-  JSClassDefinition& JSClassDefinition::operator=(JSClassDefinition&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSCLASSDEFINITION_LOCK_GUARD;
+  JSClassDefinition& JSClassDefinition::operator=(JSClassDefinition&& rhs) HAL_NOEXCEPT {
+    HAL_JSCLASSDEFINITION_LOCK_GUARD;
     swap(rhs);
     return *this;
   }
   
-  void JSClassDefinition::swap(JSClassDefinition& other) JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSCLASSDEFINITION_LOCK_GUARD;
+  void JSClassDefinition::swap(JSClassDefinition& other) HAL_NOEXCEPT {
+    HAL_JSCLASSDEFINITION_LOCK_GUARD;
     using std::swap;
     
     swap(name__                  , other.name__);
@@ -89,7 +89,7 @@ namespace JavaScriptCoreCPP {
     swap(js_class_definition__   , other.js_class_definition__);
   }
   
-  void JSClassDefinition::Initialize(const ::JSClassDefinition& other) JAVASCRIPTCORECPP_NOEXCEPT {
+  void JSClassDefinition::Initialize(const ::JSClassDefinition& other) HAL_NOEXCEPT {
     js_class_definition__.version           = other.version;
     js_class_definition__.attributes        = other.attributes;
     
@@ -112,8 +112,8 @@ namespace JavaScriptCoreCPP {
     js_class_definition__.convertToType     = other.convertToType;
   }
   
-  void JSClassDefinition::InitializePropertyCallbacks() JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSCLASSDEFINITION_LOCK_GUARD;
+  void JSClassDefinition::InitializePropertyCallbacks() HAL_NOEXCEPT {
+    HAL_JSCLASSDEFINITION_LOCK_GUARD;
     
     js_class_definition__.staticValues = nullptr;
     static_values__.clear();
@@ -130,7 +130,7 @@ namespace JavaScriptCoreCPP {
                        return static_value;
                      });
       
-      JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition<", name__, "> added value property ", static_values__.back().name);
+      HAL_LOG_DEBUG("JSClassDefinition<", name__, "> added value property ", static_values__.back().name);
       static_values__.push_back({nullptr, nullptr, nullptr, kJSPropertyAttributeNone});
       js_class_definition__.staticValues = &static_values__[0];
     }
@@ -149,52 +149,52 @@ namespace JavaScriptCoreCPP {
                        return static_function;
                      });
       
-      JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition<", name__, "> added function property ", static_functions__.back().name);
+      HAL_LOG_DEBUG("JSClassDefinition<", name__, "> added function property ", static_functions__.back().name);
       static_functions__.push_back({nullptr, nullptr, kJSPropertyAttributeNone});
       js_class_definition__.staticFunctions = &static_functions__[0];
     }
   }
   
-  std::string JSClassDefinition::get_name() const JAVASCRIPTCORECPP_NOEXCEPT {
+  std::string JSClassDefinition::get_name() const HAL_NOEXCEPT {
     return name__;
   }
   
-  std::uint32_t JSClassDefinition::get_version() const JAVASCRIPTCORECPP_NOEXCEPT {
+  std::uint32_t JSClassDefinition::get_version() const HAL_NOEXCEPT {
     return js_class_definition__.version;
   }
   
-  void JSClassDefinition::Print() JAVASCRIPTCORECPP_NOEXCEPT {
+  void JSClassDefinition::Print() HAL_NOEXCEPT {
     Print(js_class_definition__);
   }
   
-  void JSClassDefinition::Print(const ::JSClassDefinition& js_class_definition) JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: version           = ", js_class_definition.version);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: attributes        = ", detail::to_string_JSClassAttributes(js_class_definition.attributes));
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: className         = ", js_class_definition.className);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: parentClass       = ", js_class_definition.parentClass);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: initialize        = ", js_class_definition.initialize);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: finalize          = ", js_class_definition.finalize);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: hasProperty       = ", js_class_definition.hasProperty);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: getProperty       = ", js_class_definition.getProperty);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: setProperty       = ", js_class_definition.setProperty);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: deleteProperty    = ", js_class_definition.deleteProperty);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: getPropertyNames  = ", js_class_definition.getPropertyNames);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: callAsFunction    = ", js_class_definition.callAsFunction);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: callAsConstructor = ", js_class_definition.callAsConstructor);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: hasInstance       = ", js_class_definition.hasInstance);
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: convertToType     = ", js_class_definition.convertToType);
+  void JSClassDefinition::Print(const ::JSClassDefinition& js_class_definition) HAL_NOEXCEPT {
+    HAL_LOG_DEBUG("JSClassDefinition::Print: version           = ", js_class_definition.version);
+    HAL_LOG_DEBUG("JSClassDefinition::Print: attributes        = ", detail::to_string_JSClassAttributes(js_class_definition.attributes));
+    HAL_LOG_DEBUG("JSClassDefinition::Print: className         = ", js_class_definition.className);
+    HAL_LOG_DEBUG("JSClassDefinition::Print: parentClass       = ", js_class_definition.parentClass);
+    HAL_LOG_DEBUG("JSClassDefinition::Print: initialize        = ", js_class_definition.initialize);
+    HAL_LOG_DEBUG("JSClassDefinition::Print: finalize          = ", js_class_definition.finalize);
+    HAL_LOG_DEBUG("JSClassDefinition::Print: hasProperty       = ", js_class_definition.hasProperty);
+    HAL_LOG_DEBUG("JSClassDefinition::Print: getProperty       = ", js_class_definition.getProperty);
+    HAL_LOG_DEBUG("JSClassDefinition::Print: setProperty       = ", js_class_definition.setProperty);
+    HAL_LOG_DEBUG("JSClassDefinition::Print: deleteProperty    = ", js_class_definition.deleteProperty);
+    HAL_LOG_DEBUG("JSClassDefinition::Print: getPropertyNames  = ", js_class_definition.getPropertyNames);
+    HAL_LOG_DEBUG("JSClassDefinition::Print: callAsFunction    = ", js_class_definition.callAsFunction);
+    HAL_LOG_DEBUG("JSClassDefinition::Print: callAsConstructor = ", js_class_definition.callAsConstructor);
+    HAL_LOG_DEBUG("JSClassDefinition::Print: hasInstance       = ", js_class_definition.hasInstance);
+    HAL_LOG_DEBUG("JSClassDefinition::Print: convertToType     = ", js_class_definition.convertToType);
     
     auto static_value_ptr = const_cast<::JSStaticValue*>(js_class_definition.staticValues);
     while (static_value_ptr && static_value_ptr -> name) {
-      JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: value property ", static_value_ptr -> name, ": ", detail::to_string_JSPropertyAttributes(static_value_ptr -> attributes));
+      HAL_LOG_DEBUG("JSClassDefinition::Print: value property ", static_value_ptr -> name, ": ", detail::to_string_JSPropertyAttributes(static_value_ptr -> attributes));
       ++static_value_ptr;
     }
     
     auto static_function_ptr = const_cast<::JSStaticFunction*>(js_class_definition.staticFunctions);
     while (static_function_ptr && static_function_ptr -> name) {
-      JAVASCRIPTCORECPP_LOG_DEBUG("JSClassDefinition::Print: function property ", static_function_ptr -> name, ": ", detail::to_string_JSPropertyAttributes(static_function_ptr -> attributes));
+      HAL_LOG_DEBUG("JSClassDefinition::Print: function property ", static_function_ptr -> name, ": ", detail::to_string_JSPropertyAttributes(static_function_ptr -> attributes));
       ++static_function_ptr;
     }
   }
   
-} // namespace JavaScriptCoreCPP {
+} // namespace HAL {

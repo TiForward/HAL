@@ -1,5 +1,5 @@
 /**
- * JavaScriptCoreCPP
+ * HAL
  * Author: Matthew D. Langston
  *
  * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
@@ -7,14 +7,14 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/JSExportObject.hpp"
-#include "JavaScriptCoreCPP/JSUndefined.hpp"
+#include "HAL/JSExportObject.hpp"
+#include "HAL/JSUndefined.hpp"
 #include <utility>
 
-namespace JavaScriptCoreCPP {
+namespace HAL {
   
   void JSExportObject::JSExportInitialize() {
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSExportObject::JSExportInitialize");
+    HAL_LOG_DEBUG("JSExportObject::JSExportInitialize");
     SetClassVersion(1);
     AddHasPropertyCallback(std::mem_fn(&JSExportObject::HasProperty));
     AddGetPropertyCallback(std::mem_fn(&JSExportObject::GetProperty));
@@ -25,7 +25,7 @@ namespace JavaScriptCoreCPP {
     AddValueProperty("prototype", std::mem_fn(&JSExportObject::GetPrototype), std::mem_fn(&JSExportObject::SetPrototype));
   }
   
-  bool JSExportObject::HasProperty(const JSString& property_name) const JAVASCRIPTCORECPP_NOEXCEPT {
+  bool JSExportObject::HasProperty(const JSString& property_name) const HAL_NOEXCEPT {
     // TODO: Provide the virtual function
     //
     // virtual bool WillGetProperty(property_name);
@@ -33,11 +33,11 @@ namespace JavaScriptCoreCPP {
     // that derived classes can implement for custom access control
     // (e.g. to enforce security policies)."
     
-    //JAVASCRIPTCORECPP_LOG_DEBUG("JSExportObject::HasProperty: ", property_name, " = ", std::to_string(js_object__.HasProperty(property_name)));
+    //HAL_LOG_DEBUG("JSExportObject::HasProperty: ", property_name, " = ", std::to_string(js_object__.HasProperty(property_name)));
     return js_object__.HasProperty(property_name);
   }
   
-  JSValue JSExportObject::GetProperty(const JSString& property_name) const JAVASCRIPTCORECPP_NOEXCEPT {
+  JSValue JSExportObject::GetProperty(const JSString& property_name) const HAL_NOEXCEPT {
     // TODO: Provide the virtual function
     //
     // virtual bool WillGetProperty(property_name);
@@ -45,12 +45,12 @@ namespace JavaScriptCoreCPP {
     // that derived classes can implement for custom access control
     // (e.g. to enforce security policies)."
     
-    //JAVASCRIPTCORECPP_LOG_DEBUG("JSExportObject::GetProperty: ", property_name, " = ", to_string(js_object__.GetProperty(property_name)));
+    //HAL_LOG_DEBUG("JSExportObject::GetProperty: ", property_name, " = ", to_string(js_object__.GetProperty(property_name)));
     return js_object__.GetProperty(property_name);
   }
   
-  bool JSExportObject::SetProperty(const JSString& property_name, const JSValue& property_value) JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSEXPORTOBJECT_LOCK_GUARD;
+  bool JSExportObject::SetProperty(const JSString& property_name, const JSValue& property_value) HAL_NOEXCEPT {
+    HAL_JSEXPORTOBJECT_LOCK_GUARD;
     
     // TODO: Provide the virtual function
     //
@@ -78,7 +78,7 @@ namespace JavaScriptCoreCPP {
     } catch (...) {
     }
     
-    //JAVASCRIPTCORECPP_LOG_DEBUG("JSExportObject::SetProperty: property_set = ", std::to_string(property_set), " for ", property_name, " = ", to_string(property_value));
+    //HAL_LOG_DEBUG("JSExportObject::SetProperty: property_set = ", std::to_string(property_set), " for ", property_name, " = ", to_string(property_value));
     
     // TODO: Provide the virtual function
     //
@@ -90,8 +90,8 @@ namespace JavaScriptCoreCPP {
     return property_set;
   }
   
-  bool JSExportObject::DeleteProperty(const JSString& property_name) JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSEXPORTOBJECT_LOCK_GUARD;
+  bool JSExportObject::DeleteProperty(const JSString& property_name) HAL_NOEXCEPT {
+    HAL_JSEXPORTOBJECT_LOCK_GUARD;
     
     bool property_deleted = false;
     
@@ -112,12 +112,12 @@ namespace JavaScriptCoreCPP {
       }
     }
     
-    //JAVASCRIPTCORECPP_LOG_DEBUG("JSExportObject::DeleteProperty: property_deleted = ", std::to_string(property_deleted), " for ", property_name);
+    //HAL_LOG_DEBUG("JSExportObject::DeleteProperty: property_deleted = ", std::to_string(property_deleted), " for ", property_name);
     
     return property_deleted;
   }
   
-  std::vector<JSString> JSExportObject::GetEnumerablePropertyNames() const JAVASCRIPTCORECPP_NOEXCEPT {
+  std::vector<JSString> JSExportObject::GetEnumerablePropertyNames() const HAL_NOEXCEPT {
     return static_cast<std::vector<JSString>>(js_object__.GetPropertyNames());
   }
   
@@ -125,37 +125,37 @@ namespace JavaScriptCoreCPP {
     return get_context().CreateUndefined();
   }
   
-  JSValue JSExportObject::GetPrototype() const JAVASCRIPTCORECPP_NOEXCEPT {
+  JSValue JSExportObject::GetPrototype() const HAL_NOEXCEPT {
     return js_object__.GetPrototype();
   }
   
-  bool JSExportObject::SetPrototype(const JSValue& js_value) JAVASCRIPTCORECPP_NOEXCEPT {
+  bool JSExportObject::SetPrototype(const JSValue& js_value) HAL_NOEXCEPT {
     js_object__.SetPrototype(js_value);
     return true;
   }
   
-  JSContext JSExportObject::get_context() const JAVASCRIPTCORECPP_NOEXCEPT {
+  JSContext JSExportObject::get_context() const HAL_NOEXCEPT {
     return js_object__.get_context();
   }
   
-  JSExportObject::JSExportObject(const JSContext& js_context) JAVASCRIPTCORECPP_NOEXCEPT
+  JSExportObject::JSExportObject(const JSContext& js_context) HAL_NOEXCEPT
   : js_object__(js_context.CreateObject()) {
   }
   
-  JSExportObject::JSExportObject(const JSExportObject& rhs, const std::vector<JSValue>& arguments) JAVASCRIPTCORECPP_NOEXCEPT
+  JSExportObject::JSExportObject(const JSExportObject& rhs, const std::vector<JSValue>& arguments) HAL_NOEXCEPT
   : js_object__(rhs.js_object__) {
   }
   
-  JSExportObject::~JSExportObject() JAVASCRIPTCORECPP_NOEXCEPT {
+  JSExportObject::~JSExportObject() HAL_NOEXCEPT {
   }
   
-  void JSExportObject::GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const JAVASCRIPTCORECPP_NOEXCEPT {
+  void JSExportObject::GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const HAL_NOEXCEPT {
     for (const auto& entry : GetEnumerablePropertyNames()) {
       accumulator.AddName(entry);
     }
   }
   
-  void JSExportObject::swap(JSExportObject& other) JAVASCRIPTCORECPP_NOEXCEPT {
+  void JSExportObject::swap(JSExportObject& other) HAL_NOEXCEPT {
     using std::swap;
     
     // By swapping the members of two classes, the two classes are
@@ -163,4 +163,4 @@ namespace JavaScriptCoreCPP {
     swap(js_object__  , other.js_object__);
   }
   
-} // namespace JavaScriptCoreCPP {
+} // namespace HAL {

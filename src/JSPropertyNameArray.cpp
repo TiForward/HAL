@@ -1,5 +1,5 @@
 /**
- * JavaScriptCoreCPP
+ * HAL
  * Author: Matthew D. Langston
  *
  * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
@@ -7,28 +7,28 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/JSPropertyNameArray.hpp"
-#include "JavaScriptCoreCPP/JSString.hpp"
-#include "JavaScriptCoreCPP/JSObject.hpp"
+#include "HAL/JSPropertyNameArray.hpp"
+#include "HAL/JSString.hpp"
+#include "HAL/JSObject.hpp"
 
 #include <algorithm>
 
 #include <JavaScriptCore/JavaScript.h>
 
-namespace JavaScriptCoreCPP {
+namespace HAL {
   
-  std::size_t JSPropertyNameArray::GetCount() const JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSPROPERTYNAMEARRAY_LOCK_GUARD;
+  std::size_t JSPropertyNameArray::GetCount() const HAL_NOEXCEPT {
+    HAL_JSPROPERTYNAMEARRAY_LOCK_GUARD;
     return JSPropertyNameArrayGetCount(js_property_name_array_ref__);
   }
   
-  JSString JSPropertyNameArray::GetNameAtIndex(std::size_t index) const JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSPROPERTYNAMEARRAY_LOCK_GUARD;
+  JSString JSPropertyNameArray::GetNameAtIndex(std::size_t index) const HAL_NOEXCEPT {
+    HAL_JSPROPERTYNAMEARRAY_LOCK_GUARD;
     return JSString(JSPropertyNameArrayGetNameAtIndex(js_property_name_array_ref__, index));
   }
   
-  JSPropertyNameArray::operator std::vector<JSString>() const JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSPROPERTYNAMEARRAY_LOCK_GUARD;
+  JSPropertyNameArray::operator std::vector<JSString>() const HAL_NOEXCEPT {
+    HAL_JSPROPERTYNAMEARRAY_LOCK_GUARD;
     std::vector<JSString> property_names;
     for (std::size_t i = 0, count = GetCount(); i < count; ++i) {
       property_names.emplace_back(GetNameAtIndex(i));
@@ -37,51 +37,51 @@ namespace JavaScriptCoreCPP {
     return property_names;
   }
   
-  JSPropertyNameArray::~JSPropertyNameArray() JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSPropertyNameArray:: dtor");
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSPropertyNameArray:: release ", js_property_name_array_ref__);
+  JSPropertyNameArray::~JSPropertyNameArray() HAL_NOEXCEPT {
+    HAL_LOG_DEBUG("JSPropertyNameArray:: dtor");
+    HAL_LOG_DEBUG("JSPropertyNameArray:: release ", js_property_name_array_ref__);
     JSPropertyNameArrayRelease(js_property_name_array_ref__);
   }
   
-  JSPropertyNameArray::JSPropertyNameArray(const JSPropertyNameArray& rhs) JAVASCRIPTCORECPP_NOEXCEPT
+  JSPropertyNameArray::JSPropertyNameArray(const JSPropertyNameArray& rhs) HAL_NOEXCEPT
   : js_property_name_array_ref__(rhs.js_property_name_array_ref__) {
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSPropertyNameArray:: copy ctor");
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSPropertyNameArray:: retain ", js_property_name_array_ref__);
+    HAL_LOG_DEBUG("JSPropertyNameArray:: copy ctor");
+    HAL_LOG_DEBUG("JSPropertyNameArray:: retain ", js_property_name_array_ref__);
     JSPropertyNameArrayRetain(js_property_name_array_ref__);
   }
   
-  JSPropertyNameArray::JSPropertyNameArray(JSPropertyNameArray&& rhs) JAVASCRIPTCORECPP_NOEXCEPT
+  JSPropertyNameArray::JSPropertyNameArray(JSPropertyNameArray&& rhs) HAL_NOEXCEPT
   : js_property_name_array_ref__(rhs.js_property_name_array_ref__) {
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSValue:: move ctor");
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSPropertyNameArray:: retain ", js_property_name_array_ref__);
+    HAL_LOG_DEBUG("JSValue:: move ctor");
+    HAL_LOG_DEBUG("JSPropertyNameArray:: retain ", js_property_name_array_ref__);
     JSPropertyNameArrayRetain(js_property_name_array_ref__);
   }
   
-  JSPropertyNameArray& JSPropertyNameArray::operator=(const JSPropertyNameArray& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSPROPERTYNAMEARRAY_LOCK_GUARD;
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSValue:: copy assignment");
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSPropertyNameArray:: release ", js_property_name_array_ref__);
+  JSPropertyNameArray& JSPropertyNameArray::operator=(const JSPropertyNameArray& rhs) HAL_NOEXCEPT {
+    HAL_JSPROPERTYNAMEARRAY_LOCK_GUARD;
+    HAL_LOG_DEBUG("JSValue:: copy assignment");
+    HAL_LOG_DEBUG("JSPropertyNameArray:: release ", js_property_name_array_ref__);
     JSPropertyNameArrayRelease(js_property_name_array_ref__);
     js_property_name_array_ref__ = rhs.js_property_name_array_ref__;
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSPropertyNameArray:: retain ", js_property_name_array_ref__);
+    HAL_LOG_DEBUG("JSPropertyNameArray:: retain ", js_property_name_array_ref__);
     JSPropertyNameArrayRetain(js_property_name_array_ref__);
     return *this;
   }
   
-  JSPropertyNameArray& JSPropertyNameArray::operator=(JSPropertyNameArray&& rhs) JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSPROPERTYNAMEARRAY_LOCK_GUARD;
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSPropertyNameArray:: move assignment");
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSPropertyNameArray:: release ", js_property_name_array_ref__);
+  JSPropertyNameArray& JSPropertyNameArray::operator=(JSPropertyNameArray&& rhs) HAL_NOEXCEPT {
+    HAL_JSPROPERTYNAMEARRAY_LOCK_GUARD;
+    HAL_LOG_DEBUG("JSPropertyNameArray:: move assignment");
+    HAL_LOG_DEBUG("JSPropertyNameArray:: release ", js_property_name_array_ref__);
     JSPropertyNameArrayRelease(js_property_name_array_ref__);
     js_property_name_array_ref__ = rhs.js_property_name_array_ref__;
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSPropertyNameArray:: retain ", js_property_name_array_ref__);
+    HAL_LOG_DEBUG("JSPropertyNameArray:: retain ", js_property_name_array_ref__);
     JSPropertyNameArrayRetain(js_property_name_array_ref__);
     return *this;
   }
   
-  void JSPropertyNameArray::swap(JSPropertyNameArray& other) JAVASCRIPTCORECPP_NOEXCEPT {
-    JAVASCRIPTCORECPP_JSPROPERTYNAMEARRAY_LOCK_GUARD;
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSPropertyNameArray:: swap");
+  void JSPropertyNameArray::swap(JSPropertyNameArray& other) HAL_NOEXCEPT {
+    HAL_JSPROPERTYNAMEARRAY_LOCK_GUARD;
+    HAL_LOG_DEBUG("JSPropertyNameArray:: swap");
     using std::swap;
     
     // By swapping the members of two classes, the two classes are
@@ -89,10 +89,10 @@ namespace JavaScriptCoreCPP {
     swap(js_property_name_array_ref__, other.js_property_name_array_ref__);
   }
   
-  JSPropertyNameArray::JSPropertyNameArray(const JSObject& js_object) JAVASCRIPTCORECPP_NOEXCEPT
+  JSPropertyNameArray::JSPropertyNameArray(const JSObject& js_object) HAL_NOEXCEPT
   : js_property_name_array_ref__(JSObjectCopyPropertyNames(js_object.get_context(), js_object)) {
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSPropertyNameArray:: ctor");
-    JAVASCRIPTCORECPP_LOG_DEBUG("JSPropertyNameArray:: retain ", js_property_name_array_ref__);
+    HAL_LOG_DEBUG("JSPropertyNameArray:: ctor");
+    HAL_LOG_DEBUG("JSPropertyNameArray:: retain ", js_property_name_array_ref__);
   }
   
-} // namespace JavaScriptCoreCPP {
+} // namespace HAL {

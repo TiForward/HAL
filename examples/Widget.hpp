@@ -1,5 +1,5 @@
 /**
- * JavaScriptCoreCPP
+ * HAL
  * Author: Matthew D. Langston
  *
  * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
@@ -7,13 +7,13 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#ifndef _JAVASCRIPTCORECPP_EXAMPLES_WIDGET_HPP_
-#define _JAVASCRIPTCORECPP_EXAMPLES_WIDGET_HPP_
+#ifndef _HAL_EXAMPLES_WIDGET_HPP_
+#define _HAL_EXAMPLES_WIDGET_HPP_
 
-#include "JavaScriptCoreCPP/JavaScriptCoreCPP.hpp"
+#include "HAL/HAL.hpp"
 #include <string>
 
-using namespace JavaScriptCoreCPP;
+using namespace HAL;
 
 /*!
  @class
@@ -31,7 +31,7 @@ public:
    @abstract Define how your JavaScript objects appear to
    JavaScriptCore.
    
-   @discussion JavaScriptCoreCPP will call this function exactly once
+   @discussion HAL will call this function exactly once
    just before your first JavaScript object is created.
    */
   static void JSExportInitialize();
@@ -46,8 +46,8 @@ public:
    @param js_context The JavaScriptCore execution context that your
    JavaScript object will execute in.
    */
-  Widget(const JSContext& js_context)                          JAVASCRIPTCORECPP_NOEXCEPT;
-  Widget(const Widget&, const std::vector<JSValue>& arguments) JAVASCRIPTCORECPP_NOEXCEPT;
+  Widget(const JSContext& js_context)                          HAL_NOEXCEPT;
+  Widget(const Widget&, const std::vector<JSValue>& arguments) HAL_NOEXCEPT;
   
   JSValue get_name() const;
   bool    set_name(const JSValue& name);
@@ -66,12 +66,12 @@ public:
   void        set_number_native(int number);
   
   
-  virtual ~Widget()                JAVASCRIPTCORECPP_NOEXCEPT;
-  Widget(const Widget&)            JAVASCRIPTCORECPP_NOEXCEPT;
-  Widget(Widget&&)                 JAVASCRIPTCORECPP_NOEXCEPT;
-  Widget& operator=(const Widget&) JAVASCRIPTCORECPP_NOEXCEPT;
-  Widget& operator=(Widget&&)      JAVASCRIPTCORECPP_NOEXCEPT;
-  void swap(Widget&)               JAVASCRIPTCORECPP_NOEXCEPT;
+  virtual ~Widget()                HAL_NOEXCEPT;
+  Widget(const Widget&)            HAL_NOEXCEPT;
+  Widget(Widget&&)                 HAL_NOEXCEPT;
+  Widget& operator=(const Widget&) HAL_NOEXCEPT;
+  Widget& operator=(Widget&&)      HAL_NOEXCEPT;
+  void swap(Widget&)               HAL_NOEXCEPT;
 
  private:
   
@@ -83,8 +83,8 @@ public:
 };
 
 inline
-void swap(Widget& first, Widget& second) JAVASCRIPTCORECPP_NOEXCEPT {
+void swap(Widget& first, Widget& second) HAL_NOEXCEPT {
   first.swap(second);
 }
 
-#endif // _JAVASCRIPTCORECPP_EXAMPLES_WIDGET_HPP_
+#endif // _HAL_EXAMPLES_WIDGET_HPP_

@@ -1,5 +1,5 @@
 /**
- * JavaScriptCoreCPP
+ * HAL
  * Author: Matthew D. Langston
  *
  * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
@@ -7,15 +7,15 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/JSRegExp.hpp"
-#include "JavaScriptCoreCPP/JSValue.hpp"
-#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
+#include "HAL/JSRegExp.hpp"
+#include "HAL/JSValue.hpp"
+#include "HAL/detail/JSUtil.hpp"
 #include <vector>
 #include <algorithm>
 #include <stdexcept>
 #include <cassert>
 
-namespace JavaScriptCoreCPP {
+namespace HAL {
 
 JSRegExp::JSRegExp(const JSContext& js_context, const std::vector<JSValue>& arguments)
 		: JSObject(js_context, MakeRegExp(js_context, arguments)) {
@@ -41,4 +41,4 @@ JSObjectRef JSRegExp::MakeRegExp(const JSContext& js_context, const std::vector<
 	return js_object_ref;
 }
 
-} // namespace JavaScriptCoreCPP {
+} // namespace HAL {

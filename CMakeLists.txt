@@ -1,4 +1,4 @@
-# JavaScriptCoreCPP
+# HAL
 # Author: Matthew D. Langston
 #
 # Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
@@ -6,14 +6,14 @@
 # Please see the LICENSE included with this distribution for details.
 cmake_minimum_required(VERSION 3.0.0)
 
-project(JavaScriptCoreCPP)
+project(HAL)
 
-set(JavaScriptCoreCPP_VERSION 0.5.0)
+set(HAL_VERSION 0.5.0)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_INCLUDE_CURRENT_DIR_IN_INTERFACE ON)
 
-option(JavaScriptCoreCPP_DISABLE_TESTS "Disable compiling the tests" OFF)
+option(HAL_DISABLE_TESTS "Disable compiling the tests" OFF)
 
 # Define helper functions and macros.
 include(${PROJECT_SOURCE_DIR}/cmake/internal_utils.cmake)
@@ -25,7 +25,7 @@ config_compiler_and_linker()
 # Allow "make test" to work.
 enable_testing()
 
-# We have a custom finder for JavaScriptCoreCPP.
+# We have a custom finder for HAL.
 list(INSERT CMAKE_MODULE_PATH 0 ${PROJECT_SOURCE_DIR}/cmake)
 find_package(JavaScriptCore REQUIRED)
 
@@ -36,121 +36,121 @@ set(Boost_USE_STATIC_RUNTIME OFF)
 # Travis only supports Boost 1.55, which is good enough for now.
 find_package(Boost 1.55.0 REQUIRED)
 
-set(SOURCE_JavaScriptCoreCPP
-  include/JavaScriptCoreCPP/JavaScriptCoreCPP.hpp
-  include/JavaScriptCoreCPP/JSString.hpp
+set(SOURCE_HAL
+  include/HAL/HAL.hpp
+  include/HAL/JSString.hpp
   src/JSString.cpp
   )
 
-set(SOURCE_JavaScriptCoreCPP_detail
-  include/JavaScriptCoreCPP/detail/JSBase.hpp
+set(SOURCE_HAL_detail
+  include/HAL/detail/JSBase.hpp
   src/detail/JSBase.cpp
-  include/JavaScriptCoreCPP/detail/JSUtil.hpp
+  include/HAL/detail/JSUtil.hpp
   src/detail/JSUtil.cpp
-  include/JavaScriptCoreCPP/detail/HashUtilities.hpp
-  include/JavaScriptCoreCPP/detail/JSPerformanceCounter.hpp
-  include/JavaScriptCoreCPP/detail/JSPerformanceCounterPrinter.hpp
+  include/HAL/detail/HashUtilities.hpp
+  include/HAL/detail/JSPerformanceCounter.hpp
+  include/HAL/detail/JSPerformanceCounterPrinter.hpp
   )
 
 set(SOURCE_JSExport
-  include/JavaScriptCoreCPP/JSExport.hpp
-  include/JavaScriptCoreCPP/JSExportObject.hpp
+  include/HAL/JSExport.hpp
+  include/HAL/JSExportObject.hpp
   src/JSExportObject.cpp
   )
 
 set(SOURCE_JSExport_detail
-  include/JavaScriptCoreCPP/detail/JSExportClassDefinition.hpp
-  include/JavaScriptCoreCPP/detail/JSExportClassDefinitionBuilder.hpp
-  include/JavaScriptCoreCPP/detail/JSExportClass.hpp
-  include/JavaScriptCoreCPP/detail/JSExportCallbacks.hpp
-  include/JavaScriptCoreCPP/detail/JSExportNamedFunctionPropertyCallback.hpp
-  include/JavaScriptCoreCPP/detail/JSExportNamedValuePropertyCallback.hpp
-  include/JavaScriptCoreCPP/detail/JSValueUtil.hpp
+  include/HAL/detail/JSExportClassDefinition.hpp
+  include/HAL/detail/JSExportClassDefinitionBuilder.hpp
+  include/HAL/detail/JSExportClass.hpp
+  include/HAL/detail/JSExportCallbacks.hpp
+  include/HAL/detail/JSExportNamedFunctionPropertyCallback.hpp
+  include/HAL/detail/JSExportNamedValuePropertyCallback.hpp
+  include/HAL/detail/JSValueUtil.hpp
   src/detail/JSValueUtil.cpp
   )
   
 set(SOURCE_JSClass
-  include/JavaScriptCoreCPP/JSClassDefinition.hpp
+  include/HAL/JSClassDefinition.hpp
   src/JSClassDefinition.cpp
-  include/JavaScriptCoreCPP/JSClassAttribute.hpp
-  include/JavaScriptCoreCPP/JSClass.hpp
+  include/HAL/JSClassAttribute.hpp
+  include/HAL/JSClass.hpp
   src/JSClass.cpp
   )
   
 set(SOURCE_JSClass_detail
-  include/JavaScriptCoreCPP/detail/JSPropertyCallback.hpp
+  include/HAL/detail/JSPropertyCallback.hpp
   src/detail/JSPropertyCallback.cpp
-  include/JavaScriptCoreCPP/detail/JSStaticValue.hpp
+  include/HAL/detail/JSStaticValue.hpp
   src/detail/JSStaticValue.cpp
-  include/JavaScriptCoreCPP/detail/JSStaticFunction.hpp
+  include/HAL/detail/JSStaticFunction.hpp
   src/detail/JSStaticFunction.cpp
   )
 
 set(SOURCE_JSContext
-  include/JavaScriptCoreCPP/JSContextGroup.hpp
+  include/HAL/JSContextGroup.hpp
   src/JSContextGroup.cpp
-  include/JavaScriptCoreCPP/JSContext.hpp
+  include/HAL/JSContext.hpp
   src/JSContext.cpp
   )
 
 set(SOURCE_JSValue
-  include/JavaScriptCoreCPP/JSValue.hpp
+  include/HAL/JSValue.hpp
   src/JSValue.cpp
-  include/JavaScriptCoreCPP/JSUndefined.hpp
-  include/JavaScriptCoreCPP/JSNull.hpp
-  include/JavaScriptCoreCPP/JSBoolean.hpp
-  include/JavaScriptCoreCPP/JSNumber.hpp
+  include/HAL/JSUndefined.hpp
+  include/HAL/JSNull.hpp
+  include/HAL/JSBoolean.hpp
+  include/HAL/JSNumber.hpp
   )
 
 set(SOURCE_JSObject
-  include/JavaScriptCoreCPP/JSPropertyAttribute.hpp
-  include/JavaScriptCoreCPP/JSPropertyNameArray.hpp
+  include/HAL/JSPropertyAttribute.hpp
+  include/HAL/JSPropertyNameArray.hpp
   src/JSPropertyNameArray.cpp
-  include/JavaScriptCoreCPP/JSObject.hpp
+  include/HAL/JSObject.hpp
   src/JSObject.cpp
-  include/JavaScriptCoreCPP/JSArray.hpp
+  include/HAL/JSArray.hpp
   src/JSArray.cpp
-  include/JavaScriptCoreCPP/JSDate.hpp
+  include/HAL/JSDate.hpp
   src/JSDate.cpp
-  include/JavaScriptCoreCPP/JSError.hpp
+  include/HAL/JSError.hpp
   src/JSError.cpp 
-  include/JavaScriptCoreCPP/JSRegExp.hpp
+  include/HAL/JSRegExp.hpp
   src/JSRegExp.cpp
-  include/JavaScriptCoreCPP/JSFunction.hpp
+  include/HAL/JSFunction.hpp
   src/JSFunction.cpp
   )
   
 set(SOURCE_JSObject_detail
-  include/JavaScriptCoreCPP/detail/JSPropertyNameAccumulator.hpp
+  include/HAL/detail/JSPropertyNameAccumulator.hpp
   )
 
 set(SOURCE_JSLogger_detail
-  include/JavaScriptCoreCPP/detail/JSLogger.hpp
-  include/JavaScriptCoreCPP/detail/JSLoggerPolicyInterface.hpp
-  include/JavaScriptCoreCPP/detail/JSLoggerPolicyConsole.hpp
-  include/JavaScriptCoreCPP/detail/JSLoggerPolicyFile.hpp
-  include/JavaScriptCoreCPP/detail/JSLoggerPimpl.hpp
+  include/HAL/detail/JSLogger.hpp
+  include/HAL/detail/JSLoggerPolicyInterface.hpp
+  include/HAL/detail/JSLoggerPolicyConsole.hpp
+  include/HAL/detail/JSLoggerPolicyFile.hpp
+  include/HAL/detail/JSLoggerPimpl.hpp
   src/detail/JSLoggerPimpl.cpp
   )
 
-source_group(JavaScriptCoreCPP                   FILES ${SOURCE_JavaScriptCoreCPP})
-source_group(JavaScriptCoreCPP\\detail           FILES ${SOURCE_JavaScriptCoreCPP_detail})
-source_group(JavaScriptCoreCPP\\JSExport         FILES ${SOURCE_JSExport})
-source_group(JavaScriptCoreCPP\\JSExport\\detail FILES ${SOURCE_JSExport_detail})
-source_group(JavaScriptCoreCPP\\JSClass          FILES ${SOURCE_JSClass})
-source_group(JavaScriptCoreCPP\\JSClass\\detail  FILES ${SOURCE_JSClass_detail})
-source_group(JavaScriptCoreCPP\\JSContext        FILES ${SOURCE_JSContext})
-source_group(JavaScriptCoreCPP\\JSValue          FILES ${SOURCE_JSValue})
-source_group(JavaScriptCoreCPP\\JSObject         FILES ${SOURCE_JSObject})
-source_group(JavaScriptCoreCPP\\JSObject\\detail FILES ${SOURCE_JSObject_detail})
-source_group(JavaScriptCoreCPP\\JSLogger\\detail FILES ${SOURCE_JSLogger_detail})
+source_group(HAL                   FILES ${SOURCE_HAL})
+source_group(HAL\\detail           FILES ${SOURCE_HAL_detail})
+source_group(HAL\\JSExport         FILES ${SOURCE_JSExport})
+source_group(HAL\\JSExport\\detail FILES ${SOURCE_JSExport_detail})
+source_group(HAL\\JSClass          FILES ${SOURCE_JSClass})
+source_group(HAL\\JSClass\\detail  FILES ${SOURCE_JSClass_detail})
+source_group(HAL\\JSContext        FILES ${SOURCE_JSContext})
+source_group(HAL\\JSValue          FILES ${SOURCE_JSValue})
+source_group(HAL\\JSObject         FILES ${SOURCE_JSObject})
+source_group(HAL\\JSObject\\detail FILES ${SOURCE_JSObject_detail})
+source_group(HAL\\JSLogger\\detail FILES ${SOURCE_JSLogger_detail})
 
 #set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 #set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
-add_library(JavaScriptCoreCPP SHARED
-  ${SOURCE_JavaScriptCoreCPP}
-  ${SOURCE_JavaScriptCoreCPP_detail}
+add_library(HAL SHARED
+  ${SOURCE_HAL}
+  ${SOURCE_HAL_detail}
   ${SOURCE_JSExport}
   ${SOURCE_JSExport_detail}
   ${SOURCE_JSClass}
@@ -163,18 +163,18 @@ add_library(JavaScriptCoreCPP SHARED
   )
 
 include(GenerateExportHeader)
-generate_export_header(JavaScriptCoreCPP)
-target_compile_definitions(JavaScriptCoreCPP PRIVATE JavaScriptCoreCPP_EXPORTS)
-#target_compile_definitions(JavaScriptCoreCPP PUBLIC JAVASCRIPTCORECPP_STATIC_DEFINE)
+generate_export_header(HAL)
+target_compile_definitions(HAL PRIVATE HAL_EXPORTS)
+#target_compile_definitions(HAL PUBLIC HAL_STATIC_DEFINE)
 
-target_compile_definitions(JavaScriptCoreCPP PRIVATE STATICALLY_LINKED_WITH_JavaScriptCore)
-target_include_directories(JavaScriptCoreCPP PUBLIC
+target_compile_definitions(HAL PRIVATE STATICALLY_LINKED_WITH_JavaScriptCore)
+target_include_directories(HAL PUBLIC
   ${PROJECT_SOURCE_DIR}/include
   ${JavaScriptCore_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
   )
 
-target_link_libraries(JavaScriptCoreCPP
+target_link_libraries(HAL
   ${JavaScriptCore_LIBRARIES}
   ${Boost_LIBRARIES}
   )
@@ -185,7 +185,7 @@ if (WIN32)
   #
   # "warning LNK4099: PDB 'vc120.pdb' was not found with
   # 'JavaScriptCore-Debug.lib(...)' ...".
-  set_property(TARGET JavaScriptCoreCPP APPEND PROPERTY LINK_FLAGS "/IGNORE:4099")
+  set_property(TARGET HAL APPEND PROPERTY LINK_FLAGS "/IGNORE:4099")
   
   # Silence this warning when lnking with the JavaScriptCore static
   # library for the i386 emulator:
@@ -207,7 +207,7 @@ if (WIN32)
   include(${PROJECT_SOURCE_DIR}/cmake/TargetArch.cmake)
   target_architecture(target_architecture)
   if (${target_architecture} STREQUAL i386)
-    set_property(TARGET JavaScriptCoreCPP APPEND_STRING PROPERTY LINK_FLAGS " /SAFESEH:NO")
+    set_property(TARGET HAL APPEND_STRING PROPERTY LINK_FLAGS " /SAFESEH:NO")
   endif()
 
   # Silence this warning when lnking the Debug configuration:
@@ -242,62 +242,62 @@ if (WIN32)
   #
   # Therefore we disable /OPT:REF and /OPT:ICF for the Debug
   # configuration.
-  set_property(TARGET JavaScriptCoreCPP APPEND_STRING PROPERTY LINK_FLAGS_DEBUG "/OPT:NOREF /OPT:NOICF")
+  set_property(TARGET HAL APPEND_STRING PROPERTY LINK_FLAGS_DEBUG "/OPT:NOREF /OPT:NOICF")
 endif()
 
-if (NOT JavaScriptCoreCPP_DISABLE_TESTS)
+if (NOT HAL_DISABLE_TESTS)
   add_subdirectory(examples)
   add_subdirectory(test)
 endif()
 
-# Support find_package(JavaScriptCoreCPP 0.5 REQUIRED)
+# Support find_package(HAL 0.5 REQUIRED)
 
-set_property(TARGET JavaScriptCoreCPP PROPERTY VERSION ${JavaScriptCoreCPP_VERSION})
-set_property(TARGET JavaScriptCoreCPP PROPERTY SOVERSION 0)
-set_property(TARGET JavaScriptCoreCPP PROPERTY INTERFACE_JavaScriptCoreCPP_MAJOR_VERSION 0)
-set_property(TARGET JavaScriptCoreCPP APPEND PROPERTY
-  COMPATIBLE_INTERFACE_STRING JavaScriptCoreCPP_MAJOR_VERSION
+set_property(TARGET HAL PROPERTY VERSION ${HAL_VERSION})
+set_property(TARGET HAL PROPERTY SOVERSION 0)
+set_property(TARGET HAL PROPERTY INTERFACE_HAL_MAJOR_VERSION 0)
+set_property(TARGET HAL APPEND PROPERTY
+  COMPATIBLE_INTERFACE_STRING HAL_MAJOR_VERSION
   )
 
-install(TARGETS JavaScriptCoreCPP EXPORT JavaScriptCoreCPPTargets
+install(TARGETS HAL EXPORT HALTargets
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
   RUNTIME DESTINATION bin
   INCLUDES DESTINATION include
   )
 
-export(EXPORT JavaScriptCoreCPPTargets
-  FILE "${CMAKE_BINARY_DIR}/JavaScriptCoreCPPTargets.cmake"
+export(EXPORT HALTargets
+  FILE "${CMAKE_BINARY_DIR}/HALTargets.cmake"
 )
 
-configure_file(cmake/JavaScriptCoreCPPConfig.cmake
-  "${CMAKE_BINARY_DIR}/JavaScriptCoreCPPConfig.cmake"
+configure_file(cmake/HALConfig.cmake
+  "${CMAKE_BINARY_DIR}/HALConfig.cmake"
   COPY_ONLY
   )
 
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
-  "${CMAKE_BINARY_DIR}/JavaScriptCoreCPPConfigVersion.cmake"
-  VERSION ${JavaScriptCoreCPP_VERSION}
+  "${CMAKE_BINARY_DIR}/HALConfigVersion.cmake"
+  VERSION ${HAL_VERSION}
   COMPATIBILITY AnyNewerVersion
   )
 
 # Store the current build directory in the CMake user package registry
-# so that find_package(JavaScriptCoreCPP) works.
-export(PACKAGE JavaScriptCoreCPP)
+# so that find_package(HAL) works.
+export(PACKAGE HAL)
 
 #[[
 # TODO: Install files to external locations.
 
-set(ConfigPackageLocation lib/cmake/JavaScriptCoreCPP)
-install(EXPORT JavaScriptCoreCPPTargets
+set(ConfigPackageLocation lib/cmake/HAL)
+install(EXPORT HALTargets
   DESTINATION ${ConfigPackageLocation}
   )
 
 install(
   FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/JavaScriptCoreCPPConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/JavaScriptCoreCPPConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/HALConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/HALConfigVersion.cmake"
   DESTINATION ${ConfigPackageLocation}
   COMPONENT Devel
   )

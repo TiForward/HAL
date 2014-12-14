@@ -1,5 +1,5 @@
 /**
- * JavaScriptCoreCPP
+ * HAL
  * Author: Matthew D. Langston
  *
  * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
@@ -7,7 +7,7 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/detail/JSLoggerPimpl.hpp"
+#include "HAL/detail/JSLoggerPimpl.hpp"
 
 #include <chrono>
 #include <sstream>
@@ -15,7 +15,7 @@
 #include <ctime>
 #include <limits>
 
-namespace JavaScriptCoreCPP { namespace detail {
+namespace HAL { namespace detail {
   
   inline
   std::string to_string(const std::chrono::system_clock::time_point& tp) {
@@ -54,4 +54,4 @@ namespace JavaScriptCoreCPP { namespace detail {
     return os.str();
   }
   
-}} // namespace JavaScriptCoreCPP { namespace detail {
+}} // namespace HAL { namespace detail {

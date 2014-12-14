@@ -1,4 +1,4 @@
-# JavaScriptCoreCPP
+# HAL
 # Author: Matthew D. Langston
 #
 # Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
@@ -10,13 +10,13 @@ set(SOURCE_Widget
   Widget.cpp
 )
 
-add_library(JavaScriptCoreCPP_examples STATIC
+add_library(HAL_examples STATIC
   ${SOURCE_Widget}
   )
-target_include_directories(JavaScriptCoreCPP_examples INTERFACE
+target_include_directories(HAL_examples INTERFACE
   ${PROJECT_SOURCE_DIR}/examples
   )
-target_link_libraries(JavaScriptCoreCPP_examples JavaScriptCoreCPP)
+target_link_libraries(HAL_examples HAL)
 
 set(SOURCE_WidgetMain
   WidgetMain.cpp
@@ -24,7 +24,7 @@ set(SOURCE_WidgetMain
 add_executable(WidgetMain
   ${SOURCE_WidgetMain}
 )
-target_link_libraries(WidgetMain JavaScriptCoreCPP_examples)
+target_link_libraries(WidgetMain HAL_examples)
 
 set(SOURCE_EvaluateScript
   EvaluateScript.cpp
@@ -32,9 +32,9 @@ set(SOURCE_EvaluateScript
 add_executable(EvaluateScript
   ${SOURCE_EvaluateScript}
   )
-target_link_libraries(EvaluateScript JavaScriptCoreCPP)
+target_link_libraries(EvaluateScript HAL)
 
-source_group(JavaScriptCoreCPP\\Examples FILES
+source_group(HAL\\Examples FILES
   ${SOURCE_Widget}
   ${SOURCE_WidgetMain}
   ${SOURCE_EvaluateScript}

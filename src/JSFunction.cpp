@@ -1,5 +1,5 @@
 /**
- * JavaScriptCoreCPP
+ * HAL
  * Author: Matthew D. Langston
  *
  * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
@@ -7,16 +7,16 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/JSFunction.hpp"
-#include "JavaScriptCoreCPP/JSString.hpp"
-#include "JavaScriptCoreCPP/JSValue.hpp"
-#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
+#include "HAL/JSFunction.hpp"
+#include "HAL/JSString.hpp"
+#include "HAL/JSValue.hpp"
+#include "HAL/detail/JSUtil.hpp"
 #include <vector>
 #include <algorithm>
 #include <stdexcept>
 #include <cassert>
 
-namespace JavaScriptCoreCPP {
+namespace HAL {
 
 JSFunction::JSFunction(const JSContext& js_context, const JSString& body, const std::vector<JSString>& parameter_names, const JSString& function_name, const JSString& source_url, int starting_line_number)
 		: JSObject(js_context, MakeFunction(js_context, body, parameter_names, function_name, source_url, starting_line_number)) {
@@ -43,4 +43,4 @@ JSObjectRef JSFunction::MakeFunction(const JSContext& js_context, const JSString
 	return js_object_ref;
 }
 
-} // namespace JavaScriptCoreCPP {
+} // namespace HAL {

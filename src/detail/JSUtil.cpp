@@ -1,5 +1,5 @@
 /**
- * JavaScriptCoreCPP
+ * HAL
  * Author: Matthew D. Langston
  *
  * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
@@ -7,9 +7,9 @@
  * Please see the LICENSE included with this distribution for details.
  */
 
-#include "JavaScriptCoreCPP/detail/JSUtil.hpp"
-#include "JavaScriptCoreCPP/JSString.hpp"
-#include "JavaScriptCoreCPP/JSValue.hpp"
+#include "HAL/detail/JSUtil.hpp"
+#include "HAL/JSString.hpp"
+#include "HAL/JSValue.hpp"
 
 #include <algorithm>
 #include <sstream>
@@ -18,32 +18,32 @@
 #include <JavaScriptCore/JavaScript.h>
 
 
-namespace JavaScriptCoreCPP { namespace detail {
+namespace HAL { namespace detail {
   
   void ThrowLogicError(const std::string& internal_component_name, const std::string& message) {
-    JAVASCRIPTCORECPP_LOG_ERROR(internal_component_name, ": ", message);
+    HAL_LOG_ERROR(internal_component_name, ": ", message);
     throw std::logic_error(message);
   }
   
   void ThrowLogicError(const std::string& internal_component_name, const JSValue& exception) {
     const auto exception_message = to_string(exception);
-    JAVASCRIPTCORECPP_LOG_ERROR(internal_component_name, ": ", exception_message);
+    HAL_LOG_ERROR(internal_component_name, ": ", exception_message);
     throw std::logic_error(exception_message);
   }
   
   void ThrowRuntimeError(const std::string& internal_component_name, const std::string& message) {
-    JAVASCRIPTCORECPP_LOG_ERROR(internal_component_name, ": ", message);
+    HAL_LOG_ERROR(internal_component_name, ": ", message);
     throw std::runtime_error(message);
   }
   
   void ThrowRuntimeError(const std::string& internal_component_name, const JSValue& exception) {
     const auto exception_message = to_string(exception);
-    JAVASCRIPTCORECPP_LOG_ERROR(internal_component_name, ": ", exception_message);
+    HAL_LOG_ERROR(internal_component_name, ": ", exception_message);
     throw std::runtime_error(exception_message);
   }
   
   void ThrowInvalidArgument(const std::string& internal_component_name, const std::string& message) {
-    JAVASCRIPTCORECPP_LOG_ERROR(internal_component_name, ": ", message);
+    HAL_LOG_ERROR(internal_component_name, ": ", message);
     throw std::invalid_argument(message);
   }
   
@@ -84,7 +84,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     return js_string_ref_vector;
   }
   
-  JSPropertyAttributes ToJSPropertyAttributes(const std::unordered_set<JSPropertyAttribute>& attributes) JAVASCRIPTCORECPP_NOEXCEPT {
+  JSPropertyAttributes ToJSPropertyAttributes(const std::unordered_set<JSPropertyAttribute>& attributes) HAL_NOEXCEPT {
     JSPropertyAttributes result = kJSPropertyAttributeNone;
     for (auto attribute : attributes) {
       switch (attribute) {
@@ -109,7 +109,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     return result;
   }
   
-  std::unordered_set<JSPropertyAttribute> FromJSPropertyAttributes(::JSPropertyAttributes attributes) JAVASCRIPTCORECPP_NOEXCEPT {
+  std::unordered_set<JSPropertyAttribute> FromJSPropertyAttributes(::JSPropertyAttributes attributes) HAL_NOEXCEPT {
     std::unordered_set<JSPropertyAttribute> attribute_set;
     static_cast<void>(attributes == kJSPropertyAttributeNone       && attribute_set.emplace(JSPropertyAttribute::None).second);
     static_cast<void>(attributes &  kJSPropertyAttributeReadOnly   && attribute_set.emplace(JSPropertyAttribute::ReadOnly).second);
@@ -118,7 +118,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     return attribute_set;
   }
   
-  std::string to_string(JSPropertyAttribute attribute) JAVASCRIPTCORECPP_NOEXCEPT {
+  std::string to_string(JSPropertyAttribute attribute) HAL_NOEXCEPT {
     std::string string = "Unknown";
     switch (attribute) {
       case JSPropertyAttribute::None:
@@ -141,7 +141,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     return string;
   }
   
-  std::string to_string(const std::unordered_set<JSPropertyAttribute>& attributes) JAVASCRIPTCORECPP_NOEXCEPT {
+  std::string to_string(const std::unordered_set<JSPropertyAttribute>& attributes) HAL_NOEXCEPT {
     std::string result;
     for (auto attribute : {JSPropertyAttribute::None, JSPropertyAttribute::ReadOnly, JSPropertyAttribute::DontEnum, JSPropertyAttribute::DontDelete}) {
       auto position = attributes.find(attribute);
@@ -156,11 +156,11 @@ namespace JavaScriptCoreCPP { namespace detail {
     return result;
   }
   
-  std::string to_string_JSPropertyAttributes(::JSPropertyAttributes attributes) JAVASCRIPTCORECPP_NOEXCEPT {
+  std::string to_string_JSPropertyAttributes(::JSPropertyAttributes attributes) HAL_NOEXCEPT {
     return to_string(FromJSPropertyAttributes(attributes));
   }
   
-  unsigned ToJSClassAttribute(JSClassAttribute attribute) JAVASCRIPTCORECPP_NOEXCEPT {
+  unsigned ToJSClassAttribute(JSClassAttribute attribute) HAL_NOEXCEPT {
     JSClassAttributes attributes = kJSClassAttributeNone;
     switch (attribute) {
       case JSClassAttribute::None:
@@ -175,7 +175,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     return attributes;
   }
   
-  std::unordered_set<JSClassAttribute> FromJSClassAttributes(::JSClassAttributes attributes) JAVASCRIPTCORECPP_NOEXCEPT {
+  std::unordered_set<JSClassAttribute> FromJSClassAttributes(::JSClassAttributes attributes) HAL_NOEXCEPT {
     std::unordered_set<JSClassAttribute> attribute_set;
     static_cast<void>(attributes == kJSClassAttributeNone                 && attribute_set.emplace(JSClassAttribute::None).second);
     static_cast<void>(attributes &  kJSClassAttributeNoAutomaticPrototype && attribute_set.emplace(JSClassAttribute::NoAutomaticPrototype).second);
@@ -183,7 +183,7 @@ namespace JavaScriptCoreCPP { namespace detail {
   }
   
   
-  std::string to_string(JSClassAttribute attribute) JAVASCRIPTCORECPP_NOEXCEPT {
+  std::string to_string(JSClassAttribute attribute) HAL_NOEXCEPT {
     std::string string = "Unknown";
     switch (attribute) {
       case JSClassAttribute::None:
@@ -198,7 +198,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     return string;
   }
   
-  std::string to_string(const std::unordered_set<JSClassAttribute>& attributes) JAVASCRIPTCORECPP_NOEXCEPT {
+  std::string to_string(const std::unordered_set<JSClassAttribute>& attributes) HAL_NOEXCEPT {
     std::string result;
     for (auto attribute : {JSClassAttribute::None, JSClassAttribute::NoAutomaticPrototype}) {
       auto position = attributes.find(attribute);
@@ -213,7 +213,7 @@ namespace JavaScriptCoreCPP { namespace detail {
     return result;
   }
   
-  std::string to_string_JSClassAttributes(::JSClassAttributes attributes) JAVASCRIPTCORECPP_NOEXCEPT {
+  std::string to_string_JSClassAttributes(::JSClassAttributes attributes) HAL_NOEXCEPT {
     return to_string(FromJSClassAttributes(attributes));
   }
   
@@ -310,4 +310,4 @@ namespace JavaScriptCoreCPP { namespace detail {
     return bits < 0 ? -result : result;
   }
   
-}} // namespace JavaScriptCoreCPP { namespace detail {
+}} // namespace HAL { namespace detail {

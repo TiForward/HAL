@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# JavaScriptCoreCPP
+# HAL
 # Author: Matthew D. Langston
 #
 # Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
