@@ -10,9 +10,7 @@ Step 1. Install Xcode 6
 
 Step 2. Install cmake version 3.0 (or higher) using either `sudo port install cmake` or `brew unlink cmake; brew install cmake`.
 
-Step 3. Install boost using either `sudo port install boost` or `brew install boost`.
-
-Step 4. Download our pre-compiled version of Google Test [gtest-1.7.0-osx.zip (3 MB)](http://timobile.appcelerator.com.s3.amazonaws.com/gtest-1.7.0-osx.zip), unzip anywhere (the location doesn't matter) and set the environment variable GTEST_ROOT to where you unzipped it.
+Step 3. Download our pre-compiled version of Google Test [gtest-1.7.0-osx.zip (3 MB)](http://timobile.appcelerator.com.s3.amazonaws.com/gtest-1.7.0-osx.zip), unzip anywhere (the location doesn't matter) and set the environment variable GTEST_ROOT to where you unzipped it.
 
 Just run the following commands from your bash prompt to setup your development environment for Google Test before proceeding:
 
@@ -55,25 +53,9 @@ $ curl -O http://timobile.appcelerator.com.s3.amazonaws.com/gtest-1.7.0-windows.
 $ unzip gtest-1.7.0-windows.zip
 ```
 
-Step 6. Install Boost
-
-Microsoft officially supports and encourages the use of the Boost C++ open source library for Windows Store and Windows Phone apps, and they have contributed a great deal of open source code to the Boost project. Please read the Microsoft article [Using Boost Libraries in Windows Store and Phone Applications](http://blogs.msdn.com/b/vcblog/archive/2014/07/18/using-boost-libraries-in-windows-store-and-phone-applications.aspx) and follow their instructions.
-
-Microsoft instructs us to create the folders named WPSDK\WP81 under the VC Visual Studio installation directory, `C:\Program Files
-(x86)\Microsoft Visual Studio 12.0\VC\`, and copy their [phone setup script files](http://blogs.msdn.com/cfs-file.ashx/__key/communityserver-components-postattachments/00-10-54-33-32/BoostSample-.zip) to it. This has been verified to work well with our CMake build infrastructure.
-
-After following Microsoft's instructions, define the environment variable `BOOST_ROOT` to point to where you cloned the boost git repository and add it to your `PATH`. If you are using PowerShell something like the following works:
-```
-setx.exe BOOST_ROOT $env:HOME\Documents\GitHub\boost
-$env:Path += ";$env:BOOST_ROOT";
-cd $env:BOOST_ROOT\libs\thread\build
-b2 toolset=msvc-12.0 link=static windows-api=store
-b2 toolset=msvc-12.0 link=static windows-api=phone
-```
-
 ## Quick Start
 
-To run our 255 (and counting) unit tests on both both OS X and Windows:
+To run our unit tests on both both OS X and Windows:
 
 ```bash
 build_and_test.sh
@@ -93,7 +75,7 @@ int main () {
 }
 ```
 
-To seamlessly add a C++ class to the JavaScriptCore runtime take a look at our Widget example in [Widget.hpp](examples/Widget.hpp) and [Widget.cpp](examples/Widget.cpp). This will show you how to expose a C++ class to JavaScriptCore.
+To add a C++ class to the JavaScriptCore runtime take a look at our Widget example in [Widget.hpp](examples/Widget.hpp) and [Widget.cpp](examples/Widget.cpp). This will show you how to expose a C++ class to JavaScriptCore.
 
 Running it on Windows (type `./build.debug/examples/WidgetMain.exe`) or OS X (type `./build.debug/examples/WidgetMain`) produces this output.
 ```
@@ -108,13 +90,9 @@ Widget.sayHello(); // outputs 'Hello, foo. Your number is 21.'
 
 ## Description
 
-This is HAL, a cross-platform standards-compliant C++11 library that wraps the JavaScriptCore C API. This will be the foundation for building Titanium on Windows and perhaps other Appcelerator products.
+This is HAL, a cross-platform standards-compliant C++11 library that wraps the JavaScriptCore C API.
 
-The design and implementation of this library has currently gone through several experimental iterations by only one senior Appcelerator software engineer, and it is critical that it be critically peer reviewed by Appcelerator business owners, Appcelerator's senior technical staff, and the entire Appcelerator engineering staff as a whole. There are sure to be bugs and room for improvement, and all empirical critical feedback is essential and welcome for the library's success.
-
-The API documentation is thorough and complete, but there is currently no introductory or tutorial material other than this README and one example. The introductory and tutorial material will come as prioritized by our chain of command.
-
-This library was initially created using both iOS 8 (i.e. Apple LLVM version 6.0, aka clang-600.0.54 based on LLVM 3.5svn) and Windows Phone 8.1 (i.e Microsoft's Visual C++ 18.0.30723.0 from Visual Studio 2013 Update 3 RTM) as reference platforms. However, as stated in goal number 10 of the library (see below), it was designed to work on any platform that has a standards compliant C++11 compiler and library.
+This library was initially created using both iOS 8 (i.e. Apple LLVM version 6.0, aka clang-600.0.54 based on LLVM 3.5svn) and Windows Phone 8.1 (i.e Microsoft's Visual C++ 18.0.30723.0 from Visual Studio 2013 Update 3 RTM) as reference platforms. However, it was designed to work on any platform that has a standards compliant C++11 compiler and library.
 
 To use the library you will always want to include the main header:
 
@@ -164,27 +142,14 @@ A [JSObject](include/HAL/JSObject.hpp) is an RAII wrapper around a [JSObjectRef]
 
 1. The library is RAII through-and-through.
 2. The interaction between the JavaScript and C++ languages is as seamless as possible.
-3. The library is difficult (if not impossible) to use incorrectly. It exposes none of JavaScriptCore C API.
-4. The library is high-performance and leaves the majority of the CPU and heap memory for use by the user's application. Although each library component has a large functional API, internally every library component  takes up the memory space of only one or two integers. This allows the library to live entirely on the stack, which leaves heap memory (i.e. the vast majority of the mobile device's memory) dedicated to running the user's application. The cost of the JavaScriptCore bridge has been measured to be less than 1% (i.e. despite tall tales of Appcelerator lore to the contrary that "the JavaScriptCore C API bridge is slow" - empirically it is not) which also leaves the majority of the CPU to run the user's application.
-5. The library is 100% thread-safe. What this means practically is that we have successfully run hundreds of JavaScriptCore contexts simultaneously in multiple "context groups" among multiple threads of execution without any issues. We have shown empirically that JavaScript values and objects may be safely shared and exchanged between multiple JavaScriptCore contexts that share the same "context group". The executive summary is that the HAL library offers a truly thread-safe asynchronous computation engine for the JavaScript language.
-6. The library uses only Apple's public JavaScriptCore C API. It does not depend on anything that is not in Apple's public API (i.e. no internal implementation details are used or we're referenced in the design).
+3. The library is as pleasant to use for the C++ developer as Apple's JavaScriptCore Objective-C API is to the Objective-C/Swift developer.
+4. The library is high-performance and leaves the majority of the CPU and heap memory for use by the user's application. Although each library component has a large functional API, internally every library component  takes up the memory space of only one or two integers.
+5. The library is thread-safe.
+6. The library uses only Apple's public JavaScriptCore C API, making it "App Store Compliant".
 7. Performance counters are built-in for testability.
-8. The library's public API is 100% thoroughly documented.
-9. The library comes with a suite of unit tests that covers a minimum of 80% of the API.
+8. The library's public API is thoroughly documented.
+9. The library comes with a suite of unit tests.
 10. The library uses only C++11. What this means practically is that it uses nothing platform specific. This allows the HAL library to be used on the largest number of devices possible (e.g. iOS, Android, Windows Phone, etc.).
-
-## Lessons Learned and Future Direction
-
-Here are some valuable lessons we have learned during the development of the HAL library and possible areas of future exploration and R&D:
-
-1. The HAL library expose 100% of the JavaScript AST object model when used in 'strict' mode. What this means practically is that in principle a JavaScript compiler can compile JavaScript source code directly to C++ without the need of any "JavaScript Engine" for interpretation. We suggest that this is a useful avenue of Appcelerator R&D.
-2. The library offers the capability of a pure C++ implementation of Ti.Next, a pure JavaScript implementation of Ti.next, or a hybrid of the two. We suggest that this is a useful avenue of Appcelerator R&D to determine the correct mix.
-3. The HAL library is a practical backend target for the Hyperloop compiler. Again, we suggest that this is a useful avenue of Appcelerator R&D.
-
-## One Last Note
-
-Please do not concern yourself (yet) with the coding convention you see in the source code. It will be the decision of the business owners of this library to direct that effort once the design and API are locked, which is now the case. For example, if the business owners decide that this library should be upstreamed to the WebKit open source project (so that Appcelerator does not have to maintain it), then the library must follow Apple's coding conventions. If instead the business owners decide that this library is an independent Appcelerator product (open sourced or not) then it may be refactored to follow a different coding convention.
-
 
 ## Contributors
 

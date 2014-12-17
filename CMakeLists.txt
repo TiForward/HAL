@@ -28,13 +28,6 @@ enable_testing()
 list(INSERT CMAKE_MODULE_PATH 0 ${PROJECT_SOURCE_DIR}/cmake)
 find_package(JavaScriptCore REQUIRED)
 
-set(Boost_USE_STATIC_LIBS    ON )
-set(Boost_USE_MULTITHREADED  ON )
-set(Boost_USE_STATIC_RUNTIME OFF)
-
-# Travis only supports Boost 1.55, which is good enough for now.
-find_package(Boost 1.55.0 REQUIRED)
-
 set(SOURCE_HAL
   include/HAL/HAL.hpp
   include/HAL/JSString.hpp
@@ -170,12 +163,10 @@ target_compile_definitions(HAL PRIVATE STATICALLY_LINKED_WITH_JavaScriptCore)
 target_include_directories(HAL PUBLIC
   ${PROJECT_SOURCE_DIR}/include
   ${JavaScriptCore_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIRS}
   )
 
 target_link_libraries(HAL
   ${JavaScriptCore_LIBRARIES}
-  ${Boost_LIBRARIES}
   )
 
 if (WIN32)
