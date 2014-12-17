@@ -13,6 +13,7 @@
 #include <iomanip>
 #include <ctime>
 #include <limits>
+#include <thread>
 
 namespace HAL { namespace detail {
   
@@ -42,13 +43,16 @@ namespace HAL { namespace detail {
     os << std::setfill('0')
     << std::setw(std::numeric_limits<uint32_t>::digits10)
     << log_line_number
-    << " <"
+    << " "
     << to_string(std::chrono::system_clock::now())
     //     <<" - "
     //     << std::setfill('0')
     //     << std::setw(std::numeric_limits<std::clock_t>::digits10)
     //     << std::clock()
-    <<"> ";
+    //    << " ["
+    //    << std::this_thread::get_id()
+    //    <<"] ";
+    << " ";
     
     return os.str();
   }

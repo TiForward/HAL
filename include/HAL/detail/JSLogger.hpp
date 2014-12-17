@@ -57,16 +57,17 @@ namespace HAL { namespace detail {
     
     JSLogger(const std::string& name)
     : js_log_policy__(name) {
+      std::clog << "MDL: JSLogger: ctor: name = " << name << std::endl;
     }
     
     JSLogger()                           = delete;
     ~JSLogger()                          = default;
-    JSLogger(const JSLogger&)            = default;
-    JSLogger& operator=(const JSLogger&) = default;
+    JSLogger(const JSLogger&)            = delete;
+    JSLogger& operator=(const JSLogger&) = delete;
     
 #ifdef HAL_MOVE_CTOR_AND_ASSIGN_DEFAULT_ENABLE
-    JSLogger(JSLogger&&)                 = default;
-    JSLogger& operator=(JSLogger&&)      = default;
+    JSLogger(JSLogger&&)                 = delete;
+    JSLogger& operator=(JSLogger&&)      = delete;
 #endif
     
     template<JSLoggerSeverityType severity, typename...Args>

@@ -10,7 +10,7 @@
 #define _HAL_DETAIL_JSBASE_HPP_
 
 
-// #define HAL_LOGGING_ENABLE
+#define HAL_LOGGING_ENABLE
 // #define HAL_THREAD_SAFE
 
 #define HAL_NOEXCEPT_ENABLE

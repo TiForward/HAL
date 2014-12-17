@@ -300,6 +300,7 @@ namespace HAL { namespace detail {
     const auto callback = (callback_position -> second).function_callback();
     const auto result   = callback(*native_this_ptr, to_vector(js_context, argument_count, arguments_array), this_object);
     
+#ifdef HAL_LOGGING_ENABLE
     std::string js_value_str;
     if (result.IsObject()) {
       JSObject js_object = result;
@@ -311,6 +312,7 @@ namespace HAL { namespace detail {
     }
     
     HAL_LOG_DEBUG("JSExportClass::CallNamedFunction: result = ", js_value_str, " for this[", native_this_ptr, "].", function_name, "(...)");
+#endif
     
     return result;
     
@@ -374,6 +376,7 @@ namespace HAL { namespace detail {
     
     const auto result = callback(*native_object_ptr, property_name);
     
+#ifdef HAL_LOGGING_ENABLE
     std::string js_value_str;
     if (result.IsObject()) {
       JSObject js_object = result;
@@ -384,6 +387,7 @@ namespace HAL { namespace detail {
       js_value_str = to_string(result);
     }
     HAL_LOG_DEBUG("JSExportClass::GetProperty: result = ", js_value_str, " for this[", native_object_ptr, "].", property_name);
+#endif
     
     return result;
     
