@@ -214,66 +214,66 @@ namespace HAL {
   }
   
   JSValue::~JSValue() HAL_NOEXCEPT {
-    HAL_LOG_DEBUG("JSValue:: dtor");
-    HAL_LOG_DEBUG("JSValue:: release ", js_value_ref__);
+    HAL_LOG_TRACE("JSValue:: dtor");
+    HAL_LOG_TRACE("JSValue:: release ", js_value_ref__);
     JSValueUnprotect(js_context__, js_value_ref__);
   }
   
   JSValue::JSValue(const JSValue& rhs) HAL_NOEXCEPT
   : js_context__(rhs.js_context__)
   , js_value_ref__(rhs.js_value_ref__) {
-    HAL_LOG_DEBUG("JSValue:: copy ctor");
-    HAL_LOG_DEBUG("JSValue:: retain ", js_value_ref__);
+    HAL_LOG_TRACE("JSValue:: copy ctor");
+    HAL_LOG_TRACE("JSValue:: retain ", js_value_ref__);
     JSValueProtect(js_context__, js_value_ref__);
   }
   
   JSValue::JSValue(JSValue&& rhs) HAL_NOEXCEPT
   : js_context__(std::move(rhs.js_context__))
   , js_value_ref__(rhs.js_value_ref__) {
-    HAL_LOG_DEBUG("JSValue:: move ctor");
-    HAL_LOG_DEBUG("JSValue:: retain ", js_value_ref__);
+    HAL_LOG_TRACE("JSValue:: move ctor");
+    HAL_LOG_TRACE("JSValue:: retain ", js_value_ref__);
     JSValueProtect(js_context__, js_value_ref__);
   }
   
   JSValue& JSValue::operator=(const JSValue& rhs) {
     HAL_JSVALUE_LOCK_GUARD;
-    HAL_LOG_DEBUG("JSValue:: copy assignment");
+    HAL_LOG_TRACE("JSValue:: copy assignment");
     // JSValues can only be copied between contexts within the same
     // context group.
     if (js_context__.get_context_group() != rhs.js_context__.get_context_group()) {
       detail::ThrowRuntimeError("JSValue", "JSValues must belong to JSContexts within the same JSContextGroup to be shared and exchanged.");
     }
     
-    HAL_LOG_DEBUG("JSValue:: release ", js_value_ref__);
+    HAL_LOG_TRACE("JSValue:: release ", js_value_ref__);
     JSValueUnprotect(js_context__, js_value_ref__);
     js_context__   = rhs.js_context__;
     js_value_ref__ = rhs.js_value_ref__;
-    HAL_LOG_DEBUG("JSValue:: retain ", js_value_ref__);
+    HAL_LOG_TRACE("JSValue:: retain ", js_value_ref__);
     JSValueProtect(js_context__, js_value_ref__);
     return *this;
   }
   
   JSValue& JSValue::operator=(JSValue&& rhs) {
     HAL_JSVALUE_LOCK_GUARD;
-    HAL_LOG_DEBUG("JSValue:: move assignment");
+    HAL_LOG_TRACE("JSValue:: move assignment");
     // JSValues can only be copied between contexts within the same
     // context group.
     if (js_context__.get_context_group() != rhs.js_context__.get_context_group()) {
       detail::ThrowRuntimeError("JSValue", "JSValues must belong to JSContexts within the same JSContextGroup to be shared and exchanged.");
     }
 
-    HAL_LOG_DEBUG("JSValue:: release ", js_value_ref__);
+    HAL_LOG_TRACE("JSValue:: release ", js_value_ref__);
     JSValueUnprotect(js_context__, js_value_ref__);
     js_context__   = std::move(rhs.js_context__);
     js_value_ref__ = rhs.js_value_ref__;
-    HAL_LOG_DEBUG("JSValue:: retain ", js_value_ref__);
+    HAL_LOG_TRACE("JSValue:: retain ", js_value_ref__);
     JSValueProtect(js_context__, js_value_ref__);
     return *this;
   }
   
   void JSValue::swap(JSValue& other) HAL_NOEXCEPT {
     HAL_JSVALUE_LOCK_GUARD;
-    HAL_LOG_DEBUG("JSValue:: swap");
+    HAL_LOG_TRACE("JSValue:: swap");
     using std::swap;
     
     // By swapping the members of two classes, the two classes are
@@ -284,7 +284,7 @@ namespace HAL {
   
   JSValue::JSValue(const JSContext& js_context, const JSString& js_string, bool parse_as_json)
   : js_context__(js_context) {
-    HAL_LOG_DEBUG("JSValue:: ctor");
+    HAL_LOG_TRACE("JSValue:: ctor");
     if (parse_as_json) {
       js_value_ref__ = JSValueMakeFromJSONString(js_context, js_string);
       if (!js_value_ref__) {
@@ -294,16 +294,16 @@ namespace HAL {
     } else {
       js_value_ref__ = JSValueMakeString(js_context__, js_string);
     }
-    HAL_LOG_DEBUG("JSValue:: retain ", js_value_ref__);
+    HAL_LOG_TRACE("JSValue:: retain ", js_value_ref__);
   }
   
   // For interoperability with the JavaScriptCore C API.
   JSValue::JSValue(const JSContext& js_context, JSValueRef js_value_ref) HAL_NOEXCEPT
   : js_context__(js_context)
   , js_value_ref__(js_value_ref)  {
-    HAL_LOG_DEBUG("JSValue:: ctor");
+    HAL_LOG_TRACE("JSValue:: ctor");
     assert(js_value_ref__);
-    HAL_LOG_DEBUG("JSValue:: retain ", js_value_ref__);
+    HAL_LOG_TRACE("JSValue:: retain ", js_value_ref__);
     JSValueProtect(js_context__, js_value_ref__);
   }
   

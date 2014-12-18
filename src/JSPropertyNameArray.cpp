@@ -37,50 +37,50 @@ namespace HAL {
   }
   
   JSPropertyNameArray::~JSPropertyNameArray() HAL_NOEXCEPT {
-    HAL_LOG_DEBUG("JSPropertyNameArray:: dtor");
-    HAL_LOG_DEBUG("JSPropertyNameArray:: release ", js_property_name_array_ref__);
+    HAL_LOG_TRACE("JSPropertyNameArray:: dtor");
+    HAL_LOG_TRACE("JSPropertyNameArray:: release ", js_property_name_array_ref__);
     JSPropertyNameArrayRelease(js_property_name_array_ref__);
   }
   
   JSPropertyNameArray::JSPropertyNameArray(const JSPropertyNameArray& rhs) HAL_NOEXCEPT
   : js_property_name_array_ref__(rhs.js_property_name_array_ref__) {
-    HAL_LOG_DEBUG("JSPropertyNameArray:: copy ctor");
-    HAL_LOG_DEBUG("JSPropertyNameArray:: retain ", js_property_name_array_ref__);
+    HAL_LOG_TRACE("JSPropertyNameArray:: copy ctor");
+    HAL_LOG_TRACE("JSPropertyNameArray:: retain ", js_property_name_array_ref__);
     JSPropertyNameArrayRetain(js_property_name_array_ref__);
   }
   
   JSPropertyNameArray::JSPropertyNameArray(JSPropertyNameArray&& rhs) HAL_NOEXCEPT
   : js_property_name_array_ref__(rhs.js_property_name_array_ref__) {
-    HAL_LOG_DEBUG("JSValue:: move ctor");
-    HAL_LOG_DEBUG("JSPropertyNameArray:: retain ", js_property_name_array_ref__);
+    HAL_LOG_TRACE("JSValue:: move ctor");
+    HAL_LOG_TRACE("JSPropertyNameArray:: retain ", js_property_name_array_ref__);
     JSPropertyNameArrayRetain(js_property_name_array_ref__);
   }
   
   JSPropertyNameArray& JSPropertyNameArray::operator=(const JSPropertyNameArray& rhs) HAL_NOEXCEPT {
     HAL_JSPROPERTYNAMEARRAY_LOCK_GUARD;
-    HAL_LOG_DEBUG("JSValue:: copy assignment");
-    HAL_LOG_DEBUG("JSPropertyNameArray:: release ", js_property_name_array_ref__);
+    HAL_LOG_TRACE("JSValue:: copy assignment");
+    HAL_LOG_TRACE("JSPropertyNameArray:: release ", js_property_name_array_ref__);
     JSPropertyNameArrayRelease(js_property_name_array_ref__);
     js_property_name_array_ref__ = rhs.js_property_name_array_ref__;
-    HAL_LOG_DEBUG("JSPropertyNameArray:: retain ", js_property_name_array_ref__);
+    HAL_LOG_TRACE("JSPropertyNameArray:: retain ", js_property_name_array_ref__);
     JSPropertyNameArrayRetain(js_property_name_array_ref__);
     return *this;
   }
   
   JSPropertyNameArray& JSPropertyNameArray::operator=(JSPropertyNameArray&& rhs) HAL_NOEXCEPT {
     HAL_JSPROPERTYNAMEARRAY_LOCK_GUARD;
-    HAL_LOG_DEBUG("JSPropertyNameArray:: move assignment");
-    HAL_LOG_DEBUG("JSPropertyNameArray:: release ", js_property_name_array_ref__);
+    HAL_LOG_TRACE("JSPropertyNameArray:: move assignment");
+    HAL_LOG_TRACE("JSPropertyNameArray:: release ", js_property_name_array_ref__);
     JSPropertyNameArrayRelease(js_property_name_array_ref__);
     js_property_name_array_ref__ = rhs.js_property_name_array_ref__;
-    HAL_LOG_DEBUG("JSPropertyNameArray:: retain ", js_property_name_array_ref__);
+    HAL_LOG_TRACE("JSPropertyNameArray:: retain ", js_property_name_array_ref__);
     JSPropertyNameArrayRetain(js_property_name_array_ref__);
     return *this;
   }
   
   void JSPropertyNameArray::swap(JSPropertyNameArray& other) HAL_NOEXCEPT {
     HAL_JSPROPERTYNAMEARRAY_LOCK_GUARD;
-    HAL_LOG_DEBUG("JSPropertyNameArray:: swap");
+    HAL_LOG_TRACE("JSPropertyNameArray:: swap");
     using std::swap;
     
     // By swapping the members of two classes, the two classes are
@@ -90,8 +90,8 @@ namespace HAL {
   
   JSPropertyNameArray::JSPropertyNameArray(const JSObject& js_object) HAL_NOEXCEPT
   : js_property_name_array_ref__(JSObjectCopyPropertyNames(js_object.get_context(), js_object)) {
-    HAL_LOG_DEBUG("JSPropertyNameArray:: ctor");
-    HAL_LOG_DEBUG("JSPropertyNameArray:: retain ", js_property_name_array_ref__);
+    HAL_LOG_TRACE("JSPropertyNameArray:: ctor");
+    HAL_LOG_TRACE("JSPropertyNameArray:: retain ", js_property_name_array_ref__);
   }
   
 } // namespace HAL {

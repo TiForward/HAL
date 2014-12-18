@@ -216,54 +216,54 @@ namespace HAL {
 #endif
   
   JSContext::~JSContext() HAL_NOEXCEPT {
-    HAL_LOG_DEBUG("JSContext:: dtor");
-    HAL_LOG_DEBUG("JSContext:: release ", js_global_context_ref__);
+    HAL_LOG_TRACE("JSContext:: dtor");
+    HAL_LOG_TRACE("JSContext:: release ", js_global_context_ref__);
     JSGlobalContextRelease(js_global_context_ref__);
   }
   
   JSContext::JSContext(const JSContext& rhs) HAL_NOEXCEPT
   : js_context_group__(rhs.js_context_group__)
   , js_global_context_ref__(rhs.js_global_context_ref__) {
-    HAL_LOG_DEBUG("JSContext:: copy ctor");
-    HAL_LOG_DEBUG("JSContext:: retain ", js_global_context_ref__);
+    HAL_LOG_TRACE("JSContext:: copy ctor");
+    HAL_LOG_TRACE("JSContext:: retain ", js_global_context_ref__);
     JSGlobalContextRetain(js_global_context_ref__);
   }
   
   JSContext::JSContext(JSContext&& rhs) HAL_NOEXCEPT
   : js_context_group__(std::move(rhs.js_context_group__))
   , js_global_context_ref__(rhs.js_global_context_ref__) {
-    HAL_LOG_DEBUG("JSContext:: move ctor");
-    HAL_LOG_DEBUG("JSContext:: retain ", js_global_context_ref__);
+    HAL_LOG_TRACE("JSContext:: move ctor");
+    HAL_LOG_TRACE("JSContext:: retain ", js_global_context_ref__);
     JSGlobalContextRetain(js_global_context_ref__);
   }
   
   JSContext& JSContext::operator=(const JSContext& rhs) HAL_NOEXCEPT {
     HAL_JSCONTEXT_LOCK_GUARD;
-    HAL_LOG_DEBUG("JSContext:: copy assignment");
+    HAL_LOG_TRACE("JSContext:: copy assignment");
     JSGlobalContextRelease(js_global_context_ref__);
-    HAL_LOG_DEBUG("JSContext:: release ", js_global_context_ref__);
+    HAL_LOG_TRACE("JSContext:: release ", js_global_context_ref__);
     js_context_group__      = rhs.js_context_group__;
     js_global_context_ref__ = rhs.js_global_context_ref__;
-    HAL_LOG_DEBUG("JSContext:: retain ", js_global_context_ref__);
+    HAL_LOG_TRACE("JSContext:: retain ", js_global_context_ref__);
     JSGlobalContextRetain(js_global_context_ref__);
     return *this;
   }
   
   JSContext& JSContext::operator=(JSContext&& rhs) HAL_NOEXCEPT {
     HAL_JSCONTEXT_LOCK_GUARD;
-    HAL_LOG_DEBUG("JSContext:: move assignment");
+    HAL_LOG_TRACE("JSContext:: move assignment");
     JSGlobalContextRelease(js_global_context_ref__);
-    HAL_LOG_DEBUG("JSContext:: release ", js_global_context_ref__);
+    HAL_LOG_TRACE("JSContext:: release ", js_global_context_ref__);
     js_context_group__      = std::move(rhs.js_context_group__);
     js_global_context_ref__ = rhs.js_global_context_ref__;
-    HAL_LOG_DEBUG("JSContext:: retain ", js_global_context_ref__);
+    HAL_LOG_TRACE("JSContext:: retain ", js_global_context_ref__);
     JSGlobalContextRetain(js_global_context_ref__);
     return *this;
   }
   
   void JSContext::swap(JSContext& other) HAL_NOEXCEPT {
     HAL_JSCONTEXT_LOCK_GUARD;
-    HAL_LOG_DEBUG("JSContext:: swap");
+    HAL_LOG_TRACE("JSContext:: swap");
     using std::swap;
     
     // By swapping the members of two classes, the two classes are
@@ -275,8 +275,8 @@ namespace HAL {
   JSContext::JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class) HAL_NOEXCEPT
   : js_context_group__(js_context_group)
   , js_global_context_ref__(JSGlobalContextCreateInGroup(js_context_group, global_object_class)) {
-    HAL_LOG_DEBUG("JSContext:: ctor");
-    HAL_LOG_DEBUG("JSContext:: retain ", js_global_context_ref__);
+    HAL_LOG_TRACE("JSContext:: ctor");
+    HAL_LOG_TRACE("JSContext:: retain ", js_global_context_ref__);
   }
   
   JSContext::JSContext(JSContextRef js_context_ref) HAL_NOEXCEPT
@@ -287,9 +287,9 @@ namespace HAL {
   JSContext::JSContext(JSGlobalContextRef js_global_context_ref) HAL_NOEXCEPT
   : js_context_group__(JSContextGetGroup(js_global_context_ref))
   , js_global_context_ref__(js_global_context_ref) {
-    HAL_LOG_DEBUG("JSContext:: ctor");
+    HAL_LOG_TRACE("JSContext:: ctor");
     assert(js_global_context_ref__);
-    HAL_LOG_DEBUG("JSContext:: retain ", js_global_context_ref__);
+    HAL_LOG_TRACE("JSContext:: retain ", js_global_context_ref__);
     JSGlobalContextRetain(js_global_context_ref__);
   }
   

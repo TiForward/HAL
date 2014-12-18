@@ -14,33 +14,33 @@ namespace HAL {
   
   JSString::JSString() HAL_NOEXCEPT
   : JSString("") {
-    //HAL_LOG_DEBUG("JSString::JSString()");
+    //HAL_LOG_TRACE("JSString::JSString()");
   }
   
   JSString::JSString(const char* string) HAL_NOEXCEPT
   : js_string_ref__(JSStringCreateWithUTF8CString(string))
   , string__(string) {
-    HAL_LOG_DEBUG("JSString:: ctor");
-    HAL_LOG_DEBUG("JSString:: retain ", js_string_ref__);
+    HAL_LOG_TRACE("JSString:: ctor");
+    HAL_LOG_TRACE("JSString:: retain ", js_string_ref__);
     const JSChar* string_ptr = JSStringGetCharactersPtr(js_string_ref__);
     u16string__ = std::u16string(string_ptr, string_ptr + length());
     
     std::hash<std::string> hash_function = std::hash<std::string>();
     hash_value__ = hash_function(static_cast<std::string>(string__));
-    //HAL_LOG_DEBUG("JSString::JSString(const char*)");
+    //HAL_LOG_TRACE("JSString::JSString(const char*)");
   }
   
   JSString::JSString(const std::string& string) HAL_NOEXCEPT
   : js_string_ref__(JSStringCreateWithUTF8CString(string.c_str()))
   , string__(string) {
-    HAL_LOG_DEBUG("JSString:: ctor");
-    HAL_LOG_DEBUG("JSString:: retain ", js_string_ref__);
+    HAL_LOG_TRACE("JSString:: ctor");
+    HAL_LOG_TRACE("JSString:: retain ", js_string_ref__);
     const JSChar* string_ptr = JSStringGetCharactersPtr(js_string_ref__);
     u16string__ = std::u16string(string_ptr, string_ptr + length());
 
     std::hash<std::string> hash_function = std::hash<std::string>();
     hash_value__ = hash_function(static_cast<std::string>(string__));
-    //HAL_LOG_DEBUG("JSString::JSString(const std::string&)");
+    //HAL_LOG_TRACE("JSString::JSString(const std::string&)");
   }
   
   const std::size_t JSString::length() const  HAL_NOEXCEPT{
@@ -69,8 +69,8 @@ namespace HAL {
   }
   
   JSString::~JSString() HAL_NOEXCEPT {
-    HAL_LOG_DEBUG("JSString:: dtor");
-    HAL_LOG_DEBUG("JSString:: release ", js_string_ref__);
+    HAL_LOG_TRACE("JSString:: dtor");
+    HAL_LOG_TRACE("JSString:: release ", js_string_ref__);
     JSStringRelease(js_string_ref__);
   }
   
@@ -79,8 +79,8 @@ namespace HAL {
   , string__(rhs.string__)
   , u16string__(rhs.u16string__)
   , hash_value__(rhs.hash_value__) {
-    HAL_LOG_DEBUG("JSString:: copy ctor");
-    HAL_LOG_DEBUG("JSString:: retain ", js_string_ref__);
+    HAL_LOG_TRACE("JSString:: copy ctor");
+    HAL_LOG_TRACE("JSString:: retain ", js_string_ref__);
     JSStringRetain(js_string_ref__);
   }
   
@@ -89,42 +89,42 @@ namespace HAL {
   , string__(std::move(rhs.string__))
   , u16string__(std::move(rhs.u16string__))
   , hash_value__(std::move(rhs.hash_value__)) {
-    HAL_LOG_DEBUG("JSString:: move ctor");
-    HAL_LOG_DEBUG("JSString:: retain ", js_string_ref__);
+    HAL_LOG_TRACE("JSString:: move ctor");
+    HAL_LOG_TRACE("JSString:: retain ", js_string_ref__);
     JSStringRetain(js_string_ref__);
   }
   
   JSString& JSString::operator=(const JSString& rhs) HAL_NOEXCEPT {
     HAL_JSSTRING_LOCK_GUARD;
-    HAL_LOG_DEBUG("JSString:: copy assignment");
-    HAL_LOG_DEBUG("JSString:: release ", js_string_ref__);
+    HAL_LOG_TRACE("JSString:: copy assignment");
+    HAL_LOG_TRACE("JSString:: release ", js_string_ref__);
     JSStringRelease(js_string_ref__);
     js_string_ref__ = rhs.js_string_ref__;
     string__        = rhs.string__;
     u16string__     = rhs.u16string__;
     hash_value__    = rhs.hash_value__;
-    HAL_LOG_DEBUG("JSString:: retain ", js_string_ref__);
+    HAL_LOG_TRACE("JSString:: retain ", js_string_ref__);
     JSStringRetain(js_string_ref__);
     return *this;
   }
   
   JSString& JSString::operator=(JSString&& rhs) HAL_NOEXCEPT {
     HAL_JSSTRING_LOCK_GUARD;
-    HAL_LOG_DEBUG("JSString:: move assignment");
-    HAL_LOG_DEBUG("JSString:: release ", js_string_ref__);
+    HAL_LOG_TRACE("JSString:: move assignment");
+    HAL_LOG_TRACE("JSString:: release ", js_string_ref__);
     JSStringRelease(js_string_ref__);
     js_string_ref__ = rhs.js_string_ref__;
     string__        = std::move(rhs.string__);
     u16string__     = std::move(rhs.u16string__);
     hash_value__    = std::move(rhs.hash_value__);
-    HAL_LOG_DEBUG("JSString:: retain ", js_string_ref__);
+    HAL_LOG_TRACE("JSString:: retain ", js_string_ref__);
     JSStringRetain(js_string_ref__);
     return *this;
   }
   
   void JSString::swap(JSString& other) HAL_NOEXCEPT {
     HAL_JSSTRING_LOCK_GUARD;
-    HAL_LOG_DEBUG("JSString:: swap");
+    HAL_LOG_TRACE("JSString:: swap");
     using std::swap;
     
     // By swapping the members of two classes, the two classes are
@@ -141,8 +141,8 @@ namespace HAL {
     static std::wstring_convert<std::codecvt_utf8_utf16<char16_t>,char16_t> converter;
     assert(js_string_ref__);
     JSStringRetain(js_string_ref__);
-    HAL_LOG_DEBUG("JSString:: ctor");
-    HAL_LOG_DEBUG("JSString:: retain ", js_string_ref__);
+    HAL_LOG_TRACE("JSString:: ctor");
+    HAL_LOG_TRACE("JSString:: retain ", js_string_ref__);
 
     const JSChar* string_ptr = JSStringGetCharactersPtr(js_string_ref__);
     u16string__ = std::u16string(string_ptr, string_ptr + length());
@@ -151,7 +151,7 @@ namespace HAL {
     std::hash<std::string> hash_function = std::hash<std::string>();
     hash_value__ = hash_function(static_cast<std::string>(string__));
 
-    //HAL_LOG_DEBUG("JSString::JSString(JSStringRef)");
+    //HAL_LOG_TRACE("JSString::JSString(JSStringRef)");
   }
   
   bool operator==(const JSString& lhs, const JSString& rhs) {

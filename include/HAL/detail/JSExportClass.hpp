@@ -339,14 +339,14 @@ namespace HAL { namespace detail {
     const bool callback_found = callback != nullptr;
 
     const auto native_object_ptr = reinterpret_cast<const T*>(js_object.GetPrivate());
-    HAL_LOG_DEBUG("JSExportClass::HasProperty: callback found = ", callback_found, " for this[", native_object_ptr, "].", property_name);
+    HAL_LOG_DEBUG("JSExportClass::HasProperty: callback found = ", callback_found, " for this[", native_object_ptr, "].", static_cast<std::string>(property_name));
     
     // precondition
     assert(callback_found);
     
     const auto result = callback(*native_object_ptr, property_name);
     
-    HAL_LOG_DEBUG("JSExportClass::HasProperty: result = ", result, " for this[", native_object_ptr, "].", property_name);
+    HAL_LOG_DEBUG("JSExportClass::HasProperty: result = ", result, " for this[", native_object_ptr, "].", static_cast<std::string>(property_name));
     
     return result;
     
@@ -369,7 +369,7 @@ namespace HAL { namespace detail {
     const bool callback_found = callback != nullptr;
     
     const auto native_object_ptr = reinterpret_cast<const T*>(js_object.GetPrivate());
-    HAL_LOG_DEBUG("JSExportClass::GetProperty: callback found = ", callback_found, " for this[", native_object_ptr, "].", property_name);
+    HAL_LOG_DEBUG("JSExportClass::GetProperty: callback found = ", callback_found, " for this[", native_object_ptr, "].", static_cast<std::string>(property_name));
     
     // precondition
     assert(callback_found);
@@ -386,7 +386,7 @@ namespace HAL { namespace detail {
     else {
       js_value_str = to_string(result);
     }
-    HAL_LOG_DEBUG("JSExportClass::GetProperty: result = ", js_value_str, " for this[", native_object_ptr, "].", property_name);
+    HAL_LOG_DEBUG("JSExportClass::GetProperty: result = ", js_value_str, " for this[", native_object_ptr, "].", static_cast<std::string>(property_name));
 #endif
     
     return result;
@@ -415,14 +415,14 @@ namespace HAL { namespace detail {
     const bool callback_found = callback != nullptr;
     
     auto native_object_ptr = reinterpret_cast<T*>(js_object.GetPrivate());
-    HAL_LOG_DEBUG("JSExportClass::SetProperty: callback found = ", callback_found, " for this[", native_object_ptr, "].", property_name);
+    HAL_LOG_DEBUG("JSExportClass::SetProperty: callback found = ", callback_found, " for this[", native_object_ptr, "].", static_cast<std::string>(property_name));
     
     // precondition
     assert(callback_found);
     
     const auto result = callback(*native_object_ptr, property_name, JSValue(js_context, value_ref));
     
-    HAL_LOG_DEBUG("JSExportClass::SetProperty: result = ", result, " for this[", native_object_ptr, "].", property_name);
+    HAL_LOG_DEBUG("JSExportClass::SetProperty: result = ", result, " for this[", native_object_ptr, "].", static_cast<std::string>(property_name));
     
     return result;
     
@@ -449,14 +449,14 @@ namespace HAL { namespace detail {
     const bool callback_found = callback != nullptr;
     
     auto native_object_ptr = reinterpret_cast<T*>(js_object.GetPrivate());
-    HAL_LOG_DEBUG("JSExportClass::DeleteProperty: callback found = ", callback_found, " for this[", native_object_ptr, "].", property_name);
+    HAL_LOG_DEBUG("JSExportClass::DeleteProperty: callback found = ", callback_found, " for this[", native_object_ptr, "].", static_cast<std::string>(property_name));
     
     // precondition
     assert(callback_found);
     
     const auto result = callback(*native_object_ptr, property_name);
     
-    HAL_LOG_DEBUG("JSExportClass::DeleteProperty: result = ", result, " for this[", native_object_ptr, "].", property_name);
+    HAL_LOG_DEBUG("JSExportClass::DeleteProperty: result = ", result, " for this[", native_object_ptr, "].", static_cast<std::string>(property_name));
     
     return result;
     
