@@ -16,6 +16,7 @@
 #include <iomanip>
 #include <cstdint>
 #include <mutex>
+#include <memory>
 
 namespace HAL { namespace detail {
   
@@ -99,7 +100,6 @@ namespace HAL { namespace detail {
   template<typename JSLoggerPolicy>
   JSLogger<JSLoggerPolicy>::JSLogger(const std::string& name)
   : js_log_policy__(name) {
-    std::clog << "MDL: JSLogger: ctor: name = " << name << std::endl;
   }
   
   template<typename JSLoggerPolicy>
