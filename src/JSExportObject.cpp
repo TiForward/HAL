@@ -32,7 +32,7 @@ namespace HAL {
     // that derived classes can implement for custom access control
     // (e.g. to enforce security policies)."
     
-    //HAL_LOG_DEBUG("JSExportObject::HasProperty: ", property_name, " = ", std::to_string(js_object__.HasProperty(property_name)));
+    HAL_LOG_DEBUG("JSExportObject::HasProperty: ", static_cast<std::string>(property_name), " = ", js_object__.HasProperty(property_name));
     return js_object__.HasProperty(property_name);
   }
   
@@ -44,7 +44,7 @@ namespace HAL {
     // that derived classes can implement for custom access control
     // (e.g. to enforce security policies)."
     
-    //HAL_LOG_DEBUG("JSExportObject::GetProperty: ", property_name, " = ", to_string(js_object__.GetProperty(property_name)));
+    HAL_LOG_DEBUG("JSExportObject::GetProperty: ", static_cast<std::string>(property_name), " = ", to_string(js_object__.GetProperty(property_name)));
     return js_object__.GetProperty(property_name);
   }
   
@@ -77,7 +77,7 @@ namespace HAL {
     } catch (...) {
     }
     
-    //HAL_LOG_DEBUG("JSExportObject::SetProperty: property_set = ", std::to_string(property_set), " for ", property_name, " = ", to_string(property_value));
+    HAL_LOG_DEBUG("JSExportObject::SetProperty: property_set = ", property_set, " for ", static_cast<std::string>(property_name), " = ", to_string(property_value));
     
     // TODO: Provide the virtual function
     //
@@ -111,7 +111,7 @@ namespace HAL {
       }
     }
     
-    //HAL_LOG_DEBUG("JSExportObject::DeleteProperty: property_deleted = ", std::to_string(property_deleted), " for ", property_name);
+    HAL_LOG_DEBUG("JSExportObject::DeleteProperty: property_deleted = ", property_deleted, " for ", static_cast<std::string>(property_name));
     
     return property_deleted;
   }
@@ -121,14 +121,17 @@ namespace HAL {
   }
   
   JSValue JSExportObject::CallAsFunction(const std::vector<JSValue>& arguments, JSObject this_object) {
+    HAL_LOG_DEBUG("JSExportObject::CallAsFunction");
     return get_context().CreateUndefined();
   }
   
   JSValue JSExportObject::GetPrototype() const HAL_NOEXCEPT {
+    HAL_LOG_DEBUG("JSExportObject::GetPrototype");
     return js_object__.GetPrototype();
   }
   
   bool JSExportObject::SetPrototype(const JSValue& js_value) HAL_NOEXCEPT {
+    HAL_LOG_DEBUG("JSExportObject::SetPrototype");
     js_object__.SetPrototype(js_value);
     return true;
   }
@@ -150,6 +153,7 @@ namespace HAL {
   
   void JSExportObject::GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const HAL_NOEXCEPT {
     for (const auto& entry : GetEnumerablePropertyNames()) {
+      HAL_LOG_DEBUG("JSExportObject::GetPropertyNames: ", entry);
       accumulator.AddName(entry);
     }
   }

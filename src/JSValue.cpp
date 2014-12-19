@@ -284,7 +284,7 @@ namespace HAL {
   
   JSValue::JSValue(const JSContext& js_context, const JSString& js_string, bool parse_as_json)
   : js_context__(js_context) {
-    HAL_LOG_TRACE("JSValue:: ctor");
+    HAL_LOG_TRACE("JSValue:: ctor 1");
     if (parse_as_json) {
       js_value_ref__ = JSValueMakeFromJSONString(js_context, js_string);
       if (!js_value_ref__) {
@@ -301,7 +301,7 @@ namespace HAL {
   JSValue::JSValue(const JSContext& js_context, JSValueRef js_value_ref) HAL_NOEXCEPT
   : js_context__(js_context)
   , js_value_ref__(js_value_ref)  {
-    HAL_LOG_TRACE("JSValue:: ctor");
+    HAL_LOG_TRACE("JSValue:: ctor 2");
     assert(js_value_ref__);
     HAL_LOG_TRACE("JSValue:: retain ", js_value_ref__);
     JSValueProtect(js_context__, js_value_ref__);

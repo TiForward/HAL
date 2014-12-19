@@ -20,8 +20,8 @@ namespace HAL {
   JSString::JSString(const char* string) HAL_NOEXCEPT
   : js_string_ref__(JSStringCreateWithUTF8CString(string))
   , string__(string) {
-    HAL_LOG_TRACE("JSString:: ctor");
-    HAL_LOG_TRACE("JSString:: retain ", js_string_ref__);
+    HAL_LOG_TRACE("JSString:: ctor 1");
+    HAL_LOG_TRACE("JSString:: retain (implicit) ", js_string_ref__);
     const JSChar* string_ptr = JSStringGetCharactersPtr(js_string_ref__);
     u16string__ = std::u16string(string_ptr, string_ptr + length());
     
@@ -33,8 +33,8 @@ namespace HAL {
   JSString::JSString(const std::string& string) HAL_NOEXCEPT
   : js_string_ref__(JSStringCreateWithUTF8CString(string.c_str()))
   , string__(string) {
-    HAL_LOG_TRACE("JSString:: ctor");
-    HAL_LOG_TRACE("JSString:: retain ", js_string_ref__);
+    HAL_LOG_TRACE("JSString:: ctor 2");
+    HAL_LOG_TRACE("JSString:: retain (implicit) ", js_string_ref__);
     const JSChar* string_ptr = JSStringGetCharactersPtr(js_string_ref__);
     u16string__ = std::u16string(string_ptr, string_ptr + length());
 
@@ -141,7 +141,7 @@ namespace HAL {
     static std::wstring_convert<std::codecvt_utf8_utf16<char16_t>,char16_t> converter;
     assert(js_string_ref__);
     JSStringRetain(js_string_ref__);
-    HAL_LOG_TRACE("JSString:: ctor");
+    HAL_LOG_TRACE("JSString:: ctor 3");
     HAL_LOG_TRACE("JSString:: retain ", js_string_ref__);
 
     const JSChar* string_ptr = JSStringGetCharactersPtr(js_string_ref__);

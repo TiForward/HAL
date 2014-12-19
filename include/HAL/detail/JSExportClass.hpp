@@ -344,7 +344,7 @@ namespace HAL { namespace detail {
     // precondition
     assert(callback_found);
     
-    const auto result = callback(*native_object_ptr, property_name);
+    const bool result = callback(*native_object_ptr, property_name);
     
     HAL_LOG_DEBUG("JSExportClass::HasProperty: result = ", result, " for this[", native_object_ptr, "].", static_cast<std::string>(property_name));
     

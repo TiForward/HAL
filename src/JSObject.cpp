@@ -233,17 +233,23 @@ namespace HAL {
     swap(js_object_ref__, other.js_object_ref__);
   }
   
+//  JSObject::JSObject(const JSContext& js_context, const JSClass& js_class, void* private_data)
+//  : JSObject(js_context, JSObjectMake(js_context, js_class, private_data)) {
+//    HAL_LOG_TRACE("JSObject:: ctor 1");
+//  }
+
   JSObject::JSObject(const JSContext& js_context, const JSClass& js_class, void* private_data)
-  : JSObject(js_context, JSObjectMake(js_context, js_class, private_data)) {
-    HAL_LOG_TRACE("JSObject:: ctor");
-    HAL_LOG_TRACE("JSObject:: retain ", js_object_ref__);
+  : js_context__(js_context)
+  , js_object_ref__(JSObjectMake(js_context, js_class, private_data)) {
+    HAL_LOG_TRACE("JSObject:: ctor 1");
+    HAL_LOG_TRACE("JSObject:: retain (implicit) ", js_object_ref__);
   }
 
   // For interoperability with the JavaScriptCore C API.
   JSObject::JSObject(const JSContext& js_context, JSObjectRef js_object_ref)
   : js_context__(js_context)
   , js_object_ref__(js_object_ref) {
-    HAL_LOG_TRACE("JSObject:: ctor");
+    HAL_LOG_TRACE("JSObject:: ctor 2");
     HAL_LOG_TRACE("JSObject:: retain ", js_object_ref__);
     JSValueProtect(js_context__, js_object_ref__);
   }
