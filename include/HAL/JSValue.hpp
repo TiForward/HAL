@@ -159,15 +159,6 @@ namespace HAL {
     /*!
      @method
      
-     @abstract Convert this JSValue to a JSNumber.
-     
-     @result A JSNumber with the result of conversion.
-     */
-    virtual operator JSNumber() const final;
-    
-    /*!
-     @method
-     
      @abstract Convert this JSValue to a JSObject.
      
      @result A JSObject with the result of conversion.

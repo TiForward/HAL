@@ -65,30 +65,6 @@ public:
 		return operator=(JSNumber(get_context(), number));
   }
 
-	/*!
-    @method
-    
-    @abstract Convert the given JavaScript value to a JavaScript
-    number and assign it to this JSNumber.
-    
-    @param js_value The JavaScript value to assign to this JSNumber
-    
-    @result The JSNumber with the new value of the given JavaScript
-    value.
-    
-	  @throws std::invalid_argument if the given JavaScript value could
-	  not be converted to a JavaScript number.
-	*/
-	JSNumber& operator=(const JSValue& js_value) {
-		JSValue::operator=(static_cast<JSNumber>(js_value));
-		return *this;
-  }
-
-	JSNumber& operator=(JSValue&& js_value) {
-		JSValue::operator=(static_cast<JSNumber>(js_value));
-		return *this;
-	}
-
 private:
 	
 	// Only a JSContext can create a JSNumber.

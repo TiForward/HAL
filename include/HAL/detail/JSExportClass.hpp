@@ -61,8 +61,8 @@ namespace HAL { namespace detail {
     
     JSExportClass(const JSExportClassDefinition<T>& js_export_class_definition) HAL_NOEXCEPT;
     
-    JSExportClass()                                = default;
-    ~JSExportClass()                               = default;
+    JSExportClass()                                HAL_NOEXCEPT;//= default;
+    ~JSExportClass()                               HAL_NOEXCEPT;//= default;
     JSExportClass(const JSExportClass&)            = default;
     JSExportClass& operator=(const JSExportClass&) = default;
     
@@ -131,13 +131,25 @@ namespace HAL { namespace detail {
   JSExportClassDefinition<T> JSExportClass<T>::js_export_class_definition__;
   
   template<typename T>
+  JSExportClass<T>::JSExportClass() HAL_NOEXCEPT {
+    HAL_LOG_TRACE("JSExportClass:: ctor 1", this);
+  }
+
+  template<typename T>
   JSExportClass<T>::JSExportClass(const JSExportClassDefinition<T>& js_export_class_definition) HAL_NOEXCEPT
   : JSClass(js_export_class_definition) {
     HAL_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
+    HAL_LOG_TRACE("JSExportClass:: ctor 2", this);
     js_export_class_definition__ = js_export_class_definition;
     //js_export_class_definition__.Print();
   }
   
+  template<typename T>
+  JSExportClass<T>::~JSExportClass() HAL_NOEXCEPT {
+    HAL_LOG_TRACE("JSExportClass:: dtor ", this);
+  }
+  
+
   template<typename T>
   void JSExportClass<T>::Print() const {
     HAL_JSCLASS_LOCK_GUARD;
@@ -165,16 +177,23 @@ namespace HAL { namespace detail {
     JSContext js_context(context_ref);
     JSObject  js_object(js_context, object_ref);
 
-    const auto native_object_ptr = new T(js_context);
-    
-    if (js_object.GetPrivate()) {
-      HAL_LOG_DEBUG("JSExportClass::Initialize: replace ", js_object.GetPrivate(), " with ", native_object_ptr, " for ", object_ref);
-      delete static_cast<JSExport<T>*>(js_object.GetPrivate());
-    }
+//    const auto native_object_ptr = new T(js_context);
+//    
+//    if (js_object.GetPrivate()) {
+//      HAL_LOG_DEBUG("JSExportClass::Initialize: replace ", js_object.GetPrivate(), " with ", native_object_ptr, " for ", object_ref);
+//      delete static_cast<JSExport<T>*>(js_object.GetPrivate());
+//    }
+//
+//    const bool result = js_object.SetPrivate(native_object_ptr);
+//    HAL_LOG_DEBUG("JSExportClass::Initialize: private data set to ", js_object.GetPrivate(), " for ", object_ref);
+//    assert(result);
 
-    const bool result = js_object.SetPrivate(native_object_ptr);
-    HAL_LOG_DEBUG("JSExportClass::Initialize: private data set to ", js_object.GetPrivate(), " for ", object_ref);
-    assert(result);
+    if (!js_object.GetPrivate()) {
+      const auto native_object_ptr = new T(js_context);
+      const bool result = js_object.SetPrivate(native_object_ptr);
+      HAL_LOG_DEBUG("JSExportClass::Initialize: private data set to ", js_object.GetPrivate(), " for ", object_ref);
+      assert(result);
+    }
   }
   
   template<typename T>

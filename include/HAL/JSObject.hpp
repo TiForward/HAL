@@ -189,7 +189,7 @@ namespace HAL {
      function.
      
      @param this_object An optional JavaScript object to use as
-     'this'. The default value is this JavaScript object.
+     'this'. The default value is the global object.
      
      @result Return the function's return value.
      

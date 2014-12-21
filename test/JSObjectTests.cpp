@@ -73,13 +73,15 @@ TEST_F(JSObjectTests, API) {
   
   js_object.SetProperty("foo", js_context.CreateNumber(42));
   XCTAssertTrue(js_object.HasProperty("foo"));
-  JSNumber foo = js_object.GetProperty("foo");
-  XCTAssertEqual(42, static_cast<int32_t>(42));
+  JSValue foo = js_object.GetProperty("foo");
+  XCTAssertTrue(foo.IsNumber());
+  XCTAssertEqual(42, static_cast<int32_t>(foo));
   XCTAssertTrue(js_object.DeleteProperty("foo"));
 
   js_object.SetProperty("bar", js_context.CreateBoolean(true), {JSPropertyAttribute::DontDelete});
   XCTAssertTrue(js_object.HasProperty("bar"));
-  JSBoolean bar = js_object.GetProperty("bar");
+  JSValue bar = js_object.GetProperty("bar");
+  XCTAssertTrue(bar.IsBoolean());
   XCTAssertTrue(static_cast<bool>(bar));
   XCTAssertFalse(js_object.DeleteProperty("bar"));
   XCTAssertTrue(js_object.HasProperty("bar"));
@@ -88,15 +90,16 @@ TEST_F(JSObjectTests, API) {
 
   XCTAssertTrue(js_object.GetProperty(42).IsUndefined());
   js_object.SetProperty(42, js_context.CreateNumber(UnitTestConstants::pi));
-  JSNumber pi = js_object.GetProperty(42);
+  JSValue pi = js_object.GetProperty(42);
+  XCTAssertTrue(pi.IsNumber());
   //XCTAssertEqualWithAccuracy(UnitTestConstants::pi, static_cast<double>(pi), std::numeric_limits<double>::epsilon());
   ASSERT_DOUBLE_EQ(UnitTestConstants::pi, static_cast<double>(pi));
     
-  // You can't call a JSObject as a function.
+  // You can't call an JSObject as a function that isn't a function.
   XCTAssertFalse(js_object.IsFunction());
   ASSERT_THROW(js_object(), std::runtime_error);
   
-  // You can't call a JSObject as a constructor.
+  // You can't call a JSObject as a constructor that isn't a constructor.
   XCTAssertFalse(js_object.IsConstructor());
   ASSERT_THROW(js_object.CallAsConstructor(), std::runtime_error);
   
