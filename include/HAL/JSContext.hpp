@@ -29,6 +29,7 @@ namespace HAL {
   class JSError;
   class JSRegExp;
   class JSFunction;
+  class JSExportObject;
   
   namespace detail {
     template<typename T>
@@ -212,7 +213,8 @@ namespace HAL {
      @result A JavaScript object running in this execution context
      that is implemented by a C++ class.
      */
-    // template<typename T, typename... Us>
+    template<typename T, typename... Us>
+    JSObject CreateObject(Us&&... constructor_arguments) const HAL_NOEXCEPT;
     // std::shared_ptr<T> CreateObject(Us&&... constructor_arguments) const;
     
     /*!
@@ -442,7 +444,7 @@ namespace HAL {
     HAL_EXPORT friend std::vector<JSValue> detail::to_vector(const JSContext&, size_t, const JSValueRef[]);
     
     // For interoperability with the JavaScriptCore C API.
-    operator JSContextRef() const HAL_NOEXCEPT {
+    explicit operator JSContextRef() const HAL_NOEXCEPT {
       return js_global_context_ref__;
     }
     
@@ -495,7 +497,7 @@ namespace HAL {
   bool operator!=(const JSContext& lhs, const JSContext& rhs) {
     return ! (lhs == rhs);
   }
-  
+
 } // namespace HAL {
 
 #endif // _HAL_JSCONTEXT_HPP_

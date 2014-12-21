@@ -17,7 +17,7 @@ namespace HAL {
   JSContextGroup::JSContextGroup() HAL_NOEXCEPT
   : js_context_group_ref__(JSContextGroupCreate()) {
     HAL_LOG_TRACE("JSContextGroup:: ctor 1");
-    HAL_LOG_TRACE("JSContextGroup:: retain (implicit) ", js_context_group_ref__);
+    HAL_LOG_TRACE("JSContextGroup:: retain ", js_context_group_ref__, " (implicit)");
   }
   
   JSContext JSContextGroup::CreateContext() const HAL_NOEXCEPT {

@@ -582,6 +582,12 @@ namespace HAL {
     return js_export_class;
   }
   
+  template<typename T, typename... Us>
+  JSObject JSContext::CreateObject(Us&&... constructor_arguments) const HAL_NOEXCEPT {
+    JSContext js_context(js_global_context_ref__);
+    return JSObject(js_context, JSExport<T>::Class(), new T(js_context, std::forward<Us>(constructor_arguments)...));
+  }
+
   // template<typename T, typename... Us>
   // std::shared_ptr<T> JSContext::CreateObject(Us&&... constructor_arguments) const {
   //   auto native_object_ptr = std::make_shared<T>(*this);

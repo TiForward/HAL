@@ -161,7 +161,7 @@ namespace HAL {
       friend std::vector<JSStringRef> detail::to_vector(const std::vector<JSString>&);
       
       // For interoperability with the JavaScriptCore C API.
-      operator JSStringRef() const {
+      explicit operator JSStringRef() const {
         return js_string_ref__;
       }
       

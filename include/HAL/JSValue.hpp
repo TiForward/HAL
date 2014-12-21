@@ -121,15 +121,6 @@ namespace HAL {
     /*!
      @method
      
-     @abstract Convert this JSValue to a JSBoolean.
-     
-     @result A JSBoolean with the result of conversion.
-     */
-    virtual operator JSBoolean() const HAL_NOEXCEPT final;
-    
-    /*!
-     @method
-     
      @abstract Convert a JSValue to a double.
      
      @result The double result of conversion.
@@ -324,8 +315,7 @@ namespace HAL {
     JSValue(const JSContext& js_context, const JSString& js_string, bool parse_as_json = false);
     
     
-    // These classes and functions create a JSValue using the
-    // following constructor.
+    // These classes create a JSValue using the following constructor.
     // friend class JSUndefined;
     // friend class JSNull;
     // friend class JSBoolean;
@@ -348,7 +338,7 @@ namespace HAL {
     JSValue(const JSContext& js_context, JSValueRef js_value_ref) HAL_NOEXCEPT;
     
     // For interoperability with the JavaScriptCore C API.
-    virtual operator JSValueRef() const HAL_NOEXCEPT final {
+    virtual explicit operator JSValueRef() const HAL_NOEXCEPT final {
       return js_value_ref__;
     }
     

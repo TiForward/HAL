@@ -18,8 +18,8 @@ namespace HAL {
   JSClass::JSClass() HAL_NOEXCEPT
   : name__("Empty")
   , js_class_ref__(JSClassCreate(&kJSClassDefinitionEmpty)) {
-//    HAL_LOG_TRACE("JSClass:: ctor");
-//    HAL_LOG_TRACE("JSClass:: retain ", js_class_ref__);
+    HAL_LOG_TRACE("JSClass:: ctor");
+    HAL_LOG_TRACE("JSClass:: retain ", js_class_ref__, " (implicit)");
   }
   
   JSClass::JSClass(const JSClassDefinition& js_class_definition) HAL_NOEXCEPT
@@ -30,8 +30,8 @@ namespace HAL {
   }
   
   JSClass::~JSClass() HAL_NOEXCEPT {
-//    HAL_LOG_TRACE("JSClass:: dtor");
-//    HAL_LOG_TRACE("JSClass:: release ", js_class_ref__);
+    HAL_LOG_TRACE("JSClass:: dtor");
+    HAL_LOG_TRACE("JSClass:: release ", js_class_ref__);
     JSClassRelease(js_class_ref__);
   }
   

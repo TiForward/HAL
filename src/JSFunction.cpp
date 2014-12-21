@@ -19,6 +19,7 @@ namespace HAL {
 
 JSFunction::JSFunction(const JSContext& js_context, const JSString& body, const std::vector<JSString>& parameter_names, const JSString& function_name, const JSString& source_url, int starting_line_number)
 		: JSObject(js_context, MakeFunction(js_context, body, parameter_names, function_name, source_url, starting_line_number)) {
+      JSValueUnprotect(static_cast<JSContextRef>(js_context), static_cast<JSObjectRef>(*this));
 }
 
 JSObjectRef JSFunction::MakeFunction(const JSContext& js_context, const JSString& body, const std::vector<JSString>& parameter_names, const JSString& function_name, const JSString& source_url, int starting_line_number) {
@@ -27,9 +28,9 @@ JSObjectRef JSFunction::MakeFunction(const JSContext& js_context, const JSString
 	JSObjectRef js_object_ref = nullptr;
 	if (!parameter_names.empty()) {
 		std::vector<JSStringRef> parameter_name_array = detail::to_vector(parameter_names);
-		js_object_ref = JSObjectMakeFunction(js_context, function_name, static_cast<unsigned>(parameter_name_array.size()), &parameter_name_array[0], body, source_url_ref, starting_line_number, &exception);
+		js_object_ref = JSObjectMakeFunction(static_cast<JSContextRef>(js_context), static_cast<JSStringRef>(function_name), static_cast<unsigned>(parameter_name_array.size()), &parameter_name_array[0], static_cast<JSStringRef>(body), source_url_ref, starting_line_number, &exception);
 	} else {
-		js_object_ref = JSObjectMakeFunction(js_context, function_name, 0, nullptr, body, source_url_ref, starting_line_number, &exception);
+		js_object_ref = JSObjectMakeFunction(static_cast<JSContextRef>(js_context), static_cast<JSStringRef>(function_name), 0, nullptr, static_cast<JSStringRef>(body), source_url_ref, starting_line_number, &exception);
 	}
 	
 	if (exception) {

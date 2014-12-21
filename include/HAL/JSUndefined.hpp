@@ -29,7 +29,8 @@ private:
 	friend JSContext;
 	
 	explicit JSUndefined(const JSContext& js_context)
-			: JSValue(js_context, JSValueMakeUndefined(js_context)) {
+			: JSValue(js_context, JSValueMakeUndefined(static_cast<JSContextRef>(js_context))) {
+        JSValueUnprotect(static_cast<JSContextRef>(js_context), static_cast<JSValueRef>(*this));
 	}
 };
 

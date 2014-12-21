@@ -21,7 +21,7 @@ namespace HAL {
   : js_string_ref__(JSStringCreateWithUTF8CString(string))
   , string__(string) {
     HAL_LOG_TRACE("JSString:: ctor 1");
-    HAL_LOG_TRACE("JSString:: retain (implicit) ", js_string_ref__);
+    HAL_LOG_TRACE("JSString:: retain ", js_string_ref__, " (implicit)");
     const JSChar* string_ptr = JSStringGetCharactersPtr(js_string_ref__);
     u16string__ = std::u16string(string_ptr, string_ptr + length());
     
@@ -34,7 +34,7 @@ namespace HAL {
   : js_string_ref__(JSStringCreateWithUTF8CString(string.c_str()))
   , string__(string) {
     HAL_LOG_TRACE("JSString:: ctor 2");
-    HAL_LOG_TRACE("JSString:: retain (implicit) ", js_string_ref__);
+    HAL_LOG_TRACE("JSString:: retain ", js_string_ref__, " (implicit)");
     const JSChar* string_ptr = JSStringGetCharactersPtr(js_string_ref__);
     u16string__ = std::u16string(string_ptr, string_ptr + length());
 
@@ -155,7 +155,7 @@ namespace HAL {
   }
   
   bool operator==(const JSString& lhs, const JSString& rhs) {
-    return JSStringIsEqual(lhs, rhs);
+    return JSStringIsEqual(static_cast<JSStringRef>(lhs), static_cast<JSStringRef>(rhs));
   }
   
 } // namespace HAL {

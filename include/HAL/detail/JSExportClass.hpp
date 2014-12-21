@@ -160,13 +160,20 @@ namespace HAL { namespace detail {
   template<typename T>
   void JSExportClass<T>::JSObjectInitializeCallback(JSContextRef context_ref, JSObjectRef object_ref) {
     
-    HAL_LOG_DEBUG("JSExport::Initialize");
+    HAL_LOG_DEBUG("JSExportClass::Initialize");
     
     JSContext js_context(context_ref);
     JSObject  js_object(js_context, object_ref);
-    const bool result = js_object.SetPrivate(new T(js_context));
 
-    HAL_LOG_DEBUG("JSExportClass::Initialize: private data set to = ", js_object.GetPrivate());
+    const auto native_object_ptr = new T(js_context);
+    
+    if (js_object.GetPrivate()) {
+      HAL_LOG_DEBUG("JSExportClass::Initialize: replace ", js_object.GetPrivate(), " with ", native_object_ptr, " for ", object_ref);
+      delete static_cast<JSExport<T>*>(js_object.GetPrivate());
+    }
+
+    const bool result = js_object.SetPrivate(native_object_ptr);
+    HAL_LOG_DEBUG("JSExportClass::Initialize: private data set to ", js_object.GetPrivate(), " for ", object_ref);
     assert(result);
   }
   
@@ -174,10 +181,14 @@ namespace HAL { namespace detail {
   void JSExportClass<T>::JSObjectFinalizeCallback(JSObjectRef object_ref) {
     HAL_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
     
-    auto native_object_ptr = JSObjectGetPrivate(object_ref);
+    auto native_object_ptr = static_cast<JSExport<T>*>(JSObjectGetPrivate(object_ref));
     
-    HAL_LOG_DEBUG("JSExport::Finalize: delete native object ", native_object_ptr);
-    delete reinterpret_cast<T*>(native_object_ptr);
+    HAL_LOG_DEBUG("JSExportClass::Finalize: delete native object ", native_object_ptr, " for ", object_ref);
+    if (native_object_ptr) {
+      //delete reinterpret_cast<T*>(native_object_ptr);
+      delete native_object_ptr;
+      JSObjectSetPrivate(object_ref, nullptr);
+    }
   }
   
   template<typename T>
@@ -196,23 +207,23 @@ namespace HAL { namespace detail {
     // precondition
     assert(callback_found);
     
-    const auto native_object_ptr = reinterpret_cast<const T*>(js_object.GetPrivate());
+    const auto native_object_ptr = static_cast<const T*>(js_object.GetPrivate());
     const auto callback          = (callback_position -> second).get_callback();
     const auto result            = callback(*native_object_ptr);
     
     HAL_LOG_DEBUG("JSExportClass::GetNamedProperty: result = ", to_string(result), " for ", to_string(js_object), ".", property_name);
     
-    return result;
+    return static_cast<JSValueRef>(result);
     
   } catch (const std::exception& e) {
     JSContext js_context(context_ref);
     JSString message(LogStdException("JSExportClass::GetNamedProperty", JSObject(js_context, object_ref), e));
-    *exception = JSValue(js_context, message);
+    *exception = static_cast<JSValueRef>(js_context.CreateString(message));
     return nullptr;
   } catch (...) {
     JSContext js_context(context_ref);
     JSString message(LogUnknownException("JSExportClass::GetNamedProperty", JSObject(js_context, object_ref)));
-    *exception = JSValue(js_context, message);
+    *exception = static_cast<JSValueRef>(js_context.CreateString(message));
     return nullptr;
   }
   
@@ -233,7 +244,7 @@ namespace HAL { namespace detail {
     // precondition
     assert(callback_found);
     
-    auto native_object_ptr = reinterpret_cast<T*>(js_object.GetPrivate());
+    auto native_object_ptr = static_cast<T*>(js_object.GetPrivate());
     const auto callback    = (callback_position -> second).set_callback();
     const auto result      = callback(*native_object_ptr, js_value);
     
@@ -244,12 +255,12 @@ namespace HAL { namespace detail {
   } catch (const std::exception& e) {
     JSContext js_context(context_ref);
     JSString message(LogStdException("JSExportClass::SetNamedProperty", JSObject(js_context, object_ref), e));
-    *exception = JSValue(js_context, message);
+    *exception = static_cast<JSValueRef>(js_context.CreateString(message));
     return false;
   } catch (...) {
     JSContext js_context(context_ref);
     JSString message(LogUnknownException("JSExportClass::SetNamedProperty", JSObject(js_context, object_ref)));
-    *exception = JSValue(js_context, message);
+    *exception = static_cast<JSValueRef>(js_context.CreateString(message));
     return false;
   }
   
@@ -288,8 +299,8 @@ namespace HAL { namespace detail {
     
     const auto callback_position = js_export_class_definition__.named_function_property_callback_map__.find(function_name);
     const bool callback_found    = callback_position != js_export_class_definition__.named_function_property_callback_map__.end();
-    const auto native_object_ptr = reinterpret_cast<T*>(js_object.GetPrivate());
-    const auto native_this_ptr   = reinterpret_cast<T*>(this_object.GetPrivate());
+    const auto native_object_ptr = static_cast<T*>(js_object.GetPrivate());
+    const auto native_this_ptr   = static_cast<T*>(this_object.GetPrivate());
 
     static_cast<void>(native_object_ptr);
     HAL_LOG_DEBUG("JSExportClass::CallNamedFunction: callback found = ", callback_found, " for this[", native_this_ptr, "].", function_name, "(...)");
@@ -314,17 +325,17 @@ namespace HAL { namespace detail {
     HAL_LOG_DEBUG("JSExportClass::CallNamedFunction: result = ", js_value_str, " for this[", native_this_ptr, "].", function_name, "(...)");
 #endif
     
-    return result;
+    return static_cast<JSValueRef>(result);
     
   } catch (const std::exception& e) {
     JSContext js_context(context_ref);
     JSString message(LogStdException("JSExportClass::CallNamedFunction", JSObject(js_context, function_ref), e));
-    *exception = JSValue(js_context, message);
+    *exception = static_cast<JSValueRef>(js_context.CreateString(message));
     return nullptr;
   } catch (...) {
     JSContext js_context(context_ref);
     JSString message(LogUnknownException("JSExportClass::CallNamedFunction", JSObject(js_context, function_ref)));
-    *exception = JSValue(js_context, message);
+    *exception = static_cast<JSValueRef>(js_context.CreateString(message));
     return nullptr;
   }
   
@@ -338,7 +349,7 @@ namespace HAL { namespace detail {
     auto       callback       = js_export_class_definition__.has_property_callback__;
     const bool callback_found = callback != nullptr;
 
-    const auto native_object_ptr = reinterpret_cast<const T*>(js_object.GetPrivate());
+    const auto native_object_ptr = static_cast<const T*>(js_object.GetPrivate());
     HAL_LOG_DEBUG("JSExportClass::HasProperty: callback found = ", callback_found, " for this[", native_object_ptr, "].", static_cast<std::string>(property_name));
     
     // precondition
@@ -368,7 +379,7 @@ namespace HAL { namespace detail {
     auto       callback       = js_export_class_definition__.get_property_callback__;
     const bool callback_found = callback != nullptr;
     
-    const auto native_object_ptr = reinterpret_cast<const T*>(js_object.GetPrivate());
+    const auto native_object_ptr = static_cast<const T*>(js_object.GetPrivate());
     HAL_LOG_DEBUG("JSExportClass::GetProperty: callback found = ", callback_found, " for this[", native_object_ptr, "].", static_cast<std::string>(property_name));
     
     // precondition
@@ -389,17 +400,17 @@ namespace HAL { namespace detail {
     HAL_LOG_DEBUG("JSExportClass::GetProperty: result = ", js_value_str, " for this[", native_object_ptr, "].", static_cast<std::string>(property_name));
 #endif
     
-    return result;
+    return static_cast<JSValueRef>(result);
     
   } catch (const std::exception& e) {
     JSContext js_context(context_ref);
     JSString message(LogStdException("JSExportClass::GetProperty", JSObject(js_context, object_ref), e));
-    *exception = JSValue(js_context, message);
+    *exception = static_cast<JSValueRef>(js_context.CreateString(message));
     return nullptr;
   } catch (...) {
     JSContext js_context(context_ref);
     JSString message(LogUnknownException("JSExportClass::GetProperty", JSObject(js_context, object_ref)));
-    *exception = JSValue(js_context, message);
+    *exception = static_cast<JSValueRef>(js_context.CreateString(message));
     return nullptr;
   }
   
@@ -414,7 +425,7 @@ namespace HAL { namespace detail {
     auto       callback       = js_export_class_definition__.set_property_callback__;
     const bool callback_found = callback != nullptr;
     
-    auto native_object_ptr = reinterpret_cast<T*>(js_object.GetPrivate());
+    auto native_object_ptr = static_cast<T*>(js_object.GetPrivate());
     HAL_LOG_DEBUG("JSExportClass::SetProperty: callback found = ", callback_found, " for this[", native_object_ptr, "].", static_cast<std::string>(property_name));
     
     // precondition
@@ -429,12 +440,12 @@ namespace HAL { namespace detail {
   } catch (const std::exception& e) {
     JSContext js_context(context_ref);
     JSString message(LogStdException("JSExportClass::SetProperty", JSObject(js_context, object_ref), e));
-    *exception = JSValue(js_context, message);
+    *exception = static_cast<JSValueRef>(js_context.CreateString(message));
     return false;
   } catch (...) {
     JSContext js_context(context_ref);
     JSString message(LogUnknownException("JSExportClass::SetProperty", JSObject(js_context, object_ref)));
-    *exception = JSValue(js_context, message);
+    *exception = static_cast<JSValueRef>(js_context.CreateString(message));
     return false;
   }
   
@@ -448,7 +459,7 @@ namespace HAL { namespace detail {
     auto       callback       = js_export_class_definition__.delete_property_callback__;
     const bool callback_found = callback != nullptr;
     
-    auto native_object_ptr = reinterpret_cast<T*>(js_object.GetPrivate());
+    auto native_object_ptr = static_cast<T*>(js_object.GetPrivate());
     HAL_LOG_DEBUG("JSExportClass::DeleteProperty: callback found = ", callback_found, " for this[", native_object_ptr, "].", static_cast<std::string>(property_name));
     
     // precondition
@@ -463,12 +474,12 @@ namespace HAL { namespace detail {
   } catch (const std::exception& e) {
     JSContext js_context(context_ref);
     JSString message(LogStdException("JSExportClass::DeleteProperty", JSObject(js_context, object_ref), e));
-    *exception = JSValue(js_context, message);
+    *exception = static_cast<JSValueRef>(js_context.CreateString(message));
     return false;
   } catch (...) {
     JSContext js_context(context_ref);
     JSString message(LogUnknownException("JSExportClass::DeleteProperty", JSObject(js_context, object_ref)));
-    *exception = JSValue(js_context, message);
+    *exception = static_cast<JSValueRef>(js_context.CreateString(message));
     return false;
   }
   
@@ -482,7 +493,7 @@ namespace HAL { namespace detail {
     auto       callback       = js_export_class_definition__.get_property_names_callback__;
     const bool callback_found = callback != nullptr;
     
-    auto native_object_ptr = reinterpret_cast<T*>(js_object.GetPrivate());
+    auto native_object_ptr = static_cast<T*>(js_object.GetPrivate());
     HAL_LOG_DEBUG("JSExportClass::GetPropertyNames: callback found = ", callback_found, " for this[", native_object_ptr, "]");
     
     // precondition
@@ -509,8 +520,8 @@ namespace HAL { namespace detail {
     auto       callback       = js_export_class_definition__.call_as_function_callback__;
     const bool callback_found = callback != nullptr;
     
-    auto native_object_ptr = reinterpret_cast<T*>(js_object.GetPrivate());
-    auto native_this_ptr   = reinterpret_cast<T*>(this_object.GetPrivate());
+    auto native_object_ptr = static_cast<T*>(js_object.GetPrivate());
+    auto native_this_ptr   = static_cast<T*>(this_object.GetPrivate());
     static_cast<void>(native_this_ptr);
     HAL_LOG_DEBUG("JSExportClass::CallAsFunction: callback found = ", callback_found, " for this[", native_this_ptr, "].this[", native_object_ptr, "](...)");
     
@@ -521,17 +532,17 @@ namespace HAL { namespace detail {
     
     HAL_LOG_DEBUG("JSExportClass::CallAsFunction: result = ", to_string(result), " for this[", native_this_ptr, "].this[", native_object_ptr, "](...)");
     
-    return result;
+    return static_cast<JSValueRef>(result);
     
   } catch (const std::exception& e) {
     JSContext js_context(context_ref);
     JSString message(LogStdException("JSExportClass::CallAsFunction", JSObject(js_context, function_ref), e));
-    *exception = JSValue(js_context, message);
+    *exception = static_cast<JSValueRef>(js_context.CreateString(message));
     return nullptr;
   } catch (...) {
     JSContext js_context(context_ref);
     JSString message(LogUnknownException("JSExportClass::CallAsFunction", JSObject(js_context, function_ref)));
-    *exception = JSValue(js_context, message);
+    *exception = static_cast<JSValueRef>(js_context.CreateString(message));
     return nullptr;
   }
   
@@ -541,28 +552,31 @@ namespace HAL { namespace detail {
     JSContext js_context(context_ref);
     JSObject  js_object(js_context, constructor_ref);
     
-    auto native_object_ptr = reinterpret_cast<T*>(js_object.GetPrivate());
+    auto native_object_ptr = static_cast<T*>(js_object.GetPrivate());
     HAL_LOG_DEBUG("JSExportClass::CallAsConstructor: new this[", native_object_ptr, "]");
     
-    auto new_object   = js_context.CreateObject(JSExport<T>::Class());
-    const bool result = new_object.SetPrivate(new T(*native_object_ptr, to_vector(js_context, argument_count, arguments_array)));
+//    auto new_object   = js_context.CreateObject(JSExport<T>::Class());
+//    const bool result = new_object.SetPrivate(new T(*native_object_ptr, to_vector(js_context, argument_count, arguments_array)));
     
-    auto native_new_object_ptr = reinterpret_cast<T*>(new_object.GetPrivate());
+    auto new_object = JSObject(js_context, JSExport<T>::Class(), new T(*native_object_ptr, to_vector(js_context, argument_count, arguments_array)));
+
+    auto native_new_object_ptr = static_cast<T*>(new_object.GetPrivate());
     static_cast<void>(native_new_object_ptr);
     HAL_LOG_DEBUG("JSExportClass::CallAsConstructor: result = this[", native_new_object_ptr, "] for new this[", native_object_ptr, "]");
-    assert(result);
+    HAL_LOG_DEBUG("JSExportClass::CallAsConstructor: private data set to ", new_object.GetPrivate(), " for ", JSObjectRef(new_object));
+//    assert(result);
     
-    return new_object;
+    return static_cast<JSObjectRef>(new_object);
     
   } catch (const std::exception& e) {
     JSContext js_context(context_ref);
     JSString message(LogStdException("JSObjectCallAsConstructorCallback", JSObject(js_context, constructor_ref), e));
-    *exception = JSValue(js_context, message);
+    *exception = static_cast<JSValueRef>(js_context.CreateString(message));
     return nullptr;
   } catch (...) {
     JSContext js_context(context_ref);
     JSString message(LogUnknownException("JSObjectCallAsConstructorCallback", JSObject(js_context, constructor_ref)));
-    *exception = JSValue(js_context, message);
+    *exception = static_cast<JSValueRef>(js_context.CreateString(message));
     return nullptr;
   }
   
@@ -576,7 +590,7 @@ namespace HAL { namespace detail {
     if (possible_instance.IsObject()) {
       JSObject possible_object = possible_instance;
       if (possible_object.GetPrivate() != nullptr) {
-        auto possible_js_export_ptr     = reinterpret_cast<JSExport<T>*>(possible_object.GetPrivate());
+        auto possible_js_export_ptr     = static_cast<JSExport<T>*>(possible_object.GetPrivate());
         auto possible_native_object_ptr = dynamic_cast<T*>(possible_js_export_ptr);
         if (possible_native_object_ptr != nullptr) {
           result = true;
@@ -584,7 +598,7 @@ namespace HAL { namespace detail {
       }
     }
     
-    auto native_object_ptr = reinterpret_cast<T*>(js_object.GetPrivate());
+    auto native_object_ptr = static_cast<T*>(js_object.GetPrivate());
     static_cast<void>(native_object_ptr);
     HAL_LOG_DEBUG("JSExportClass::HasInstance: result = ", result, " for ", to_string(possible_instance), " instanceof this[", native_object_ptr, "]");
     return result;
@@ -592,12 +606,12 @@ namespace HAL { namespace detail {
   } catch (const std::exception& e) {
     JSContext js_context(context_ref);
     JSString message(LogStdException("JSObjectHasInstanceCallback", JSObject(js_context, constructor_ref), e));
-    *exception = JSValue(js_context, message);
+    *exception = static_cast<JSValueRef>(js_context.CreateString(message));
     return false;
   } catch (...) {
     JSContext js_context(context_ref);
     JSString message(LogUnknownException("JSObjectHasInstanceCallback", JSObject(js_context, constructor_ref)));
-    *exception = JSValue(js_context, message);
+    *exception = static_cast<JSValueRef>(js_context.CreateString(message));
     return false;
   }
   
@@ -610,7 +624,7 @@ namespace HAL { namespace detail {
     auto       callback       = js_export_class_definition__.convert_to_type_callback__;
     const bool callback_found = callback != nullptr;
     
-    const auto native_object_ptr = reinterpret_cast<const T*>(js_object.GetPrivate());
+    const auto native_object_ptr = static_cast<const T*>(js_object.GetPrivate());
     HAL_LOG_DEBUG("JSExportClass::ConvertToType: callback found = ", callback_found, " for this[", native_object_ptr, "]");
     
     // precondition
@@ -620,17 +634,17 @@ namespace HAL { namespace detail {
     
     HAL_LOG_DEBUG("JSExportClass::ConvertToType: result = ", to_string(result), " for converting this[", native_object_ptr, "] to ", to_string(js_value_type));
     
-    return result;
+    return static_cast<JSValueRef>(result);
     
   } catch (const std::exception& e) {
     JSContext js_context(context_ref);
     JSString message(LogStdException("JSObjectConvertToTypeCallback", JSObject(js_context, object_ref), e));
-    *exception = JSValue(js_context, message);
+    *exception = static_cast<JSValueRef>(js_context.CreateString(message));
     return nullptr;
   } catch (...) {
     JSContext js_context(context_ref);
     JSString message(LogUnknownException("JSObjectConvertToTypeCallback", JSObject(js_context, object_ref)));
-    *exception = JSValue(js_context, message);
+    *exception = static_cast<JSValueRef>(js_context.CreateString(message));
     return nullptr;
   }
   

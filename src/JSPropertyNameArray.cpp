@@ -89,7 +89,7 @@ namespace HAL {
   }
   
   JSPropertyNameArray::JSPropertyNameArray(const JSObject& js_object) HAL_NOEXCEPT
-  : js_property_name_array_ref__(JSObjectCopyPropertyNames(js_object.get_context(), js_object)) {
+  : js_property_name_array_ref__(JSObjectCopyPropertyNames(static_cast<JSContextRef>(js_object.get_context()), static_cast<JSObjectRef>(js_object))) {
     HAL_LOG_TRACE("JSPropertyNameArray:: ctor");
     HAL_LOG_TRACE("JSPropertyNameArray:: retain ", js_property_name_array_ref__);
   }

@@ -36,7 +36,7 @@ namespace HAL {
   JSString JSValue::ToJSONString(unsigned indent) {
     HAL_JSVALUE_LOCK_GUARD;
     JSValueRef exception { nullptr };
-    JSStringRef js_string_ref = JSValueCreateJSONString(js_context__, js_value_ref__, indent, &exception);
+    JSStringRef js_string_ref = JSValueCreateJSONString(static_cast<JSContextRef>(js_context__), js_value_ref__, indent, &exception);
     if (exception) {
       // If this assert fails then we need to JSStringRelease
       // js_string_ref.
@@ -56,8 +56,11 @@ namespace HAL {
   JSValue::operator JSString() const {
     HAL_JSVALUE_LOCK_GUARD;
     JSValueRef exception { nullptr };
-    JSStringRef js_string_ref = JSValueToStringCopy(js_context__, js_value_ref__, &exception);
+    JSStringRef js_string_ref = JSValueToStringCopy(static_cast<JSContextRef>(js_context__), js_value_ref__, &exception);
     if (exception) {
+      // If this assert fails then we need to JSStringRelease
+      // js_string_ref.
+      assert(!js_string_ref);
       detail::ThrowRuntimeError("JSValue", JSValue(js_context__, exception));
     }
     
@@ -74,18 +77,13 @@ namespace HAL {
   
   JSValue::operator bool() const HAL_NOEXCEPT {
     HAL_JSVALUE_LOCK_GUARD;
-    return JSValueToBoolean(js_context__, js_value_ref__);
-  }
-  
-  JSValue::operator JSBoolean() const HAL_NOEXCEPT {
-    HAL_JSVALUE_LOCK_GUARD;
-    return js_context__.CreateBoolean(operator bool());
+    return JSValueToBoolean(static_cast<JSContextRef>(js_context__), js_value_ref__);
   }
   
   JSValue::operator double() const {
     HAL_JSVALUE_LOCK_GUARD;
     JSValueRef exception { nullptr };
-    const double result = JSValueToNumber(js_context__, js_value_ref__, &exception);
+    const double result = JSValueToNumber(static_cast<JSContextRef>(js_context__), js_value_ref__, &exception);
     
     if (exception) {
       detail::ThrowRuntimeError("JSValue", JSValue(js_context__, exception));
@@ -106,7 +104,7 @@ namespace HAL {
   JSValue::operator JSObject() const {
     HAL_JSVALUE_LOCK_GUARD;
     JSValueRef exception { nullptr };
-    JSObjectRef js_object_ref = JSValueToObject(js_context__, js_value_ref__, &exception);
+    JSObjectRef js_object_ref = JSValueToObject(static_cast<JSContextRef>(js_context__), js_value_ref__, &exception);
     
     if (exception) {
       // If this assert fails then we need to JSValueUnprotect
@@ -122,7 +120,7 @@ namespace HAL {
   JSValue::Type JSValue::GetType() const HAL_NOEXCEPT {
     HAL_JSVALUE_LOCK_GUARD;
     auto type = Type::Undefined;
-    const JSType js_type = JSValueGetType(js_context__, js_value_ref__);
+    const JSType js_type = JSValueGetType(static_cast<JSContextRef>(js_context__), js_value_ref__);
     switch (js_type) {
       case kJSTypeUndefined:
         type = Type::Undefined;
@@ -154,43 +152,43 @@ namespace HAL {
   
   bool JSValue::IsUndefined() const HAL_NOEXCEPT {
     HAL_JSVALUE_LOCK_GUARD;
-    return JSValueIsUndefined(js_context__, js_value_ref__);
+    return JSValueIsUndefined(static_cast<JSContextRef>(js_context__), js_value_ref__);
   }
   
   bool JSValue::IsNull() const HAL_NOEXCEPT {
     HAL_JSVALUE_LOCK_GUARD;
-    return JSValueIsNull(js_context__, js_value_ref__);
+    return JSValueIsNull(static_cast<JSContextRef>(js_context__), js_value_ref__);
   }
   
   bool JSValue::IsBoolean() const HAL_NOEXCEPT {
     HAL_JSVALUE_LOCK_GUARD;
-    return JSValueIsBoolean(js_context__, js_value_ref__);
+    return JSValueIsBoolean(static_cast<JSContextRef>(js_context__), js_value_ref__);
   }
   
   bool JSValue::IsNumber() const HAL_NOEXCEPT {
     HAL_JSVALUE_LOCK_GUARD;
-    return JSValueIsNumber(js_context__, js_value_ref__);
+    return JSValueIsNumber(static_cast<JSContextRef>(js_context__), js_value_ref__);
   }
   
   bool JSValue::IsString() const HAL_NOEXCEPT {
     HAL_JSVALUE_LOCK_GUARD;
-    return JSValueIsString(js_context__, js_value_ref__);
+    return JSValueIsString(static_cast<JSContextRef>(js_context__), js_value_ref__);
   }
   
   bool JSValue::IsObject() const HAL_NOEXCEPT {
     HAL_JSVALUE_LOCK_GUARD;
-    return JSValueIsObject(js_context__, js_value_ref__);
+    return JSValueIsObject(static_cast<JSContextRef>(js_context__), js_value_ref__);
   }
   
   bool JSValue::IsObjectOfClass(const JSClass& js_class) const HAL_NOEXCEPT {
     HAL_JSVALUE_LOCK_GUARD;
-    return JSValueIsObjectOfClass(js_context__, js_value_ref__, js_class);
+    return JSValueIsObjectOfClass(static_cast<JSContextRef>(js_context__), js_value_ref__, static_cast<JSClassRef>(js_class));
   }
   
   bool JSValue::IsInstanceOfConstructor(const JSObject& constructor) const {
     HAL_JSVALUE_LOCK_GUARD;
     JSValueRef exception { nullptr };
-    const bool result = JSValueIsInstanceOfConstructor(js_context__, js_value_ref__, constructor, &exception);
+    const bool result = JSValueIsInstanceOfConstructor(static_cast<JSContextRef>(js_context__), js_value_ref__, static_cast<JSObjectRef>(constructor), &exception);
     if (exception) {
       detail::ThrowRuntimeError("JSValue", JSValue(js_context__, exception));
     }
@@ -201,7 +199,7 @@ namespace HAL {
   bool JSValue::IsEqualWithTypeCoercion(const JSValue& rhs) const {
     HAL_JSVALUE_LOCK_GUARD;
     JSValueRef exception { nullptr };
-    const bool result = JSValueIsEqual(js_context__, js_value_ref__, rhs.js_value_ref__, &exception);
+    const bool result = JSValueIsEqual(static_cast<JSContextRef>(js_context__), js_value_ref__, rhs.js_value_ref__, &exception);
     if (exception) {
       detail::ThrowRuntimeError("JSValue", JSValue(js_context__, exception));
     }
@@ -216,7 +214,7 @@ namespace HAL {
   JSValue::~JSValue() HAL_NOEXCEPT {
     HAL_LOG_TRACE("JSValue:: dtor");
     HAL_LOG_TRACE("JSValue:: release ", js_value_ref__);
-    JSValueUnprotect(js_context__, js_value_ref__);
+    JSValueUnprotect(static_cast<JSContextRef>(js_context__), js_value_ref__);
   }
   
   JSValue::JSValue(const JSValue& rhs) HAL_NOEXCEPT
@@ -224,7 +222,7 @@ namespace HAL {
   , js_value_ref__(rhs.js_value_ref__) {
     HAL_LOG_TRACE("JSValue:: copy ctor");
     HAL_LOG_TRACE("JSValue:: retain ", js_value_ref__);
-    JSValueProtect(js_context__, js_value_ref__);
+    JSValueProtect(static_cast<JSContextRef>(js_context__), js_value_ref__);
   }
   
   JSValue::JSValue(JSValue&& rhs) HAL_NOEXCEPT
@@ -232,7 +230,7 @@ namespace HAL {
   , js_value_ref__(rhs.js_value_ref__) {
     HAL_LOG_TRACE("JSValue:: move ctor");
     HAL_LOG_TRACE("JSValue:: retain ", js_value_ref__);
-    JSValueProtect(js_context__, js_value_ref__);
+    JSValueProtect(static_cast<JSContextRef>(js_context__), js_value_ref__);
   }
   
   JSValue& JSValue::operator=(const JSValue& rhs) {
@@ -245,11 +243,11 @@ namespace HAL {
     }
     
     HAL_LOG_TRACE("JSValue:: release ", js_value_ref__);
-    JSValueUnprotect(js_context__, js_value_ref__);
+    JSValueUnprotect(static_cast<JSContextRef>(js_context__), js_value_ref__);
     js_context__   = rhs.js_context__;
     js_value_ref__ = rhs.js_value_ref__;
     HAL_LOG_TRACE("JSValue:: retain ", js_value_ref__);
-    JSValueProtect(js_context__, js_value_ref__);
+    JSValueProtect(static_cast<JSContextRef>(js_context__), js_value_ref__);
     return *this;
   }
   
@@ -263,11 +261,11 @@ namespace HAL {
     }
 
     HAL_LOG_TRACE("JSValue:: release ", js_value_ref__);
-    JSValueUnprotect(js_context__, js_value_ref__);
+    JSValueUnprotect(static_cast<JSContextRef>(js_context__), js_value_ref__);
     js_context__   = std::move(rhs.js_context__);
     js_value_ref__ = rhs.js_value_ref__;
     HAL_LOG_TRACE("JSValue:: retain ", js_value_ref__);
-    JSValueProtect(js_context__, js_value_ref__);
+    JSValueProtect(static_cast<JSContextRef>(js_context__), js_value_ref__);
     return *this;
   }
   
@@ -286,15 +284,15 @@ namespace HAL {
   : js_context__(js_context) {
     HAL_LOG_TRACE("JSValue:: ctor 1");
     if (parse_as_json) {
-      js_value_ref__ = JSValueMakeFromJSONString(js_context, js_string);
+      js_value_ref__ = JSValueMakeFromJSONString(static_cast<JSContextRef>(js_context), static_cast<JSStringRef>(js_string));
       if (!js_value_ref__) {
         const std::string message = "Input is not a valid JSON string: " + to_string(js_string);
         detail::ThrowRuntimeError("JSValue", message);
       }
     } else {
-      js_value_ref__ = JSValueMakeString(js_context__, js_string);
+      js_value_ref__ = JSValueMakeString(static_cast<JSContextRef>(js_context__), static_cast<JSStringRef>(js_string));
     }
-    HAL_LOG_TRACE("JSValue:: retain ", js_value_ref__);
+    HAL_LOG_TRACE("JSValue:: retain ", js_value_ref__, " (implicit)");
   }
   
   // For interoperability with the JavaScriptCore C API.
@@ -304,11 +302,11 @@ namespace HAL {
     HAL_LOG_TRACE("JSValue:: ctor 2");
     assert(js_value_ref__);
     HAL_LOG_TRACE("JSValue:: retain ", js_value_ref__);
-    JSValueProtect(js_context__, js_value_ref__);
+    JSValueProtect(static_cast<JSContextRef>(js_context__), js_value_ref__);
   }
   
   std::string to_string(const JSValue::Type& js_value_type) HAL_NOEXCEPT {
-	  std::string string = "Unknown";
+    std::string string = "Unknown";
     switch (js_value_type) {
       case JSValue::Type::Undefined:
         string = "Undefined";
@@ -333,7 +331,7 @@ namespace HAL {
   }
   
   bool operator==(const JSValue& lhs, const JSValue& rhs) HAL_NOEXCEPT {
-    return JSValueIsStrictEqual(lhs.get_context(), lhs, rhs);
+    return JSValueIsStrictEqual(static_cast<JSContextRef>(lhs.get_context()), static_cast<JSValueRef>(lhs), static_cast<JSValueRef>(rhs));
   }
   
   

@@ -18,6 +18,7 @@ namespace HAL {
 
 JSDate::JSDate(const JSContext& js_context, const std::vector<JSValue>& arguments)
 		: JSObject(js_context, MakeDate(js_context, arguments)) {
+      JSValueUnprotect(static_cast<JSContextRef>(js_context), static_cast<JSObjectRef>(*this));
 }
 
 JSObjectRef JSDate::MakeDate(const JSContext& js_context, const std::vector<JSValue>& arguments) {
@@ -25,9 +26,9 @@ JSObjectRef JSDate::MakeDate(const JSContext& js_context, const std::vector<JSVa
 	JSObjectRef js_object_ref = nullptr;
 	if (!arguments.empty()) {
 		std::vector<JSValueRef> arguments_array = detail::to_vector(arguments);
-		js_object_ref = JSObjectMakeDate(js_context, arguments_array.size(), &arguments_array[0], &exception);
+		js_object_ref = JSObjectMakeDate(static_cast<JSContextRef>(js_context), arguments_array.size(), &arguments_array[0], &exception);
 	} else {
-		js_object_ref = JSObjectMakeDate(js_context, 0, nullptr, &exception);
+		js_object_ref = JSObjectMakeDate(static_cast<JSContextRef>(js_context), 0, nullptr, &exception);
 	}
 	
 	if (exception) {

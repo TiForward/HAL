@@ -169,7 +169,7 @@ namespace HAL {
      JavaScript 'new' expression.
      */
     JSExportObject(const JSExportObject&, const std::vector<JSValue>& arguments) HAL_NOEXCEPT;
-    virtual ~JSExportObject()  HAL_NOEXCEPT;
+    virtual ~JSExportObject() HAL_NOEXCEPT;
     JSExportObject(const JSExportObject&)            = default;
     JSExportObject& operator=(const JSExportObject&) = default;
 #ifdef TITANIUM_MOVE_CTOR_AND_ASSIGN_DEFAULT_ENABLE

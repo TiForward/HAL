@@ -302,20 +302,16 @@ namespace HAL {
     
   protected:
     
-    // Only JSContext uses the following constructor.
-    friend class JSContext;
-    
-    JSObject(const JSContext& js_context, const JSClass& js_class, void* private_data = nullptr);
-    
-    // In addition to derived classes, these classes need access to
-    // the following JSObject constructor.
+    // In addition to derived classes, JSValue and JSExportClass need
+    // access to the following JSObject constructor.
     
     friend class JSValue;
     
-    // For GetPrivate, and SetPrivate and the static functions.
+    // The JSExportClass static functions also need access to
+    // GetPrivate and SetPrivate.
     template<typename T>
     friend class detail::JSExportClass;
-    
+
     // For interoperability with the JavaScriptCore C API.
     JSObject(const JSContext& js_context, JSObjectRef js_object_ref);
     
@@ -323,7 +319,7 @@ namespace HAL {
     friend class JSPropertyNameArray;
     
     // For interoperability with the JavaScriptCore C API.
-    virtual operator JSObjectRef() const HAL_NOEXCEPT final {
+    virtual explicit operator JSObjectRef() const HAL_NOEXCEPT final {
       return js_object_ref__;
     }
     
@@ -395,6 +391,12 @@ namespace HAL {
      used by JavaScript for...in loops.
      */
     virtual void GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const HAL_NOEXCEPT final;
+    
+    // JSContext (and already friended JSExportClass) use the
+    // following constructor.
+    friend class JSContext;
+
+    JSObject(const JSContext& js_context, const JSClass& js_class, void* private_data = nullptr);
     
     JSContext js_context__;
 

@@ -172,7 +172,7 @@ namespace HAL {
     JSValueRef js_value_ref { nullptr };
     const JSStringRef source_url_ref = (source_url.length() > 0) ? static_cast<JSStringRef>(source_url) : nullptr;
     JSValueRef exception { nullptr };
-    js_value_ref = ::JSEvaluateScript(js_global_context_ref__, script, this_object, source_url_ref, starting_line_number, &exception);
+    js_value_ref = ::JSEvaluateScript(js_global_context_ref__, static_cast<JSStringRef>(script), static_cast<JSObjectRef>(this_object), source_url_ref, starting_line_number, &exception);
     
     if (exception) {
       // If this assert fails then we need to JSValueUnprotect
@@ -192,7 +192,7 @@ namespace HAL {
     HAL_JSCONTEXT_LOCK_GUARD;
     const JSStringRef source_url_ref = (source_url.length() > 0) ? static_cast<JSStringRef>(source_url) : nullptr;
     JSValueRef exception { nullptr };
-    bool result = ::JSCheckScriptSyntax(js_global_context_ref__, script, source_url_ref, starting_line_number, &exception);
+    bool result = ::JSCheckScriptSyntax(js_global_context_ref__, static_cast<JSStringRef>(script), source_url_ref, starting_line_number, &exception);
     
     if (exception) {
       detail::ThrowRuntimeError("JSContext", JSValue(JSContext(js_global_context_ref__), exception));
@@ -274,9 +274,9 @@ namespace HAL {
   
   JSContext::JSContext(const JSContextGroup& js_context_group, const JSClass& global_object_class) HAL_NOEXCEPT
   : js_context_group__(js_context_group)
-  , js_global_context_ref__(JSGlobalContextCreateInGroup(js_context_group, global_object_class)) {
+  , js_global_context_ref__(JSGlobalContextCreateInGroup(static_cast<JSContextGroupRef>(js_context_group), static_cast<JSClassRef>(global_object_class))) {
     HAL_LOG_TRACE("JSContext:: ctor 1");
-    HAL_LOG_TRACE("JSContext:: retain (implicit) ", js_global_context_ref__);
+    HAL_LOG_TRACE("JSContext:: retain ", js_global_context_ref__, " (implicit)");
   }
   
   JSContext::JSContext(JSContextRef js_context_ref) HAL_NOEXCEPT

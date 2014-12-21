@@ -68,7 +68,8 @@ class HAL_EXPORT JSBoolean final : public JSValue HAL_PERFORMANCE_COUNTER2(JSBoo
 	friend JSContext;
 	
 	JSBoolean(const JSContext& js_context, bool boolean)
-			: JSValue(js_context, JSValueMakeBoolean(js_context, boolean)) {
+			: JSValue(js_context, JSValueMakeBoolean(static_cast<JSContextRef>(js_context), boolean)) {
+        JSValueUnprotect(static_cast<JSContextRef>(js_context), static_cast<JSValueRef>(*this));
 	}
 };
 

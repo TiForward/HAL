@@ -95,7 +95,8 @@ private:
 	friend JSContext;
 
 	explicit JSNumber(const JSContext& js_context, double number = 0)
-			: JSValue(js_context, JSValueMakeNumber(js_context, number)) {
+			: JSValue(js_context, JSValueMakeNumber(static_cast<JSContextRef>(js_context), number)) {
+        JSValueUnprotect(static_cast<JSContextRef>(js_context), static_cast<JSValueRef>(*this));
 	}
 	
 	JSNumber(const JSContext& js_context, int32_t number)

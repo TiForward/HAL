@@ -706,7 +706,7 @@ namespace HAL { namespace detail {
     const std::string internal_component_name = "JSExportClassDefinitionBuilder<" + name__ + ">::build()";
     
     js_class_definition__.className         = name__.c_str();
-    js_class_definition__.parentClass       = parent__;
+    js_class_definition__.parentClass       = static_cast<JSClassRef>(parent__);
     js_class_definition__.initialize        = JSExportClass<T>::JSObjectInitializeCallback;
     js_class_definition__.finalize          = JSExportClass<T>::JSObjectFinalizeCallback;
     js_class_definition__.callAsConstructor = JSExportClass<T>::JSObjectCallAsConstructorCallback;

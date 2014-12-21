@@ -142,13 +142,16 @@ namespace HAL {
   
   JSExportObject::JSExportObject(const JSContext& js_context) HAL_NOEXCEPT
   : js_object__(js_context.CreateObject()) {
+    HAL_LOG_DEBUG("JSExportObject:: ctor 1 ", this);
   }
   
   JSExportObject::JSExportObject(const JSExportObject& rhs, const std::vector<JSValue>& arguments) HAL_NOEXCEPT
   : js_object__(rhs.js_object__) {
+    HAL_LOG_DEBUG("JSExportObject:: ctor 2 ", this);
   }
   
   JSExportObject::~JSExportObject() HAL_NOEXCEPT {
+    HAL_LOG_DEBUG("JSExportObject:: dtor ", this);
   }
   
   void JSExportObject::GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const HAL_NOEXCEPT {
