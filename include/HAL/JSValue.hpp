@@ -329,7 +329,7 @@ namespace HAL {
     JSValue(const JSContext& js_context, JSValueRef js_value_ref) HAL_NOEXCEPT;
     
     // For interoperability with the JavaScriptCore C API.
-    virtual explicit operator JSValueRef() const HAL_NOEXCEPT final {
+    explicit operator JSValueRef() const HAL_NOEXCEPT {
       return js_value_ref__;
     }
     

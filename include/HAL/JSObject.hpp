@@ -319,7 +319,7 @@ namespace HAL {
     friend class JSPropertyNameArray;
     
     // For interoperability with the JavaScriptCore C API.
-    virtual explicit operator JSObjectRef() const HAL_NOEXCEPT final {
+    explicit operator JSObjectRef() const HAL_NOEXCEPT {
       return js_object_ref__;
     }
     
