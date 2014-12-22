@@ -89,7 +89,7 @@ namespace HAL {
     explicit JSPropertyNameArray(const JSObject& js_object) HAL_NOEXCEPT;
     
     // For interoperability with the JavaScriptCore C API.
-    operator JSPropertyNameArrayRef() const HAL_NOEXCEPT {
+    explicit operator JSPropertyNameArrayRef() const HAL_NOEXCEPT {
       return js_property_name_array_ref__;
     }
     

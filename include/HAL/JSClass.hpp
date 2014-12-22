@@ -98,7 +98,7 @@ namespace HAL {
     template<typename T>
     friend class detail::JSExportClassDefinitionBuilder;
     
-    operator JSClassRef() const HAL_NOEXCEPT {
+    explicit operator JSClassRef() const HAL_NOEXCEPT {
       return js_class_ref__;
     }
     

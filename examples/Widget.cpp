@@ -26,14 +26,14 @@ Widget::Widget(const JSContext& js_context) HAL_NOEXCEPT
 : JSExportObject(js_context)
 , name__("world")
 , number__(42) {
-  HAL_LOG_DEBUG("Widget ctor");
+  HAL_LOG_DEBUG("Widget:: ctor 1 ", this);
 }
 
 Widget::Widget(const Widget& rhs, const std::vector<JSValue>& arguments) HAL_NOEXCEPT
 : JSExportObject(rhs, arguments)
 , name__(rhs.name__)
 , number__(rhs.number__) {
-  HAL_LOG_DEBUG("Widget JavaScript constructor");
+  HAL_LOG_DEBUG("Widget:: ctor 2 ", this);
   assert(arguments.size() >= 2);
   const auto _0 = arguments.at(0);
   const auto _1 = arguments.at(1);
@@ -41,7 +41,6 @@ Widget::Widget(const Widget& rhs, const std::vector<JSValue>& arguments) HAL_NOE
   assert(_1.IsNumber());
   name__   = static_cast<JSString>(_0);
   number__ = static_cast<int32_t>(_1);
-  
 }
 
 JSValue Widget::get_name() const {
@@ -84,7 +83,7 @@ JSValue Widget::sayHello(const std::vector<JSValue>& arguments, JSObject& this_o
   
   os << ". Your number is " << number__ << ".";
   
-  return get_context().CreateString(os.str());
+  return this_object.get_context().CreateString(os.str());
 }
 
 std::string Widget::get_name_native() const {
@@ -104,38 +103,39 @@ void Widget::set_number_native(int number) {
 }
 
 Widget::~Widget() HAL_NOEXCEPT {
-  HAL_LOG_DEBUG("Widget dtor");
+  HAL_LOG_DEBUG("Widget:: dtor ", this);
 }
 
 Widget::Widget(const Widget& rhs) HAL_NOEXCEPT
 : JSExportObject(rhs.get_context())
 , name__(rhs.name__)
 , number__(rhs.number__) {
-  HAL_LOG_DEBUG("Widget copy ctor");
+  HAL_LOG_DEBUG("Widget:: copy ctor ", this);
 }
 
 Widget::Widget(Widget&& rhs) HAL_NOEXCEPT
 : JSExportObject(rhs.get_context())
 , name__(rhs.name__)
 , number__(rhs.number__) {
-  HAL_LOG_DEBUG("Widget move ctor");
+  HAL_LOG_DEBUG("Widget:: move ctor ", this);
 }
 
 Widget& Widget::operator=(const Widget& rhs) HAL_NOEXCEPT {
+  HAL_LOG_DEBUG("Widget:: copy assign ", this);
   JSExportObject::operator=(rhs);
   name__   = rhs.name__;
   number__ = rhs.number__;
-  HAL_LOG_DEBUG("Widget copy assign");
   return *this;
 }
 
 Widget& Widget::operator=(Widget&& rhs) HAL_NOEXCEPT {
+  HAL_LOG_DEBUG("Widget:: move assign ", this);
   swap(rhs);
-  HAL_LOG_DEBUG("Widget move assign");
   return *this;
 }
 
 void Widget::swap(Widget& other) HAL_NOEXCEPT {
+  HAL_LOG_DEBUG("Widget:: swap ", this);
   JSExportObject::swap(other);
   using std::swap;
   

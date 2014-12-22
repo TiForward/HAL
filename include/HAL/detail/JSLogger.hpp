@@ -16,6 +16,7 @@
 #include <iomanip>
 #include <cstdint>
 #include <mutex>
+#include <memory>
 
 namespace HAL { namespace detail {
   
@@ -35,15 +36,15 @@ namespace HAL { namespace detail {
    logging facility:
    
    HAL_LOG_DEBUG("Before loop.");
-   for(short i = 0 ; i < 3 ; ++i)
-   {
-   HAL_LOG_DEBUG("The value of 'i' is ", i , ". " , 3 - i - 1 , " more iterations left ");
+   for (short i = 0 ; i < 3 ; ++i) {
+     HAL_LOG_DEBUG("The value of 'i' is ", i , ". " , 3 - i - 1 , " more iterations left ");
    }
    HAL_LOG_WARN("After loop.");
    HAL_LOG_ERROR("All good things come to an end.");
    */
   
   enum class HAL_EXPORT JSLoggerSeverityType {
+    JS_TRACE,
     JS_DEBUG,
     JS_INFO,
     JS_WARN,
@@ -55,18 +56,15 @@ namespace HAL { namespace detail {
     
   public:
     
-    JSLogger(const std::string& name)
-    : js_log_policy__(name) {
-    }
+    static std::shared_ptr<JSLogger<JSLoggerPolicy>> Instance();
     
     JSLogger()                           = delete;
-    ~JSLogger()                          = default;
-    JSLogger(const JSLogger&)            = default;
-    JSLogger& operator=(const JSLogger&) = default;
+    JSLogger(const JSLogger&)            = delete;
+    JSLogger& operator=(const JSLogger&) = delete;
     
 #ifdef HAL_MOVE_CTOR_AND_ASSIGN_DEFAULT_ENABLE
-    JSLogger(JSLogger&&)                 = default;
-    JSLogger& operator=(JSLogger&&)      = default;
+    JSLogger(JSLogger&&)                 = delete;
+    JSLogger& operator=(JSLogger&&)      = delete;
 #endif
     
     template<JSLoggerSeverityType severity, typename...Args>
@@ -74,18 +72,47 @@ namespace HAL { namespace detail {
     
   private:
     
+    JSLogger(const std::string& name);
+    ~JSLogger() = default;
+    
     // Core printing functionality.
     void PrintImpl();
     
     template<typename First, typename...Rest>
     void PrintImpl(First first_parameter, Rest...rest);
     
-    JSLoggerPolicy     js_log_policy__;
-    uint32_t           log_line_number__ { 0 };
-    std::ostringstream log_stream__;
-    std::mutex         js_logger_mutex__;
+    // This struct only exists so that a custom deleter can be passed to
+    // std::shared_ptr<JSLogger<T>> while keeping the JSLogger<T> destructor
+    // private.
+    struct deleter {
+      void operator()(JSLogger* ptr) {
+        delete ptr;
+      }
+    };
+
+    JSLoggerPolicy       js_log_policy__;
+    uint32_t             log_line_number__ { 0 };
+    std::ostringstream   log_stream__;
+    std::mutex           js_logger_mutex__;
+    //std::recursive_mutex js_logger_mutex__;
   };
   
+  template<typename JSLoggerPolicy>
+  JSLogger<JSLoggerPolicy>::JSLogger(const std::string& name)
+  : js_log_policy__(name) {
+  }
+  
+  template<typename JSLoggerPolicy>
+  std::shared_ptr<JSLogger<JSLoggerPolicy>> JSLogger<JSLoggerPolicy>::Instance() {
+    static std::shared_ptr<JSLogger<JSLoggerPolicy>> instance;
+    static std::once_flag of;
+    std::call_once(of, [] {
+      instance = std::shared_ptr<JSLogger<JSLoggerPolicy>>(new JSLogger<JSLoggerPolicy>("HAL.log"), deleter{});
+    });
+    
+    return instance;
+  }
+
   template<typename JSLoggerPolicy>
   template<JSLoggerSeverityType severity, typename...Args>
   void JSLogger<JSLoggerPolicy>::Print(Args...args)  {
@@ -98,6 +125,9 @@ namespace HAL { namespace detail {
     log_stream__ << std::setw(5) << std::left;
     
     switch(severity) {
+      case JSLoggerSeverityType::JS_TRACE:
+        log_stream__ << "TRACE: ";
+        break;
       case JSLoggerSeverityType::JS_DEBUG:
         log_stream__ << "DEBUG: ";
         break;
@@ -131,15 +161,16 @@ namespace HAL { namespace detail {
 #ifdef HAL_LOGGING_ENABLE
   
   // TODO: Add a more flexible way to specify the logging policy.
+  //using JSLogger_t = JSLogger<JSLoggerPolicyFile>;
+  using JSLogger_t = JSLogger<JSLoggerPolicyConsole>;
   
-  //static JSLogger<JSLoggerPolicyFile>    js_logger_instance("HAL.log");
-  static JSLogger<JSLoggerPolicyConsole> js_logger_instance("HAL.log");
-  
-#define HAL_LOG_DEBUG HAL::detail::js_logger_instance.Print<HAL::detail::JSLoggerSeverityType::JS_DEBUG>
-#define HAL_LOG_INFO  HAL::detail::js_logger_instance.Print<HAL::detail::JSLoggerSeverityType::JS_INFO>
-#define HAL_LOG_WARN  HAL::detail::js_logger_instance.Print<HAL::detail::JSLoggerSeverityType::JS_WARN>
-#define HAL_LOG_ERROR HAL::detail::js_logger_instance.Print<HAL::detail::JSLoggerSeverityType::JS_ERROR>
+#define HAL_LOG_TRACE HAL::detail::JSLogger_t::Instance() -> Print<HAL::detail::JSLoggerSeverityType::JS_TRACE>
+#define HAL_LOG_DEBUG HAL::detail::JSLogger_t::Instance() -> Print<HAL::detail::JSLoggerSeverityType::JS_DEBUG>
+#define HAL_LOG_INFO  HAL::detail::JSLogger_t::Instance() -> Print<HAL::detail::JSLoggerSeverityType::JS_INFO>
+#define HAL_LOG_WARN  HAL::detail::JSLogger_t::Instance() -> Print<HAL::detail::JSLoggerSeverityType::JS_WARN>
+#define HAL_LOG_ERROR HAL::detail::JSLogger_t::Instance() -> Print<HAL::detail::JSLoggerSeverityType::JS_ERROR>
 #else
+#define HAL_LOG_TRACE(...)
 #define HAL_LOG_DEBUG(...)
 #define HAL_LOG_INFO(...)
 #define HAL_LOG_WARN(...)

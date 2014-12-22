@@ -55,7 +55,7 @@ namespace HAL {
        @param property_name The property name to add.
        */
       void AddName(const JSString& property_name) const {
-        JSPropertyNameAccumulatorAddName(js_property_name_accumulator_ref__, property_name);
+        JSPropertyNameAccumulatorAddName(js_property_name_accumulator_ref__, static_cast<JSStringRef>(property_name));
       }
       
     private:

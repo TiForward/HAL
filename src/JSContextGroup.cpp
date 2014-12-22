@@ -16,8 +16,8 @@ namespace HAL {
   
   JSContextGroup::JSContextGroup() HAL_NOEXCEPT
   : js_context_group_ref__(JSContextGroupCreate()) {
-    HAL_LOG_DEBUG("JSContextGroup:: ctor");
-    HAL_LOG_DEBUG("JSContextGroup:: retain ", js_context_group_ref__);
+    HAL_LOG_TRACE("JSContextGroup:: ctor 1 ", this);
+    HAL_LOG_TRACE("JSContextGroup:: retain ", js_context_group_ref__, " (implicit) for ", this);
   }
   
   JSContext JSContextGroup::CreateContext() const HAL_NOEXCEPT {
@@ -30,57 +30,57 @@ namespace HAL {
   
   JSContextGroup::JSContextGroup(JSContextGroupRef js_context_group_ref) HAL_NOEXCEPT
   : js_context_group_ref__(js_context_group_ref) {
-    HAL_LOG_DEBUG("JSContextGroup:: ctor");
+    HAL_LOG_TRACE("JSContextGroup:: ctor 2 ", this);
     assert(js_context_group_ref__);
-    HAL_LOG_DEBUG("JSContextGroup:: retain ", js_context_group_ref__);
+    HAL_LOG_TRACE("JSContextGroup:: retain ", js_context_group_ref__, " for ", this);
     JSContextGroupRetain(js_context_group_ref__);
   }
   
   JSContextGroup::~JSContextGroup() HAL_NOEXCEPT {
-    HAL_LOG_DEBUG("JSContextGroup:: dtor");
-    HAL_LOG_DEBUG("JSContextGroup:: release ", js_context_group_ref__);
+    HAL_LOG_TRACE("JSContextGroup:: dtor ", this);
+    HAL_LOG_TRACE("JSContextGroup:: release ", js_context_group_ref__, " for ", this);
     JSContextGroupRelease(js_context_group_ref__);
   }
   
   JSContextGroup::JSContextGroup(const JSContextGroup& rhs) HAL_NOEXCEPT
   : js_context_group_ref__(rhs.js_context_group_ref__) {
-    HAL_LOG_DEBUG("JSContextGroup:: copy ctor");
-    HAL_LOG_DEBUG("JSContextGroup:: retain ", js_context_group_ref__);
+    HAL_LOG_TRACE("JSContextGroup:: copy ctor ", this);
+    HAL_LOG_TRACE("JSContextGroup:: retain ", js_context_group_ref__, " for ", this);
     JSContextGroupRetain(js_context_group_ref__);
   }
   
   JSContextGroup::JSContextGroup(JSContextGroup&& rhs) HAL_NOEXCEPT
   : js_context_group_ref__(rhs.js_context_group_ref__) {
-    HAL_LOG_DEBUG("JSContextGroup:: move ctor");
-    HAL_LOG_DEBUG("JSContextGroup:: retain ", js_context_group_ref__);
+    HAL_LOG_TRACE("JSContextGroup:: move ctor ", this);
+    HAL_LOG_TRACE("JSContextGroup:: retain ", js_context_group_ref__, " for ", this);
     JSContextGroupRetain(js_context_group_ref__);
   }
   
   JSContextGroup& JSContextGroup::operator=(const JSContextGroup& rhs) HAL_NOEXCEPT {
     HAL_JSCONTEXTGROUP_LOCK_GUARD;
-    HAL_LOG_DEBUG("JSContextGroup:: copy assignment");
+    HAL_LOG_TRACE("JSContextGroup:: copy assignment ", this);
     JSContextGroupRelease(js_context_group_ref__);
-    HAL_LOG_DEBUG("JSContextGroup:: release ", js_context_group_ref__);
+    HAL_LOG_TRACE("JSContextGroup:: release ", js_context_group_ref__, " for ", this);
     js_context_group_ref__ = rhs.js_context_group_ref__;
-    HAL_LOG_DEBUG("JSContextGroup:: retain ", js_context_group_ref__);
+    HAL_LOG_TRACE("JSContextGroup:: retain ", js_context_group_ref__, " for ", this);
     JSContextGroupRetain(js_context_group_ref__);
     return *this;
   }
   
   JSContextGroup& JSContextGroup::operator=(JSContextGroup&& rhs) HAL_NOEXCEPT {
     HAL_JSCONTEXTGROUP_LOCK_GUARD;
-    HAL_LOG_DEBUG("JSContextGroup:: move assignment");
-    HAL_LOG_DEBUG("JSContextGroup:: release ", js_context_group_ref__);
+    HAL_LOG_TRACE("JSContextGroup:: move assignment ", this);
+    HAL_LOG_TRACE("JSContextGroup:: release ", js_context_group_ref__, " for ", this);
     JSContextGroupRelease(js_context_group_ref__);
     js_context_group_ref__ = rhs.js_context_group_ref__;
-    HAL_LOG_DEBUG("JSContextGroup:: retain ", js_context_group_ref__);
+    HAL_LOG_TRACE("JSContextGroup:: retain ", js_context_group_ref__, " for ", this);
     JSContextGroupRetain(js_context_group_ref__);
     return *this;
   }
   
   void JSContextGroup::swap(JSContextGroup& other) HAL_NOEXCEPT {
     HAL_JSCONTEXTGROUP_LOCK_GUARD;
-    HAL_LOG_DEBUG("JSContextGroup:: swap");
+    HAL_LOG_TRACE("JSContextGroup:: swap ", this);
     using std::swap;
     
     // By swapping the members of two classes, the two classes are

@@ -28,29 +28,6 @@ class HAL_EXPORT JSBoolean final : public JSValue HAL_PERFORMANCE_COUNTER2(JSBoo
 	/*!
     @method
     
-    @abstract Assign the given JavaScript value to this JSBoolean.
-    
-    @param js_value The JavaScript value to assign to this JSBoolean
-    
-    @result The JSBoolean with the new value of the given JavaScript
-    value.
-    
-	  @throws std::invalid_argument if the given JavaScript value could
-	  not be converted to a boolean.
-	*/
-	JSBoolean& operator=(const JSValue& js_value) {
-		JSValue::operator=(js_value);
-		return *this;
-  }
-
-	JSBoolean& operator=(JSValue&& js_value) {
-		JSValue::operator=(js_value);
-		return *this;
-  }
-
-	/*!
-    @method
-    
     @abstract Assign the given boolean value to the JSBoolean.
     
     @param boolean The bool to assign to the JSBoolean
@@ -68,7 +45,8 @@ class HAL_EXPORT JSBoolean final : public JSValue HAL_PERFORMANCE_COUNTER2(JSBoo
 	friend JSContext;
 	
 	JSBoolean(const JSContext& js_context, bool boolean)
-			: JSValue(js_context, JSValueMakeBoolean(js_context, boolean)) {
+			: JSValue(js_context, JSValueMakeBoolean(static_cast<JSContextRef>(js_context), boolean)) {
+        JSValueUnprotect(static_cast<JSContextRef>(js_context), static_cast<JSValueRef>(*this));
 	}
 };
 

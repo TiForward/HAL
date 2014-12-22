@@ -92,7 +92,7 @@ namespace HAL {
     // JSContext needs access to operator JSContextGroupRef().
     friend class JSContext;
     
-    operator JSContextGroupRef() const HAL_NOEXCEPT {
+    explicit operator JSContextGroupRef() const HAL_NOEXCEPT {
       return js_context_group_ref__;
     }
     

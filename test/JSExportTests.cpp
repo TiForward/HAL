@@ -77,7 +77,7 @@ TEST_F(JSExportTests, JSExport) {
   auto global_object   = js_context.get_global_object();
   
   XCTAssertFalse(global_object.HasProperty("Widget"));
-  auto widget = js_context.CreateObject(JSExport<Widget>::Class());
+  auto widget = js_context.CreateObject<Widget>();
   global_object.SetProperty("Widget", widget);
   XCTAssertTrue(global_object.HasProperty("Widget"));
   

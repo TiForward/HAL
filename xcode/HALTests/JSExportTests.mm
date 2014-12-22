@@ -147,7 +147,8 @@ using namespace HAL;
   XCTAssertTrue(result.IsString());
   XCTAssertEqual("Hello, bar. Your number is 32.", static_cast<std::string>(result));
   
-  result = js_context.JSEvaluateScript("var widget = new Widget('baz', 999); widget.sayHello();");
+  result = js_context.JSEvaluateScript("var widget = new Widget('baz', 999);");
+  result = js_context.JSEvaluateScript("widget.sayHello();");
   XCTAssertTrue(result.IsString());
   XCTAssertEqual("Hello, baz. Your number is 999.", static_cast<std::string>(result));
 
