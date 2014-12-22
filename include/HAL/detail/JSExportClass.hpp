@@ -179,7 +179,7 @@ namespace HAL { namespace detail {
     JSContext js_context(context_ref);
     JSObject  js_object(js_context, object_ref);
     
-    const auto previous_native_object_ptr = static_cast<T*>(js_object.GetPrivate());
+    const auto previous_native_object_ptr = static_cast<JSExport<T>*>(js_object.GetPrivate());
     const auto native_object_ptr          = new T(js_context);
     
     if (previous_native_object_ptr != nullptr) {
