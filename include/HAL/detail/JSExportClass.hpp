@@ -568,6 +568,7 @@ namespace HAL { namespace detail {
     JSObject  js_object(js_context, constructor_ref);
     
     auto native_object_ptr = static_cast<T*>(js_object.GetPrivate());
+    static_cast<void>(native_object_ptr);
     HAL_LOG_DEBUG("JSExportClass<", typeid(T).name(), ">::CallAsConstructor: new this[", native_object_ptr, "]");
     
 //    auto new_object   = js_context.CreateObject(JSExport<T>::Class());
@@ -578,7 +579,7 @@ namespace HAL { namespace detail {
 
     auto       new_object                 = js_context.CreateObject<T>();
     const auto previous_native_object_ptr = static_cast<T*>(new_object.GetPrivate());
-    const auto new_native_new_object_ptr  = new T(*native_object_ptr, to_vector(js_context, argument_count, arguments_array));
+    const auto new_native_new_object_ptr  = new T(js_context, to_vector(js_context, argument_count, arguments_array));
     const bool result                     = new_object.SetPrivate(new_native_new_object_ptr);
     
     HAL_LOG_DEBUG("JSExportClass<", typeid(T).name(), ">::CallAsConstructor: replace ", previous_native_object_ptr, " with ", new_native_new_object_ptr, " for ", JSObjectRef(new_object));

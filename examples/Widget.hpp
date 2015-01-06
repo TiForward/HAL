@@ -27,6 +27,39 @@ public:
   /*!
    @method
    
+   @abstract This is the constructor used by JSContext::CreateObject
+   to create a Widget instance and add it to a JavaScript execution
+   context.
+   
+   @param js_context The JavaScriptCore execution context that your
+   JavaScript object will execute in.
+   
+   @param arguments An optional list of JSValues to initialize your
+   JavaScript object with as the result of being called in a
+   JavaScript 'new' expression.
+   */
+  Widget(const JSContext& js_context, const std::vector<JSValue>& arguments = {}) HAL_NOEXCEPT;
+  
+  std::string get_name() const                  HAL_NOEXCEPT;
+  void        set_name(const std::string& name) HAL_NOEXCEPT;
+  
+  std::int32_t get_number() const                    HAL_NOEXCEPT;
+  void         set_number(const std::int32_t number) HAL_NOEXCEPT;
+  
+  static double get_pi() HAL_NOEXCEPT;
+  
+  std::string sayHello();
+  
+  virtual ~Widget()                HAL_NOEXCEPT;
+  Widget(const Widget&)            HAL_NOEXCEPT;
+  Widget(Widget&&)                 HAL_NOEXCEPT;
+  Widget& operator=(const Widget&) HAL_NOEXCEPT;
+  Widget& operator=(Widget&&)      HAL_NOEXCEPT;
+  void swap(Widget&)               HAL_NOEXCEPT;
+  
+  /*!
+   @method
+   
    @abstract Define how your JavaScript objects appear to
    JavaScriptCore.
    
@@ -35,50 +68,22 @@ public:
    */
   static void JSExportInitialize();
   
-  /*!
-   @method
-   
-   @abstract This is the constructor used by JSContext::CreateObject
-   to create a Widget instance and add it to a JavaScript execution
-   context.
-   
-   @param js_context The JavaScriptCore execution context that your
-   JavaScript object will execute in.
-   */
-  Widget(const JSContext& js_context)                          HAL_NOEXCEPT;
-  Widget(const Widget&, const std::vector<JSValue>& arguments) HAL_NOEXCEPT;
+  JSValue js_get_name() const              HAL_NOEXCEPT;
+  bool    js_set_name(const JSValue& name) HAL_NOEXCEPT;
   
-  JSValue get_name() const;
-  bool    set_name(const JSValue& name);
+  JSValue js_get_number() const                HAL_NOEXCEPT;
+  bool    js_set_number(const JSValue& number) HAL_NOEXCEPT;
   
-  JSValue get_number() const;
-  bool    set_number(const JSValue& number);
+  JSValue js_get_pi() const;
   
-  JSValue pi() const;
+  JSValue js_sayHello(const std::vector<JSValue>& arguments, JSObject& this_object);
   
-  JSValue sayHello(const std::vector<JSValue>& arguments, JSObject& this_object);
-  
-  std::string get_name_native() const;
-  void        set_name_native(const std::string& name);
-  
-  int         get_number_native() const;
-  void        set_number_native(int number);
-  
-  
-  virtual ~Widget()                HAL_NOEXCEPT;
-  Widget(const Widget&)            HAL_NOEXCEPT;
-  Widget(Widget&&)                 HAL_NOEXCEPT;
-  Widget& operator=(const Widget&) HAL_NOEXCEPT;
-  Widget& operator=(Widget&&)      HAL_NOEXCEPT;
-  void swap(Widget&)               HAL_NOEXCEPT;
-
- private:
+private:
   
   std::string name__;
   int         number__;
   
   static double pi__;
-  
 };
 
 inline
