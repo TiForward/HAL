@@ -49,9 +49,9 @@ using namespace HAL;
 }
 
 - (void)testValuePropertyCallback {
-  detail::JSExportNamedValuePropertyCallback<Widget>   name_callback("name"  , &Widget::get_name  , &Widget::set_name  , {JSPropertyAttribute::DontDelete});
-  detail::JSExportNamedValuePropertyCallback<Widget> number_callback("number", &Widget::get_number, &Widget::set_number, {JSPropertyAttribute::DontDelete});
-  detail::JSExportNamedValuePropertyCallback<Widget>     pi_callback("pi"    , &Widget::pi        , nullptr            , {JSPropertyAttribute::DontDelete});
+  detail::JSExportNamedValuePropertyCallback<Widget>   name_callback("name"  , &Widget::js_get_name  , &Widget::js_set_name  , {JSPropertyAttribute::DontDelete});
+  detail::JSExportNamedValuePropertyCallback<Widget> number_callback("number", &Widget::js_get_number, &Widget::js_set_number, {JSPropertyAttribute::DontDelete});
+  detail::JSExportNamedValuePropertyCallback<Widget>     pi_callback("pi"    , &Widget::js_get_pi    , nullptr               , {JSPropertyAttribute::DontDelete});
   
   XCTAssertEqual(1, name_callback.get_attributes().count(JSPropertyAttribute::DontDelete));
   XCTAssertEqual(0, name_callback.get_attributes().count(JSPropertyAttribute::ReadOnly));
@@ -64,16 +64,16 @@ using namespace HAL;
 }
 
 - (void)testFunctionPropertyCallbacks {
-  detail::JSExportNamedFunctionPropertyCallback<Widget> sayHello_callback("sayHello", &Widget::sayHello, {JSPropertyAttribute::DontDelete});
+  detail::JSExportNamedFunctionPropertyCallback<Widget> sayHello_callback("sayHello", &Widget::js_sayHello, {JSPropertyAttribute::DontDelete});
 }
 
 - (void)testJSExportClassDefinitionBuilder {
   detail::JSExportClassDefinitionBuilder<Widget> builder("Widget");
   builder
-  .AddValueProperty("name", &Widget::get_name, &Widget::set_name)
-  .AddValueProperty("number", &Widget::get_number, &Widget::set_number)
-  .AddValueProperty("pi", &Widget::pi)
-  .AddFunctionProperty("sayhello", &Widget::sayHello)
+  .AddValueProperty("name", &Widget::js_get_name, &Widget::js_set_name)
+  .AddValueProperty("number", &Widget::js_get_number, &Widget::js_set_number)
+  .AddValueProperty("pi", &Widget::js_get_pi)
+  .AddFunctionProperty("sayhello", &Widget::js_sayHello)
   // .Function(&Widget::CallAsFunction)
   // .ConvertType(&Widget::ConvertToType);
   ;
@@ -133,12 +133,12 @@ using namespace HAL;
   auto widget_ptr = widget.GetPrivate<Widget>();
   XCTAssertNotEqual(nullptr, widget_ptr);
   
-  widget_ptr -> set_name_native("bar");
+  widget_ptr -> set_name("bar");
   result = js_context.JSEvaluateScript("Widget.name;");
   XCTAssertTrue(result.IsString());
   XCTAssertEqual("bar", static_cast<std::string>(result));
   
-  widget_ptr -> set_number_native(4 * 8);
+  widget_ptr -> set_number(4 * 8);
   result = js_context.JSEvaluateScript("Widget.number;");
   XCTAssertTrue(result.IsNumber());
   XCTAssertEqual(32, static_cast<std::uint32_t>(result));
@@ -155,6 +155,21 @@ using namespace HAL;
   // FIXME
   auto string_ptr = widget.GetPrivate<std::string>();
   //XCTAssertEqual(nullptr, string_ptr);
+}
+
+- (void)testToString {
+  JSContext js_context = js_context_group.CreateContext();
+  auto global_object   = js_context.get_global_object();
+  
+  XCTAssertFalse(global_object.HasProperty("Widget"));
+  auto widget = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", widget);
+  XCTAssertTrue(global_object.HasProperty("Widget"));
+  
+  auto result = js_context.JSEvaluateScript("Widget.toString();");
+  XCTAssertTrue(result.IsString());
+  XCTAssertEqual(std::string("[object ") + typeid(Widget).name() + "]", static_cast<std::string>(result));
+  std::clog << "MDL: result = " << static_cast<std::string>(result) << std::endl;
 }
 
 @end

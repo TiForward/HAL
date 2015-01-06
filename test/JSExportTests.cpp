@@ -44,9 +44,9 @@ TEST_F(JSExportTests, JSPropertyAttribute) {
 }
 
 TEST_F(JSExportTests, ValuePropertyCallback) {
-  detail::JSExportNamedValuePropertyCallback<Widget>   name_callback("name"  , std::mem_fn(&Widget::get_name)  , std::mem_fn(&Widget::set_name)  , {JSPropertyAttribute::DontDelete});
-  detail::JSExportNamedValuePropertyCallback<Widget> number_callback("number", std::mem_fn(&Widget::get_number), std::mem_fn(&Widget::set_number), {JSPropertyAttribute::DontDelete});
-  detail::JSExportNamedValuePropertyCallback<Widget>     pi_callback("pi"    , std::mem_fn(&Widget::pi)        , nullptr            , {JSPropertyAttribute::DontDelete});
+  detail::JSExportNamedValuePropertyCallback<Widget>   name_callback("name"  , std::mem_fn(&Widget::js_get_name)  , std::mem_fn(&Widget::js_set_name)  , {JSPropertyAttribute::DontDelete});
+  detail::JSExportNamedValuePropertyCallback<Widget> number_callback("number", std::mem_fn(&Widget::js_get_number), std::mem_fn(&Widget::js_set_number), {JSPropertyAttribute::DontDelete});
+  detail::JSExportNamedValuePropertyCallback<Widget>     pi_callback("pi"    , std::mem_fn(&Widget::js_get_pi)    , nullptr                            , {JSPropertyAttribute::DontDelete});
   
   XCTAssertEqual(1, name_callback.get_attributes().count(JSPropertyAttribute::DontDelete));
   XCTAssertEqual(0, name_callback.get_attributes().count(JSPropertyAttribute::ReadOnly));
@@ -61,10 +61,10 @@ TEST_F(JSExportTests, ValuePropertyCallback) {
 TEST_F(JSExportTests, JSExportClassDefinitionBuilder) {
   detail::JSExportClassDefinitionBuilder<Widget> builder("Widget");
   builder
-      .AddValueProperty("name", std::mem_fn(&Widget::get_name), std::mem_fn(&Widget::set_name))
-      .AddValueProperty("number", std::mem_fn(&Widget::get_number), std::mem_fn(&Widget::set_number))
-      .AddValueProperty("pi", std::mem_fn(&Widget::pi))
-      .AddFunctionProperty("sayhello", std::mem_fn(&Widget::sayHello))
+      .AddValueProperty("name", std::mem_fn(&Widget::js_get_name), std::mem_fn(&Widget::js_set_name))
+      .AddValueProperty("number", std::mem_fn(&Widget::js_get_number), std::mem_fn(&Widget::js_set_number))
+      .AddValueProperty("pi", std::mem_fn(&Widget::js_get_pi))
+      .AddFunctionProperty("sayhello", std::mem_fn(&Widget::js_sayHello))
   // .Function(&Widget::CallAsFunction)
   // .ConvertType(&Widget::ConvertToType);
   ;
@@ -124,12 +124,12 @@ TEST_F(JSExportTests, JSExport) {
   auto widget_ptr = widget.GetPrivate<Widget>();
   XCTAssertNotEqual(nullptr, widget_ptr.get());
   
-  widget_ptr -> set_name_native("bar");
+  widget_ptr -> set_name("bar");
   result = js_context.JSEvaluateScript("Widget.name;");
   XCTAssertTrue(result.IsString());
   XCTAssertEqual("bar", static_cast<std::string>(result));
   
-  widget_ptr -> set_number_native(4 * 8);
+  widget_ptr -> set_number(4 * 8);
   result = js_context.JSEvaluateScript("Widget.number;");
   XCTAssertTrue(result.IsNumber());
   XCTAssertEqual(32, static_cast<std::uint32_t>(result));
