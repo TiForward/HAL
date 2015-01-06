@@ -34,107 +34,6 @@ namespace HAL {
     
   public:
     
-    /*!
-     @method
-     
-     @abstract Determine whether this JavaScript object has a
-     property.
-     
-     @param property_name The name of the property to set.
-     
-     @result true if this JavaScript object has the property.
-     */
-    virtual bool HasProperty(const JSString& property_name) const HAL_NOEXCEPT final;
-    
-    /*!
-     @method
-     
-     @abstract Return a property of this JavaScript object.
-     
-     @param property_name The name of the property to get.
-     
-     @result The property's value if this JavaScript object has the
-     property, otherwise JSUndefined.
-     */
-    virtual JSValue GetProperty(const JSString& property_name) const HAL_NOEXCEPT final;
-    
-    /*!
-     @method
-     
-     @abstract Set a property on this JavaScript object with an
-     optional set of attributes.
-     
-     @param property_name The name of the property to set.
-     
-     @param value The value of the the property to set.
-     
-     @param attributes An optional set of property attributes to give
-     to the property.
-     
-     @result true if the the property was set.
-     */
-    virtual bool SetProperty(const JSString& property_name, const JSValue& property_value) HAL_NOEXCEPT final;
-    
-    /*!
-     @method
-     
-     @abstract Delete a property from this JavaScript object.
-     
-     @param property_name The name of the property to delete.
-     
-     @result true if the property was deleted.
-     */
-    virtual bool DeleteProperty(const JSString& property_name) HAL_NOEXCEPT final;
-    
-    /*!
-     @method
-     
-     @abstract Return the names of this JavaScript object's enumerable
-     properties.
-     
-     @result A JSPropertyNameArray containing the names object's
-     enumerable properties.
-     */
-    virtual std::vector<JSString> GetEnumerablePropertyNames() const HAL_NOEXCEPT final;
-    
-    /*!
-     @method
-     
-     @abstract Call this JavaScript object as a function. By default
-     this method simply returns JSUndefined to the caller. However,
-     your derived class can override this method to provide custom
-     'CallAsFunction' behavior.
-     
-     @discussion In the JavaScript expression 'myObject.myFunction()',
-     the 'this_object' parameter will be set to 'myObject' and this
-     JavaScript object is 'myFunction'.
-     
-     @param arguments The arguments passed to the function.
-     
-     @param this_object The JavaScript object to use as 'this'.
-     
-     @result Return the function's return value.
-     */
-    virtual JSValue CallAsFunction(const std::vector<JSValue>& arguments, JSObject this_object);
-    
-    /*!
-     @method
-     
-     @abstract Return this JavaScript object's prototype.
-     
-     @result This JavaScript object's prototype.
-     */
-    virtual JSValue GetPrototype() const HAL_NOEXCEPT final;
-    
-    /*!
-     @method
-     
-     @abstract Sets this JavaScript object's prototype.
-     
-     @param value The value to set as this JavaScript object's
-     prototype.
-     */
-    virtual bool SetPrototype(const JSValue& js_value) HAL_NOEXCEPT final;
 
     /*!
      @method
@@ -149,26 +48,18 @@ namespace HAL {
      @method
      
      @abstract This mandatory constructor is invoked when your
-     JavaScript object is created not as the result of a JavaScript
-     'new' expression.
-     
-     @param js_context The JSContext in which your JavaScript object
-     is created.
-     */
-    JSExportObject(const JSContext& js_context) HAL_NOEXCEPT;
-    
-    /*!
-     @method
-     
-     @abstract This mandatory constructor is invoked when your
      JavaScript object is created as the result of being called in a
      JavaScript 'new' expression.
      
+     @param js_context The JSContext in which your JavaScript object
+     is created.
+
      @param arguments An optional list of JSValues to initialize your
      JavaScript object with as the result of being called in a
      JavaScript 'new' expression.
      */
-    JSExportObject(const JSExportObject&, const std::vector<JSValue>& arguments) HAL_NOEXCEPT;
+    JSExportObject(const JSContext& js_context, const std::vector<JSValue>& arguments = {}) HAL_NOEXCEPT;
+    
     virtual ~JSExportObject() HAL_NOEXCEPT;
     JSExportObject(const JSExportObject&)            = default;
     JSExportObject& operator=(const JSExportObject&) = default;
@@ -183,28 +74,7 @@ namespace HAL {
     
   private:
     
-    /*!
-     @method
-     
-     @abstract Collect the names of this JavaScript object's
-     properties.
-     
-     @discussion Derived classes should provide only the names of
-     properties that this JavaScript object provides through the
-     GetProperty and SetProperty methods. Other property names are
-     automatically added from properties vended by the JavaScript
-     object's parent class chain and properties belonging to the
-     JavaScript object's prototype chain.
-     
-     @param accumulator A JavaScript property name accumulator in
-     which to accumulate the names of this JavaScript object's
-     properties. Use JSPropertyNameAccumulator::AddName to add
-     property names to the accumulator. Property name accumulators are
-     used by JavaScript for...in loops.
-     */
-    virtual void GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const HAL_NOEXCEPT final;
-    
-    JSObject js_object__;
+    JSContext js_context__;
     
 #undef  HAL_JSEXPORTOBJECT_LOCK_GUARD
 #ifdef  HAL_THREAD_SAFE
