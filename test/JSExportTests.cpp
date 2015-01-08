@@ -164,7 +164,7 @@ TEST_F(JSExportTests, CallAsFunction) {
   XCTAssertTrue(widget.HasProperty("sayHello"));
   auto widget_sayHello_property = widget.GetProperty("sayHello");
   XCTAssertTrue(widget_sayHello_property.IsObject());
-  JSObject widget_sayHello = widget_sayHello_property;
+  JSObject widget_sayHello = static_cast<JSObject>(widget_sayHello_property);
   XCTAssertTrue(widget_sayHello.IsFunction());
   auto hello = widget_sayHello(widget);
   XCTAssertTrue(hello.IsString());
@@ -185,12 +185,12 @@ TEST_F(JSExportTests, CallAsFunctionForNewObj) {
 
   auto result = js_context.JSEvaluateScript("new Widget('baz', 999);");
   XCTAssertTrue(result.IsObject());
-  JSObject widget = result;
+  JSObject widget = static_cast<JSObject>(result);
   
   XCTAssertTrue(widget.HasProperty("sayHello"));
   auto widget_sayHello_property = widget.GetProperty("sayHello");
   XCTAssertTrue(widget_sayHello_property.IsObject());
-  JSObject widget_sayHello = widget_sayHello_property;
+  JSObject widget_sayHello = static_cast<JSObject>(widget_sayHello_property);
   XCTAssertTrue(widget_sayHello.IsFunction());
   auto hello = widget_sayHello(widget);
   XCTAssertTrue(hello.IsString());
@@ -216,7 +216,7 @@ TEST_F(JSExportTests, CallAsConstructor) {
   XCTAssertTrue(widget_obj.HasProperty("sayHello"));
   auto widget_sayHello_property = widget_obj.GetProperty("sayHello");
   XCTAssertTrue(widget_sayHello_property.IsObject());
-  JSObject widget_sayHello = widget_sayHello_property;
+  JSObject widget_sayHello = static_cast<JSObject>(widget_sayHello_property);
   XCTAssertTrue(widget_sayHello.IsFunction());
   auto hello = widget_sayHello(widget_obj);
   XCTAssertTrue(hello.IsString());
