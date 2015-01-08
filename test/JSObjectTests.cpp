@@ -97,7 +97,7 @@ TEST_F(JSObjectTests, API) {
     
   // You can't call an JSObject as a function that isn't a function.
   XCTAssertFalse(js_object.IsFunction());
-  ASSERT_THROW(js_object(), std::runtime_error);
+  ASSERT_THROW(js_object(js_object), std::runtime_error);
   
   // You can't call a JSObject as a constructor that isn't a constructor.
   XCTAssertFalse(js_object.IsConstructor());
@@ -268,5 +268,5 @@ TEST_F(JSObjectTests, JSFunction) {
   JSFunction js_function = js_context.CreateFunction("return 'Hello, ' + name;", {"name"});
   XCTAssertTrue(js_function.IsFunction());
   //std::clog << "MDL: js_function(\"world\") = " << js_function("world") << std::endl;
-  XCTAssertEqual("Hello, world", static_cast<std::string>(js_function("world")));
+  XCTAssertEqual("Hello, world", static_cast<std::string>(js_function("world", js_function)));
 }

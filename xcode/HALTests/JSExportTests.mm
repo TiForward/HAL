@@ -157,6 +157,82 @@ using namespace HAL;
   //XCTAssertEqual(nullptr, string_ptr);
 }
 
+/*
+ * Call Widget.sayHello() through operator()
+ */
+- (void)testCallAsFunction {
+  JSContext js_context = js_context_group.CreateContext();
+  auto global_object   = js_context.get_global_object();
+  
+  XCTAssertFalse(global_object.HasProperty("Widget"));
+  auto widget = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", widget);
+  XCTAssertTrue(global_object.HasProperty("Widget"));
+  
+  widget.SetProperty("name", js_context.CreateString("bar"));
+  
+  XCTAssertTrue(widget.HasProperty("sayHello"));
+  auto widget_sayHello_property = widget.GetProperty("sayHello");
+  XCTAssertTrue(widget_sayHello_property.IsObject());
+  JSObject widget_sayHello = widget_sayHello_property;
+  XCTAssertTrue(widget_sayHello.IsFunction());
+  auto hello = widget_sayHello(widget);
+  XCTAssertTrue(hello.IsString());
+  XCTAssertEqual("Hello, bar. Your number is 42.", static_cast<std::string>(hello));
+}
+
+/*
+ * Call new Widget('baz', 999).sayHello() through operator()
+ */
+- (void)testCallAsFunctionForNewObj {
+  JSContext js_context = js_context_group.CreateContext();
+  auto global_object   = js_context.get_global_object();
+  
+  XCTAssertFalse(global_object.HasProperty("Widget"));
+  auto Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", Widget_);
+  XCTAssertTrue(global_object.HasProperty("Widget"));
+
+  auto result = js_context.JSEvaluateScript("new Widget('baz', 999);");
+  XCTAssertTrue(result.IsObject());
+  JSObject widget = result;
+  
+  XCTAssertTrue(widget.HasProperty("sayHello"));
+  auto widget_sayHello_property = widget.GetProperty("sayHello");
+  XCTAssertTrue(widget_sayHello_property.IsObject());
+  JSObject widget_sayHello = widget_sayHello_property;
+  XCTAssertTrue(widget_sayHello.IsFunction());
+  auto hello = widget_sayHello(widget);
+  XCTAssertTrue(hello.IsString());
+  XCTAssertEqual("Hello, baz. Your number is 999.", static_cast<std::string>(hello));
+}
+
+/*
+ * Call sayHello() through operator() over CallAsConstructor-ed object
+ */
+- (void)testCallAsConstructor {
+  JSContext js_context = js_context_group.CreateContext();
+  auto global_object   = js_context.get_global_object();
+  
+  XCTAssertFalse(global_object.HasProperty("Widget"));
+  auto Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", Widget_);
+  XCTAssertTrue(global_object.HasProperty("Widget"));
+
+  const std::vector<JSValue> args = {js_context.CreateString("hoo"), js_context.CreateNumber(123)};
+  auto widget_obj = Widget_.CallAsConstructor(args);
+  auto widget_obj_ptr = widget_obj.GetPrivate<Widget>();
+  XCTAssertTrue(widget_obj_ptr);
+  XCTAssertTrue(widget_obj.HasProperty("sayHello"));
+  auto widget_sayHello_property = widget_obj.GetProperty("sayHello");
+  XCTAssertTrue(widget_sayHello_property.IsObject());
+  JSObject widget_sayHello = widget_sayHello_property;
+  XCTAssertTrue(widget_sayHello.IsFunction());
+  auto hello = widget_sayHello(widget_obj);
+  XCTAssertTrue(hello.IsString());
+  XCTAssertEqual("Hello, hoo. Your number is 123.", static_cast<std::string>(hello));
+}
+
 - (void)testToString {
   JSContext js_context = js_context_group.CreateContext();
   auto global_object   = js_context.get_global_object();
