@@ -101,11 +101,11 @@ namespace HAL {
     return JSObjectIsFunction(static_cast<JSContextRef>(js_context__), js_object_ref__);
   }
   
-  JSValue JSObject::operator()(                                        JSObject& this_object) { return CallAsFunction(std::vector<JSValue>()                      , this_object); }
-  JSValue JSObject::operator()(JSValue&                     argument , JSObject& this_object) { return CallAsFunction({argument}                                  , this_object); }
-  JSValue JSObject::operator()(const JSString&              argument , JSObject& this_object) { return CallAsFunction(detail::to_vector(js_context__, {argument}) , this_object); }
-  JSValue JSObject::operator()(const std::vector<JSValue>&  arguments, JSObject& this_object) { return CallAsFunction(arguments                                   , this_object); }
-  JSValue JSObject::operator()(const std::vector<JSString>& arguments, JSObject& this_object) { return CallAsFunction(detail::to_vector(js_context__, arguments)  , this_object); }
+  JSValue JSObject::operator()(                                        JSObject this_object) { return CallAsFunction(std::vector<JSValue>()                      , this_object); }
+  JSValue JSObject::operator()(JSValue&                     argument , JSObject this_object) { return CallAsFunction({argument}                                  , this_object); }
+  JSValue JSObject::operator()(const JSString&              argument , JSObject this_object) { return CallAsFunction(detail::to_vector(js_context__, {argument}) , this_object); }
+  JSValue JSObject::operator()(const std::vector<JSValue>&  arguments, JSObject this_object) { return CallAsFunction(arguments                                   , this_object); }
+  JSValue JSObject::operator()(const std::vector<JSString>& arguments, JSObject this_object) { return CallAsFunction(detail::to_vector(js_context__, arguments)  , this_object); }
   
   bool JSObject::IsConstructor() const HAL_NOEXCEPT {
     return JSObjectIsConstructor(static_cast<JSContextRef>(js_context__), js_object_ref__);
