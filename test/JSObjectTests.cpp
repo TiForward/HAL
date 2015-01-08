@@ -146,14 +146,14 @@ TEST_F(JSObjectTests, Property) {
   JSContext js_context = js_context_group.CreateContext();
   auto js_value  = js_context.JSEvaluateScript("[1, 3, 5, 7]");
   XCTAssertTrue(js_value.IsObject());
-  JSObject js_object = js_value;
+  JSObject js_object = static_cast<JSObject>(js_value);
   XCTAssertTrue(js_object.HasProperty("length"));
   js_value = js_object.GetProperty("length");
   XCTAssertEqual(4, static_cast<int32_t>(js_value));
 
   js_value  = js_context.JSEvaluateScript("'hello, JavaScript'");
   XCTAssertTrue(js_value.IsString());
-  js_object = js_value;
+  js_object = static_cast<JSObject>(js_value);
   XCTAssertTrue(js_object.HasProperty("length"));
   js_value = js_object.GetProperty("length");
   XCTAssertEqual(17, static_cast<int32_t>(js_value));
@@ -165,7 +165,7 @@ TEST_F(JSObjectTests, Property) {
 
   js_value = js_context.JSEvaluateScript("new Object()");
   XCTAssertTrue(js_value.IsObject());
-  js_object = js_value;
+  js_object = static_cast<JSObject>(js_value);
   XCTAssertFalse(js_object.HasProperty("foo"));
   
   js_object.SetProperty("foo", js_context.CreateNumber(42));
@@ -183,7 +183,7 @@ TEST_F(JSObjectTests, Property) {
   
   // You can set a custom propery on a string.
   js_value = js_context.CreateString("hello, world");
-  js_object = js_value;
+  js_object = static_cast<JSObject>(js_value);
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));
   js_value = js_object.GetProperty("quote");
@@ -191,7 +191,7 @@ TEST_F(JSObjectTests, Property) {
 
   // You can set a custom propery on a bool.
   js_value = js_context.CreateBoolean(true);
-  js_object = js_value;
+  js_object = static_cast<JSObject>(js_value);
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));
   js_value = js_object.GetProperty("quote");
@@ -199,7 +199,7 @@ TEST_F(JSObjectTests, Property) {
 
   // You can set a custom propery on a number.
   js_value = js_context.CreateNumber(42);
-  js_object = js_value;
+  js_object = static_cast<JSObject>(js_value);
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));
   js_value = js_object.GetProperty("quote");
@@ -207,7 +207,7 @@ TEST_F(JSObjectTests, Property) {
 
   // You can set a custom propery on an array.
   js_value = js_context.CreateArray();
-  js_object = js_value;
+  js_object = static_cast<JSObject>(js_value);
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));
   js_value = js_object.GetProperty("quote");
@@ -215,7 +215,7 @@ TEST_F(JSObjectTests, Property) {
 
   // You can set a custom propery on an regexp.
   js_value = js_context.CreateRegExp();
-  js_object = js_value;
+  js_object = static_cast<JSObject>(js_value);
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));
   js_value = js_object.GetProperty("quote");
@@ -223,19 +223,11 @@ TEST_F(JSObjectTests, Property) {
 
   // You can set a custom propery on an error.
   js_value = js_context.CreateError();
-  js_object = js_value;
+  js_object = static_cast<JSObject>(js_value);
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));
   js_value = js_object.GetProperty("quote");
   XCTAssertEqual(quoteString, static_cast<std::string>(js_value));
-
-  // You can't set a custom propery on a undefined.
-  js_value = js_context.CreateUndefined();
-  ASSERT_THROW(js_object = js_value, std::runtime_error);
-
-  // You can't set a custom propery on a null.
-  js_value = js_context.CreateNull();
-  ASSERT_THROW(js_object = js_value, std::runtime_error);
 
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));
