@@ -615,7 +615,7 @@ namespace HAL { namespace detail {
 
     bool result = false;
     if (possible_instance.IsObject()) {
-      JSObject possible_object = possible_instance;
+      JSObject possible_object = static_cast<JSObject>(possible_instance);
       if (possible_object.GetPrivate() != nullptr) {
         auto possible_js_export_ptr     = static_cast<JSExport<T>*>(possible_object.GetPrivate());
         auto possible_native_object_ptr = dynamic_cast<T*>(possible_js_export_ptr);

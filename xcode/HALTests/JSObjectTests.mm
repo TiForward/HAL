@@ -164,14 +164,14 @@ namespace UnitTestConstants {
   JSContext js_context = js_context_group.CreateContext();
   auto js_value  = js_context.JSEvaluateScript("[1, 3, 5, 7]");
   XCTAssertTrue(js_value.IsObject());
-  JSObject js_object = js_value;
+  JSObject js_object = static_cast<JSObject>(js_value);
   XCTAssertTrue(js_object.HasProperty("length"));
   js_value = js_object.GetProperty("length");
   XCTAssertEqual(4, static_cast<int32_t>(js_value));
 
   js_value  = js_context.JSEvaluateScript("'hello, JavaScript'");
   XCTAssertTrue(js_value.IsString());
-  js_object = js_value;
+  js_object = static_cast<JSObject>(js_value);
   XCTAssertTrue(js_object.HasProperty("length"));
   js_value = js_object.GetProperty("length");
   XCTAssertEqual(17, static_cast<int32_t>(js_value));
@@ -183,7 +183,7 @@ namespace UnitTestConstants {
 
   js_value = js_context.JSEvaluateScript("new Object()");
   XCTAssertTrue(js_value.IsObject());
-  js_object = js_value;
+  js_object = static_cast<JSObject>(js_value);
   XCTAssertFalse(js_object.HasProperty("foo"));
   
   js_object.SetProperty("foo", js_context.CreateNumber(42));
@@ -201,7 +201,7 @@ namespace UnitTestConstants {
   
   // You can set a custom propery on a string.
   js_value = js_context.CreateString("hello, world");
-  js_object = js_value;
+  js_object = static_cast<JSObject>(js_value);
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));
   js_value = js_object.GetProperty("quote");
@@ -209,7 +209,7 @@ namespace UnitTestConstants {
 
   // You can set a custom propery on a bool.
   js_value = js_context.CreateBoolean(true);
-  js_object = js_value;
+  js_object = static_cast<JSObject>(js_value);
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));
   js_value = js_object.GetProperty("quote");
@@ -217,7 +217,7 @@ namespace UnitTestConstants {
 
   // You can set a custom propery on a number.
   js_value = js_context.CreateNumber(42);
-  js_object = js_value;
+  js_object = static_cast<JSObject>(js_value);
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));
   js_value = js_object.GetProperty("quote");
@@ -225,7 +225,7 @@ namespace UnitTestConstants {
 
   // You can set a custom propery on an array.
   js_value = js_context.CreateArray();
-  js_object = js_value;
+  js_object = static_cast<JSObject>(js_value);
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));
   js_value = js_object.GetProperty("quote");
@@ -233,7 +233,7 @@ namespace UnitTestConstants {
 
   // You can set a custom propery on an regexp.
   js_value = js_context.CreateRegExp();
-  js_object = js_value;
+  js_object = static_cast<JSObject>(js_value);
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));
   js_value = js_object.GetProperty("quote");
@@ -241,33 +241,11 @@ namespace UnitTestConstants {
 
   // You can set a custom propery on an error.
   js_value = js_context.CreateError();
-  js_object = js_value;
+  js_object = static_cast<JSObject>(js_value);
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));
   js_value = js_object.GetProperty("quote");
   XCTAssertEqual(quoteString, static_cast<std::string>(js_value));
-
-  // You can't set a custom propery on a undefined.
-  js_value = js_context.CreateUndefined();
-  try {
-    js_object = js_value;
-    XCTFail("js_value illegally converted to a JSObject");
-  } catch (const std::runtime_error& exception) {
-    XCTAssert(YES, @"Caught expected std::runtime_error exception.");
-  } catch (...) {
-    XCTFail("Caught unexpected unknown exception, but we expected a std::runtime_error exception.");
-  }
-
-  // You can't set a custom propery on a null.
-  js_value = js_context.CreateNull();
-  try {
-    js_object = js_value;
-    XCTFail("js_value illegally converted to a JSObject");
-  } catch (const std::runtime_error& exception) {
-    XCTAssert(YES, @"Caught expected std::runtime_error exception.");
-  } catch (...) {
-    XCTFail("Caught unexpected unknown exception, but we expected a std::runtime_error exception.");
-  }
 
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));

@@ -166,7 +166,7 @@ namespace HAL {
      @throws std::runtime_error if this JSValue could not be converted
      to a JSObject.
      */
-    virtual operator JSObject() const final;
+    explicit operator JSObject() const;
     
     /*!
      @method
