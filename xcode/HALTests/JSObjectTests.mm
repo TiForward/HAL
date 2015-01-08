@@ -101,7 +101,7 @@ namespace UnitTestConstants {
   XCTAssertFalse(js_object.IsFunction());
   
   try {
-    js_object();
+    js_object(js_object);
     XCTFail("js_object was called as a function but did not throw a std::runtime_error exception");
   } catch (const std::runtime_error& exception) {
     XCTAssert(YES, @"Caught expected std::runtime_error exception.");
@@ -300,7 +300,7 @@ namespace UnitTestConstants {
   JSFunction js_function = js_context.CreateFunction("return 'Hello, ' + name;", {"name"});
   XCTAssertTrue(js_function.IsFunction());
   //std::clog << "MDL: js_function(\"world\") = " << js_function("world") << std::endl;
-  XCTAssertEqual("Hello, world", static_cast<std::string>(js_function("world")));
+  XCTAssertEqual("Hello, world", static_cast<std::string>(js_function("world", js_function)));
 }
 
 @end

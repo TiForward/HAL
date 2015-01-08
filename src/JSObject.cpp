@@ -101,11 +101,6 @@ namespace HAL {
     return JSObjectIsFunction(static_cast<JSContextRef>(js_context__), js_object_ref__);
   }
   
-  JSValue JSObject::operator()(                                                            ) { return CallAsFunction(std::vector<JSValue>()                      , get_context().get_global_object() ); }
-  JSValue JSObject::operator()(JSValue&                     argument                       ) { return CallAsFunction({argument}                                  , get_context().get_global_object() ); }
-  JSValue JSObject::operator()(const JSString&              argument                       ) { return CallAsFunction(detail::to_vector(js_context__, {argument}) , get_context().get_global_object() ); }
-  JSValue JSObject::operator()(const std::vector<JSValue>&  arguments                      ) { return CallAsFunction(arguments                                   , get_context().get_global_object() ); }
-  JSValue JSObject::operator()(const std::vector<JSString>& arguments                      ) { return CallAsFunction(detail::to_vector(js_context__, arguments)  , get_context().get_global_object() ); }
   JSValue JSObject::operator()(                                        JSObject this_object) { return CallAsFunction(std::vector<JSValue>()                      , this_object); }
   JSValue JSObject::operator()(JSValue&                     argument , JSObject this_object) { return CallAsFunction({argument}                                  , this_object); }
   JSValue JSObject::operator()(const JSString&              argument , JSObject this_object) { return CallAsFunction(detail::to_vector(js_context__, {argument}) , this_object); }
