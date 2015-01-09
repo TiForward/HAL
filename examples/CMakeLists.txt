@@ -7,6 +7,8 @@
 set(SOURCE_Widget
   Widget.hpp
   Widget.cpp
+  WidgetExample.hpp
+  WidgetExample.cpp
 )
 
 add_library(HAL_examples STATIC

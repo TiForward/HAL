@@ -329,7 +329,7 @@ namespace HAL { namespace detail {
 #ifdef HAL_LOGGING_ENABLE
     std::string js_value_str;
     if (result.IsObject()) {
-      JSObject js_object = result;
+      JSObject js_object = static_cast<JSObject>(result);
       const auto native_object_ptr = reinterpret_cast<std::intptr_t>(js_object.GetPrivate());
       js_value_str = std::to_string(native_object_ptr);
     }
@@ -405,7 +405,7 @@ namespace HAL { namespace detail {
 #ifdef HAL_LOGGING_ENABLE
     std::string js_value_str;
     if (result.IsObject()) {
-      JSObject js_object = result;
+      JSObject js_object = static_cast<JSObject>(result);
       const auto native_object_ptr = reinterpret_cast<std::intptr_t>(js_object.GetPrivate());
       js_value_str = std::to_string(native_object_ptr);
     }

@@ -20,7 +20,7 @@ using namespace HAL;
  @discussion This is an example of how to create a JavaScript object
  implemented by a C++ class.
  */
-class Widget final : public JSExportObject, public JSExport<Widget> {
+class Widget : public JSExportObject, public JSExport<Widget> {
   
 public:
   

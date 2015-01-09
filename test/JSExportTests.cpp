@@ -8,6 +8,7 @@
 
 #include "HAL/HAL.hpp"
 #include "Widget.hpp"
+#include "WidgetExample.hpp"
 #include <functional>
 
 #include "gtest/gtest.h"
@@ -221,5 +222,65 @@ TEST_F(JSExportTests, CallAsConstructor) {
   auto hello = widget_sayHello(widget_obj);
   XCTAssertTrue(hello.IsString());
   XCTAssertEqual("Hello, hoo. Your number is 123.", static_cast<std::string>(hello));
+}
+
+TEST_F(JSExportTests, testJSExportExtend) {
+  JSContext js_context = js_context_group.CreateContext();
+  auto global_object   = js_context.get_global_object();
+  
+  XCTAssertFalse(global_object.HasProperty("Widget"));
+  auto Widget_ = js_context.CreateObject(JSExport<WidgetExample>::Class());
+  global_object.SetProperty("Widget", Widget_);
+  XCTAssertTrue(global_object.HasProperty("Widget"));
+  
+  auto result = js_context.JSEvaluateScript("Widget.data");
+  XCTAssertTrue(result.IsString());
+  XCTAssertEqual("initial string", static_cast<std::string>(result));
+  
+  result = js_context.JSEvaluateScript("Widget.data = 'hello'; Widget.data");
+  XCTAssertTrue(result.IsString());
+  XCTAssertEqual("hello", static_cast<std::string>(result));
+}
+
+TEST_F(JSExportTests, testJSExportExtendForNewObj) {
+  JSContext js_context = js_context_group.CreateContext();
+  auto global_object   = js_context.get_global_object();
+  
+  XCTAssertFalse(global_object.HasProperty("Widget"));
+  auto Widget_ = js_context.CreateObject(JSExport<WidgetExample>::Class());
+  global_object.SetProperty("Widget", Widget_);
+  XCTAssertTrue(global_object.HasProperty("Widget"));
+  
+  auto widget = js_context.JSEvaluateScript("new Widget();");
+  global_object.SetProperty("widget", widget);
+  
+  auto result = js_context.JSEvaluateScript("widget.data");
+  XCTAssertTrue(result.IsString());
+  XCTAssertEqual("initial string", static_cast<std::string>(result));
+  
+  result = js_context.JSEvaluateScript("widget.data = 'hello'; widget.data");
+  XCTAssertTrue(result.IsString());
+  XCTAssertEqual("hello", static_cast<std::string>(result));
+}
+
+TEST_F(JSExportTests, testJSExportExtendForCallAsConstructor) {
+  JSContext js_context = js_context_group.CreateContext();
+  auto global_object   = js_context.get_global_object();
+
+  XCTAssertFalse(global_object.HasProperty("Widget"));
+  auto Widget_ = js_context.CreateObject(JSExport<WidgetExample>::Class());
+  global_object.SetProperty("Widget", Widget_);
+  XCTAssertTrue(global_object.HasProperty("Widget"));
+  
+  auto widget = Widget_.CallAsConstructor();
+  global_object.SetProperty("widget", widget);
+  
+  auto result = js_context.JSEvaluateScript("widget.data");
+  XCTAssertTrue(result.IsString());
+  XCTAssertEqual("initial string", static_cast<std::string>(result));
+  
+  result = js_context.JSEvaluateScript("widget.data = 'hello'; widget.data");
+  XCTAssertTrue(result.IsString());
+  XCTAssertEqual("hello", static_cast<std::string>(result));
 }
 
