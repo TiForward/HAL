@@ -72,7 +72,9 @@ namespace HAL { namespace detail {
     JSExportClass(JSExportClass&&)                 = default;
     JSExportClass& operator=(JSExportClass&&)      = default;
 #endif
-    
+
+  static std::unordered_map<std::intptr_t,std::intptr_t> object_context_mapping;
+
   private:
     
     void Print() const;
@@ -123,6 +125,9 @@ namespace HAL { namespace detail {
 #define HAL_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC
 #endif  // HAL_THREAD_SAFE
   };
+
+  template<typename T>
+  std::unordered_map<std::intptr_t,std::intptr_t> JSExportClass<T>::object_context_mapping;
   
 #ifdef HAL_THREAD_SAFE
   template<typename T>
@@ -175,6 +180,8 @@ namespace HAL { namespace detail {
   void JSExportClass<T>::JSObjectInitializeCallback(JSContextRef context_ref, JSObjectRef object_ref) {
     
 	  HAL_LOG_DEBUG("JSExportClass<", typeid(T).name(), ">::Initialize");
+
+    JSExportClass<T>::object_context_mapping[reinterpret_cast<std::intptr_t>(object_ref)] = reinterpret_cast<std::intptr_t>(context_ref);
     
     JSContext js_context(context_ref);
     JSObject  js_object(js_context, object_ref);
@@ -196,6 +203,9 @@ namespace HAL { namespace detail {
   void JSExportClass<T>::JSObjectFinalizeCallback(JSObjectRef object_ref) {
     HAL_DETAIL_JSEXPORTCLASS_LOCK_GUARD_STATIC;
     
+    assert(object_context_mapping.find(reinterpret_cast<std::intptr_t>(object_ref)) != object_context_mapping.end());
+    object_context_mapping.erase(reinterpret_cast<std::intptr_t>(object_ref));
+
     auto native_object_ptr = static_cast<JSExport<T>*>(JSObjectGetPrivate(object_ref));
     
     HAL_LOG_DEBUG("JSExportClass<", typeid(T).name(), ">::Finalize: delete native object ", native_object_ptr, " for ", object_ref);
@@ -209,7 +219,9 @@ namespace HAL { namespace detail {
   template<typename T>
   JSValueRef JSExportClass<T>::GetNamedValuePropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception) try {
     
-    JSContext js_context(context_ref);
+    assert(object_context_mapping.find(reinterpret_cast<std::intptr_t>(object_ref)) != object_context_mapping.end());
+
+    JSContext js_context(reinterpret_cast<JSContextRef>(object_context_mapping[reinterpret_cast<std::intptr_t>(object_ref)]));
     JSObject  js_object(js_context, object_ref);
     
     const std::string property_name = JSString(property_name_ref);
@@ -245,7 +257,9 @@ namespace HAL { namespace detail {
   template<typename T>
   bool JSExportClass<T>::SetNamedValuePropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef value_ref, JSValueRef* exception) try {
     
-    JSContext js_context(context_ref);
+    assert(object_context_mapping.find(reinterpret_cast<std::intptr_t>(object_ref)) != object_context_mapping.end());
+
+    JSContext js_context(reinterpret_cast<JSContextRef>(object_context_mapping[reinterpret_cast<std::intptr_t>(object_ref)]));
     JSObject  js_object(js_context, object_ref);
     JSValue   js_value(js_context, value_ref);
     
@@ -291,7 +305,9 @@ namespace HAL { namespace detail {
     // function's name for lookup.
     static std::regex regex("^function\\s+([^(]+)\\(\\)(.|\\n)*$");
     
-    JSContext         js_context(context_ref);
+    assert(object_context_mapping.find(reinterpret_cast<std::intptr_t>(this_object_ref)) != object_context_mapping.end());
+
+    JSContext js_context(reinterpret_cast<JSContextRef>(object_context_mapping[reinterpret_cast<std::intptr_t>(this_object_ref)]));
     JSObject          js_object(js_context, function_ref);
     JSObject          this_object(js_context, this_object_ref);
     const std::string js_object_string = to_string(js_object);
@@ -357,7 +373,9 @@ namespace HAL { namespace detail {
   template<typename T>
   bool JSExportClass<T>::JSObjectHasPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref) try {
     
-    JSContext js_context(context_ref);
+    assert(object_context_mapping.find(reinterpret_cast<std::intptr_t>(object_ref)) != object_context_mapping.end());
+
+    JSContext js_context(reinterpret_cast<JSContextRef>(object_context_mapping[reinterpret_cast<std::intptr_t>(object_ref)]));
     JSObject  js_object(js_context, object_ref);
     JSString  property_name(property_name_ref);
     
@@ -387,7 +405,9 @@ namespace HAL { namespace detail {
   template<typename T>
   JSValueRef JSExportClass<T>::JSObjectGetPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception) try {
     
-    JSContext js_context(context_ref);
+    assert(object_context_mapping.find(reinterpret_cast<std::intptr_t>(object_ref)) != object_context_mapping.end());
+
+    JSContext js_context(reinterpret_cast<JSContextRef>(object_context_mapping[reinterpret_cast<std::intptr_t>(object_ref)]));
     JSObject  js_object(js_context, object_ref);
     JSString  property_name(property_name_ref);
     
@@ -432,7 +452,9 @@ namespace HAL { namespace detail {
   template<typename T>
   bool JSExportClass<T>::JSObjectSetPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef value_ref, JSValueRef* exception) try {
     
-    JSContext js_context(context_ref);
+    assert(object_context_mapping.find(reinterpret_cast<std::intptr_t>(object_ref)) != object_context_mapping.end());
+
+    JSContext js_context(reinterpret_cast<JSContextRef>(object_context_mapping[reinterpret_cast<std::intptr_t>(object_ref)]));
     JSObject  js_object(js_context, object_ref);
     JSString  property_name(property_name_ref);
     ;
@@ -467,7 +489,9 @@ namespace HAL { namespace detail {
   template<typename T>
   bool JSExportClass<T>::JSObjectDeletePropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception) try {
     
-    JSContext js_context(context_ref);
+    assert(object_context_mapping.find(reinterpret_cast<std::intptr_t>(object_ref)) != object_context_mapping.end());
+
+    JSContext js_context(reinterpret_cast<JSContextRef>(object_context_mapping[reinterpret_cast<std::intptr_t>(object_ref)]));
     JSObject  js_object(js_context, object_ref);
     JSString  property_name(property_name_ref);
     
@@ -501,7 +525,9 @@ namespace HAL { namespace detail {
   template<typename T>
   void JSExportClass<T>::JSObjectGetPropertyNamesCallback(JSContextRef context_ref, JSObjectRef object_ref, JSPropertyNameAccumulatorRef property_names) try {
     
-    JSContext                 js_context(context_ref);
+    assert(object_context_mapping.find(reinterpret_cast<std::intptr_t>(object_ref)) != object_context_mapping.end());
+
+    JSContext js_context(reinterpret_cast<JSContextRef>(object_context_mapping[reinterpret_cast<std::intptr_t>(object_ref)]));
     JSObject                  js_object(js_context, object_ref);
     JSPropertyNameAccumulator js_property_name_accumulator(property_names);
     
@@ -525,7 +551,9 @@ namespace HAL { namespace detail {
   template<typename T>
   JSValueRef JSExportClass<T>::JSObjectCallAsFunctionCallback(JSContextRef context_ref, JSObjectRef function_ref, JSObjectRef this_object_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception) try {
     
-    JSContext js_context(context_ref);
+    assert(object_context_mapping.find(reinterpret_cast<std::intptr_t>(this_object_ref)) != object_context_mapping.end());
+
+    JSContext js_context(reinterpret_cast<JSContextRef>(object_context_mapping[reinterpret_cast<std::intptr_t>(this_object_ref)]));
     JSObject  js_object(js_context, function_ref);
     JSObject  this_object(js_context, this_object_ref);
     
@@ -564,7 +592,9 @@ namespace HAL { namespace detail {
   template<typename T>
   JSObjectRef JSExportClass<T>::JSObjectCallAsConstructorCallback(JSContextRef context_ref, JSObjectRef constructor_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception) try {
     
-    JSContext js_context(context_ref);
+    assert(object_context_mapping.find(reinterpret_cast<std::intptr_t>(constructor_ref)) != object_context_mapping.end());
+
+    JSContext js_context(reinterpret_cast<JSContextRef>(object_context_mapping[reinterpret_cast<std::intptr_t>(constructor_ref)]));
     JSObject  js_object(js_context, constructor_ref);
     
     auto native_object_ptr = static_cast<T*>(js_object.GetPrivate());
@@ -609,7 +639,9 @@ namespace HAL { namespace detail {
   
   template<typename T>
   bool JSExportClass<T>::JSObjectHasInstanceCallback(JSContextRef context_ref, JSObjectRef constructor_ref, JSValueRef possible_instance_ref, JSValueRef* exception) try {
-    JSContext js_context(context_ref);
+    assert(object_context_mapping.find(reinterpret_cast<std::intptr_t>(constructor_ref)) != object_context_mapping.end());
+
+    JSContext js_context(reinterpret_cast<JSContextRef>(object_context_mapping[reinterpret_cast<std::intptr_t>(constructor_ref)]));
     JSObject  js_object(js_context, constructor_ref);
     JSValue   possible_instance(js_context, possible_instance_ref);
 
@@ -644,7 +676,9 @@ namespace HAL { namespace detail {
   
   template<typename T>
   JSValueRef JSExportClass<T>::JSObjectConvertToTypeCallback(JSContextRef context_ref, JSObjectRef object_ref, JSType type, JSValueRef* exception) try {
-    JSContext js_context(context_ref);
+    assert(object_context_mapping.find(reinterpret_cast<std::intptr_t>(object_ref)) != object_context_mapping.end());
+
+    JSContext js_context(reinterpret_cast<JSContextRef>(object_context_mapping[reinterpret_cast<std::intptr_t>(object_ref)]));
     JSObject  js_object(js_context, object_ref);
     JSValue::Type js_value_type = ToJSValueType(type);
     

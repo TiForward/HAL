@@ -19,9 +19,11 @@ public:
   
   virtual ~WidgetExample()                       = default;
   WidgetExample(const WidgetExample&)            = default;
-  WidgetExample(WidgetExample&&)                 = default;
   WidgetExample& operator=(const WidgetExample&) = default;
+#ifdef HAL_MOVE_CTOR_AND_ASSIGN_DEFAULT_ENABLE
+  WidgetExample(WidgetExample&&)                 = default;
   WidgetExample& operator=(WidgetExample&&)      = default;
+#endif
   
   static void JSExportInitialize();
   
