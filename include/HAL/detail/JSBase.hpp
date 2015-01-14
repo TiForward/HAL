@@ -21,7 +21,7 @@
 
 #if defined(_MSC_VER) && _MSC_VER <= 1800
 // According to Microsoft's "Visual C++ Team Blog":
-// 
+//
 // VS 2013 supported rvalue references, except for automatically
 // generated move ctors/assigns. Similarly, VS 2013 supported
 // defaulted and deleted functions, except for defaulted move
@@ -56,4 +56,4 @@
 #include "HAL/detail/JSPerformanceCounter.hpp"
 #include <JavaScriptCore/JavaScript.h>
 
-#endif // _HAL_DETAIL_JSBASE_HPP_
+#endif  // _HAL_DETAIL_JSBASE_HPP_

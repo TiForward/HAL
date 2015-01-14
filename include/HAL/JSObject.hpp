@@ -17,6 +17,7 @@
 #include <memory>
 #include <vector>
 #include <unordered_set>
+#include <unordered_map>
 
 namespace HAL {
   class JSString;
@@ -290,8 +291,7 @@ namespace HAL {
     virtual ~JSObject()                  HAL_NOEXCEPT;
     JSObject(const JSObject&)            HAL_NOEXCEPT;
     JSObject(JSObject&&)                 HAL_NOEXCEPT;
-    JSObject& operator=(const JSObject&);
-    JSObject& operator=(JSObject&&);
+    JSObject& operator=(JSObject);
     void swap(JSObject&)                 HAL_NOEXCEPT;
     
   protected:
@@ -386,6 +386,10 @@ namespace HAL {
      */
     virtual void GetPropertyNames(const JSPropertyNameAccumulator& accumulator) const HAL_NOEXCEPT final;
     
+    static void     RegisterJSContext(JSContextRef js_context_ref, JSObjectRef js_object_ref);
+    static void     UnRegisterJSContext(JSObjectRef js_object_ref);
+    static JSObject FindJSObject(JSContextRef js_context_ref, JSObjectRef js_object_ref);
+    
     // JSContext (and already friended JSExportClass) use the
     // following constructor.
     friend class JSContext;
@@ -401,12 +405,18 @@ namespace HAL {
     JSObjectRef js_object_ref__;
 #pragma warning(pop)
     
+    static std::unordered_map<std::intptr_t, std::intptr_t> js_object_ref_to_js_context_ref_map__;
+
 #undef  HAL_JSOBJECT_LOCK_GUARD
+#undef  HAL_JSOBJECT_LOCK_GUARD_STATIC
 #ifdef  HAL_THREAD_SAFE
-    std::recursive_mutex mutex__;
+           std::recursive_mutex mutex__;
+    static std::recursive_mutex mutex_static__;
 #define HAL_JSOBJECT_LOCK_GUARD std::lock_guard<std::recursive_mutex> lock(mutex__)
+#define HAL_JSOBJECT_LOCK_GUARD_STATIC std::lock_guard<std::recursive_mutex> lock_static(JSObject::mutex_static__)
 #else
 #define HAL_JSOBJECT_LOCK_GUARD
+#define HAL_JSOBJECT_LOCK_GUARD_STATIC
 #endif  // HAL_THREAD_SAFE
   };
   
