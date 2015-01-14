@@ -163,6 +163,7 @@ namespace HAL {
     HAL_LOG_TRACE("JSObject:: dtor ", this);
     HAL_LOG_TRACE("JSObject:: release ", js_object_ref__, " for ", this);
     JSValueUnprotect(static_cast<JSContextRef>(js_context__), js_object_ref__);
+    UnRegisterJSContext(js_object_ref__);
   }
   
   JSObject::JSObject(const JSObject& rhs) HAL_NOEXCEPT
@@ -171,6 +172,7 @@ namespace HAL {
     HAL_LOG_TRACE("JSObject:: copy ctor ", this);
     HAL_LOG_TRACE("JSObject:: retain ", js_object_ref__, " for ", this);
     JSValueProtect(static_cast<JSContextRef>(js_context__), js_object_ref__);
+    RegisterJSContext(static_cast<JSContextRef>(js_context__), js_object_ref__);
   }
   
   JSObject::JSObject(JSObject&& rhs) HAL_NOEXCEPT
@@ -179,41 +181,19 @@ namespace HAL {
     HAL_LOG_TRACE("JSObject:: move ctor ", this);
     HAL_LOG_TRACE("JSObject:: retain ", js_object_ref__, " for ", this);
     JSValueProtect(static_cast<JSContextRef>(js_context__), js_object_ref__);
+    RegisterJSContext(static_cast<JSContextRef>(js_context__), js_object_ref__);
   }
   
-  JSObject& JSObject::operator=(const JSObject& rhs) {
+  JSObject& JSObject::operator=(JSObject rhs) {
     HAL_JSOBJECT_LOCK_GUARD;
-    HAL_LOG_TRACE("JSObject:: copy assignment ", this);
+    HAL_LOG_TRACE("JSObject:: assignment ", this);
     // JSValues can only be copied between contexts within the same
     // context group.
     if (js_context__.get_context_group() != rhs.js_context__.get_context_group()) {
       detail::ThrowRuntimeError("JSObject", "JSObjects must belong to JSContexts within the same JSContextGroup to be shared and exchanged.");
     }
     
-    HAL_LOG_TRACE("JSObject:: release ", js_object_ref__, " for ", this);
-    JSValueUnprotect(static_cast<JSContextRef>(js_context__), js_object_ref__);
-    js_context__    = rhs.js_context__;
-    js_object_ref__ = rhs.js_object_ref__;
-    HAL_LOG_TRACE("JSObject:: retain ", js_object_ref__, " for ", this);
-    JSValueProtect(static_cast<JSContextRef>(js_context__), js_object_ref__);
-    return *this;
-  }
-  
-  JSObject& JSObject::operator=(JSObject&& rhs) {
-    HAL_JSOBJECT_LOCK_GUARD;
-    HAL_LOG_TRACE("JSObject:: move assignment ", this);
-    // JSValues can only be copied between contexts within the same
-    // context group.
-    if (js_context__.get_context_group() != rhs.js_context__.get_context_group()) {
-      detail::ThrowRuntimeError("JSObject", "JSObjects must belong to JSContexts within the same JSContextGroup to be shared and exchanged.");
-    }
-    
-    HAL_LOG_TRACE("JSObject:: release ", js_object_ref__, " for ", this);
-    JSValueUnprotect(static_cast<JSContextRef>(js_context__), js_object_ref__);
-    js_context__    = std::move(rhs.js_context__);
-    js_object_ref__ = rhs.js_object_ref__;
-    HAL_LOG_TRACE("JSObject:: retain ", js_object_ref__, " for ", this);
-    JSValueProtect(static_cast<JSContextRef>(js_context__), js_object_ref__);
+    swap(rhs);
     return *this;
   }
   
@@ -228,16 +208,12 @@ namespace HAL {
     swap(js_object_ref__, other.js_object_ref__);
   }
   
-//  JSObject::JSObject(const JSContext& js_context, const JSClass& js_class, void* private_data)
-//  : JSObject(js_context, JSObjectMake(js_context, js_class, private_data)) {
-//    HAL_LOG_TRACE("JSObject:: ctor 1");
-//  }
-
   JSObject::JSObject(const JSContext& js_context, const JSClass& js_class, void* private_data)
   : js_context__(js_context)
   , js_object_ref__(JSObjectMake(static_cast<JSContextRef>(js_context), static_cast<JSClassRef>(js_class), private_data)) {
     HAL_LOG_TRACE("JSObject:: ctor 1 ", this);
     HAL_LOG_TRACE("JSObject:: retain ", js_object_ref__, " (implicit) for ", this);
+    RegisterJSContext(static_cast<JSContextRef>(js_context__), js_object_ref__);
   }
 
   // For interoperability with the JavaScriptCore C API.
@@ -247,6 +223,7 @@ namespace HAL {
     HAL_LOG_TRACE("JSObject:: ctor 2 ", this);
     HAL_LOG_TRACE("JSObject:: retain ", js_object_ref__, " for ", this);
     JSValueProtect(static_cast<JSContextRef>(js_context__), js_object_ref__);
+    RegisterJSContext(static_cast<JSContextRef>(js_context__), js_object_ref__);
   }
   
   JSObject::operator JSValue() const {
@@ -287,4 +264,63 @@ namespace HAL {
     }
   }
   
+
+  std::unordered_map<std::intptr_t, std::intptr_t> JSObject::js_object_ref_to_js_context_ref_map__;
+  
+  void JSObject::RegisterJSContext(JSContextRef js_context_ref, JSObjectRef js_object_ref) {
+    HAL_JSOBJECT_LOCK_GUARD_STATIC;
+    const auto key   = reinterpret_cast<std::intptr_t>(js_object_ref);
+    const auto value = reinterpret_cast<std::intptr_t>(js_context_ref);
+    
+    const auto position = js_object_ref_to_js_context_ref_map__.find(key);
+    const bool found    = position != js_object_ref_to_js_context_ref_map__.end();
+    
+    if (!found) {
+      const auto insert_result = js_object_ref_to_js_context_ref_map__.emplace(key, value);
+      const bool inserted      = insert_result.second;
+      
+      // postcondition
+      assert(inserted);
+      
+      HAL_LOG_DEBUG("JSObject::RegisterJSContext: JSObjectRef = ", js_object_ref, ", JSContextRef = ", js_context_ref);
+    }
+  }
+  
+  void JSObject::UnRegisterJSContext(JSObjectRef js_object_ref) {
+    HAL_JSOBJECT_LOCK_GUARD_STATIC;
+    const auto key      = reinterpret_cast<std::intptr_t>(js_object_ref);
+    const auto position = js_object_ref_to_js_context_ref_map__.find(key);
+    const bool found    = position != js_object_ref_to_js_context_ref_map__.end();
+    
+    // precondition
+    if (found) {
+      JSContextRef js_context_ref = reinterpret_cast<JSContextRef>(position -> second);
+      static_cast<void>(js_context_ref);
+      HAL_LOG_DEBUG("JSObject::UnRegisterJSContext: JSObjectRef = ", js_object_ref, ", JSContextRef = ", js_context_ref);
+      
+      const auto number_of_elements_removed = js_object_ref_to_js_context_ref_map__.erase(key);
+      
+      // postcondition
+      assert(number_of_elements_removed == 1);
+    } else {
+      HAL_LOG_DEBUG("JSObject::UnRegisterJSContext: JSObjectRef = ", js_object_ref, " not registered");
+    }
+  }
+
+  JSObject JSObject::FindJSObject(JSContextRef js_context_ref, JSObjectRef js_object_ref) {
+    HAL_JSOBJECT_LOCK_GUARD_STATIC;
+    const auto key      = reinterpret_cast<std::intptr_t>(js_object_ref);
+    const auto position = js_object_ref_to_js_context_ref_map__.find(key);
+    const bool found    = position != js_object_ref_to_js_context_ref_map__.end();
+    
+    // precondition
+    if (found) {
+      js_context_ref = reinterpret_cast<JSContextRef>(position -> second);
+    }
+    
+    HAL_LOG_TRACE("JSObject::FindJSObject: found = ", found, " for JSObjectRef ", js_object_ref, ", JSContextRef = ", js_context_ref);
+    
+    return JSObject(JSContext(js_context_ref), js_object_ref);
+  }
+
 } // namespace HAL {
