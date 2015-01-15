@@ -17,6 +17,7 @@ double Widget::pi__ = 3.141592653589793;
 Widget::Widget(const JSContext& js_context, const std::vector<JSValue>& arguments) HAL_NOEXCEPT
 : JSExportObject(js_context, arguments)
 , name__("world")
+, jsvalue__(js_context.CreateObject())
 , number__(42) {
   HAL_LOG_DEBUG("Widget:: ctor ", this);
   if (arguments.size() >= 1) {
@@ -39,6 +40,7 @@ Widget::~Widget() HAL_NOEXCEPT {
 Widget::Widget(const Widget& rhs) HAL_NOEXCEPT
 : JSExportObject(rhs.get_context())
 , name__(rhs.name__)
+, jsvalue__(rhs.jsvalue__)
 , number__(rhs.number__) {
   HAL_LOG_DEBUG("Widget:: copy ctor ", this);
 }
@@ -46,6 +48,7 @@ Widget::Widget(const Widget& rhs) HAL_NOEXCEPT
 Widget::Widget(Widget&& rhs) HAL_NOEXCEPT
 : JSExportObject(rhs.get_context())
 , name__(rhs.name__)
+, jsvalue__(rhs.jsvalue__)
 , number__(rhs.number__) {
   HAL_LOG_DEBUG("Widget:: move ctor ", this);
 }
@@ -55,6 +58,7 @@ Widget& Widget::operator=(const Widget& rhs) HAL_NOEXCEPT {
   JSExportObject::operator=(rhs);
   name__   = rhs.name__;
   number__ = rhs.number__;
+  jsvalue__ = rhs.jsvalue__;
   return *this;
 }
 
@@ -73,6 +77,7 @@ void Widget::swap(Widget& other) HAL_NOEXCEPT {
   // effectively swapped.
   swap(name__  , other.name__);
   swap(number__, other.number__);
+  swap(jsvalue__, other.jsvalue__);
 }
 
 std::string Widget::get_name() const HAL_NOEXCEPT {

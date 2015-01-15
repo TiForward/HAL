@@ -84,6 +84,8 @@ private:
   int         number__;
   
   static double pi__;
+  
+  JSValue jsvalue__;
 };
 
 inline
