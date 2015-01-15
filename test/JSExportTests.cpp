@@ -222,3 +222,64 @@ TEST_F(JSExportTests, CallAsConstructor) {
   XCTAssertTrue(result.IsString());
   XCTAssertEqual("Hello, foo. Your number is 123.", static_cast<std::string>(result));
 }
+
+TEST_F(JSExportTests, EvaluateNewWidgetProperty) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object   = js_context.get_global_object();
+
+  XCTAssertFalse(global_object.HasProperty("Widget"));
+  JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", widget, {JSPropertyAttribute::ReadOnly, JSPropertyAttribute::DontDelete});
+  XCTAssertTrue(global_object.HasProperty("Widget"));
+
+  auto test = widget.GetProperty("name");
+
+  const std::vector<JSValue> args = {js_context.CreateString("newbar"), js_context.CreateNumber(123)};
+  JSObject js_widget = widget.CallAsConstructor(args);
+  auto widget_ptr = js_widget.GetPrivate<Widget>();
+  XCTAssertTrue(widget_ptr.get());
+  XCTAssertTrue(js_widget.HasProperty("name"));
+  JSValue widget_sayHello_property = js_widget.GetProperty("name");
+  XCTAssertTrue(widget_sayHello_property.IsString());
+  XCTAssertEqual("newbar", static_cast<std::string>(widget_sayHello_property));
+}
+
+TEST_F(JSExportTests, EvaluateNewWidgetPropertyByEval) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object   = js_context.get_global_object();
+
+  XCTAssertFalse(global_object.HasProperty("Widget"));
+  JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", widget, {JSPropertyAttribute::ReadOnly, JSPropertyAttribute::DontDelete});
+  XCTAssertTrue(global_object.HasProperty("Widget"));
+
+  auto test = widget.GetProperty("name");
+
+  auto result = js_context.JSEvaluateScript("var widget = new Widget(); widget.name = 'newbar'; widget");
+  XCTAssertTrue(result.IsObject());
+  auto new_widget = static_cast<JSObject>(result);
+
+  auto name = new_widget.GetProperty("name");
+  XCTAssertTrue(name.IsString());
+  XCTAssertEqual("newbar", static_cast<std::string>(name));
+}
+
+TEST_F(JSExportTests, EvaluateNewWidgetPropertyByEval2) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object   = js_context.get_global_object();
+
+  XCTAssertFalse(global_object.HasProperty("Widget"));
+  JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", widget, {JSPropertyAttribute::ReadOnly, JSPropertyAttribute::DontDelete});
+  XCTAssertTrue(global_object.HasProperty("Widget"));
+
+  auto test = js_context.JSEvaluateScript("Widget.name;");
+
+  auto result = js_context.JSEvaluateScript("var widget = new Widget(); widget.name = 'newbar'; widget");
+  XCTAssertTrue(result.IsObject());
+  auto new_widget = static_cast<JSObject>(result);
+
+  auto name = new_widget.GetProperty("name");
+  XCTAssertTrue(name.IsString());
+  XCTAssertEqual("newbar", static_cast<std::string>(name));
+}
