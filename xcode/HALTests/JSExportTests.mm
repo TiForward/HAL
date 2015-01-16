@@ -251,27 +251,15 @@ using namespace HAL;
 - (void)testJSExportFinalize {
   JSContext js_context = js_context_group.CreateContext();
   JSObject global_object   = js_context.get_global_object();
-  
   {
     XCTAssertFalse(global_object.HasProperty("Widget"));
     JSObject Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
     global_object.SetProperty("Widget", Widget_);
     XCTAssertTrue(global_object.HasProperty("Widget"));
     
-    {
-      const std::vector<JSValue> args = {js_context.CreateString("newbar"), js_context.CreateNumber(123)};
-      JSObject widget = Widget_.CallAsConstructor(args);
-      global_object.SetProperty("widget", widget);
-    }
+    js_context.JSEvaluateScript("for (var i=0; i<10000;i++) { var widget = new Widget('newbar', 123); }");
+    js_context.JSEvaluateScript("Widget = null;");
   }
-  
-  global_object.DeleteProperty("Widget");
-  global_object.DeleteProperty("widget");
-  
-  XCTAssertFalse(global_object.HasProperty("Widget"));
-  XCTAssertFalse(global_object.HasProperty("widget"));
-  
-  js_context.GarbageCollect();
 }
 
 - (void)testJSExportFinalize2 {
@@ -311,7 +299,7 @@ using namespace HAL;
   global_object.SetProperty("Widget", widget, {JSPropertyAttribute::ReadOnly, JSPropertyAttribute::DontDelete});
   XCTAssertTrue(global_object.HasProperty("Widget"));
   
-  auto test = widget.GetProperty("name");
+  // auto test = widget.GetProperty("name");
   
   const std::vector<JSValue> args = {js_context.CreateString("newbar"), js_context.CreateNumber(123)};
   JSObject js_widget = widget.CallAsConstructor(args);
@@ -332,7 +320,7 @@ using namespace HAL;
   global_object.SetProperty("Widget", widget, {JSPropertyAttribute::ReadOnly, JSPropertyAttribute::DontDelete});
   XCTAssertTrue(global_object.HasProperty("Widget"));
   
-  auto test = widget.GetProperty("name");
+  //auto test = widget.GetProperty("name");
   
   auto result = js_context.JSEvaluateScript("var widget = new Widget(); widget.name = 'newbar'; widget");
   XCTAssertTrue(result.IsObject());
@@ -352,7 +340,7 @@ using namespace HAL;
   global_object.SetProperty("Widget", widget, {JSPropertyAttribute::ReadOnly, JSPropertyAttribute::DontDelete});
   XCTAssertTrue(global_object.HasProperty("Widget"));
   
-  auto test = js_context.JSEvaluateScript("Widget.name;");
+  //auto test = js_context.JSEvaluateScript("Widget.name;");
   
   auto result = js_context.JSEvaluateScript("var widget = new Widget(); widget.name = 'newbar'; widget");
   XCTAssertTrue(result.IsObject());
