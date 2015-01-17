@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		C936FD6119CB96650082CB08 /* libHAL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C936FD3119CB95BE0082CB08 /* libHAL.a */; };
-		C936FD6319CB966B0082CB08 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C936FD6219CB966B0082CB08 /* JavaScriptCore.framework */; };
 		C97453D91A02797E00CB4CA9 /* JSString.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C97453D71A02797E00CB4CA9 /* JSString.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		C97453DF1A027A1800CB4CA9 /* JSContext.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C97453DB1A027A1800CB4CA9 /* JSContext.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		C97453E01A027A1800CB4CA9 /* JSContextGroup.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C97453DC1A027A1800CB4CA9 /* JSContextGroup.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -74,6 +73,7 @@
 		C97455021A0D23AD00CB4CA9 /* JSClassDefinition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97455001A0D23AD00CB4CA9 /* JSClassDefinition.cpp */; };
 		C97455041A0D292500CB4CA9 /* JSBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97455031A0D292500CB4CA9 /* JSBase.cpp */; };
 		C97455061A0D55E200CB4CA9 /* JSExportClassDefinition.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C97455051A0D55E200CB4CA9 /* JSExportClassDefinition.hpp */; };
+		C97C6D941A674D67002D0644 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C97C6D931A674D67002D0644 /* JavaScriptCore.framework */; };
 		C98091991A21491300AE5930 /* HAL_EXPORT.h in Headers */ = {isa = PBXBuildFile; fileRef = C98091981A21491300AE5930 /* HAL_EXPORT.h */; };
 		C985CB091A107E96004D4163 /* Widget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C985CB081A107E96004D4163 /* Widget.cpp */; };
 		C9E6AFA51A11653A00FED053 /* JSExportObject.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9E6AFA31A11653A00FED053 /* JSExportObject.hpp */; };
@@ -102,7 +102,6 @@
 		C936FD3119CB95BE0082CB08 /* libHAL.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libHAL.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		C936FD4D19CB961A0082CB08 /* HALTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HALTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C936FD5019CB961A0082CB08 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C936FD6219CB966B0082CB08 /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		C97453D71A02797E00CB4CA9 /* JSString.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSString.hpp; path = include/HAL/JSString.hpp; sourceTree = "<group>"; };
 		C97453DB1A027A1800CB4CA9 /* JSContext.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSContext.hpp; path = include/HAL/JSContext.hpp; sourceTree = "<group>"; };
 		C97453DC1A027A1800CB4CA9 /* JSContextGroup.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSContextGroup.hpp; path = include/HAL/JSContextGroup.hpp; sourceTree = "<group>"; };
@@ -171,6 +170,7 @@
 		C97455001A0D23AD00CB4CA9 /* JSClassDefinition.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSClassDefinition.cpp; path = src/JSClassDefinition.cpp; sourceTree = "<group>"; };
 		C97455031A0D292500CB4CA9 /* JSBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSBase.cpp; path = src/detail/JSBase.cpp; sourceTree = "<group>"; };
 		C97455051A0D55E200CB4CA9 /* JSExportClassDefinition.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSExportClassDefinition.hpp; path = include/HAL/detail/JSExportClassDefinition.hpp; sourceTree = "<group>"; };
+		C97C6D931A674D67002D0644 /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = "../../../../../../../../Library/Developer/Xcode/DerivedData/HAL-hcxjmhhybdhmehhcdnspifhzxwxl/Build/Products/Debug/JavaScriptCore.framework"; sourceTree = "<group>"; };
 		C98091981A21491300AE5930 /* HAL_EXPORT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HAL_EXPORT.h; path = xcode/HAL_EXPORT.h; sourceTree = "<group>"; };
 		C985CB081A107E96004D4163 /* Widget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Widget.cpp; path = ../../examples/Widget.cpp; sourceTree = "<group>"; };
 		C9E6AFA31A11653A00FED053 /* JSExportObject.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSExportObject.hpp; path = include/HAL/JSExportObject.hpp; sourceTree = "<group>"; };
@@ -196,7 +196,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C936FD6319CB966B0082CB08 /* JavaScriptCore.framework in Frameworks */,
+				C97C6D941A674D67002D0644 /* JavaScriptCore.framework in Frameworks */,
 				C936FD6119CB96650082CB08 /* libHAL.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -207,7 +207,7 @@
 		C936FD2819CB95BE0082CB08 = {
 			isa = PBXGroup;
 			children = (
-				C936FD6219CB966B0082CB08 /* JavaScriptCore.framework */,
+				C97C6D931A674D67002D0644 /* JavaScriptCore.framework */,
 				C936FD3319CB95BE0082CB08 /* HAL */,
 				C936FD4E19CB961A0082CB08 /* HALTests */,
 				C936FD3219CB95BE0082CB08 /* Products */,
@@ -734,6 +734,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 					"$(inherited)",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/HAL-hcxjmhhybdhmehhcdnspifhzxwxl/Build/Products/Debug",
 				);
 				INFOPLIST_FILE = HALTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
@@ -748,6 +749,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 					"$(inherited)",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/HAL-hcxjmhhybdhmehhcdnspifhzxwxl/Build/Products/Debug",
 				);
 				INFOPLIST_FILE = HALTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";

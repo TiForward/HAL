@@ -228,7 +228,7 @@ namespace HAL {
     JSValueProtect(static_cast<JSContextRef>(js_context__), js_value_ref__);
   }
   
-  JSValue& JSValue::operator=(const JSValue& rhs) {
+  JSValue& JSValue::operator=(JSValue rhs) {
     HAL_JSVALUE_LOCK_GUARD;
     HAL_LOG_TRACE("JSValue:: copy assignment ", this);
     // JSValues can only be copied between contexts within the same
@@ -237,30 +237,7 @@ namespace HAL {
       detail::ThrowRuntimeError("JSValue", "JSValues must belong to JSContexts within the same JSContextGroup to be shared and exchanged.");
     }
     
-    HAL_LOG_TRACE("JSValue:: release ", js_value_ref__, " for ", this);
-    JSValueUnprotect(static_cast<JSContextRef>(js_context__), js_value_ref__);
-    js_context__   = rhs.js_context__;
-    js_value_ref__ = rhs.js_value_ref__;
-    HAL_LOG_TRACE("JSValue:: retain ", js_value_ref__, " for ", this);
-    JSValueProtect(static_cast<JSContextRef>(js_context__), js_value_ref__);
-    return *this;
-  }
-  
-  JSValue& JSValue::operator=(JSValue&& rhs) {
-    HAL_JSVALUE_LOCK_GUARD;
-    HAL_LOG_TRACE("JSValue:: move assignment ", this);
-    // JSValues can only be copied between contexts within the same
-    // context group.
-    if (js_context__.get_context_group() != rhs.js_context__.get_context_group()) {
-      detail::ThrowRuntimeError("JSValue", "JSValues must belong to JSContexts within the same JSContextGroup to be shared and exchanged.");
-    }
-
-    HAL_LOG_TRACE("JSValue:: release ", js_value_ref__, " for ", this);
-    JSValueUnprotect(static_cast<JSContextRef>(js_context__), js_value_ref__);
-    js_context__   = std::move(rhs.js_context__);
-    js_value_ref__ = rhs.js_value_ref__;
-    HAL_LOG_TRACE("JSValue:: retain ", js_value_ref__, " for ", this);
-    JSValueProtect(static_cast<JSContextRef>(js_context__), js_value_ref__);
+    swap(rhs);
     return *this;
   }
   

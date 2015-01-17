@@ -63,7 +63,7 @@ namespace HAL {
     virtual ~JSExportObject() HAL_NOEXCEPT;
     JSExportObject(const JSExportObject&)            = default;
     JSExportObject& operator=(const JSExportObject&) = default;
-#ifdef TITANIUM_MOVE_CTOR_AND_ASSIGN_DEFAULT_ENABLE
+#ifdef HAL_MOVE_CTOR_AND_ASSIGN_DEFAULT_ENABLE
     JSExportObject(JSExportObject&&)                 = default;
     JSExportObject& operator=(JSExportObject&&)      = default;
 #endif

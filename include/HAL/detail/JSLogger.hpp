@@ -161,8 +161,8 @@ namespace HAL { namespace detail {
 #ifdef HAL_LOGGING_ENABLE
   
   // TODO: Add a more flexible way to specify the logging policy.
-  //using JSLogger_t = JSLogger<JSLoggerPolicyFile>;
-  using JSLogger_t = JSLogger<JSLoggerPolicyConsole>;
+  using JSLogger_t = JSLogger<JSLoggerPolicyFile>;
+  //using JSLogger_t = JSLogger<JSLoggerPolicyConsole>;
   
 #define HAL_LOG_TRACE HAL::detail::JSLogger_t::Instance() -> Print<HAL::detail::JSLoggerSeverityType::JS_TRACE>
 #define HAL_LOG_DEBUG HAL::detail::JSLogger_t::Instance() -> Print<HAL::detail::JSLoggerSeverityType::JS_DEBUG>

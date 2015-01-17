@@ -63,13 +63,12 @@ namespace HAL {
      */
     operator std::vector<JSString>() const HAL_NOEXCEPT;
     
-    JSPropertyNameArray()                                      = delete;;
-    ~JSPropertyNameArray()                                     HAL_NOEXCEPT;
-    JSPropertyNameArray(const JSPropertyNameArray&)            HAL_NOEXCEPT;
-    JSPropertyNameArray(JSPropertyNameArray&&)                 HAL_NOEXCEPT;
-    JSPropertyNameArray& operator=(const JSPropertyNameArray&) HAL_NOEXCEPT;
-    JSPropertyNameArray& operator=(JSPropertyNameArray&&)      HAL_NOEXCEPT;
-    void swap(JSPropertyNameArray&)                            HAL_NOEXCEPT;
+    JSPropertyNameArray()                               = delete;;
+    ~JSPropertyNameArray()                              HAL_NOEXCEPT;
+    JSPropertyNameArray(const JSPropertyNameArray&)     HAL_NOEXCEPT;
+    JSPropertyNameArray(JSPropertyNameArray&&)          HAL_NOEXCEPT;
+    JSPropertyNameArray& operator=(JSPropertyNameArray) HAL_NOEXCEPT;
+    void swap(JSPropertyNameArray&)                     HAL_NOEXCEPT;
     
   private:
     

@@ -407,15 +407,15 @@ namespace HAL {
      */
 #ifdef DEBUG
     void SynchronousGarbageCollectForDebugging() const;
+    void SynchronousEdenCollectForDebugging() const;
 #endif
     
     JSContext() = delete;
-    ~JSContext()                           HAL_NOEXCEPT;
-    JSContext(const JSContext&)            HAL_NOEXCEPT;
-    JSContext(JSContext&&)                 HAL_NOEXCEPT;
-    JSContext& operator=(const JSContext&) HAL_NOEXCEPT;
-    JSContext& operator=(JSContext&&)      HAL_NOEXCEPT;
-    void swap(JSContext&)                  HAL_NOEXCEPT;
+    ~JSContext()                    HAL_NOEXCEPT;
+    JSContext(const JSContext&)     HAL_NOEXCEPT;
+    JSContext(JSContext&&)          HAL_NOEXCEPT;
+    JSContext& operator=(JSContext) HAL_NOEXCEPT;
+    void swap(JSContext&)           HAL_NOEXCEPT;
     
   private:
     

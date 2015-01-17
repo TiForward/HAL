@@ -56,25 +56,10 @@ namespace HAL {
     JSContextGroupRetain(js_context_group_ref__);
   }
   
-  JSContextGroup& JSContextGroup::operator=(const JSContextGroup& rhs) HAL_NOEXCEPT {
+  JSContextGroup& JSContextGroup::operator=(JSContextGroup rhs) HAL_NOEXCEPT {
     HAL_JSCONTEXTGROUP_LOCK_GUARD;
-    HAL_LOG_TRACE("JSContextGroup:: copy assignment ", this);
-    JSContextGroupRelease(js_context_group_ref__);
-    HAL_LOG_TRACE("JSContextGroup:: release ", js_context_group_ref__, " for ", this);
-    js_context_group_ref__ = rhs.js_context_group_ref__;
-    HAL_LOG_TRACE("JSContextGroup:: retain ", js_context_group_ref__, " for ", this);
-    JSContextGroupRetain(js_context_group_ref__);
-    return *this;
-  }
-  
-  JSContextGroup& JSContextGroup::operator=(JSContextGroup&& rhs) HAL_NOEXCEPT {
-    HAL_JSCONTEXTGROUP_LOCK_GUARD;
-    HAL_LOG_TRACE("JSContextGroup:: move assignment ", this);
-    HAL_LOG_TRACE("JSContextGroup:: release ", js_context_group_ref__, " for ", this);
-    JSContextGroupRelease(js_context_group_ref__);
-    js_context_group_ref__ = rhs.js_context_group_ref__;
-    HAL_LOG_TRACE("JSContextGroup:: retain ", js_context_group_ref__, " for ", this);
-    JSContextGroupRetain(js_context_group_ref__);
+    HAL_LOG_TRACE("JSContextGroup:: assignment ", this);
+    swap(rhs);
     return *this;
   }
   

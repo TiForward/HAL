@@ -208,10 +208,16 @@ namespace HAL {
   
 #ifdef DEBUG
   extern "C" void JSSynchronousGarbageCollectForDebugging(JSContextRef);
+  extern "C" void JSSynchronousEdenCollectForDebugging(JSContextRef);
   
   void JSContext::SynchronousGarbageCollectForDebugging() const {
     HAL_JSCONTEXT_LOCK_GUARD;
     JSSynchronousGarbageCollectForDebugging(js_global_context_ref__);
+  }
+
+  void JSContext::SynchronousEdenCollectForDebugging() const {
+    HAL_JSCONTEXT_LOCK_GUARD;
+    JSSynchronousEdenCollectForDebugging(js_global_context_ref__);
   }
 #endif
   
@@ -237,27 +243,10 @@ namespace HAL {
     JSGlobalContextRetain(js_global_context_ref__);
   }
   
-  JSContext& JSContext::operator=(const JSContext& rhs) HAL_NOEXCEPT {
+  JSContext& JSContext::operator=(JSContext rhs) HAL_NOEXCEPT {
     HAL_JSCONTEXT_LOCK_GUARD;
-    HAL_LOG_TRACE("JSContext:: copy assignment ", this);
-    JSGlobalContextRelease(js_global_context_ref__);
-    HAL_LOG_TRACE("JSContext:: release ", js_global_context_ref__, " for ", this);
-    js_context_group__      = rhs.js_context_group__;
-    js_global_context_ref__ = rhs.js_global_context_ref__;
-    HAL_LOG_TRACE("JSContext:: retain ", js_global_context_ref__, " for ", this);
-    JSGlobalContextRetain(js_global_context_ref__);
-    return *this;
-  }
-  
-  JSContext& JSContext::operator=(JSContext&& rhs) HAL_NOEXCEPT {
-    HAL_JSCONTEXT_LOCK_GUARD;
-    HAL_LOG_TRACE("JSContext:: move assignment ", this);
-    JSGlobalContextRelease(js_global_context_ref__);
-    HAL_LOG_TRACE("JSContext:: release ", js_global_context_ref__, " for ", this);
-    js_context_group__      = std::move(rhs.js_context_group__);
-    js_global_context_ref__ = rhs.js_global_context_ref__;
-    HAL_LOG_TRACE("JSContext:: retain ", js_global_context_ref__, " for ", this);
-    JSGlobalContextRetain(js_global_context_ref__);
+    HAL_LOG_TRACE("JSContext:: assignment ", this);
+    swap(rhs);
     return *this;
   }
   
@@ -280,7 +269,7 @@ namespace HAL {
   }
   
   JSContext::JSContext(JSContextRef js_context_ref) HAL_NOEXCEPT
-  : JSContext(const_cast<JSGlobalContextRef>(js_context_ref)) {
+  : JSContext(JSContextGetGlobalContext(js_context_ref)) {
   }
   
   // For interoperability with the JavaScriptCore C API.
