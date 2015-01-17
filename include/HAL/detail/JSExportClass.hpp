@@ -171,7 +171,6 @@ namespace HAL { namespace detail {
   template<typename T>
   void JSExportClass<T>::JSObjectInitializeCallback(JSContextRef context_ref, JSObjectRef object_ref) {
     
-    //JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
     JSObject js_object(JSContext(context_ref), object_ref);
     HAL_LOG_DEBUG("JSExportClass<", typeid(T).name(), ">::Initialize: JSContextRef = ", context_ref, ", JSObjectRef = ", object_ref);
 

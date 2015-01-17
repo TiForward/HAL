@@ -390,7 +390,6 @@ namespace HAL {
     static void     UnRegisterJSContext(JSObjectRef js_object_ref);
     static JSObject FindJSObject(JSContextRef js_context_ref, JSObjectRef js_object_ref);
     static JSObject FindJSObject(JSObjectRef js_object_ref);
-    static void     Sweep();
     
     // JSContext (and already friended JSExportClass) use the
     // following constructor.

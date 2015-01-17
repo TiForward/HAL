@@ -297,11 +297,6 @@ namespace HAL {
       JSContextRef js_context_ref = reinterpret_cast<JSContextRef>(position -> second);
       static_cast<void>(js_context_ref);
       HAL_LOG_DEBUG("JSObject::UnRegisterJSContext: JSObjectRef = ", js_object_ref, ", JSContextRef = ", js_context_ref);
-      
-      //const auto number_of_elements_removed = js_object_ref_to_js_context_ref_map__.erase(key);
-      
-      // postcondition
-      //assert(number_of_elements_removed == 1);
     } else {
       HAL_LOG_DEBUG("JSObject::UnRegisterJSContext: JSObjectRef = ", js_object_ref, " not registered");
     }
