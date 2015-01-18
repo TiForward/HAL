@@ -264,7 +264,7 @@ using namespace HAL;
     global_object.SetProperty("Widget", widget);
     XCTAssertTrue(global_object.HasProperty("Widget"));
     
-    js_context.JSEvaluateScript("for (var i=0; i<10000;i++) { var widget = new Widget('newbar', 123); }");
+    js_context.JSEvaluateScript("for (var i=0; i<2000;i++) { var widget = new Widget('newbar', 123); }");
     js_context.JSEvaluateScript("Widget = null;");
   }
 }
@@ -274,7 +274,7 @@ using namespace HAL;
 	JSContext js_context = js_context_group.CreateContext();
 	JSObject global_object = js_context.get_global_object();
 
-	for (int i = 0; i < 10000; i++) {
+	for (int i = 0; i < 2000; i++) {
 		{
 			XCTAssertFalse(global_object.HasProperty("Widget"));
 			JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
@@ -369,4 +369,35 @@ using namespace HAL;
 	XCTAssertEqual("newbar", static_cast<std::string>(name));
 }
 
+/* Create multiple instances and see if properties are set correctly */
+- (void)testEvaluateMultipleNewWidget
+{
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  
+  XCTAssertFalse(global_object.HasProperty("Widget1"));
+  JSObject Widget1 = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget1", Widget1, {JSPropertyAttribute::ReadOnly, JSPropertyAttribute::DontDelete});
+  XCTAssertTrue(global_object.HasProperty("Widget1"));
+  
+  XCTAssertFalse(global_object.HasProperty("Widget2"));
+  JSObject Widget2 = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget2", Widget2, {JSPropertyAttribute::ReadOnly, JSPropertyAttribute::DontDelete});
+  XCTAssertTrue(global_object.HasProperty("Widget2"));
+  
+  JSValue test1 = js_context.JSEvaluateScript("Widget1.name = 'bar'; Widget1.sayHello();");
+  JSValue test2 = js_context.JSEvaluateScript("Widget2.name = 'baz'; Widget2.sayHello();");
+  
+  XCTAssertTrue(test1.IsString());
+  XCTAssertTrue(test2.IsString());
+  
+  XCTAssertEqual("Hello, bar. Your number is 42.", static_cast<std::string>(test1));
+  XCTAssertEqual("Hello, baz. Your number is 42.", static_cast<std::string>(test2));
+
+  JSValue test3 = js_context.JSEvaluateScript("new Widget1('foo', 456).sayHello();");
+  JSValue test4 = js_context.JSEvaluateScript("new Widget2('bar', 234).sayHello();");
+  
+  XCTAssertEqual("Hello, foo. Your number is 456.", static_cast<std::string>(test3));
+  XCTAssertEqual("Hello, bar. Your number is 234.", static_cast<std::string>(test4));
+}
 @end
