@@ -264,12 +264,12 @@ namespace HAL { namespace detail {
     JSObject js_object(JSObject::FindJSObject(object_ref));
     JSString message(LogStdException("SetNamedProperty", js_object, e));
     *exception = static_cast<JSValueRef>(js_object.get_context().CreateString(message));
-    return nullptr;
+    return false;
   } catch (...) {
     JSObject js_object(JSObject::FindJSObject(object_ref));
     JSString message(LogUnknownException("SetNamedProperty", js_object));
     *exception = static_cast<JSValueRef>(js_object.get_context().CreateString(message));
-    return nullptr;
+    return false;
   }
   
   template<typename T>
@@ -444,12 +444,12 @@ namespace HAL { namespace detail {
     JSObject js_object(JSObject::FindJSObject(object_ref));
     JSString message(LogStdException("SetProperty", js_object, e));
     *exception = static_cast<JSValueRef>(js_object.get_context().CreateString(message));
-    return nullptr;
+    return false;
   } catch (...) {
     JSObject js_object(JSObject::FindJSObject(object_ref));
     JSString message(LogUnknownException("SetProperty", js_object));
     *exception = static_cast<JSValueRef>(js_object.get_context().CreateString(message));
-    return nullptr;
+    return false;
   }
   
   template<typename T>
@@ -477,12 +477,12 @@ namespace HAL { namespace detail {
     JSObject js_object(JSObject::FindJSObject(object_ref));
     JSString message(LogStdException("DeleteProperty", js_object, e));
     *exception = static_cast<JSValueRef>(js_object.get_context().CreateString(message));
-    return nullptr;
+    return false;
   } catch (...) {
     JSObject js_object(JSObject::FindJSObject(object_ref));
     JSString message(LogUnknownException("DeleteProperty", js_object));
     *exception = static_cast<JSValueRef>(js_object.get_context().CreateString(message));
-    return nullptr;
+    return false;
   }
   
   template<typename T>
@@ -618,12 +618,12 @@ namespace HAL { namespace detail {
     JSObject js_object(JSObject::FindJSObject(constructor_ref));
     JSString message(LogStdException("JSObjectHasInstanceCallback", js_object, e));
     *exception = static_cast<JSValueRef>(js_object.get_context().CreateString(message));
-    return nullptr;
+    return false;
   } catch (...) {
     JSObject js_object(JSObject::FindJSObject(constructor_ref));
     JSString message(LogUnknownException("JSObjectHasInstanceCallback", js_object));
     *exception = static_cast<JSValueRef>(js_object.get_context().CreateString(message));
-    return nullptr;
+    return false;
   }
   
   template<typename T>
