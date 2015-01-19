@@ -36,12 +36,9 @@ declare -r HAL_DISABLE_TESTS="OFF"
 cmd+="cmake"
 cmd+=" -DHAL_DISABLE_TESTS=${HAL_DISABLE_TESTS}"
 
-set +e
-cmake -P cmake/IsWin32.cmake 2>&1 | grep -q -e 1
-set -e
-declare -r CMAKE_HOST_WIN32=${PIPESTATUS[1]}
+declare -r CMAKE_HOST_WIN32=$(cmake -P cmake/IsWin32.cmake 2>&1)
 
-if [[ ${CMAKE_HOST_WIN32} == 0 ]]; then
+if [[ x"${CMAKE_HOST_WIN32}" == "x1" ]]; then
     declare -r project_name=$(grep -E '^\s*project[(][^)]+[)]\s*$' CMakeLists.txt | awk 'BEGIN {FS="[()]"} {printf "%s", $2}')
     declare -r solution_file_name="${project_name}.sln"
     declare -r MSBUILD_PATH="c:/Program Files (x86)/MSBuild/12.0/Bin/MSBuild.exe"
