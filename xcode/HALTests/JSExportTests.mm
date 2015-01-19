@@ -376,13 +376,13 @@ using namespace HAL;
   JSObject global_object = js_context.get_global_object();
   
   XCTAssertFalse(global_object.HasProperty("Widget1"));
-  JSObject Widget1 = js_context.CreateObject(JSExport<Widget>::Class());
-  global_object.SetProperty("Widget1", Widget1, {JSPropertyAttribute::ReadOnly, JSPropertyAttribute::DontDelete});
+  JSObject widget1 = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget1", widget1, {JSPropertyAttribute::ReadOnly, JSPropertyAttribute::DontDelete});
   XCTAssertTrue(global_object.HasProperty("Widget1"));
   
   XCTAssertFalse(global_object.HasProperty("Widget2"));
-  JSObject Widget2 = js_context.CreateObject(JSExport<Widget>::Class());
-  global_object.SetProperty("Widget2", Widget2, {JSPropertyAttribute::ReadOnly, JSPropertyAttribute::DontDelete});
+  JSObject widget2 = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget2", widget2, {JSPropertyAttribute::ReadOnly, JSPropertyAttribute::DontDelete});
   XCTAssertTrue(global_object.HasProperty("Widget2"));
   
   JSValue test1 = js_context.JSEvaluateScript("Widget1.name = 'bar'; Widget1.sayHello();");
@@ -410,8 +410,8 @@ using namespace HAL;
   JSObject global_object = js_context.get_global_object();
   
   XCTAssertFalse(global_object.HasProperty("Widget"));
-  JSObject Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
-  global_object.SetProperty("Widget", Widget_);
+  JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", widget);
   XCTAssertTrue(global_object.HasProperty("Widget"));
   
   const std::string script = R"JS(
@@ -432,8 +432,8 @@ using namespace HAL;
   JSObject global_object = js_context.get_global_object();
   
   XCTAssertFalse(global_object.HasProperty("Widget"));
-  JSObject Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
-  global_object.SetProperty("Widget", Widget_);
+  JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", widget);
   XCTAssertTrue(global_object.HasProperty("Widget"));
   
   const std::string script = R"JS(
@@ -454,8 +454,8 @@ using namespace HAL;
   JSObject global_object = js_context.get_global_object();
   
   XCTAssertFalse(global_object.HasProperty("Widget"));
-  JSObject Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
-  global_object.SetProperty("Widget", Widget_);
+  JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", widget);
   XCTAssertTrue(global_object.HasProperty("Widget"));
   
   const std::string script = R"JS(
@@ -476,8 +476,8 @@ using namespace HAL;
   JSObject global_object = js_context.get_global_object();
   
   XCTAssertFalse(global_object.HasProperty("Widget"));
-  JSObject Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
-  global_object.SetProperty("Widget", Widget_);
+  JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", widget);
   XCTAssertTrue(global_object.HasProperty("Widget"));
   
   const std::string script = R"JS(
@@ -498,8 +498,8 @@ using namespace HAL;
   JSObject global_object = js_context.get_global_object();
   
   XCTAssertFalse(global_object.HasProperty("Widget"));
-  JSObject Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
-  global_object.SetProperty("Widget", Widget_);
+  JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", widget);
   XCTAssertTrue(global_object.HasProperty("Widget"));
   
   const std::string script = R"JS(
@@ -526,8 +526,8 @@ using namespace HAL;
   JSObject global_object = js_context.get_global_object();
   
   XCTAssertFalse(global_object.HasProperty("Widget"));
-  JSObject Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
-  global_object.SetProperty("Widget", Widget_);
+  JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", widget);
   XCTAssertTrue(global_object.HasProperty("Widget"));
   
   const std::string script = R"JS(
@@ -554,8 +554,8 @@ using namespace HAL;
   JSObject global_object = js_context.get_global_object();
   
   XCTAssertFalse(global_object.HasProperty("Widget"));
-  JSObject Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
-  global_object.SetProperty("Widget", Widget_);
+  JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", widget);
   XCTAssertTrue(global_object.HasProperty("Widget"));
   
   js_context.JSEvaluateScript("var widget = new Widget('bar',456);");
@@ -578,8 +578,8 @@ using namespace HAL;
   JSObject global_object = js_context.get_global_object();
   
   XCTAssertFalse(global_object.HasProperty("Widget"));
-  JSObject Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
-  global_object.SetProperty("Widget", Widget_);
+  JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", widget);
   XCTAssertTrue(global_object.HasProperty("Widget"));
   
   js_context.JSEvaluateScript("var widget = new Widget('bar',456);");
@@ -602,8 +602,8 @@ using namespace HAL;
   JSObject global_object = js_context.get_global_object();
   
   XCTAssertFalse(global_object.HasProperty("Widget"));
-  JSObject Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
-  global_object.SetProperty("Widget", Widget_);
+  JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", widget);
   XCTAssertTrue(global_object.HasProperty("Widget"));
   
   js_context.JSEvaluateScript("var widget = new Widget('bar',456);");
@@ -626,8 +626,8 @@ using namespace HAL;
   JSObject global_object = js_context.get_global_object();
   
   XCTAssertFalse(global_object.HasProperty("Widget"));
-  JSObject Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
-  global_object.SetProperty("Widget", Widget_);
+  JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", widget);
   XCTAssertTrue(global_object.HasProperty("Widget"));
   
   js_context.JSEvaluateScript("var widget = new Widget('bar',456);");
@@ -650,8 +650,8 @@ using namespace HAL;
   JSObject global_object = js_context.get_global_object();
   
   XCTAssertFalse(global_object.HasProperty("Widget"));
-  JSObject Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
-  global_object.SetProperty("Widget", Widget_);
+  JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", widget);
   XCTAssertTrue(global_object.HasProperty("Widget"));
   
   js_context.JSEvaluateScript("var widget = new Widget('bar',456);");
@@ -680,8 +680,8 @@ using namespace HAL;
   JSObject global_object = js_context.get_global_object();
   
   XCTAssertFalse(global_object.HasProperty("Widget"));
-  JSObject Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
-  global_object.SetProperty("Widget", Widget_);
+  JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", widget);
   XCTAssertTrue(global_object.HasProperty("Widget"));
   
   js_context.JSEvaluateScript("var widget = new Widget('bar',456);");
