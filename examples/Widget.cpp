@@ -10,6 +10,7 @@
 
 #include <functional>
 #include <sstream>
+#include <vector>
 
 double Widget::pi__ = 3.141592653589793;
 
@@ -17,6 +18,7 @@ double Widget::pi__ = 3.141592653589793;
 Widget::Widget(const JSContext& js_context, const std::vector<JSValue>& arguments) HAL_NOEXCEPT
 : JSExportObject(js_context, arguments)
 , name__("world")
+, jsvalue__(js_context.CreateObject())
 , number__(42) {
   HAL_LOG_DEBUG("Widget:: ctor ", this);
   if (arguments.size() >= 1) {
@@ -39,6 +41,7 @@ Widget::~Widget() HAL_NOEXCEPT {
 Widget::Widget(const Widget& rhs) HAL_NOEXCEPT
 : JSExportObject(rhs.get_context())
 , name__(rhs.name__)
+, jsvalue__(rhs.jsvalue__)
 , number__(rhs.number__) {
   HAL_LOG_DEBUG("Widget:: copy ctor ", this);
 }
@@ -46,6 +49,7 @@ Widget::Widget(const Widget& rhs) HAL_NOEXCEPT
 Widget::Widget(Widget&& rhs) HAL_NOEXCEPT
 : JSExportObject(rhs.get_context())
 , name__(rhs.name__)
+, jsvalue__(rhs.jsvalue__)
 , number__(rhs.number__) {
   HAL_LOG_DEBUG("Widget:: move ctor ", this);
 }
@@ -55,6 +59,7 @@ Widget& Widget::operator=(const Widget& rhs) HAL_NOEXCEPT {
   JSExportObject::operator=(rhs);
   name__   = rhs.name__;
   number__ = rhs.number__;
+  jsvalue__ = rhs.jsvalue__;
   return *this;
 }
 
@@ -73,6 +78,7 @@ void Widget::swap(Widget& other) HAL_NOEXCEPT {
   // effectively swapped.
   swap(name__  , other.name__);
   swap(number__, other.number__);
+  swap(jsvalue__, other.jsvalue__);
 }
 
 std::string Widget::get_name() const HAL_NOEXCEPT {
@@ -112,8 +118,10 @@ void Widget::JSExportInitialize() {
   JSExport<Widget>::SetClassVersion(1);
   JSExport<Widget>::AddValueProperty("name"       , std::mem_fn(&Widget::js_get_name)  , std::mem_fn(&Widget::js_set_name));
   JSExport<Widget>::AddValueProperty("number"     , std::mem_fn(&Widget::js_get_number), std::mem_fn(&Widget::js_set_number));
+  JSExport<Widget>::AddValueProperty("value"     , std::mem_fn(&Widget::js_get_value), std::mem_fn(&Widget::js_set_value));
   JSExport<Widget>::AddValueProperty("pi"         , std::mem_fn(&Widget::js_get_pi));
   JSExport<Widget>::AddFunctionProperty("sayHello", std::mem_fn(&Widget::js_sayHello));
+  JSExport<Widget>::AddFunctionProperty("sayHelloWithCallback", std::mem_fn(&Widget::js_sayHelloWithCallback));
 }
 
 JSValue Widget::js_get_name() const HAL_NOEXCEPT {
@@ -142,8 +150,29 @@ bool Widget::js_set_number(const JSValue& value) HAL_NOEXCEPT {
   return result;
 }
 
+JSValue Widget::js_get_value() const HAL_NOEXCEPT {
+  return jsvalue__;
+}
+
+bool Widget::js_set_value(const JSValue& value) HAL_NOEXCEPT {
+  jsvalue__ = value;
+  return true;
+}
+
 JSValue Widget::js_get_pi() const {
 	return get_context().CreateNumber(get_pi());
+}
+
+JSValue Widget::js_sayHelloWithCallback(const std::vector<JSValue>& arguments, JSObject& this_object) {
+  if (arguments.size() > 0) {
+    if (arguments.at(0).IsObject()) {
+      // sayHello(callback);
+      JSObject callback = static_cast<JSObject>(arguments.at(0));
+      const std::vector<JSValue> callback_args = { js_get_name(), js_get_number() };
+      return callback(callback_args, this_object);
+    }
+  }
+  return this_object.get_context().CreateString(sayHello());
 }
 
 JSValue Widget::js_sayHello(const std::vector<JSValue>& arguments, JSObject& this_object) {

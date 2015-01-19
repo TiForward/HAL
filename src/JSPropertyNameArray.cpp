@@ -56,25 +56,10 @@ namespace HAL {
     JSPropertyNameArrayRetain(js_property_name_array_ref__);
   }
   
-  JSPropertyNameArray& JSPropertyNameArray::operator=(const JSPropertyNameArray& rhs) HAL_NOEXCEPT {
+  JSPropertyNameArray& JSPropertyNameArray::operator=(JSPropertyNameArray rhs) HAL_NOEXCEPT {
     HAL_JSPROPERTYNAMEARRAY_LOCK_GUARD;
-    HAL_LOG_TRACE("JSValue:: copy assignment ", this);
-    HAL_LOG_TRACE("JSPropertyNameArray:: release ", js_property_name_array_ref__, " for ", this);
-    JSPropertyNameArrayRelease(js_property_name_array_ref__);
-    js_property_name_array_ref__ = rhs.js_property_name_array_ref__;
-    HAL_LOG_TRACE("JSPropertyNameArray:: retain ", js_property_name_array_ref__, " for ", this);
-    JSPropertyNameArrayRetain(js_property_name_array_ref__);
-    return *this;
-  }
-  
-  JSPropertyNameArray& JSPropertyNameArray::operator=(JSPropertyNameArray&& rhs) HAL_NOEXCEPT {
-    HAL_JSPROPERTYNAMEARRAY_LOCK_GUARD;
-    HAL_LOG_TRACE("JSPropertyNameArray:: move assignment ", this);
-    HAL_LOG_TRACE("JSPropertyNameArray:: release ", js_property_name_array_ref__, " for ", this);
-    JSPropertyNameArrayRelease(js_property_name_array_ref__);
-    js_property_name_array_ref__ = rhs.js_property_name_array_ref__;
-    HAL_LOG_TRACE("JSPropertyNameArray:: retain ", js_property_name_array_ref__, " for ", this);
-    JSPropertyNameArrayRetain(js_property_name_array_ref__);
+    HAL_LOG_TRACE("JSValue:: assignment ", this);
+    swap(rhs);
     return *this;
   }
   

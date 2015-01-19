@@ -141,12 +141,11 @@ namespace HAL {
       
       std::size_t hash_value() const;
       
-      ~JSString()                          HAL_NOEXCEPT;
-      JSString(const JSString&)            HAL_NOEXCEPT;
-      JSString(JSString&&)                 HAL_NOEXCEPT;
-      JSString& operator=(const JSString&) HAL_NOEXCEPT;
-      JSString& operator=(JSString&&)      HAL_NOEXCEPT;
-      void swap(JSString&)                 HAL_NOEXCEPT;
+      ~JSString()                   HAL_NOEXCEPT;
+      JSString(const JSString&)     HAL_NOEXCEPT;
+      JSString(JSString&&)          HAL_NOEXCEPT;
+      JSString& operator=(JSString) HAL_NOEXCEPT;
+      void swap(JSString&)          HAL_NOEXCEPT;
 
     private:
       

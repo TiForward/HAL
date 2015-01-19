@@ -171,7 +171,7 @@ namespace HAL { namespace detail {
   template<typename T>
   void JSExportClass<T>::JSObjectInitializeCallback(JSContextRef context_ref, JSObjectRef object_ref) {
     
-    JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
+    JSObject js_object(JSContext(context_ref), object_ref);
     HAL_LOG_DEBUG("JSExportClass<", typeid(T).name(), ">::Initialize: JSContextRef = ", context_ref, ", JSObjectRef = ", object_ref);
 
     const auto previous_native_object_ptr = static_cast<JSExport<T>*>(js_object.GetPrivate());
@@ -204,7 +204,7 @@ namespace HAL { namespace detail {
   template<typename T>
   JSValueRef JSExportClass<T>::GetNamedValuePropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception) try {
     
-    JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
+    JSObject js_object(JSObject::FindJSObject(object_ref));
     
     const std::string property_name = JSString(property_name_ref);
     
@@ -225,12 +225,12 @@ namespace HAL { namespace detail {
     return static_cast<JSValueRef>(result);
     
   } catch (const std::exception& e) {
-    JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
+    JSObject js_object(JSObject::FindJSObject(object_ref));
     JSString message(LogStdException("GetNamedProperty", js_object, e));
     *exception = static_cast<JSValueRef>(js_object.get_context().CreateString(message));
     return nullptr;
   } catch (...) {
-    JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
+    JSObject js_object(JSObject::FindJSObject(object_ref));
     JSString message(LogUnknownException("GetNamedProperty", js_object));
     *exception = static_cast<JSValueRef>(js_object.get_context().CreateString(message));
     return nullptr;
@@ -239,7 +239,7 @@ namespace HAL { namespace detail {
   template<typename T>
   bool JSExportClass<T>::SetNamedValuePropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef value_ref, JSValueRef* exception) try {
     
-    JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
+    JSObject js_object(JSObject::FindJSObject(object_ref));
     JSValue  js_value(js_object.get_context(), value_ref);
     
     const std::string property_name = JSString(property_name_ref);
@@ -261,15 +261,15 @@ namespace HAL { namespace detail {
     return result;
     
   } catch (const std::exception& e) {
-    JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
+    JSObject js_object(JSObject::FindJSObject(object_ref));
     JSString message(LogStdException("SetNamedProperty", js_object, e));
     *exception = static_cast<JSValueRef>(js_object.get_context().CreateString(message));
-    return nullptr;
+    return false;
   } catch (...) {
-    JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
+    JSObject js_object(JSObject::FindJSObject(object_ref));
     JSString message(LogUnknownException("SetNamedProperty", js_object));
     *exception = static_cast<JSValueRef>(js_object.get_context().CreateString(message));
-    return nullptr;
+    return false;
   }
   
   template<typename T>
@@ -285,7 +285,7 @@ namespace HAL { namespace detail {
     static std::regex regex("^function\\s+([^(]+)\\(\\)(.|\\n)*$");
     
     JSObject          js_object(JSObject::FindJSObject(context_ref, function_ref));
-    JSObject          this_object(JSObject::FindJSObject(context_ref, this_object_ref));
+    JSObject          this_object(JSObject::FindJSObject(this_object_ref));
     const std::string js_object_string = to_string(js_object);
     std::smatch       match_results;
     const bool        found = std::regex_match(js_object_string, match_results, regex);
@@ -349,7 +349,7 @@ namespace HAL { namespace detail {
   template<typename T>
   bool JSExportClass<T>::JSObjectHasPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref) try {
     
-    JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
+    JSObject js_object(JSObject::FindJSObject(object_ref));
     JSString property_name(property_name_ref);
     
     auto       callback       = js_export_class_definition__.has_property_callback__;
@@ -368,17 +368,17 @@ namespace HAL { namespace detail {
     return result;
     
   } catch (const std::exception& e) {
-	  LogStdException("HasProperty", JSObject::FindJSObject(context_ref, object_ref), e);
+	  LogStdException("HasProperty", JSObject::FindJSObject(object_ref), e);
     return false;
   } catch (...) {
-	  LogUnknownException("HasProperty", JSObject::FindJSObject(context_ref, object_ref));
+	  LogUnknownException("HasProperty", JSObject::FindJSObject(object_ref));
     return false;
   }
   
   template<typename T>
   JSValueRef JSExportClass<T>::JSObjectGetPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception) try {
     
-    JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
+    JSObject js_object(JSObject::FindJSObject(object_ref));
     JSString property_name(property_name_ref);
     
     auto       callback       = js_export_class_definition__.get_property_callback__;
@@ -408,12 +408,12 @@ namespace HAL { namespace detail {
     return static_cast<JSValueRef>(result);
     
   } catch (const std::exception& e) {
-    JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
+    JSObject js_object(JSObject::FindJSObject(object_ref));
     JSString message(LogStdException("GetProperty", js_object, e));
     *exception = static_cast<JSValueRef>(js_object.get_context().CreateString(message));
     return nullptr;
   } catch (...) {
-    JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
+    JSObject js_object(JSObject::FindJSObject(object_ref));
     JSString message(LogUnknownException("GetProperty", js_object));
     *exception = static_cast<JSValueRef>(js_object.get_context().CreateString(message));
     return nullptr;
@@ -422,7 +422,7 @@ namespace HAL { namespace detail {
   template<typename T>
   bool JSExportClass<T>::JSObjectSetPropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef value_ref, JSValueRef* exception) try {
     
-    JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
+    JSObject js_object(JSObject::FindJSObject(object_ref));
     JSString property_name(property_name_ref);
     
     auto       callback       = js_export_class_definition__.set_property_callback__;
@@ -441,21 +441,21 @@ namespace HAL { namespace detail {
     return result;
     
   } catch (const std::exception& e) {
-    JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
+    JSObject js_object(JSObject::FindJSObject(object_ref));
     JSString message(LogStdException("SetProperty", js_object, e));
     *exception = static_cast<JSValueRef>(js_object.get_context().CreateString(message));
-    return nullptr;
+    return false;
   } catch (...) {
-    JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
+    JSObject js_object(JSObject::FindJSObject(object_ref));
     JSString message(LogUnknownException("SetProperty", js_object));
     *exception = static_cast<JSValueRef>(js_object.get_context().CreateString(message));
-    return nullptr;
+    return false;
   }
   
   template<typename T>
   bool JSExportClass<T>::JSObjectDeletePropertyCallback(JSContextRef context_ref, JSObjectRef object_ref, JSStringRef property_name_ref, JSValueRef* exception) try {
     
-    JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
+    JSObject js_object(JSObject::FindJSObject(object_ref));
     JSString property_name(property_name_ref);
     
     auto       callback       = js_export_class_definition__.delete_property_callback__;
@@ -474,21 +474,21 @@ namespace HAL { namespace detail {
     return result;
     
   } catch (const std::exception& e) {
-    JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
+    JSObject js_object(JSObject::FindJSObject(object_ref));
     JSString message(LogStdException("DeleteProperty", js_object, e));
     *exception = static_cast<JSValueRef>(js_object.get_context().CreateString(message));
-    return nullptr;
+    return false;
   } catch (...) {
-    JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
+    JSObject js_object(JSObject::FindJSObject(object_ref));
     JSString message(LogUnknownException("DeleteProperty", js_object));
     *exception = static_cast<JSValueRef>(js_object.get_context().CreateString(message));
-    return nullptr;
+    return false;
   }
   
   template<typename T>
   void JSExportClass<T>::JSObjectGetPropertyNamesCallback(JSContextRef context_ref, JSObjectRef object_ref, JSPropertyNameAccumulatorRef property_names) try {
     
-    JSObject                  js_object(JSObject::FindJSObject(context_ref, object_ref));
+    JSObject                  js_object(JSObject::FindJSObject(object_ref));
     JSPropertyNameAccumulator js_property_name_accumulator(property_names);
     
     auto       callback       = js_export_class_definition__.get_property_names_callback__;
@@ -503,16 +503,16 @@ namespace HAL { namespace detail {
     callback(*native_object_ptr, js_property_name_accumulator);
     
   } catch (const std::exception& e) {
-	  LogStdException("GetPropertyNames", JSObject::FindJSObject(context_ref, object_ref), e);
+	  LogStdException("GetPropertyNames", JSObject::FindJSObject(object_ref), e);
   } catch (...) {
-	  LogUnknownException("GetPropertyNames", JSObject::FindJSObject(context_ref, object_ref));
+	  LogUnknownException("GetPropertyNames", JSObject::FindJSObject(object_ref));
   }
   
   template<typename T>
   JSValueRef JSExportClass<T>::JSObjectCallAsFunctionCallback(JSContextRef context_ref, JSObjectRef function_ref, JSObjectRef this_object_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception) try {
     
-    JSObject js_object(JSObject::FindJSObject(context_ref, function_ref));
-    JSObject this_object(JSObject::FindJSObject(context_ref, this_object_ref));
+    JSObject js_object(JSObject::FindJSObject(function_ref));
+    JSObject this_object(JSObject::FindJSObject(this_object_ref));
     
     // precondition
     assert(js_object.IsFunction());
@@ -535,12 +535,12 @@ namespace HAL { namespace detail {
     return static_cast<JSValueRef>(result);
     
   } catch (const std::exception& e) {
-    JSObject js_object(JSObject::FindJSObject(context_ref, function_ref));
+    JSObject js_object(JSObject::FindJSObject(function_ref));
     JSString message(LogStdException("CallAsFunction", js_object, e));
     *exception = static_cast<JSValueRef>(js_object.get_context().CreateString(message));
     return nullptr;
   } catch (...) {
-    JSObject js_object(JSObject::FindJSObject(context_ref, function_ref));
+    JSObject js_object(JSObject::FindJSObject(function_ref));
     JSString message(LogUnknownException("CallAsFunction", js_object));
     *exception = static_cast<JSValueRef>(js_object.get_context().CreateString(message));
     return nullptr;
@@ -549,7 +549,7 @@ namespace HAL { namespace detail {
   template<typename T>
   JSObjectRef JSExportClass<T>::JSObjectCallAsConstructorCallback(JSContextRef context_ref, JSObjectRef constructor_ref, size_t argument_count, const JSValueRef arguments_array[], JSValueRef* exception) try {
     
-    JSObject  js_object(JSObject::FindJSObject(context_ref, constructor_ref));
+    JSObject  js_object(JSObject::FindJSObject(constructor_ref));
     JSContext js_context = js_object.get_context();
     
     auto native_object_ptr = static_cast<T*>(js_object.GetPrivate());
@@ -581,12 +581,12 @@ namespace HAL { namespace detail {
     return static_cast<JSObjectRef>(new_object);
     
   } catch (const std::exception& e) {
-    JSObject js_object(JSObject::FindJSObject(context_ref, constructor_ref));
+    JSObject js_object(JSObject::FindJSObject(constructor_ref));
     JSString message(LogStdException("JSObjectCallAsConstructorCallback", js_object, e));
     *exception = static_cast<JSValueRef>(js_object.get_context().CreateString(message));
     return nullptr;
   } catch (...) {
-    JSObject js_object(JSObject::FindJSObject(context_ref, constructor_ref));
+    JSObject js_object(JSObject::FindJSObject(constructor_ref));
     JSString message(LogUnknownException("JSObjectCallAsConstructorCallback", js_object));
     *exception = static_cast<JSValueRef>(js_object.get_context().CreateString(message));
     return nullptr;
@@ -594,7 +594,7 @@ namespace HAL { namespace detail {
   
   template<typename T>
   bool JSExportClass<T>::JSObjectHasInstanceCallback(JSContextRef context_ref, JSObjectRef constructor_ref, JSValueRef possible_instance_ref, JSValueRef* exception) try {
-    JSObject js_object(JSObject::FindJSObject(context_ref, constructor_ref));
+    JSObject js_object(JSObject::FindJSObject(constructor_ref));
     JSValue  possible_instance(js_object.get_context(), possible_instance_ref);
 
     bool result = false;
@@ -615,20 +615,20 @@ namespace HAL { namespace detail {
     return result;
     
   } catch (const std::exception& e) {
-    JSObject js_object(JSObject::FindJSObject(context_ref, constructor_ref));
+    JSObject js_object(JSObject::FindJSObject(constructor_ref));
     JSString message(LogStdException("JSObjectHasInstanceCallback", js_object, e));
     *exception = static_cast<JSValueRef>(js_object.get_context().CreateString(message));
-    return nullptr;
+    return false;
   } catch (...) {
-    JSObject js_object(JSObject::FindJSObject(context_ref, constructor_ref));
+    JSObject js_object(JSObject::FindJSObject(constructor_ref));
     JSString message(LogUnknownException("JSObjectHasInstanceCallback", js_object));
     *exception = static_cast<JSValueRef>(js_object.get_context().CreateString(message));
-    return nullptr;
+    return false;
   }
   
   template<typename T>
   JSValueRef JSExportClass<T>::JSObjectConvertToTypeCallback(JSContextRef context_ref, JSObjectRef object_ref, JSType type, JSValueRef* exception) try {
-    JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
+    JSObject js_object(JSObject::FindJSObject(object_ref));
     JSValue::Type js_value_type = ToJSValueType(type);
     
     auto       callback       = js_export_class_definition__.convert_to_type_callback__;
@@ -647,12 +647,12 @@ namespace HAL { namespace detail {
     return static_cast<JSValueRef>(result);
     
   } catch (const std::exception& e) {
-    JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
+    JSObject js_object(JSObject::FindJSObject(object_ref));
     JSString message(LogStdException("JSObjectConvertToTypeCallback", js_object, e));
     *exception = static_cast<JSValueRef>(js_object.get_context().CreateString(message));
     return nullptr;
   } catch (...) {
-    JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
+    JSObject js_object(JSObject::FindJSObject(object_ref));
     JSString message(LogUnknownException("JSObjectConvertToTypeCallback", js_object));
     *exception = static_cast<JSValueRef>(js_object.get_context().CreateString(message));
     return nullptr;

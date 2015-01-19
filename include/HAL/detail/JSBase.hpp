@@ -56,4 +56,12 @@
 #include "HAL/detail/JSPerformanceCounter.hpp"
 #include <JavaScriptCore/JavaScript.h>
 
+/*!
+  @function
+  @abstract Gets the global context of a JavaScript execution context.
+  @param ctx The JSContext whose global context you want to get.
+  @result ctx's global context.
+*/
+extern "C" JSGlobalContextRef JSContextGetGlobalContext(JSContextRef ctx);
+
 #endif  // _HAL_DETAIL_JSBASE_HPP_

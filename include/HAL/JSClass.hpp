@@ -76,12 +76,11 @@ namespace HAL {
       return name__;
     }
     
-    virtual ~JSClass()                 HAL_NOEXCEPT;
-    JSClass(const JSClass&)            HAL_NOEXCEPT;
-    JSClass(JSClass&&)                 HAL_NOEXCEPT;
-    JSClass& operator=(const JSClass&) HAL_NOEXCEPT;
-    JSClass& operator=(JSClass&&)      HAL_NOEXCEPT;
-    void swap(JSClass&)                HAL_NOEXCEPT;
+    virtual ~JSClass()          HAL_NOEXCEPT;
+    JSClass(const JSClass&)     HAL_NOEXCEPT;
+    JSClass(JSClass&&)          HAL_NOEXCEPT;
+    JSClass& operator=(JSClass) HAL_NOEXCEPT;
+    void swap(JSClass&)         HAL_NOEXCEPT;
     
   private:
     

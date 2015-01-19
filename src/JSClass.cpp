@@ -51,27 +51,10 @@ namespace HAL {
     JSClassRetain(js_class_ref__);
   }
   
-  JSClass& JSClass::operator=(const JSClass& rhs) HAL_NOEXCEPT {
+  JSClass& JSClass::operator=(JSClass rhs) HAL_NOEXCEPT {
     HAL_JSCLASS_LOCK_GUARD;
-    HAL_LOG_TRACE("JSClass:: copy assignment ", this);
-    HAL_LOG_TRACE("JSClass:: release ", js_class_ref__, " for ", this);
-    JSClassRelease(js_class_ref__);
-    name__         = rhs.name__;
-    js_class_ref__ = rhs.js_class_ref__;
-    HAL_LOG_TRACE("JSClass:: retain ", js_class_ref__, " for ", this);
-    JSClassRetain(js_class_ref__);
-    return *this;
-  }
-  
-  JSClass& JSClass::operator=(JSClass&& rhs) HAL_NOEXCEPT {
-    HAL_JSCLASS_LOCK_GUARD;
-    HAL_LOG_TRACE("JSClass:: move assignment ", this);
-    HAL_LOG_TRACE("JSClass:: release ", js_class_ref__, " for ", this);
-    JSClassRelease(js_class_ref__);
-    name__         = std::move(rhs.name__);
-    js_class_ref__ = rhs.js_class_ref__;
-    HAL_LOG_TRACE("JSClass:: retain ", js_class_ref__, " for ", this);
-    JSClassRetain(js_class_ref__);
+    HAL_LOG_TRACE("JSClass:: assignment ", this);
+    swap(rhs);
     return *this;
   }
   

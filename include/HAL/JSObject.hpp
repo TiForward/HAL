@@ -288,11 +288,11 @@ namespace HAL {
     std::shared_ptr<T> GetPrivate() const HAL_NOEXCEPT;
     
     
-    virtual ~JSObject()                  HAL_NOEXCEPT;
-    JSObject(const JSObject&)            HAL_NOEXCEPT;
-    JSObject(JSObject&&)                 HAL_NOEXCEPT;
+    virtual ~JSObject()            HAL_NOEXCEPT;
+    JSObject(const JSObject&)      HAL_NOEXCEPT;
+    JSObject(JSObject&&)           HAL_NOEXCEPT;
     JSObject& operator=(JSObject);
-    void swap(JSObject&)                 HAL_NOEXCEPT;
+    void swap(JSObject&)           HAL_NOEXCEPT;
     
   protected:
     
@@ -389,6 +389,7 @@ namespace HAL {
     static void     RegisterJSContext(JSContextRef js_context_ref, JSObjectRef js_object_ref);
     static void     UnRegisterJSContext(JSObjectRef js_object_ref);
     static JSObject FindJSObject(JSContextRef js_context_ref, JSObjectRef js_object_ref);
+    static JSObject FindJSObject(JSObjectRef js_object_ref);
     
     // JSContext (and already friended JSExportClass) use the
     // following constructor.
@@ -403,9 +404,8 @@ namespace HAL {
 #pragma warning(push)
 #pragma warning(disable: 4251)
     JSObjectRef js_object_ref__;
-#pragma warning(pop)
-    
     static std::unordered_map<std::intptr_t, std::intptr_t> js_object_ref_to_js_context_ref_map__;
+#pragma warning(pop)
 
 #undef  HAL_JSOBJECT_LOCK_GUARD
 #undef  HAL_JSOBJECT_LOCK_GUARD_STATIC

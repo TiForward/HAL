@@ -161,8 +161,8 @@ namespace HAL {
   
   JSObject::~JSObject() HAL_NOEXCEPT {
     HAL_LOG_TRACE("JSObject:: dtor ", this);
-    HAL_LOG_TRACE("JSObject:: release ", js_object_ref__, " for ", this);
-    JSValueUnprotect(static_cast<JSContextRef>(js_context__), js_object_ref__);
+    //HAL_LOG_TRACE("JSObject:: release ", js_object_ref__, " for ", this);
+    //JSValueUnprotect(static_cast<JSContextRef>(js_context__), js_object_ref__);
     UnRegisterJSContext(js_object_ref__);
   }
   
@@ -297,11 +297,6 @@ namespace HAL {
       JSContextRef js_context_ref = reinterpret_cast<JSContextRef>(position -> second);
       static_cast<void>(js_context_ref);
       HAL_LOG_DEBUG("JSObject::UnRegisterJSContext: JSObjectRef = ", js_object_ref, ", JSContextRef = ", js_context_ref);
-      
-      const auto number_of_elements_removed = js_object_ref_to_js_context_ref_map__.erase(key);
-      
-      // postcondition
-      assert(number_of_elements_removed == 1);
     } else {
       HAL_LOG_DEBUG("JSObject::UnRegisterJSContext: JSObjectRef = ", js_object_ref, " not registered");
     }
@@ -318,6 +313,21 @@ namespace HAL {
       js_context_ref = reinterpret_cast<JSContextRef>(position -> second);
     }
     
+    HAL_LOG_TRACE("JSObject::FindJSObject: found = ", found, " for JSObjectRef ", js_object_ref, ", JSContextRef = ", js_context_ref);
+    
+    return JSObject(JSContext(js_context_ref), js_object_ref);
+  }
+
+  JSObject JSObject::FindJSObject(JSObjectRef js_object_ref) {
+    HAL_JSOBJECT_LOCK_GUARD_STATIC;
+    const auto key      = reinterpret_cast<std::intptr_t>(js_object_ref);
+    const auto position = js_object_ref_to_js_context_ref_map__.find(key);
+    const bool found    = position != js_object_ref_to_js_context_ref_map__.end();
+    
+    // precondition
+    assert(found);
+    
+    JSContextRef js_context_ref = reinterpret_cast<JSContextRef>(position -> second);
     HAL_LOG_TRACE("JSObject::FindJSObject: found = ", found, " for JSObjectRef ", js_object_ref, ", JSContextRef = ", js_context_ref);
     
     return JSObject(JSContext(js_context_ref), js_object_ref);

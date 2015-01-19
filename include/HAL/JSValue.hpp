@@ -291,12 +291,11 @@ namespace HAL {
       return js_context__;
     }
     
-    virtual ~JSValue()                  HAL_NOEXCEPT;
-    JSValue(const JSValue&)             HAL_NOEXCEPT;
-    JSValue(JSValue&&)                  HAL_NOEXCEPT;
-    JSValue& operator=(const JSValue&);
-    JSValue& operator=(JSValue&&);
-    void swap(JSValue&)                 HAL_NOEXCEPT;
+    virtual ~JSValue()           HAL_NOEXCEPT;
+    JSValue(const JSValue&)      HAL_NOEXCEPT;
+    JSValue(JSValue&&)           HAL_NOEXCEPT;
+    JSValue& operator=(JSValue);
+    void swap(JSValue&)          HAL_NOEXCEPT;
     
   protected:
     

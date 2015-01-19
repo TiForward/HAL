@@ -6,6 +6,8 @@
 # Licensed under the terms of the Apache Public License.
 # Please see the LICENSE included with this distribution for details.
 
+set -e
+
 # check and see if we already have it installed in our local directory
 if test -d "`pwd`/gtest-1.7.0"; then
     echo "Found local gtest-1.7.0, setting GTEST_ROOT"
@@ -34,10 +36,9 @@ declare -r HAL_DISABLE_TESTS="OFF"
 cmd+="cmake"
 cmd+=" -DHAL_DISABLE_TESTS=${HAL_DISABLE_TESTS}"
 
-cmake -P cmake/IsWin32.cmake 2>&1 | grep -q -e 1
-declare -r CMAKE_HOST_WIN32=${PIPESTATUS[1]}
+declare -r CMAKE_HOST_WIN32=$(cmake -P cmake/IsWin32.cmake 2>&1 | tr -d '\r\n')
 
-if [[ ${CMAKE_HOST_WIN32} == 0 ]]; then
+if [[ x"${CMAKE_HOST_WIN32}" == "x1" ]]; then
     declare -r project_name=$(grep -E '^\s*project[(][^)]+[)]\s*$' CMakeLists.txt | awk 'BEGIN {FS="[()]"} {printf "%s", $2}')
     declare -r solution_file_name="${project_name}.sln"
     declare -r MSBUILD_PATH="c:/Program Files (x86)/MSBuild/12.0/Bin/MSBuild.exe"
@@ -63,7 +64,7 @@ echo_and_eval "mkdir -p \"${BUILD_DIR}\""
 echo_and_eval "pushd \"${BUILD_DIR}\""
 echo_and_eval "${cmd}"
 
-if [[ ${CMAKE_HOST_WIN32} == 0 ]]; then
+if [[ x"${CMAKE_HOST_WIN32}" == "x1" ]]; then
     # On Windows we need to copy the DLL to the location of the
     # executables.
     declare -r dll_paths=$(find . -type f -name "*.dll" | sort | uniq | awk '{printf "\"%s\" ", $1}')

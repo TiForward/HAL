@@ -94,31 +94,10 @@ namespace HAL {
     JSStringRetain(js_string_ref__);
   }
   
-  JSString& JSString::operator=(const JSString& rhs) HAL_NOEXCEPT {
+  JSString& JSString::operator=(JSString rhs) HAL_NOEXCEPT {
     HAL_JSSTRING_LOCK_GUARD;
-    HAL_LOG_TRACE("JSString:: copy assignment ", this);
-    HAL_LOG_TRACE("JSString:: release ", js_string_ref__, " for ", this);
-    JSStringRelease(js_string_ref__);
-    js_string_ref__ = rhs.js_string_ref__;
-    string__        = rhs.string__;
-    u16string__     = rhs.u16string__;
-    hash_value__    = rhs.hash_value__;
-    HAL_LOG_TRACE("JSString:: retain ", js_string_ref__, " for ", this);
-    JSStringRetain(js_string_ref__);
-    return *this;
-  }
-  
-  JSString& JSString::operator=(JSString&& rhs) HAL_NOEXCEPT {
-    HAL_JSSTRING_LOCK_GUARD;
-    HAL_LOG_TRACE("JSString:: move assignment ", this);
-    HAL_LOG_TRACE("JSString:: release ", js_string_ref__, " for ", this);
-    JSStringRelease(js_string_ref__);
-    js_string_ref__ = rhs.js_string_ref__;
-    string__        = std::move(rhs.string__);
-    u16string__     = std::move(rhs.u16string__);
-    hash_value__    = std::move(rhs.hash_value__);
-    HAL_LOG_TRACE("JSString:: retain ", js_string_ref__, " for ", this);
-    JSStringRetain(js_string_ref__);
+    HAL_LOG_TRACE("JSString:: assignment ", this);
+    swap(rhs);
     return *this;
   }
   

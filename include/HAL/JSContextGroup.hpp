@@ -77,12 +77,11 @@ namespace HAL {
     JSContext CreateContext() const HAL_NOEXCEPT;
     JSContext CreateContext(const JSClass& global_object_class) const HAL_NOEXCEPT;
     
-    ~JSContextGroup()                                HAL_NOEXCEPT;
-    JSContextGroup(const JSContextGroup&)            HAL_NOEXCEPT;
-    JSContextGroup(JSContextGroup&&)                 HAL_NOEXCEPT;
-    JSContextGroup& operator=(const JSContextGroup&) HAL_NOEXCEPT;
-    JSContextGroup& operator=(JSContextGroup&&)      HAL_NOEXCEPT;
-    void swap(JSContextGroup&)                       HAL_NOEXCEPT;
+    ~JSContextGroup()                         HAL_NOEXCEPT;
+    JSContextGroup(const JSContextGroup&)     HAL_NOEXCEPT;
+    JSContextGroup(JSContextGroup&&)          HAL_NOEXCEPT;
+    JSContextGroup& operator=(JSContextGroup) HAL_NOEXCEPT;
+    void swap(JSContextGroup&)                HAL_NOEXCEPT;
     
   private:
     

@@ -76,7 +76,11 @@ public:
   
   JSValue js_get_pi() const;
   
+  JSValue js_get_value() const                HAL_NOEXCEPT;
+  bool    js_set_value(const JSValue& value) HAL_NOEXCEPT;
+  
   JSValue js_sayHello(const std::vector<JSValue>& arguments, JSObject& this_object);
+  JSValue js_sayHelloWithCallback(const std::vector<JSValue>& arguments, JSObject& this_object);
   
 private:
   
@@ -84,6 +88,8 @@ private:
   int         number__;
   
   static double pi__;
+  
+  JSValue jsvalue__;
 };
 
 inline
