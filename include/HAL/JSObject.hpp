@@ -404,9 +404,8 @@ namespace HAL {
 #pragma warning(push)
 #pragma warning(disable: 4251)
     JSObjectRef js_object_ref__;
-#pragma warning(pop)
-    
     static std::unordered_map<std::intptr_t, std::intptr_t> js_object_ref_to_js_context_ref_map__;
+#pragma warning(pop)
 
 #undef  HAL_JSOBJECT_LOCK_GUARD
 #undef  HAL_JSOBJECT_LOCK_GUARD_STATIC

@@ -212,7 +212,7 @@ TEST_F(JSExportTests, CallAsConstructor) {
   const std::vector<JSValue> args = {js_context.CreateString("foo"), js_context.CreateNumber(123)};
   JSObject js_widget = widget.CallAsConstructor(args);
   auto widget_ptr = js_widget.GetPrivate<Widget>();
-  XCTAssertTrue(widget_ptr.get());
+  XCTAssertNotEqual(nullptr, widget_ptr.get());
   XCTAssertTrue(js_widget.HasProperty("sayHello"));
   JSValue widget_sayHello_property = js_widget.GetProperty("sayHello");
   XCTAssertTrue(widget_sayHello_property.IsObject());
