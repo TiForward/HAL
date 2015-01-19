@@ -362,3 +362,291 @@ TEST_F(JSExportTests, EvaluateMultipleNewWidget) {
   XCTAssertEqual("Hello, foo. Your number is 456.", static_cast<std::string>(test3));
   XCTAssertEqual("Hello, bar. Your number is 234.", static_cast<std::string>(test4));
 }
+/*
+ * Call function with callback on Widget
+ */
+TEST_F(JSExportTests, FunctionWithCallback1) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  
+  XCTAssertFalse(global_object.HasProperty("Widget"));
+  JSObject Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", Widget_);
+  XCTAssertTrue(global_object.HasProperty("Widget"));
+  
+  const std::string script = R"JS(
+    Widget.sayHelloWithCallback(function(name,number) { return 'Hello, '+name+' ['+number+']!'; });
+  )JS";
+  
+  JSValue result = js_context.JSEvaluateScript(script);
+  XCTAssertTrue(result.IsString());
+  XCTAssertEqual("Hello, world [42]!", static_cast<std::string>(result));
+}
+
+/*
+ * Call function with callback using "this"
+ */
+TEST_F(JSExportTests, FunctionWithCallback2) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  
+  XCTAssertFalse(global_object.HasProperty("Widget"));
+  JSObject Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", Widget_);
+  XCTAssertTrue(global_object.HasProperty("Widget"));
+  
+  const std::string script = R"JS(
+  Widget.sayHelloWithCallback(function(name,number) { return 'Hello, '+this.name+' ['+this.number+']!'; });
+  )JS";
+  
+  JSValue result = js_context.JSEvaluateScript(script);
+  XCTAssertTrue(result.IsString());
+  XCTAssertEqual("Hello, world [42]!", static_cast<std::string>(result));
+}
+
+/*
+ * Call function with callback using "this" and check if string property works
+ */
+TEST_F(JSExportTests, FunctionWithCallback3) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  
+  XCTAssertFalse(global_object.HasProperty("Widget"));
+  JSObject Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", Widget_);
+  XCTAssertTrue(global_object.HasProperty("Widget"));
+  
+  const std::string script = R"JS(
+  Widget.sayHelloWithCallback(function(name,number) { return this.name==name; });
+  )JS";
+  
+  JSValue result = js_context.JSEvaluateScript(script);
+  XCTAssertTrue(result.IsBoolean());
+  XCTAssertTrue(static_cast<bool>(result));
+}
+
+/*
+ * Call function with callback using "this" and check if number property works
+ */
+TEST_F(JSExportTests, FunctionWithCallback4) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  
+  XCTAssertFalse(global_object.HasProperty("Widget"));
+  JSObject Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", Widget_);
+  XCTAssertTrue(global_object.HasProperty("Widget"));
+  
+  const std::string script = R"JS(
+  Widget.sayHelloWithCallback(function(name,number) { return this.number==number; });
+  )JS";
+  
+  JSValue result = js_context.JSEvaluateScript(script);
+  XCTAssertTrue(result.IsBoolean());
+  XCTAssertTrue(static_cast<bool>(result));
+}
+
+/*
+ * Call function with callback using nested function
+ */
+TEST_F(JSExportTests, FunctionWithCallback5) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  
+  XCTAssertFalse(global_object.HasProperty("Widget"));
+  JSObject Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", Widget_);
+  XCTAssertTrue(global_object.HasProperty("Widget"));
+  
+  const std::string script = R"JS(
+  Widget.sayHelloWithCallback(
+    function(name,number) {
+     return (function(obj) {
+        return obj.name==name;
+      }
+     )(this);
+    });
+  )JS";
+  
+  JSValue result = js_context.JSEvaluateScript(script);
+  XCTAssertTrue(result.IsBoolean());
+  XCTAssertTrue(static_cast<bool>(result));
+}
+
+/*
+ * Call function with callback using "this" and check if object property works
+ */
+TEST_F(JSExportTests, FunctionWithCallback6) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  
+  XCTAssertFalse(global_object.HasProperty("Widget"));
+  JSObject Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", Widget_);
+  XCTAssertTrue(global_object.HasProperty("Widget"));
+  
+  const std::string script = R"JS(
+  Widget.sayHelloWithCallback(function(name,number) {
+    this.value.test = name;
+    return this.value;
+  });
+  )JS";
+  
+  JSValue result = js_context.JSEvaluateScript(script);
+  XCTAssertTrue(result.IsObject());
+  JSObject resultObj = static_cast<JSObject>(result);
+  XCTAssertTrue(resultObj.HasProperty("test"));
+  XCTAssertTrue(resultObj.GetProperty("test").IsString());
+  XCTAssertEqual("world", static_cast<std::string>(resultObj.GetProperty("test")));
+}
+
+/*
+ * Call function with callback for new Widget
+ */
+TEST_F(JSExportTests, FunctionWithCallback1ForNewWidget) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  
+  XCTAssertFalse(global_object.HasProperty("Widget"));
+  JSObject Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", Widget_);
+  XCTAssertTrue(global_object.HasProperty("Widget"));
+  
+  js_context.JSEvaluateScript("var widget = new Widget('bar',456);");
+  
+  const std::string script = R"JS(
+    widget.sayHelloWithCallback(function(name,number) { return 'Hello, '+name+' ['+number+']!'; });
+  )JS";
+  
+  JSValue result = js_context.JSEvaluateScript(script);
+  XCTAssertTrue(result.IsString());
+  XCTAssertEqual("Hello, bar [456]!", static_cast<std::string>(result));
+}
+
+/*
+ * Call function with callback using "this" for new Widget
+ */
+TEST_F(JSExportTests, FunctionWithCallback2ForNewWidget) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  
+  XCTAssertFalse(global_object.HasProperty("Widget"));
+  JSObject Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", Widget_);
+  XCTAssertTrue(global_object.HasProperty("Widget"));
+  
+  js_context.JSEvaluateScript("var widget = new Widget('bar',456);");
+  
+  const std::string script = R"JS(
+  widget.sayHelloWithCallback(function(name,number) { return 'Hello, '+this.name+' ['+this.number+']!'; });
+  )JS";
+  
+  JSValue result = js_context.JSEvaluateScript(script);
+  XCTAssertTrue(result.IsString());
+  XCTAssertEqual("Hello, bar [456]!", static_cast<std::string>(result));
+}
+
+/*
+ * Call function with callback using "this" and check if string property works
+ */
+TEST_F(JSExportTests, FunctionWithCallback3ForNewWidget) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  
+  XCTAssertFalse(global_object.HasProperty("Widget"));
+  JSObject Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", Widget_);
+  XCTAssertTrue(global_object.HasProperty("Widget"));
+  
+  js_context.JSEvaluateScript("var widget = new Widget('bar',456);");
+
+  const std::string script = R"JS(
+  widget.sayHelloWithCallback(function(name,number) { return this.name==name; });
+  )JS";
+  
+  JSValue result = js_context.JSEvaluateScript(script);
+  XCTAssertTrue(result.IsBoolean());
+  XCTAssertTrue(static_cast<bool>(result));
+}
+
+/*
+ * Call function with callback using "this" and check if number property works
+ */
+TEST_F(JSExportTests, FunctionWithCallback4ForNewWidget) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  
+  XCTAssertFalse(global_object.HasProperty("Widget"));
+  JSObject Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", Widget_);
+  XCTAssertTrue(global_object.HasProperty("Widget"));
+  
+  js_context.JSEvaluateScript("var widget = new Widget('bar',456);");
+
+  const std::string script = R"JS(
+  widget.sayHelloWithCallback(function(name,number) { return this.number==number; });
+  )JS";
+  
+  JSValue result = js_context.JSEvaluateScript(script);
+  XCTAssertTrue(result.IsBoolean());
+  XCTAssertTrue(static_cast<bool>(result));
+}
+
+/*
+ * Call function with callback using nested function
+ */
+TEST_F(JSExportTests, FunctionWithCallback5ForNewWidget) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  
+  XCTAssertFalse(global_object.HasProperty("Widget"));
+  JSObject Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", Widget_);
+  XCTAssertTrue(global_object.HasProperty("Widget"));
+  
+  js_context.JSEvaluateScript("var widget = new Widget('bar',456);");
+
+  const std::string script = R"JS(
+  widget.sayHelloWithCallback(
+    function(name,number) {
+     return (function(obj) {
+        return obj.name==name;
+      }
+     )(this);
+    });
+  )JS";
+  
+  JSValue result = js_context.JSEvaluateScript(script);
+  XCTAssertTrue(result.IsBoolean());
+  XCTAssertTrue(static_cast<bool>(result));
+}
+
+/*
+ * Call function with callback using "this" and check if object property works
+ */
+TEST_F(JSExportTests, FunctionWithCallback6ForNewWidget) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  
+  XCTAssertFalse(global_object.HasProperty("Widget"));
+  JSObject Widget_ = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", Widget_);
+  XCTAssertTrue(global_object.HasProperty("Widget"));
+  
+  js_context.JSEvaluateScript("var widget = new Widget('bar',456);");
+  
+  const std::string script = R"JS(
+  widget.sayHelloWithCallback(function(name,number) {
+    this.value.test = name;
+    return this.value;
+  });
+  )JS";
+  
+  JSValue result = js_context.JSEvaluateScript(script);
+  XCTAssertTrue(result.IsObject());
+  JSObject resultObj = static_cast<JSObject>(result);
+  XCTAssertTrue(resultObj.HasProperty("test"));
+  XCTAssertTrue(resultObj.GetProperty("test").IsString());
+  XCTAssertEqual("bar", static_cast<std::string>(resultObj.GetProperty("test")));
+}
+
