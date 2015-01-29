@@ -262,7 +262,7 @@ export(EXPORT HALTargets
 
 configure_file(cmake/HALConfig.cmake
   "${CMAKE_BINARY_DIR}/HALConfig.cmake"
-  COPY_ONLY
+  COPYONLY
   )
 
 include(CMakePackageConfigHelpers)
