@@ -160,36 +160,6 @@ namespace HAL {
     return JSValueIsBoolean(static_cast<JSContextRef>(js_context__), js_value_ref__);
   }
 
-  bool JSValue::IsArray() const HAL_NOEXCEPT {
-    HAL_JSVALUE_LOCK_GUARD;
-    if (IsObject()) {
-        JSValue name = js_context__.CreateString("Array");
-
-        JSObject global = js_context__.get_global_object();
-        JSValue array_value = global.GetProperty(static_cast<JSString>(name));
-        if (!array_value.IsObject()) {
-          return false;
-        }
-        JSObject array = static_cast<JSObject>(array_value);
-
-        name = js_context__.CreateString("isArray");
-        JSValue isArray_value = array.GetProperty(static_cast<JSString>(name));
-        if (!isArray_value.IsObject()) {
-          return false;
-        }
-        JSObject isArray = static_cast<JSObject>(isArray_value);
-        if (!isArray.IsFunction()) {
-          return false;
-        }
-        JSValue result = isArray(const_cast<JSValue&>(*this), global);
-
-        if (result.IsBoolean()) {
-            return static_cast<bool>(result);
-        }
-    }
-    return false;
-  }
-
   bool JSValue::IsNumber() const HAL_NOEXCEPT {
     HAL_JSVALUE_LOCK_GUARD;
     return JSValueIsNumber(static_cast<JSContextRef>(js_context__), js_value_ref__);

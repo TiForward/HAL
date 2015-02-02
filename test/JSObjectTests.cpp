@@ -102,14 +102,18 @@ TEST_F(JSObjectTests, API) {
   // You can't call a JSObject as a constructor that isn't a constructor.
   XCTAssertFalse(js_object.IsConstructor());
   ASSERT_THROW(js_object.CallAsConstructor(), std::runtime_error);
+
+  XCTAssertFalse(js_object.IsArray());
   
   auto js_value  = js_context.JSEvaluateScript("new Object()");
   XCTAssertTrue(js_value.IsObject());
-  XCTAssertFalse(js_value.IsArray());
+  js_object = static_cast<JSObject>(js_value);
+  XCTAssertFalse(js_object.IsArray());
 
   js_value  = js_context.JSEvaluateScript("Object()");
   XCTAssertTrue(js_value.IsObject());
-  XCTAssertFalse(js_value.IsArray());
+  js_object = static_cast<JSObject>(js_value);
+  XCTAssertFalse(js_object.IsArray());
   
   // It is surprising to me that an object literal, "{}", is not an object.
   js_value  = js_context.JSEvaluateScript("{}");
@@ -118,45 +122,50 @@ TEST_F(JSObjectTests, API) {
   // But this is an object.
   js_value  = js_context.JSEvaluateScript("var a = {}; a");
   XCTAssertTrue(js_value.IsObject());
-  XCTAssertFalse(js_value.IsArray());
+  js_object = static_cast<JSObject>(js_value);
+  XCTAssertFalse(js_object.IsArray());
   
-  // This is nor a primitive string.
+  // This is not a primitive string.
   js_value  = js_context.JSEvaluateScript("new String()");
   XCTAssertTrue(js_value.IsObject());
   XCTAssertFalse(js_value.IsString());
-  XCTAssertFalse(js_value.IsArray());
+  js_object = static_cast<JSObject>(js_value);
+  XCTAssertFalse(js_object.IsArray());
 
   // Yet this is a primitive string (i.e. without new).
   js_value  = js_context.JSEvaluateScript("String()");
   XCTAssertFalse(js_value.IsObject());
   XCTAssertTrue(js_value.IsString());
-  XCTAssertFalse(js_value.IsArray());
 
   js_value  = js_context.JSEvaluateScript("new Date()");
   XCTAssertTrue(js_value.IsObject());
-  XCTAssertFalse(js_value.IsArray());
+  js_object = static_cast<JSObject>(js_value);
+  XCTAssertFalse(js_object.IsArray());
 
   js_value  = js_context.JSEvaluateScript("new Array()");
   XCTAssertTrue(js_value.IsObject());
-  XCTAssertTrue(js_value.IsArray());
+  js_object = static_cast<JSObject>(js_value);
+  XCTAssertTrue(js_object.IsArray());
 
   // An array literal is an Object, as expected. Why isn't an object literal,
   // "{}", an Object?
   js_value  = js_context.JSEvaluateScript("[]");
   XCTAssertTrue(js_value.IsObject());
-  XCTAssertTrue(js_value.IsArray());
+  js_object = static_cast<JSObject>(js_value);
+  XCTAssertTrue(js_object.IsArray());
 
   js_value  = js_context.JSEvaluateScript("[1, 3, 5, 7]");
   XCTAssertTrue(js_value.IsObject());
-  XCTAssertTrue(js_value.IsArray());
+  js_object = static_cast<JSObject>(js_value);
+  XCTAssertTrue(js_object.IsArray());
 }
 
 TEST_F(JSObjectTests, Property) {
   JSContext js_context = js_context_group.CreateContext();
   auto js_value  = js_context.JSEvaluateScript("[1, 3, 5, 7]");
   XCTAssertTrue(js_value.IsObject());
-  XCTAssertTrue(js_value.IsArray());
   JSObject js_object = static_cast<JSObject>(js_value);
+  XCTAssertTrue(js_object.IsArray());
   XCTAssertTrue(js_object.HasProperty("length"));
   js_value = js_object.GetProperty("length");
   XCTAssertEqual(4, static_cast<int32_t>(js_value));
@@ -194,6 +203,7 @@ TEST_F(JSObjectTests, Property) {
   // You can set a custom propery on a string.
   js_value = js_context.CreateString("hello, world");
   js_object = static_cast<JSObject>(js_value);
+  XCTAssertFalse(js_object.IsArray());
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));
   js_value = js_object.GetProperty("quote");
@@ -202,6 +212,7 @@ TEST_F(JSObjectTests, Property) {
   // You can set a custom propery on a bool.
   js_value = js_context.CreateBoolean(true);
   js_object = static_cast<JSObject>(js_value);
+  XCTAssertFalse(js_object.IsArray());
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));
   js_value = js_object.GetProperty("quote");
@@ -210,6 +221,7 @@ TEST_F(JSObjectTests, Property) {
   // You can set a custom propery on a number.
   js_value = js_context.CreateNumber(42);
   js_object = static_cast<JSObject>(js_value);
+  XCTAssertFalse(js_object.IsArray());
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));
   js_value = js_object.GetProperty("quote");
@@ -218,6 +230,7 @@ TEST_F(JSObjectTests, Property) {
   // You can set a custom propery on an array.
   js_value = js_context.CreateArray();
   js_object = static_cast<JSObject>(js_value);
+  XCTAssertTrue(js_object.IsArray());
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));
   js_value = js_object.GetProperty("quote");
@@ -226,6 +239,7 @@ TEST_F(JSObjectTests, Property) {
   // You can set a custom propery on an regexp.
   js_value = js_context.CreateRegExp();
   js_object = static_cast<JSObject>(js_value);
+  XCTAssertFalse(js_object.IsArray());
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));
   js_value = js_object.GetProperty("quote");
@@ -234,6 +248,7 @@ TEST_F(JSObjectTests, Property) {
   // You can set a custom propery on an error.
   js_value = js_context.CreateError();
   js_object = static_cast<JSObject>(js_value);
+  XCTAssertFalse(js_object.IsArray());
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));
   js_value = js_object.GetProperty("quote");
@@ -248,6 +263,7 @@ TEST_F(JSObjectTests, Property) {
 TEST_F(JSObjectTests, JSArray) {
   JSContext js_context = js_context_group.CreateContext();
   JSArray js_array = js_context.CreateArray();
+  XCTAssertTrue(js_array.IsArray());
 }
 
 TEST_F(JSObjectTests, JSDate) {

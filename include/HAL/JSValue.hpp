@@ -208,16 +208,6 @@ namespace HAL {
      @result true if this JavaScript value's type is the boolean type.
      */
     virtual bool IsBoolean() const HAL_NOEXCEPT final;
- 
-    /*!
-     @method
-     
-     @abstract Determine whether this JavaScript value's type is an
-     Array type.
-     
-     @result true if this JavaScript value's type is an Array type.
-     */
-    virtual bool IsArray() const HAL_NOEXCEPT final;
 
     /*!
      @method
