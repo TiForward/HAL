@@ -136,7 +136,13 @@ std::string Widget::testMemberArrayProperty() const HAL_NOEXCEPT {
 }
 
 std::string Widget::testCallAsFunction(JSObject& this_object) HAL_NOEXCEPT {
-  return static_cast<std::string>(jsfunction__(this_object));
+  // Every function can be called outside of Widget (e.g. var test = widget.callAsFunction)
+  // In that case "this" could be null. We need to make sure if parent is still there
+  if (this == nullptr) {
+    return "not on Widget";
+  } else {
+    return static_cast<std::string>(jsfunction__(this_object));
+  }
 }
 
 std::string Widget::get_name() const HAL_NOEXCEPT {

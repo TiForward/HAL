@@ -403,18 +403,9 @@ using namespace HAL;
     XCTAssertTrue(global_object.HasProperty("Widget"));
     
     auto result = js_context.JSEvaluateScript(R"JS(
-      var callbacks = [];
-      for (var i=0; i<2000;i++) {
-        var widget = new Widget('newbar', 123);
-        callbacks.push(widget.testCallAsFunction);
-      }
-      for (var i = 0; i < callbacks.length; i++) {
-        var callback = callbacks[i];
-        if (callback() != 'it works fine') {
-          throw new Error('assertion failed');
-        }
-      }
-      true;
+      var widget = new Widget('newbar', 123);
+      var callback = widget.testCallAsFunction;
+      (callback() == 'not on Widget');
     )JS");
     XCTAssertTrue(result.IsBoolean());
     XCTAssertTrue(static_cast<bool>(result));
