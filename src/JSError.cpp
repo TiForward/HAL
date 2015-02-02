@@ -17,8 +17,7 @@
 namespace HAL {
 
 JSError::JSError(const JSContext& js_context, const std::vector<JSValue>& arguments)
-		: JSObject(js_context, MakeError(js_context, arguments)) {
-      JSValueUnprotect(static_cast<JSContextRef>(js_context), static_cast<JSObjectRef>(*this));
+		: JSObject(js_context, MakeError(js_context, arguments), false) {
 }
 
 JSObjectRef JSError::MakeError(const JSContext& js_context, const std::vector<JSValue>& arguments) {

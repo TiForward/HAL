@@ -161,8 +161,10 @@ namespace HAL {
   
   JSObject::~JSObject() HAL_NOEXCEPT {
     HAL_LOG_TRACE("JSObject:: dtor ", this);
-    //HAL_LOG_TRACE("JSObject:: release ", js_object_ref__, " for ", this);
-    //JSValueUnprotect(static_cast<JSContextRef>(js_context__), js_object_ref__);
+    HAL_LOG_TRACE("JSObject:: release ", js_object_ref__, " for ", this);
+    if (protect__) {
+      JSValueUnprotect(static_cast<JSContextRef>(js_context__), js_object_ref__);
+    }
     UnRegisterJSContext(js_object_ref__);
   }
   
@@ -213,16 +215,20 @@ namespace HAL {
   , js_object_ref__(JSObjectMake(static_cast<JSContextRef>(js_context), static_cast<JSClassRef>(js_class), private_data)) {
     HAL_LOG_TRACE("JSObject:: ctor 1 ", this);
     HAL_LOG_TRACE("JSObject:: retain ", js_object_ref__, " (implicit) for ", this);
+    JSValueProtect(static_cast<JSContextRef>(js_context__), js_object_ref__);
     RegisterJSContext(static_cast<JSContextRef>(js_context__), js_object_ref__);
   }
 
   // For interoperability with the JavaScriptCore C API.
-  JSObject::JSObject(const JSContext& js_context, JSObjectRef js_object_ref)
+  JSObject::JSObject(const JSContext& js_context, JSObjectRef js_object_ref, bool protect)
   : js_context__(js_context)
+  , protect__(protect)
   , js_object_ref__(js_object_ref) {
     HAL_LOG_TRACE("JSObject:: ctor 2 ", this);
     HAL_LOG_TRACE("JSObject:: retain ", js_object_ref__, " for ", this);
-    JSValueProtect(static_cast<JSContextRef>(js_context__), js_object_ref__);
+    if (protect__) {
+      JSValueProtect(static_cast<JSContextRef>(js_context__), js_object_ref__);
+    }
     RegisterJSContext(static_cast<JSContextRef>(js_context__), js_object_ref__);
   }
   

@@ -30,7 +30,6 @@ private:
 	
 	explicit JSNull(const JSContext& js_context)
 			: JSValue(js_context, JSValueMakeNull(static_cast<JSContextRef>(js_context))) {
-        JSValueUnprotect(static_cast<JSContextRef>(js_context), static_cast<JSValueRef>(*this));
 	}
 };
 

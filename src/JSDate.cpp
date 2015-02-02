@@ -17,8 +17,7 @@
 namespace HAL {
 
 JSDate::JSDate(const JSContext& js_context, const std::vector<JSValue>& arguments)
-		: JSObject(js_context, MakeDate(js_context, arguments)) {
-      JSValueUnprotect(static_cast<JSContextRef>(js_context), static_cast<JSObjectRef>(*this));
+		: JSObject(js_context, MakeDate(js_context, arguments), false) {
 }
 
 JSObjectRef JSDate::MakeDate(const JSContext& js_context, const std::vector<JSValue>& arguments) {
