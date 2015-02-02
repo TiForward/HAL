@@ -19,6 +19,14 @@ Widget::Widget(const JSContext& js_context, const std::vector<JSValue>& argument
 : JSExportObject(js_context, arguments)
 , name__("world")
 , jsvalue__(js_context.CreateObject())
+, jsnull__(js_context.CreateNull())
+, jsundefined__(js_context.CreateUndefined())
+, jsnumber__(js_context.CreateNumber(123))
+, jsstring__(js_context.CreateString("js string"))
+, jsboolean__(js_context.CreateBoolean(true))
+, jsobject__(js_context.CreateObject())
+, jsarray__(js_context.CreateArray())
+, jsfunction__(js_context.CreateFunction("return 'it works fine';"))
 , number__(42) {
   HAL_LOG_DEBUG("Widget:: ctor ", this);
   if (arguments.size() >= 1) {
@@ -32,6 +40,9 @@ Widget::Widget(const JSContext& js_context, const std::vector<JSValue>& argument
     assert(_1.IsNumber());
     number__ = static_cast<int32_t>(_1);
   }
+
+  jsobject__.SetProperty("test", js_context.CreateString("ok"));
+  jsarray__.SetProperty(0, js_context.CreateString("works"));
 }
 
 Widget::~Widget() HAL_NOEXCEPT {
@@ -42,6 +53,14 @@ Widget::Widget(const Widget& rhs) HAL_NOEXCEPT
 : JSExportObject(rhs.get_context())
 , name__(rhs.name__)
 , jsvalue__(rhs.jsvalue__)
+, jsobject__(rhs.jsobject__)
+, jsarray__(rhs.jsarray__)
+, jsfunction__(rhs.jsfunction__)
+, jsnull__(rhs.jsnull__)
+, jsundefined__(rhs.jsundefined__)
+, jsboolean__(rhs.jsboolean__)
+, jsnumber__(rhs.jsnumber__)
+, jsstring__(rhs.jsstring__)
 , number__(rhs.number__) {
   HAL_LOG_DEBUG("Widget:: copy ctor ", this);
 }
@@ -50,6 +69,14 @@ Widget::Widget(Widget&& rhs) HAL_NOEXCEPT
 : JSExportObject(rhs.get_context())
 , name__(rhs.name__)
 , jsvalue__(rhs.jsvalue__)
+, jsobject__(rhs.jsobject__)
+, jsarray__(rhs.jsarray__)
+, jsfunction__(rhs.jsfunction__)
+, jsnull__(rhs.jsnull__)
+, jsundefined__(rhs.jsundefined__)
+, jsboolean__(rhs.jsboolean__)
+, jsnumber__(rhs.jsnumber__)
+, jsstring__(rhs.jsstring__)
 , number__(rhs.number__) {
   HAL_LOG_DEBUG("Widget:: move ctor ", this);
 }
@@ -60,6 +87,14 @@ Widget& Widget::operator=(const Widget& rhs) HAL_NOEXCEPT {
   name__   = rhs.name__;
   number__ = rhs.number__;
   jsvalue__ = rhs.jsvalue__;
+  jsobject__ = rhs.jsobject__;
+  jsarray__ = rhs.jsarray__;
+  jsfunction__ = rhs.jsfunction__;
+  jsnull__ = rhs.jsnull__;
+  jsundefined__ = rhs.jsundefined__;
+  jsboolean__ = rhs.jsboolean__;
+  jsnumber__ = rhs.jsnumber__;
+  jsstring__ = rhs.jsstring__;
   return *this;
 }
 
@@ -79,6 +114,29 @@ void Widget::swap(Widget& other) HAL_NOEXCEPT {
   swap(name__  , other.name__);
   swap(number__, other.number__);
   swap(jsvalue__, other.jsvalue__);
+  swap(jsobject__, other.jsobject__);
+  swap(jsarray__, other.jsarray__);
+  swap(jsfunction__, other.jsfunction__);
+  swap(jsnull__, other.jsnull__);
+  swap(jsundefined__, other.jsundefined__);
+  swap(jsboolean__, other.jsboolean__);
+  swap(jsnumber__, other.jsnumber__);
+  swap(jsstring__, other.jsstring__);
+}
+
+std::string Widget::testMemberObjectProperty() const HAL_NOEXCEPT {
+  if (!jsobject__.HasProperty("test")) {
+    return "failed";
+  }
+  return static_cast<std::string>(jsobject__.GetProperty("test"));
+}
+
+std::string Widget::testMemberArrayProperty() const HAL_NOEXCEPT {
+  return static_cast<std::string>(jsarray__.GetProperty(0));
+}
+
+std::string Widget::testCallAsFunction(JSObject& this_object) HAL_NOEXCEPT {
+  return static_cast<std::string>(jsfunction__(this_object));
 }
 
 std::string Widget::get_name() const HAL_NOEXCEPT {
@@ -122,6 +180,14 @@ void Widget::JSExportInitialize() {
   JSExport<Widget>::AddValueProperty("pi"         , std::mem_fn(&Widget::js_get_pi));
   JSExport<Widget>::AddFunctionProperty("sayHello", std::mem_fn(&Widget::js_sayHello));
   JSExport<Widget>::AddFunctionProperty("sayHelloWithCallback", std::mem_fn(&Widget::js_sayHelloWithCallback));
+  JSExport<Widget>::AddFunctionProperty("testMemberObjectProperty", std::mem_fn(&Widget::js_testMemberObjectProperty));
+  JSExport<Widget>::AddFunctionProperty("testMemberArrayProperty", std::mem_fn(&Widget::js_testMemberArrayProperty));
+  JSExport<Widget>::AddFunctionProperty("testMemberNullProperty", std::mem_fn(&Widget::js_testMemberNullProperty));
+  JSExport<Widget>::AddFunctionProperty("testMemberUndefinedProperty", std::mem_fn(&Widget::js_testMemberUndefinedProperty));
+  JSExport<Widget>::AddFunctionProperty("testMemberBooleanProperty", std::mem_fn(&Widget::js_testMemberBooleanProperty));
+  JSExport<Widget>::AddFunctionProperty("testMemberNumberProperty", std::mem_fn(&Widget::js_testMemberNumberProperty));
+  JSExport<Widget>::AddFunctionProperty("testMemberStringProperty", std::mem_fn(&Widget::js_testMemberStringProperty));
+  JSExport<Widget>::AddFunctionProperty("testCallAsFunction", std::mem_fn(&Widget::js_testCallAsFunction));
 }
 
 JSValue Widget::js_get_name() const HAL_NOEXCEPT {
@@ -173,6 +239,38 @@ JSValue Widget::js_sayHelloWithCallback(const std::vector<JSValue>& arguments, J
     }
   }
   return this_object.get_context().CreateString(sayHello());
+}
+
+JSValue Widget::js_testMemberObjectProperty(const std::vector<JSValue>& arguments, JSObject& this_object) {
+  return this_object.get_context().CreateString(testMemberObjectProperty());
+}
+
+JSValue Widget::js_testMemberArrayProperty(const std::vector<JSValue>& arguments, JSObject& this_object) {
+  return this_object.get_context().CreateString(testMemberArrayProperty());
+}
+
+JSValue Widget::js_testMemberNullProperty(const std::vector<JSValue>& arguments, JSObject& this_object) {
+  return jsnull__;
+}
+
+JSValue Widget::js_testMemberUndefinedProperty(const std::vector<JSValue>& arguments, JSObject& this_object) {
+  return jsundefined__;
+}
+
+JSValue Widget::js_testMemberBooleanProperty(const std::vector<JSValue>& arguments, JSObject& this_object) {
+  return jsboolean__;
+}
+
+JSValue Widget::js_testMemberNumberProperty(const std::vector<JSValue>& arguments, JSObject& this_object) {
+  return jsnumber__;
+}
+
+JSValue Widget::js_testMemberStringProperty(const std::vector<JSValue>& arguments, JSObject& this_object) {
+  return jsstring__;
+}
+
+JSValue Widget::js_testCallAsFunction(const std::vector<JSValue>& arguments, JSObject& this_object) {
+  return this_object.get_context().CreateString(testCallAsFunction(this_object));
 }
 
 JSValue Widget::js_sayHello(const std::vector<JSValue>& arguments, JSObject& this_object) {
