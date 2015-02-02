@@ -42,6 +42,7 @@ TEST_F(JSValueTests, JSUndefined) {
   XCTAssertFalse(js_undefined.IsNumber());
   XCTAssertFalse(js_undefined.IsString());
   XCTAssertFalse(js_undefined.IsObject());
+  XCTAssertFalse(js_undefined.IsArray());
 }
 
 TEST_F(JSValueTests, JSNull) {
@@ -54,6 +55,7 @@ TEST_F(JSValueTests, JSNull) {
   XCTAssertFalse(js_null.IsNumber());
   XCTAssertFalse(js_null.IsString());
   XCTAssertFalse(js_null.IsObject());
+  XCTAssertFalse(js_null.IsArray());
 }
 
 TEST_F(JSValueTests, JSBoolean) {
@@ -68,17 +70,19 @@ TEST_F(JSValueTests, JSBoolean) {
   XCTAssertFalse(js_false.IsNumber());
   XCTAssertFalse(js_false.IsString());
   XCTAssertFalse(js_false.IsObject());
+  XCTAssertFalse(js_false.IsArray());
   
   JSBoolean js_true = js_context.CreateBoolean(true);
   XCTAssertTrue(static_cast<bool>(js_true));
   
   XCTAssertEqual("true", static_cast<std::string>(js_true));
-  XCTAssertFalse(js_false.IsUndefined());
-  XCTAssertFalse(js_false.IsNull());
-  XCTAssertTrue(js_false.IsBoolean());
-  XCTAssertFalse(js_false.IsNumber());
-  XCTAssertFalse(js_false.IsString());
-  XCTAssertFalse(js_false.IsObject());
+  XCTAssertFalse(js_true.IsUndefined());
+  XCTAssertFalse(js_true.IsNull());
+  XCTAssertTrue(js_true.IsBoolean());
+  XCTAssertFalse(js_true.IsNumber());
+  XCTAssertFalse(js_true.IsString());
+  XCTAssertFalse(js_true.IsObject());
+  XCTAssertFalse(js_true.IsArray());
   
   JSBoolean js_boolean = js_context.CreateBoolean(true);
   XCTAssertTrue(static_cast<bool>(js_boolean));
@@ -99,6 +103,7 @@ TEST_F(JSValueTests, JSNumber) {
   XCTAssertTrue(js_double.IsNumber());
   XCTAssertFalse(js_double.IsString());
   XCTAssertFalse(js_double.IsObject());
+  XCTAssertFalse(js_double.IsArray());
   
   const int32_t int32_value = 42;
   JSNumber js_int32 = js_context.CreateNumber(int32_value);
@@ -111,6 +116,7 @@ TEST_F(JSValueTests, JSNumber) {
   XCTAssertTrue(js_int32.IsNumber());
   XCTAssertFalse(js_int32.IsString());
   XCTAssertFalse(js_int32.IsObject());
+  XCTAssertFalse(js_int32.IsArray());
 
   const uint32_t uint32_value = 42;
   JSNumber js_uint32 = js_context.CreateNumber(uint32_value);
@@ -123,6 +129,7 @@ TEST_F(JSValueTests, JSNumber) {
   XCTAssertTrue(js_uint32.IsNumber());
   XCTAssertFalse(js_uint32.IsString());
   XCTAssertFalse(js_uint32.IsObject());
+  XCTAssertFalse(js_uint32.IsArray());
 
   auto js_pi_value  = js_context.JSEvaluateScript("Math.PI");
   //XCTAssertEqualWithAccuracy(UnitTestConstants::pi, static_cast<double>(js_pi_value), std::numeric_limits<double>::epsilon());
@@ -184,6 +191,7 @@ TEST_F(JSValueTests, String) {
   XCTAssertFalse(js_value.IsNumber());
   XCTAssertTrue(js_value.IsString());
   XCTAssertFalse(js_value.IsObject());
+  XCTAssertFalse(js_value.IsArray());
   
   JSString js_string = static_cast<JSString>(js_value);
   XCTAssertEqual("hello, world", js_string);

@@ -105,9 +105,11 @@ TEST_F(JSObjectTests, API) {
   
   auto js_value  = js_context.JSEvaluateScript("new Object()");
   XCTAssertTrue(js_value.IsObject());
+  XCTAssertFalse(js_value.IsArray());
 
   js_value  = js_context.JSEvaluateScript("Object()");
   XCTAssertTrue(js_value.IsObject());
+  XCTAssertFalse(js_value.IsArray());
   
   // It is surprising to me that an object literal, "{}", is not an object.
   js_value  = js_context.JSEvaluateScript("{}");
@@ -116,36 +118,44 @@ TEST_F(JSObjectTests, API) {
   // But this is an object.
   js_value  = js_context.JSEvaluateScript("var a = {}; a");
   XCTAssertTrue(js_value.IsObject());
+  XCTAssertFalse(js_value.IsArray());
   
   // This is nor a primitive string.
   js_value  = js_context.JSEvaluateScript("new String()");
   XCTAssertTrue(js_value.IsObject());
   XCTAssertFalse(js_value.IsString());
+  XCTAssertFalse(js_value.IsArray());
 
   // Yet this is a primitive string (i.e. without new).
   js_value  = js_context.JSEvaluateScript("String()");
   XCTAssertFalse(js_value.IsObject());
   XCTAssertTrue(js_value.IsString());
+  XCTAssertFalse(js_value.IsArray());
 
   js_value  = js_context.JSEvaluateScript("new Date()");
   XCTAssertTrue(js_value.IsObject());
+  XCTAssertFalse(js_value.IsArray());
 
   js_value  = js_context.JSEvaluateScript("new Array()");
   XCTAssertTrue(js_value.IsObject());
+  XCTAssertTrue(js_value.IsArray());
 
   // An array literal is an Object, as expected. Why isn't an object literal,
   // "{}", an Object?
   js_value  = js_context.JSEvaluateScript("[]");
   XCTAssertTrue(js_value.IsObject());
+  XCTAssertTrue(js_value.IsArray());
 
   js_value  = js_context.JSEvaluateScript("[1, 3, 5, 7]");
   XCTAssertTrue(js_value.IsObject());
+  XCTAssertTrue(js_value.IsArray());
 }
 
 TEST_F(JSObjectTests, Property) {
   JSContext js_context = js_context_group.CreateContext();
   auto js_value  = js_context.JSEvaluateScript("[1, 3, 5, 7]");
   XCTAssertTrue(js_value.IsObject());
+  XCTAssertTrue(js_value.IsArray());
   JSObject js_object = static_cast<JSObject>(js_value);
   XCTAssertTrue(js_object.HasProperty("length"));
   js_value = js_object.GetProperty("length");
