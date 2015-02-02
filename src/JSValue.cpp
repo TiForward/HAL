@@ -102,6 +102,8 @@ namespace HAL {
     JSObjectRef js_object_ref = JSValueToObject(static_cast<JSContextRef>(js_context__), js_value_ref__, &exception);
     
     if (exception) {
+      // If this assert fails then we need to JSValueUnprotect
+      // js_object_ref.
       assert(!js_object_ref);
       detail::ThrowRuntimeError("JSValue", JSValue(js_context__, exception));
     }
@@ -206,22 +208,24 @@ namespace HAL {
   
   JSValue::~JSValue() HAL_NOEXCEPT {
     HAL_LOG_TRACE("JSValue:: dtor ", this);
-    if (protect__) {
-      HAL_LOG_TRACE("JSValue:: release ", js_value_ref__, " for ", this);
-      JSValueUnprotect(static_cast<JSContextRef>(js_context__), js_value_ref__);
-    }
+    HAL_LOG_TRACE("JSValue:: release ", js_value_ref__, " for ", this);
+    JSValueUnprotect(static_cast<JSContextRef>(js_context__), js_value_ref__);
   }
   
   JSValue::JSValue(const JSValue& rhs) HAL_NOEXCEPT
   : js_context__(rhs.js_context__)
   , js_value_ref__(rhs.js_value_ref__) {
     HAL_LOG_TRACE("JSValue:: copy ctor ", this);
+    HAL_LOG_TRACE("JSValue:: retain ", js_value_ref__, " for ", this);
+    JSValueProtect(static_cast<JSContextRef>(js_context__), js_value_ref__);
   }
   
   JSValue::JSValue(JSValue&& rhs) HAL_NOEXCEPT
   : js_context__(std::move(rhs.js_context__))
   , js_value_ref__(rhs.js_value_ref__) {
     HAL_LOG_TRACE("JSValue:: move ctor ", this);
+    HAL_LOG_TRACE("JSValue:: retain ", js_value_ref__, " for ", this);
+    JSValueProtect(static_cast<JSContextRef>(js_context__), js_value_ref__);
   }
   
   JSValue& JSValue::operator=(JSValue rhs) {
@@ -262,7 +266,6 @@ namespace HAL {
     }
     HAL_LOG_TRACE("JSValue:: retain ", js_value_ref__, " for ", this);
     JSValueProtect(static_cast<JSContextRef>(js_context__), js_value_ref__);
-    protect__ = true;
   }
   
   // For interoperability with the JavaScriptCore C API.
@@ -271,6 +274,8 @@ namespace HAL {
   , js_value_ref__(js_value_ref)  {
     HAL_LOG_TRACE("JSValue:: ctor 2 ", this);
     assert(js_value_ref__);
+    HAL_LOG_TRACE("JSValue:: retain ", js_value_ref__, " for ", this);
+    JSValueProtect(static_cast<JSContextRef>(js_context__), js_value_ref__);
   }
   
   std::string to_string(const JSValue::Type& js_value_type) HAL_NOEXCEPT {

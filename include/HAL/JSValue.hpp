@@ -346,7 +346,6 @@ namespace HAL {
     static void * operator new [] (std::size_t); // #2: To prevent allocation of array of objects
     
     JSContext  js_context__;
-    bool protect__ { false };
 
     // Silence 4251 on Windows since private member variables do not
     // need to be exported from a DLL.
