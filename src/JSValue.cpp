@@ -159,7 +159,7 @@ namespace HAL {
     HAL_JSVALUE_LOCK_GUARD;
     return JSValueIsBoolean(static_cast<JSContextRef>(js_context__), js_value_ref__);
   }
-  
+
   bool JSValue::IsNumber() const HAL_NOEXCEPT {
     HAL_JSVALUE_LOCK_GUARD;
     return JSValueIsNumber(static_cast<JSContextRef>(js_context__), js_value_ref__);

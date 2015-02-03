@@ -100,6 +100,37 @@ namespace HAL {
   bool JSObject::IsFunction() const HAL_NOEXCEPT {
     return JSObjectIsFunction(static_cast<JSContextRef>(js_context__), js_object_ref__);
   }
+
+  bool JSObject::IsArray() const HAL_NOEXCEPT {
+    HAL_JSOBJECT_LOCK_GUARD;
+    
+    JSValue name = js_context__.CreateString("Array");
+
+    JSObject global = js_context__.get_global_object();
+    JSValue array_value = global.GetProperty(static_cast<JSString>(name));
+    if (!array_value.IsObject()) {
+      return false;
+    }
+    JSObject array = static_cast<JSObject>(array_value);
+
+    name = js_context__.CreateString("isArray");
+    JSValue isArray_value = array.GetProperty(static_cast<JSString>(name));
+    if (!isArray_value.IsObject()) {
+      return false;
+    }
+    JSObject isArray = static_cast<JSObject>(isArray_value);
+    if (!isArray.IsFunction()) {
+      return false;
+    }
+
+    JSValue self = static_cast<JSValue>(*this);
+    JSValue result = isArray(self, global);
+    if (result.IsBoolean()) {
+        return static_cast<bool>(result);
+    }
+    
+    return false;
+  }
   
   JSValue JSObject::operator()(                                        JSObject this_object) { return CallAsFunction(std::vector<JSValue>()                      , this_object); }
   JSValue JSObject::operator()(JSValue&                     argument , JSObject this_object) { return CallAsFunction({argument}                                  , this_object); }

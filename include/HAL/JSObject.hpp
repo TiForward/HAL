@@ -174,6 +174,16 @@ namespace HAL {
      @result true if this object can be called as a function.
      */
     virtual bool IsFunction() const HAL_NOEXCEPT final;
+
+    /*!
+     @method
+     
+     @abstract Determine whether this JavaScript object is an
+     Array.
+     
+     @result true if this JavaScript object is an Array.
+     */
+    virtual bool IsArray() const HAL_NOEXCEPT final;
     
     /*!
      @method
