@@ -232,7 +232,11 @@ TEST_F(JSExportTests, JSExportFinalize) {
     global_object.SetProperty("Widget", widget);
     XCTAssertTrue(global_object.HasProperty("Widget"));
     
-    js_context.JSEvaluateScript("for (var i=0; i<2000;i++) { var widget = new Widget('newbar', 123); }");
+    js_context.JSEvaluateScript(R"JS(
+      for (var i=0; i<2000;i++) {
+        var widget = new Widget('newbar', 123);
+      }
+    )JS");
     js_context.JSEvaluateScript("Widget = null;");
   }
 }
@@ -266,6 +270,249 @@ TEST_F(JSExportTests, JSExportFinalize2) {
 
 		js_context.GarbageCollect();
 	}
+}
+
+TEST_F(JSExportTests, JSExportFinalize3) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  {
+    XCTAssertFalse(global_object.HasProperty("Widget"));
+    JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+    global_object.SetProperty("Widget", widget);
+    XCTAssertTrue(global_object.HasProperty("Widget"));
+    
+    auto result = js_context.JSEvaluateScript(R"JS(
+      try {
+        var W = new Widget('test', 123);
+        for (var i=0; i<2000;i++) {
+          var widget = new Widget('newbar', 123);
+          if (W.testMemberObjectProperty() != 'ok') {
+            throw new Error('assertion failed');
+          }
+        }
+        true;
+      } catch (E) {
+        false;
+      }
+      )JS");
+    XCTAssertTrue(result.IsBoolean());
+    XCTAssertTrue(static_cast<bool>(result));
+  }
+}
+
+TEST_F(JSExportTests, JSExportFinalize4) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  {
+    XCTAssertFalse(global_object.HasProperty("Widget"));
+    JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+    global_object.SetProperty("Widget", widget);
+    XCTAssertTrue(global_object.HasProperty("Widget"));
+    
+    auto result = js_context.JSEvaluateScript(R"JS(
+      try {
+        var W = new Widget('test', 123);
+        for (var i=0; i<2000;i++) {
+          var widget = new Widget('newbar', 123);
+          if (W.testMemberArrayProperty() != 'works') {
+            throw new Error('assertion failed');
+          }
+        }
+        true;
+      } catch (E) {
+        false;
+      }
+      )JS");
+    XCTAssertTrue(result.IsBoolean());
+    XCTAssertTrue(static_cast<bool>(result));
+  }
+}
+
+TEST_F(JSExportTests, JSExportFinalize5) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  {
+    XCTAssertFalse(global_object.HasProperty("Widget"));
+    JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+    global_object.SetProperty("Widget", widget);
+    XCTAssertTrue(global_object.HasProperty("Widget"));
+    
+    auto result = js_context.JSEvaluateScript(R"JS(
+      try {
+        var W = new Widget('test', 123);
+        for (var i=0; i<2000;i++) {
+          var widget = new Widget('newbar', 123);
+          if (W.testCallAsFunction() != 'it works fine') {
+            throw new Error('assertion failed');
+          }
+        }
+        true;
+      } catch (E) {
+        false;
+      }
+      )JS");
+    XCTAssertTrue(result.IsBoolean());
+    XCTAssertTrue(static_cast<bool>(result));
+  }
+}
+
+TEST_F(JSExportTests, JSExportFinalize6) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  {
+    XCTAssertFalse(global_object.HasProperty("Widget"));
+    JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+    global_object.SetProperty("Widget", widget);
+    XCTAssertTrue(global_object.HasProperty("Widget"));
+    
+    auto result = js_context.JSEvaluateScript(R"JS(
+      var widget = new Widget('newbar', 123);
+      var callback = widget.testCallAsFunction;
+      (callback() == 'not on Widget');
+    )JS");
+    XCTAssertTrue(result.IsBoolean());
+    XCTAssertTrue(static_cast<bool>(result));
+  }
+}
+
+TEST_F(JSExportTests, JSExportFinalize7) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  {
+    XCTAssertFalse(global_object.HasProperty("Widget"));
+    JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+    global_object.SetProperty("Widget", widget);
+    XCTAssertTrue(global_object.HasProperty("Widget"));
+    
+    auto result = js_context.JSEvaluateScript(R"JS(
+      try {
+        var W = new Widget('test', 123);
+        for (var i=0; i<2000;i++) {
+          var widget = new Widget('newbar', 123);
+          if (W.testMemberNullProperty() !== null) {
+            throw new Error('assertion failed');
+          }
+        }
+        true;
+      } catch (E) {
+        false;
+      }
+      )JS");
+    XCTAssertTrue(result.IsBoolean());
+    XCTAssertTrue(static_cast<bool>(result));
+  }
+}
+
+TEST_F(JSExportTests, JSExportFinalize8) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  {
+    XCTAssertFalse(global_object.HasProperty("Widget"));
+    JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+    global_object.SetProperty("Widget", widget);
+    XCTAssertTrue(global_object.HasProperty("Widget"));
+    
+    auto result = js_context.JSEvaluateScript(R"JS(
+      try {
+        var W = new Widget('test', 123);
+        for (var i=0; i<2000;i++) {
+          var widget = new Widget('newbar', 123);
+          if (W.testMemberUndefinedProperty() !== undefined) {
+            throw new Error('assertion failed');
+          }
+        }
+        true;
+      } catch (E) {
+        false;
+      }
+      )JS");
+    XCTAssertTrue(result.IsBoolean());
+    XCTAssertTrue(static_cast<bool>(result));
+  }
+}
+
+TEST_F(JSExportTests, JSExportFinalize9) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  {
+    XCTAssertFalse(global_object.HasProperty("Widget"));
+    JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+    global_object.SetProperty("Widget", widget);
+    XCTAssertTrue(global_object.HasProperty("Widget"));
+    
+    auto result = js_context.JSEvaluateScript(R"JS(
+      try {
+        var W = new Widget('test', 123);
+        for (var i=0; i<2000;i++) {
+          var widget = new Widget('newbar', 123);
+          if (W.testMemberBooleanProperty() !== true) {
+            throw new Error('assertion failed');
+          }
+        }
+        true;
+      } catch (E) {
+        false;
+      }
+      )JS");
+    XCTAssertTrue(result.IsBoolean());
+    XCTAssertTrue(static_cast<bool>(result));
+  }
+}
+
+TEST_F(JSExportTests, JSExportFinalize10) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  {
+    XCTAssertFalse(global_object.HasProperty("Widget"));
+    JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+    global_object.SetProperty("Widget", widget);
+    XCTAssertTrue(global_object.HasProperty("Widget"));
+    
+    auto result = js_context.JSEvaluateScript(R"JS(
+      try {
+        var W = new Widget('test', 123);
+        for (var i=0; i<2000;i++) {
+          var widget = new Widget('newbar', 123);
+          if (W.testMemberNumberProperty() != 123) {
+            throw new Error('assertion failed');
+          }
+        }
+        true;
+      } catch (E) {
+        false;
+      }
+      )JS");
+    XCTAssertTrue(result.IsBoolean());
+    XCTAssertTrue(static_cast<bool>(result));
+  }
+}
+
+TEST_F(JSExportTests, JSExportFinalize11) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  {
+    XCTAssertFalse(global_object.HasProperty("Widget"));
+    JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+    global_object.SetProperty("Widget", widget);
+    XCTAssertTrue(global_object.HasProperty("Widget"));
+    
+    auto result = js_context.JSEvaluateScript(R"JS(
+      try {
+        var W = new Widget('test', 123);
+        for (var i=0; i<2000;i++) {
+          var widget = new Widget('newbar', 123);
+          if (W.testMemberStringProperty() != 'js string') {
+            throw new Error('assertion failed');
+          }
+        }
+        true;
+      } catch (E) {
+        false;
+      }
+      )JS");
+    XCTAssertTrue(result.IsBoolean());
+    XCTAssertTrue(static_cast<bool>(result));
+  }
 }
 
 TEST_F(JSExportTests, EvaluateNewWidgetProperty) {

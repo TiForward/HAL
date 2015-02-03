@@ -49,6 +49,10 @@ public:
   static double get_pi() HAL_NOEXCEPT;
   
   std::string sayHello();
+
+  std::string testMemberObjectProperty() const HAL_NOEXCEPT;
+  std::string testMemberArrayProperty()  const HAL_NOEXCEPT;
+  std::string testCallAsFunction(JSObject& this_object)       HAL_NOEXCEPT;
   
   virtual ~Widget()                HAL_NOEXCEPT;
   Widget(const Widget&)            HAL_NOEXCEPT;
@@ -82,6 +86,14 @@ public:
   JSValue js_sayHello(const std::vector<JSValue>& arguments, JSObject& this_object);
   JSValue js_sayHelloWithCallback(const std::vector<JSValue>& arguments, JSObject& this_object);
   
+  JSValue js_testMemberObjectProperty(const std::vector<JSValue>& arguments, JSObject& this_object);
+  JSValue js_testMemberArrayProperty(const std::vector<JSValue>& arguments, JSObject& this_object);
+  JSValue js_testMemberNullProperty(const std::vector<JSValue>& arguments, JSObject& this_object);
+  JSValue js_testMemberUndefinedProperty(const std::vector<JSValue>& arguments, JSObject& this_object);
+  JSValue js_testMemberBooleanProperty(const std::vector<JSValue>& arguments, JSObject& this_object);
+  JSValue js_testMemberNumberProperty(const std::vector<JSValue>& arguments, JSObject& this_object);
+  JSValue js_testMemberStringProperty(const std::vector<JSValue>& arguments, JSObject& this_object);
+  JSValue js_testCallAsFunction(const std::vector<JSValue>& arguments, JSObject& this_object);
 private:
   
   std::string name__;
@@ -89,7 +101,15 @@ private:
   
   static double pi__;
   
-  JSValue jsvalue__;
+  JSValue    jsvalue__;
+  JSValue    jsnull__;
+  JSValue    jsundefined__;
+  JSValue    jsboolean__;
+  JSValue    jsnumber__;
+  JSValue    jsstring__;
+  JSObject   jsobject__;
+  JSObject   jsarray__;
+  JSObject   jsfunction__;
 };
 
 inline

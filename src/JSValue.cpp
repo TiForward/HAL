@@ -264,7 +264,8 @@ namespace HAL {
     } else {
       js_value_ref__ = JSValueMakeString(static_cast<JSContextRef>(js_context__), static_cast<JSStringRef>(js_string));
     }
-    HAL_LOG_TRACE("JSValue:: retain ", js_value_ref__, " (implicit) for ", this);
+    HAL_LOG_TRACE("JSValue:: retain ", js_value_ref__, " for ", this);
+    JSValueProtect(static_cast<JSContextRef>(js_context__), js_value_ref__);
   }
   
   // For interoperability with the JavaScriptCore C API.
