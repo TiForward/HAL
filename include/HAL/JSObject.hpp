@@ -307,7 +307,7 @@ namespace HAL {
     friend class detail::JSExportClass;
 
     // For interoperability with the JavaScriptCore C API.
-    JSObject(const JSContext& js_context, JSObjectRef js_object_ref, bool protect = true);
+    JSObject(const JSContext& js_context, JSObjectRef js_object_ref, bool managed = true);
     
     // These classes need access to operator JSObjectRef().
     friend class JSPropertyNameArray;
@@ -398,7 +398,7 @@ namespace HAL {
     JSObject(const JSContext& js_context, const JSClass& js_class, void* private_data = nullptr);
     
     JSContext js_context__;
-    bool protect__ { true };
+    bool managed__ { true };
 
     // Silence 4251 on Windows since private member variables do not
     // need to be exported from a DLL.
