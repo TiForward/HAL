@@ -103,18 +103,15 @@ namespace HAL {
 
   bool JSObject::IsArray() const HAL_NOEXCEPT {
     HAL_JSOBJECT_LOCK_GUARD;
-    
-    JSValue name = js_context__.CreateString("Array");
 
-    JSObject global = js_context__.get_global_object();
-    JSValue array_value = global.GetProperty(static_cast<JSString>(name));
+    JSObject global_object = js_context__.get_global_object();
+    JSValue array_value = global_object.GetProperty("Array");
     if (!array_value.IsObject()) {
       return false;
     }
+    
     JSObject array = static_cast<JSObject>(array_value);
-
-    name = js_context__.CreateString("isArray");
-    JSValue isArray_value = array.GetProperty(static_cast<JSString>(name));
+    JSValue isArray_value = array.GetProperty("isArray");
     if (!isArray_value.IsObject()) {
       return false;
     }
@@ -124,7 +121,7 @@ namespace HAL {
     }
 
     JSValue self = static_cast<JSValue>(*this);
-    JSValue result = isArray(self, global);
+    JSValue result = isArray(self, global_object);
     if (result.IsBoolean()) {
         return static_cast<bool>(result);
     }
