@@ -236,6 +236,7 @@ if (WIN32)
 endif()
 
 if (NOT HAL_DISABLE_TESTS)
+  include(${PROJECT_SOURCE_DIR}/cmake/test.cmake)
   add_subdirectory(examples)
   add_subdirectory(test)
 endif()
