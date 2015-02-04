@@ -1,6 +1,7 @@
 include(${CMAKE_CURRENT_LIST_DIR}/internal_utils.cmake)
 
 # Build gtest from source!
+set(gtest_force_shared_crt ON CACHE BOOL "Always use msvcrt.dll")
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../vendor/gtest ${CMAKE_CURRENT_BINARY_DIR}/gtest EXCLUDE_FROM_ALL)
 
 # cxx_test_with_flags(name cxx_flags libs srcs...)
