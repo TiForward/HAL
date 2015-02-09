@@ -85,6 +85,7 @@ public:
   
   JSValue js_sayHello(const std::vector<JSValue>& arguments, JSObject& this_object);
   JSValue js_sayHelloWithCallback(const std::vector<JSValue>& arguments, JSObject& this_object);
+  JSValue js_helloLambda(const std::vector<JSValue>& arguments, JSObject& this_object);
   
   JSValue js_testMemberObjectProperty(const std::vector<JSValue>& arguments, JSObject& this_object);
   JSValue js_testMemberArrayProperty(const std::vector<JSValue>& arguments, JSObject& this_object);
@@ -110,6 +111,7 @@ private:
   JSObject   jsobject__;
   JSObject   jsarray__;
   JSObject   jsfunction__;
+  JSObject   hello_callback__;
 };
 
 inline

@@ -188,6 +188,16 @@ namespace HAL {
     /*!
      @method
      
+     @abstract Determine whether this JavaScript object is an
+     Error.
+     
+     @result true if this JavaScript object is an Error.
+     */
+    virtual bool IsError() const HAL_NOEXCEPT final;
+    
+    /*!
+     @method
+     
      @abstract Call this JavaScript object as a function. A
      std::runtime_error exception is thrown if this JavaScript object
      can't be called as a function.
@@ -304,6 +314,10 @@ namespace HAL {
     JSObject& operator=(JSObject);
     void swap(JSObject&)           HAL_NOEXCEPT;
     
+    static JSObject FindJSObjectFromPrivateData(JSContext js_context, void* private_data);
+    static void     UnRegisterPrivateData(void* private_data);
+    static void     RegisterPrivateData(JSObjectRef js_object_ref, void* private_data);
+    
   protected:
     
     // In addition to derived classes, JSValue and JSExportClass need
@@ -399,7 +413,6 @@ namespace HAL {
     static void     RegisterJSContext(JSContextRef js_context_ref, JSObjectRef js_object_ref);
     static void     UnRegisterJSContext(JSObjectRef js_object_ref);
     static JSObject FindJSObject(JSContextRef js_context_ref, JSObjectRef js_object_ref);
-    static JSObject FindJSObject(JSObjectRef js_object_ref);
     
     // JSContext (and already friended JSExportClass) use the
     // following constructor.
@@ -415,7 +428,8 @@ namespace HAL {
 #pragma warning(push)
 #pragma warning(disable: 4251)
     JSObjectRef js_object_ref__;
-    static std::unordered_map<std::intptr_t, std::intptr_t> js_object_ref_to_js_context_ref_map__;
+    static std::unordered_map<std::intptr_t, std::tuple<std::intptr_t, std::size_t>> js_object_ref_to_js_context_ref_map__;
+    static std::unordered_map<std::intptr_t, std::intptr_t> js_private_data_to_js_object_ref_map__;
 #pragma warning(pop)
 
 #undef  HAL_JSOBJECT_LOCK_GUARD

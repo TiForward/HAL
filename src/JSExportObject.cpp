@@ -21,6 +21,10 @@ namespace HAL {
     return js_context__;
   }
   
+  JSObject JSExportObject::get_object() HAL_NOEXCEPT {
+    return JSObject::FindJSObjectFromPrivateData(get_context(), this);
+  }
+  
   JSExportObject::JSExportObject(const JSContext& js_context, const std::vector<JSValue>& arguments) HAL_NOEXCEPT
   : js_context__(js_context) {
     HAL_LOG_DEBUG("JSExportObject:: ctor ", this);
@@ -28,6 +32,7 @@ namespace HAL {
   
   JSExportObject::~JSExportObject() HAL_NOEXCEPT {
     HAL_LOG_DEBUG("JSExportObject:: dtor ", this);
+    JSObject::UnRegisterPrivateData(this);
   }
   
   void JSExportObject::swap(JSExportObject& other) HAL_NOEXCEPT {

@@ -60,7 +60,7 @@ namespace UnitTestConstants {
   XCTAssertEqual(1, attributes.size());
 }
 
-- (void)testJSObject {
+- (void)testAPI {
   JSContext js_context = js_context_group.CreateContext();
   JSObject js_object = js_context.CreateObject();
   JSValue prototype = js_object.GetPrototype();
@@ -96,10 +96,9 @@ namespace UnitTestConstants {
   JSValue pi = js_object.GetProperty(42);
   XCTAssertTrue(pi.IsNumber());
   XCTAssertEqualWithAccuracy(UnitTestConstants::pi, static_cast<double>(pi), std::numeric_limits<double>::epsilon());
-
+  
   // You can't call an JSObject as a function that isn't a function.
   XCTAssertFalse(js_object.IsFunction());
-  
   try {
     js_object(js_object);
     XCTFail("js_object was called as a function but did not throw a std::runtime_error exception");
@@ -108,10 +107,9 @@ namespace UnitTestConstants {
   } catch (...) {
     XCTFail("Caught unexpected unknown exception, but we expected a std::runtime_error exception.");
   }
-
+  
   // You can't call a JSObject as a constructor that isn't a constructor.
   XCTAssertFalse(js_object.IsConstructor());
-  
   try {
     js_object.CallAsConstructor();
     XCTFail("js_object was called as a constructor but did not throw a std::runtime_error exception");
@@ -121,11 +119,20 @@ namespace UnitTestConstants {
     XCTFail("Caught unexpected unknown exception, but we expected a std::runtime_error exception.");
   }
 
+  XCTAssertFalse(js_object.IsArray());
+  XCTAssertFalse(js_object.IsError());
+  
   auto js_value  = js_context.JSEvaluateScript("new Object()");
   XCTAssertTrue(js_value.IsObject());
+  js_object = static_cast<JSObject>(js_value);
+  XCTAssertFalse(js_object.IsArray());
+  XCTAssertFalse(js_object.IsError());
 
   js_value  = js_context.JSEvaluateScript("Object()");
   XCTAssertTrue(js_value.IsObject());
+  js_object = static_cast<JSObject>(js_value);
+  XCTAssertFalse(js_object.IsArray());
+  XCTAssertFalse(js_object.IsError());
   
   // It is surprising to me that an object literal, "{}", is not an object.
   js_value  = js_context.JSEvaluateScript("{}");
@@ -134,11 +141,17 @@ namespace UnitTestConstants {
   // But this is an object.
   js_value  = js_context.JSEvaluateScript("var a = {}; a");
   XCTAssertTrue(js_value.IsObject());
+  js_object = static_cast<JSObject>(js_value);
+  XCTAssertFalse(js_object.IsArray());
+  XCTAssertFalse(js_object.IsError());
   
-  // This is nor a primitive string.
+  // This is not a primitive string.
   js_value  = js_context.JSEvaluateScript("new String()");
   XCTAssertTrue(js_value.IsObject());
   XCTAssertFalse(js_value.IsString());
+  js_object = static_cast<JSObject>(js_value);
+  XCTAssertFalse(js_object.IsArray());
+  XCTAssertFalse(js_object.IsError());
 
   // Yet this is a primitive string (i.e. without new).
   js_value  = js_context.JSEvaluateScript("String()");
@@ -147,17 +160,33 @@ namespace UnitTestConstants {
 
   js_value  = js_context.JSEvaluateScript("new Date()");
   XCTAssertTrue(js_value.IsObject());
+  js_object = static_cast<JSObject>(js_value);
+  XCTAssertFalse(js_object.IsArray());
+  XCTAssertFalse(js_object.IsError());
 
   js_value  = js_context.JSEvaluateScript("new Array()");
   XCTAssertTrue(js_value.IsObject());
+  js_object = static_cast<JSObject>(js_value);
+  XCTAssertTrue(js_object.IsArray());
+  XCTAssertFalse(js_object.IsError());
+  
+  js_value  = js_context.JSEvaluateScript("new Error()");
+  XCTAssertTrue(js_value.IsObject());
+  js_object = static_cast<JSObject>(js_value);
+  XCTAssertFalse(js_object.IsArray());
+  XCTAssertTrue(js_object.IsError());
 
   // An array literal is an Object, as expected. Why isn't an object literal,
   // "{}", an Object?
   js_value  = js_context.JSEvaluateScript("[]");
   XCTAssertTrue(js_value.IsObject());
+  js_object = static_cast<JSObject>(js_value);
+  XCTAssertTrue(js_object.IsArray());
 
   js_value  = js_context.JSEvaluateScript("[1, 3, 5, 7]");
   XCTAssertTrue(js_value.IsObject());
+  js_object = static_cast<JSObject>(js_value);
+  XCTAssertTrue(js_object.IsArray());
 }
 
 - (void)testProperty {
@@ -165,6 +194,7 @@ namespace UnitTestConstants {
   auto js_value  = js_context.JSEvaluateScript("[1, 3, 5, 7]");
   XCTAssertTrue(js_value.IsObject());
   JSObject js_object = static_cast<JSObject>(js_value);
+  XCTAssertTrue(js_object.IsArray());
   XCTAssertTrue(js_object.HasProperty("length"));
   js_value = js_object.GetProperty("length");
   XCTAssertEqual(4, static_cast<int32_t>(js_value));
@@ -202,6 +232,7 @@ namespace UnitTestConstants {
   // You can set a custom propery on a string.
   js_value = js_context.CreateString("hello, world");
   js_object = static_cast<JSObject>(js_value);
+  XCTAssertFalse(js_object.IsArray());
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));
   js_value = js_object.GetProperty("quote");
@@ -210,6 +241,7 @@ namespace UnitTestConstants {
   // You can set a custom propery on a bool.
   js_value = js_context.CreateBoolean(true);
   js_object = static_cast<JSObject>(js_value);
+  XCTAssertFalse(js_object.IsArray());
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));
   js_value = js_object.GetProperty("quote");
@@ -218,6 +250,7 @@ namespace UnitTestConstants {
   // You can set a custom propery on a number.
   js_value = js_context.CreateNumber(42);
   js_object = static_cast<JSObject>(js_value);
+  XCTAssertFalse(js_object.IsArray());
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));
   js_value = js_object.GetProperty("quote");
@@ -226,6 +259,7 @@ namespace UnitTestConstants {
   // You can set a custom propery on an array.
   js_value = js_context.CreateArray();
   js_object = static_cast<JSObject>(js_value);
+  XCTAssertTrue(js_object.IsArray());
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));
   js_value = js_object.GetProperty("quote");
@@ -234,6 +268,7 @@ namespace UnitTestConstants {
   // You can set a custom propery on an regexp.
   js_value = js_context.CreateRegExp();
   js_object = static_cast<JSObject>(js_value);
+  XCTAssertFalse(js_object.IsArray());
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));
   js_value = js_object.GetProperty("quote");
@@ -242,6 +277,7 @@ namespace UnitTestConstants {
   // You can set a custom propery on an error.
   js_value = js_context.CreateError();
   js_object = static_cast<JSObject>(js_value);
+  XCTAssertFalse(js_object.IsArray());
   js_object.SetProperty("quote", js_context.CreateString(quoteString));
   XCTAssertTrue(js_object.HasProperty("quote"));
   js_value = js_object.GetProperty("quote");
@@ -256,21 +292,29 @@ namespace UnitTestConstants {
 - (void)testJSArray {
   JSContext js_context = js_context_group.CreateContext();
   JSArray js_array = js_context.CreateArray();
+  XCTAssertTrue(js_array.IsArray());
+  XCTAssertFalse(js_array.IsError());
 }
 
 - (void)testJSDate {
   JSContext js_context = js_context_group.CreateContext();
   JSDate js_date = js_context.CreateDate();
+  XCTAssertFalse(js_date.IsArray());
+  XCTAssertFalse(js_date.IsError());
 }
 
 - (void)testJSError {
   JSContext js_context = js_context_group.CreateContext();
   JSError js_error = js_context.CreateError();
+  XCTAssertFalse(js_error.IsArray());
+  XCTAssertTrue(js_error.IsError());
 }
 
 - (void)testJSRegExp {
   JSContext js_context = js_context_group.CreateContext();
   JSRegExp js_regexp = js_context.CreateRegExp();
+  XCTAssertFalse(js_regexp.IsArray());
+  XCTAssertFalse(js_regexp.IsError());
 }
 
 - (void)testJSFunction {
@@ -279,6 +323,8 @@ namespace UnitTestConstants {
   XCTAssertTrue(js_function.IsFunction());
   //std::clog << "MDL: js_function(\"world\") = " << js_function("world") << std::endl;
   XCTAssertEqual("Hello, world", static_cast<std::string>(js_function("world", js_function)));
+  XCTAssertFalse(js_function.IsArray());
+  XCTAssertFalse(js_function.IsError());
 }
 
 @end

@@ -73,12 +73,12 @@ namespace UnitTestConstants {
   XCTAssertTrue(static_cast<bool>(js_true));
   
   XCTAssertEqual("true", static_cast<std::string>(js_true));
-  XCTAssertFalse(js_false.IsUndefined());
-  XCTAssertFalse(js_false.IsNull());
-  XCTAssertTrue(js_false.IsBoolean());
-  XCTAssertFalse(js_false.IsNumber());
-  XCTAssertFalse(js_false.IsString());
-  XCTAssertFalse(js_false.IsObject());
+  XCTAssertFalse(js_true.IsUndefined());
+  XCTAssertFalse(js_true.IsNull());
+  XCTAssertTrue(js_true.IsBoolean());
+  XCTAssertFalse(js_true.IsNumber());
+  XCTAssertFalse(js_true.IsString());
+  XCTAssertFalse(js_true.IsObject());
   
   JSBoolean js_boolean = js_context.CreateBoolean(true);
   XCTAssertTrue(static_cast<bool>(js_boolean));

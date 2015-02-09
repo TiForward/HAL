@@ -15,6 +15,7 @@
 #include "HAL/JSNull.hpp"
 #include "HAL/JSBoolean.hpp"
 #include "HAL/JSNumber.hpp"
+#include "HAL/JSError.hpp"
 
 #include "HAL/detail/JSPropertyNameAccumulator.hpp"
 #include "HAL/detail/JSUtil.hpp"
@@ -129,6 +130,18 @@ namespace HAL {
     return false;
   }
   
+  bool JSObject::IsError() const HAL_NOEXCEPT {
+    HAL_JSOBJECT_LOCK_GUARD;
+    const auto global_object = js_context__.get_global_object();
+    const auto error_value = global_object.GetProperty("Error");
+    if (!error_value.IsObject()) {
+      return false;
+    }
+    const auto error = static_cast<JSObject>(error_value);
+    const auto self  = static_cast<JSValue>(*this);
+    return static_cast<std::string>(self) == "[object Error]" || self.IsInstanceOfConstructor(error);
+  }
+  
   JSValue JSObject::operator()(                                        JSObject this_object) { return CallAsFunction(std::vector<JSValue>()                      , this_object); }
   JSValue JSObject::operator()(JSValue&                     argument , JSObject this_object) { return CallAsFunction({argument}                                  , this_object); }
   JSValue JSObject::operator()(const JSString&              argument , JSObject this_object) { return CallAsFunction(detail::to_vector(js_context__, {argument}) , this_object); }
@@ -184,6 +197,8 @@ namespace HAL {
   }
   
   bool JSObject::SetPrivate(void* data) const HAL_NOEXCEPT {
+    UnRegisterPrivateData(GetPrivate());
+    RegisterPrivateData(js_object_ref__, data);
     return JSObjectSetPrivate(js_object_ref__, data);
   }
   
@@ -298,8 +313,7 @@ namespace HAL {
     }
   }
   
-
-  std::unordered_map<std::intptr_t, std::intptr_t> JSObject::js_object_ref_to_js_context_ref_map__;
+  std::unordered_map<std::intptr_t, std::tuple<std::intptr_t, std::size_t>> JSObject::js_object_ref_to_js_context_ref_map__;
   
   void JSObject::RegisterJSContext(JSContextRef js_context_ref, JSObjectRef js_object_ref) {
     HAL_JSOBJECT_LOCK_GUARD_STATIC;
@@ -309,14 +323,19 @@ namespace HAL {
     const auto position = js_object_ref_to_js_context_ref_map__.find(key);
     const bool found    = position != js_object_ref_to_js_context_ref_map__.end();
     
-    if (!found) {
-      const auto insert_result = js_object_ref_to_js_context_ref_map__.emplace(key, value);
+    if (found) {
+      auto tuple = position -> second;
+      ++std::get<1>(tuple);
+      js_object_ref_to_js_context_ref_map__.emplace(key, tuple);
+      
+      HAL_LOG_DEBUG("JSObject::RegisterJSContext: JSObjectRef = ", js_object_ref, ", JSContextRef = ", js_context_ref, " count = ", std::get<1>(tuple));
+    } else {
+      const auto insert_result = js_object_ref_to_js_context_ref_map__.emplace(key, std::make_tuple(value, 1));
       const bool inserted      = insert_result.second;
       
       // postcondition
       assert(inserted);
-      
-      HAL_LOG_DEBUG("JSObject::RegisterJSContext: JSObjectRef = ", js_object_ref, ", JSContextRef = ", js_context_ref);
+      HAL_LOG_DEBUG("JSObject::RegisterJSContext: JSObjectRef = ", js_object_ref, ", JSContextRef = ", js_context_ref, " count = 1");
     }
   }
   
@@ -328,9 +347,16 @@ namespace HAL {
     
     // precondition
     if (found) {
-      JSContextRef js_context_ref = reinterpret_cast<JSContextRef>(position -> second);
-      static_cast<void>(js_context_ref);
-      HAL_LOG_DEBUG("JSObject::UnRegisterJSContext: JSObjectRef = ", js_object_ref, ", JSContextRef = ", js_context_ref);
+      auto tuple = position -> second;
+      JSContextRef js_context_ref = reinterpret_cast<JSContextRef>(std::get<0>(tuple));
+      static_cast<void>(js_context_ref); // just meant to suppress "unused" compiler warning
+      --std::get<1>(tuple);
+      if (std::get<1>(tuple) == 0) {
+        js_object_ref_to_js_context_ref_map__.erase(key);
+      } else {
+        js_object_ref_to_js_context_ref_map__.emplace(key, tuple);
+      }
+      HAL_LOG_DEBUG("JSObject::UnRegisterJSContext: JSObjectRef = ", js_object_ref, ", JSContextRef = ", js_context_ref, " count = ", std::get<1>(tuple));
     } else {
       HAL_LOG_DEBUG("JSObject::UnRegisterJSContext: JSObjectRef = ", js_object_ref, " not registered");
     }
@@ -344,7 +370,7 @@ namespace HAL {
     
     // precondition
     if (found) {
-      js_context_ref = reinterpret_cast<JSContextRef>(position -> second);
+      js_context_ref = reinterpret_cast<JSContextRef>(std::get<0>(position -> second));
     }
     
     HAL_LOG_TRACE("JSObject::FindJSObject: found = ", found, " for JSObjectRef ", js_object_ref, ", JSContextRef = ", js_context_ref);
@@ -352,19 +378,70 @@ namespace HAL {
     return JSObject(JSContext(js_context_ref), js_object_ref);
   }
 
-  JSObject JSObject::FindJSObject(JSObjectRef js_object_ref) {
+  std::unordered_map<std::intptr_t, std::intptr_t> JSObject::js_private_data_to_js_object_ref_map__;
+  
+  void JSObject::RegisterPrivateData(JSObjectRef js_object_ref, void* private_data) {
     HAL_JSOBJECT_LOCK_GUARD_STATIC;
-    const auto key      = reinterpret_cast<std::intptr_t>(js_object_ref);
-    const auto position = js_object_ref_to_js_context_ref_map__.find(key);
-    const bool found    = position != js_object_ref_to_js_context_ref_map__.end();
+    // we won't store nullptr
+    if (private_data == nullptr) {
+      return;
+    }
+    const auto key   = reinterpret_cast<std::intptr_t>(private_data);
+    const auto value = reinterpret_cast<std::intptr_t>(js_object_ref);
     
-    // precondition
-    assert(found);
+    const auto position = js_private_data_to_js_object_ref_map__.find(key);
+    const bool found    = position != js_private_data_to_js_object_ref_map__.end();
     
-    JSContextRef js_context_ref = reinterpret_cast<JSContextRef>(position -> second);
-    HAL_LOG_TRACE("JSObject::FindJSObject: found = ", found, " for JSObjectRef ", js_object_ref, ", JSContextRef = ", js_context_ref);
+    if (found) {
+      // private data should not be shared by multiple JSObjectRef
+      assert((reinterpret_cast<JSObjectRef>(position -> second) == js_object_ref));
+    } else {
+      const auto insert_result = js_private_data_to_js_object_ref_map__.emplace(key, value);
+      const bool inserted      = insert_result.second;
+      
+      // postcondition
+      assert(inserted);
+      
+      HAL_LOG_DEBUG("JSObject::RegisterPrivateData: JSObjectRef = ", js_object_ref, ", data = ", private_data);
+    }
+  }
+  
+  void JSObject::UnRegisterPrivateData(void* private_data) {
+    HAL_JSOBJECT_LOCK_GUARD_STATIC;
+    // we won't store nullptr
+    if (private_data == nullptr) {
+      return;
+    }
+    const auto key      = reinterpret_cast<std::intptr_t>(private_data);
+    const auto position = js_private_data_to_js_object_ref_map__.find(key);
+    const bool found    = position != js_private_data_to_js_object_ref_map__.end();
     
-    return JSObject(JSContext(js_context_ref), js_object_ref);
+    if (found) {
+      JSObjectRef js_object_ref = reinterpret_cast<JSObjectRef>(position -> second);
+      static_cast<void>(js_object_ref); // just meant to suppress "unused" compiler warning
+      js_private_data_to_js_object_ref_map__.erase(key);
+      HAL_LOG_DEBUG("JSObject::UnRegisterPrivateData: data = ", private_data, ", JSObjectRef = ", js_object_ref);
+    } else {
+      HAL_LOG_DEBUG("JSObject::UnRegisterPrivateData: data = ", private_data, " not registered");
+    }
+  }
+
+  JSObject JSObject::FindJSObjectFromPrivateData(JSContext js_context, void* private_data) {
+    HAL_JSOBJECT_LOCK_GUARD_STATIC;
+    const auto key      = reinterpret_cast<std::intptr_t>(private_data);
+    const auto position = js_private_data_to_js_object_ref_map__.find(key);
+    const bool found    = position != js_private_data_to_js_object_ref_map__.end();
+
+    // This could happen when owner object is gargabe collected while executing async operation.
+    // This Error object will be only used internally to see if object is found or not.
+    if (!found) {
+      return js_context.CreateError();
+    }
+
+    JSObjectRef js_object_ref = reinterpret_cast<JSObjectRef>(position -> second);
+    HAL_LOG_TRACE("JSObject::FindJSObjectFromPrivateData: found = ", found, " for data = ", key, ", JSObjectRef = ", js_object_ref);
+
+    return FindJSObject(static_cast<JSContextRef>(js_context), js_object_ref);
   }
 
 } // namespace HAL {

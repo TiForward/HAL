@@ -104,16 +104,19 @@ TEST_F(JSObjectTests, API) {
   ASSERT_THROW(js_object.CallAsConstructor(), std::runtime_error);
 
   XCTAssertFalse(js_object.IsArray());
+  XCTAssertFalse(js_object.IsError());
   
   auto js_value  = js_context.JSEvaluateScript("new Object()");
   XCTAssertTrue(js_value.IsObject());
   js_object = static_cast<JSObject>(js_value);
   XCTAssertFalse(js_object.IsArray());
+  XCTAssertFalse(js_object.IsError());
 
   js_value  = js_context.JSEvaluateScript("Object()");
   XCTAssertTrue(js_value.IsObject());
   js_object = static_cast<JSObject>(js_value);
   XCTAssertFalse(js_object.IsArray());
+  XCTAssertFalse(js_object.IsError());
   
   // It is surprising to me that an object literal, "{}", is not an object.
   js_value  = js_context.JSEvaluateScript("{}");
@@ -124,6 +127,7 @@ TEST_F(JSObjectTests, API) {
   XCTAssertTrue(js_value.IsObject());
   js_object = static_cast<JSObject>(js_value);
   XCTAssertFalse(js_object.IsArray());
+  XCTAssertFalse(js_object.IsError());
   
   // This is not a primitive string.
   js_value  = js_context.JSEvaluateScript("new String()");
@@ -131,6 +135,7 @@ TEST_F(JSObjectTests, API) {
   XCTAssertFalse(js_value.IsString());
   js_object = static_cast<JSObject>(js_value);
   XCTAssertFalse(js_object.IsArray());
+  XCTAssertFalse(js_object.IsError());
 
   // Yet this is a primitive string (i.e. without new).
   js_value  = js_context.JSEvaluateScript("String()");
@@ -141,11 +146,19 @@ TEST_F(JSObjectTests, API) {
   XCTAssertTrue(js_value.IsObject());
   js_object = static_cast<JSObject>(js_value);
   XCTAssertFalse(js_object.IsArray());
+  XCTAssertFalse(js_object.IsError());
 
   js_value  = js_context.JSEvaluateScript("new Array()");
   XCTAssertTrue(js_value.IsObject());
   js_object = static_cast<JSObject>(js_value);
   XCTAssertTrue(js_object.IsArray());
+  XCTAssertFalse(js_object.IsError());
+
+  js_value  = js_context.JSEvaluateScript("new Error()");
+  XCTAssertTrue(js_value.IsObject());
+  js_object = static_cast<JSObject>(js_value);
+  XCTAssertFalse(js_object.IsArray());
+  XCTAssertTrue(js_object.IsError());
 
   // An array literal is an Object, as expected. Why isn't an object literal,
   // "{}", an Object?
@@ -153,11 +166,13 @@ TEST_F(JSObjectTests, API) {
   XCTAssertTrue(js_value.IsObject());
   js_object = static_cast<JSObject>(js_value);
   XCTAssertTrue(js_object.IsArray());
+  XCTAssertFalse(js_object.IsError());
 
   js_value  = js_context.JSEvaluateScript("[1, 3, 5, 7]");
   XCTAssertTrue(js_value.IsObject());
   js_object = static_cast<JSObject>(js_value);
   XCTAssertTrue(js_object.IsArray());
+  XCTAssertFalse(js_object.IsError());
 }
 
 TEST_F(JSObjectTests, Property) {
@@ -264,21 +279,28 @@ TEST_F(JSObjectTests, JSArray) {
   JSContext js_context = js_context_group.CreateContext();
   JSArray js_array = js_context.CreateArray();
   XCTAssertTrue(js_array.IsArray());
+  XCTAssertFalse(js_array.IsError());
 }
 
 TEST_F(JSObjectTests, JSDate) {
   JSContext js_context = js_context_group.CreateContext();
   JSDate js_date = js_context.CreateDate();
+  XCTAssertFalse(js_date.IsArray());
+  XCTAssertFalse(js_date.IsError());
 }
 
 TEST_F(JSObjectTests, JSError) {
   JSContext js_context = js_context_group.CreateContext();
   JSError js_error = js_context.CreateError();
+  XCTAssertFalse(js_error.IsArray());
+  XCTAssertTrue(js_error.IsError());
 }
 
 TEST_F(JSObjectTests, JSRegExp) {
   JSContext js_context = js_context_group.CreateContext();
   JSRegExp js_regexp = js_context.CreateRegExp();
+  XCTAssertFalse(js_regexp.IsArray());
+  XCTAssertFalse(js_regexp.IsError());
 }
 
 TEST_F(JSObjectTests, JSFunction) {
@@ -287,4 +309,6 @@ TEST_F(JSObjectTests, JSFunction) {
   XCTAssertTrue(js_function.IsFunction());
   //std::clog << "MDL: js_function(\"world\") = " << js_function("world") << std::endl;
   XCTAssertEqual("Hello, world", static_cast<std::string>(js_function("world", js_function)));
+  XCTAssertFalse(js_function.IsArray());
+  XCTAssertFalse(js_function.IsError());
 }

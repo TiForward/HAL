@@ -27,6 +27,7 @@ Widget::Widget(const JSContext& js_context, const std::vector<JSValue>& argument
 , jsobject__(js_context.CreateObject())
 , jsarray__(js_context.CreateArray())
 , jsfunction__(js_context.CreateFunction("return 'it works fine';"))
+, hello_callback__(js_context.CreateFunction("return 'Hello, World';"))
 , number__(42) {
   HAL_LOG_DEBUG("Widget:: ctor ", this);
   if (arguments.size() >= 1) {
@@ -56,6 +57,7 @@ Widget::Widget(const Widget& rhs) HAL_NOEXCEPT
 , jsobject__(rhs.jsobject__)
 , jsarray__(rhs.jsarray__)
 , jsfunction__(rhs.jsfunction__)
+, hello_callback__(rhs.hello_callback__)
 , jsnull__(rhs.jsnull__)
 , jsundefined__(rhs.jsundefined__)
 , jsboolean__(rhs.jsboolean__)
@@ -72,6 +74,7 @@ Widget::Widget(Widget&& rhs) HAL_NOEXCEPT
 , jsobject__(rhs.jsobject__)
 , jsarray__(rhs.jsarray__)
 , jsfunction__(rhs.jsfunction__)
+, hello_callback__(rhs.hello_callback__)
 , jsnull__(rhs.jsnull__)
 , jsundefined__(rhs.jsundefined__)
 , jsboolean__(rhs.jsboolean__)
@@ -90,6 +93,7 @@ Widget& Widget::operator=(const Widget& rhs) HAL_NOEXCEPT {
   jsobject__ = rhs.jsobject__;
   jsarray__ = rhs.jsarray__;
   jsfunction__ = rhs.jsfunction__;
+  hello_callback__ = rhs.hello_callback__;
   jsnull__ = rhs.jsnull__;
   jsundefined__ = rhs.jsundefined__;
   jsboolean__ = rhs.jsboolean__;
@@ -117,6 +121,7 @@ void Widget::swap(Widget& other) HAL_NOEXCEPT {
   swap(jsobject__, other.jsobject__);
   swap(jsarray__, other.jsarray__);
   swap(jsfunction__, other.jsfunction__);
+  swap(hello_callback__, other.hello_callback__);
   swap(jsnull__, other.jsnull__);
   swap(jsundefined__, other.jsundefined__);
   swap(jsboolean__, other.jsboolean__);
@@ -184,6 +189,7 @@ void Widget::JSExportInitialize() {
   JSExport<Widget>::AddValueProperty("number"     , std::mem_fn(&Widget::js_get_number), std::mem_fn(&Widget::js_set_number));
   JSExport<Widget>::AddValueProperty("value"     , std::mem_fn(&Widget::js_get_value), std::mem_fn(&Widget::js_set_value));
   JSExport<Widget>::AddValueProperty("pi"         , std::mem_fn(&Widget::js_get_pi));
+  JSExport<Widget>::AddFunctionProperty("helloCallback", std::mem_fn(&Widget::js_helloLambda));
   JSExport<Widget>::AddFunctionProperty("sayHello", std::mem_fn(&Widget::js_sayHello));
   JSExport<Widget>::AddFunctionProperty("sayHelloWithCallback", std::mem_fn(&Widget::js_sayHelloWithCallback));
   JSExport<Widget>::AddFunctionProperty("testMemberObjectProperty", std::mem_fn(&Widget::js_testMemberObjectProperty));
@@ -210,7 +216,7 @@ bool Widget::js_set_name(const JSValue& value) HAL_NOEXCEPT {
 }
 
 JSValue Widget::js_get_number() const HAL_NOEXCEPT {
-	return get_context().CreateNumber(get_number());
+  return get_context().CreateNumber(get_number());
 }
 
 bool Widget::js_set_number(const JSValue& value) HAL_NOEXCEPT {
@@ -232,7 +238,7 @@ bool Widget::js_set_value(const JSValue& value) HAL_NOEXCEPT {
 }
 
 JSValue Widget::js_get_pi() const {
-	return get_context().CreateNumber(get_pi());
+  return get_context().CreateNumber(get_pi());
 }
 
 JSValue Widget::js_sayHelloWithCallback(const std::vector<JSValue>& arguments, JSObject& this_object) {
@@ -245,6 +251,25 @@ JSValue Widget::js_sayHelloWithCallback(const std::vector<JSValue>& arguments, J
     }
   }
   return this_object.get_context().CreateString(sayHello());
+}
+
+// async callback and get_object() example
+// this shows how to get JSObject associated with JSExport object
+JSValue Widget::js_helloLambda(const std::vector<JSValue>& arguments, JSObject& ignore) {
+  if (arguments.size() > 0) {
+    if (arguments.at(0).IsObject()) {
+      hello_callback__ = static_cast<JSObject>(arguments.at(0));
+      // suppose you need async operation but you can not pass "this" JSObject to C++ callback
+      // in this case you still have access to JSObject by calling get_object()
+      auto func = [this]() {
+        JSObject this_object = get_object();
+        const std::vector<JSValue> callback_args = { get_context().CreateString("Callback") };
+        return hello_callback__(callback_args, this_object);
+      };
+      return func();
+    }
+  }
+  return get_context().CreateUndefined();
 }
 
 JSValue Widget::js_testMemberObjectProperty(const std::vector<JSValue>& arguments, JSObject& this_object) {

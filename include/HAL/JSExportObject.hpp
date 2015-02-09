@@ -47,6 +47,15 @@ namespace HAL {
     /*!
      @method
      
+     @abstract Return the JSObject of this JavaScript value.
+     
+     @result The JSObject of this JavaScript value.
+     */
+    virtual JSObject get_object() HAL_NOEXCEPT final;
+    
+    /*!
+     @method
+     
      @abstract This mandatory constructor is invoked when your
      JavaScript object is created as the result of being called in a
      JavaScript 'new' expression.
