@@ -71,7 +71,10 @@ public:
    just before your first JavaScript object is created.
    */
   static void JSExportInitialize();
-  
+	
+  virtual void postInitialize(JSObject& js_object) override;
+  virtual void postCallAsConstructor(JSObject& js_object) override;
+	
   JSValue js_get_name() const              HAL_NOEXCEPT;
   bool    js_set_name(const JSValue& name) HAL_NOEXCEPT;
   

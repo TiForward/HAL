@@ -129,6 +129,14 @@ void Widget::swap(Widget& other) HAL_NOEXCEPT {
   swap(jsstring__, other.jsstring__);
 }
 
+void Widget::postInitialize(JSObject& js_object) {
+  js_object.SetProperty("test_postInitialize_called", get_context().CreateBoolean(true));
+}
+
+void Widget::postCallAsConstructor(JSObject& js_object) {
+  js_object.SetProperty("test_postCallAsConstructor_called", get_context().CreateBoolean(true));
+}
+
 std::string Widget::testMemberObjectProperty() const HAL_NOEXCEPT {
   if (!jsobject__.HasProperty("test")) {
     return "failed";

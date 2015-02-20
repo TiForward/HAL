@@ -80,7 +80,10 @@ namespace HAL {
     void swap(JSExportObject&) HAL_NOEXCEPT;
     
     static void JSExportInitialize();
-    
+		
+    virtual void postInitialize(JSObject& js_object);
+    virtual void postCallAsConstructor(JSObject& js_object);
+		
   private:
     
     JSContext js_context__;
