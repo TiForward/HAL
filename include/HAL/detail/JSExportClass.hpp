@@ -184,6 +184,9 @@ namespace HAL { namespace detail {
     
     const bool result = js_object.SetPrivate(native_object_ptr);
     HAL_LOG_DEBUG("JSExportClass<", typeid(T).name(), ">::Initialize: private data set to ", js_object.GetPrivate(), " for ", object_ref);
+		
+    native_object_ptr->postInitialize(js_object);
+		
     assert(result);
   }
   
@@ -577,7 +580,8 @@ namespace HAL { namespace detail {
 
     HAL_LOG_DEBUG("JSExportClass<", typeid(T).name(), ">::CallAsConstructor: new this[", native_object_ptr, "] = this[", new_native_new_object_ptr, "] for ", JSObjectRef(new_object));
     
-    
+    new_native_new_object_ptr->postCallAsConstructor(new_object);
+		
     return static_cast<JSObjectRef>(new_object);
     
   } catch (const std::exception& e) {

@@ -16,7 +16,15 @@ namespace HAL {
     HAL_LOG_DEBUG("JSExportObject::JSExportInitialize");
     SetClassVersion(1);
   }
-  
+	
+  void JSExportObject::postInitialize(JSObject& js_object) {
+    HAL_LOG_DEBUG("JSExportObject:: postInitialize ", this);
+  }
+
+  void JSExportObject::postCallAsConstructor(JSObject& js_object) {
+    HAL_LOG_DEBUG("JSExportObject:: postCallAsConstructor ", this);
+  }
+	
   JSContext JSExportObject::get_context() const HAL_NOEXCEPT {
     return js_context__;
   }

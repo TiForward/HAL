@@ -972,3 +972,45 @@ TEST_F(JSExportTests, JSExportFindObjectFromPrivateDataGetObject) {
   XCTAssertTrue(static_cast<bool>(result));
 
 }
+
+TEST_F(JSExportTests, JSExportPostConstruct) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  
+  XCTAssertFalse(global_object.HasProperty("Widget"));
+  JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", widget);
+  XCTAssertTrue(global_object.HasProperty("Widget"));
+  
+   auto result = js_context.JSEvaluateScript("Widget.test_postInitialize_called;");
+  XCTAssertTrue(result.IsBoolean());
+  XCTAssertTrue(static_cast<bool>(result));
+  
+  result = js_context.JSEvaluateScript("Widget.test_postCallAsConstructor_called;");
+  XCTAssertTrue(result.IsUndefined());
+}
+
+TEST_F(JSExportTests, JSExportPostConstructForNewObject) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  
+  XCTAssertFalse(global_object.HasProperty("Widget"));
+  JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", widget);
+  XCTAssertTrue(global_object.HasProperty("Widget"));
+  
+  // widget = new Widget('foo', 123);
+  XCTAssertFalse(global_object.HasProperty("widget"));
+  const std::vector<JSValue> args = {js_context.CreateString("foo"), js_context.CreateNumber(123)};
+  JSObject js_widget = widget.CallAsConstructor(args);
+  global_object.SetProperty("widget", js_widget);
+  XCTAssertTrue(global_object.HasProperty("widget"));
+  
+  auto result = js_context.JSEvaluateScript("widget.test_postInitialize_called;");
+  XCTAssertTrue(result.IsBoolean());
+  XCTAssertTrue(static_cast<bool>(result));
+  
+  result = js_context.JSEvaluateScript("widget.test_postCallAsConstructor_called;");
+  XCTAssertTrue(result.IsBoolean());
+  XCTAssertTrue(static_cast<bool>(result));
+}
