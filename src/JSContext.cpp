@@ -96,6 +96,20 @@ namespace HAL {
     HAL_JSCONTEXT_LOCK_GUARD;
     return JSObject(JSContext(js_global_context_ref__), js_class);
   }
+
+  JSObject JSContext::CreateObject(const std::unordered_map<std::string, JSValue>& properties) const HAL_NOEXCEPT {
+    return CreateObject(JSClass(), properties);
+  }
+
+  JSObject JSContext::CreateObject(const JSClass& js_class, const std::unordered_map<std::string, JSValue>& properties) const HAL_NOEXCEPT {
+    HAL_JSCONTEXT_LOCK_GUARD;
+    auto object = CreateObject();
+    for (const auto kv : properties) {
+      object.SetProperty(kv.first, kv.second);
+    }
+    return object;
+  }
+
   
   JSArray JSContext::CreateArray() const HAL_NOEXCEPT {
     HAL_JSCONTEXT_LOCK_GUARD;
