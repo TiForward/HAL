@@ -73,14 +73,14 @@ private:
 template<typename T>
 std::vector<std::shared_ptr<T>> JSArray::GetPrivateItems() const HAL_NOEXCEPT {
 	const uint32_t length = static_cast<uint32_t>(GetProperty("length"));
-	std::vector<std::shared_ptr<T>> items;
+	std::vector<std::shared_ptr<T>> items(length);
 	for (uint32_t i = 0; i < length; i++) {
 		const JSValue js_item_prop = GetProperty(i);
 		if (js_item_prop.IsObject()) {
 			const JSObject js_item = static_cast<JSObject>(js_item_prop);
-			items.push_back(js_item.GetPrivate<T>());
+			items.at(i) = js_item.GetPrivate<T>();
 		} else {
-			items.push_back(nullptr);
+			items.at(i) = nullptr;
 		}
 	}
 	return items;
