@@ -8,6 +8,7 @@
 
 #include "HAL/JSArray.hpp"
 #include "HAL/JSValue.hpp"
+#include "HAL/JSString.hpp"
 #include "HAL/detail/JSUtil.hpp"
 #include <vector>
 #include <algorithm>
@@ -18,6 +19,10 @@ namespace HAL {
 
 JSArray::JSArray(const JSContext& js_context, const std::vector<JSValue>& arguments)
 		: JSObject(js_context, MakeArray(js_context, arguments), false) {
+}
+
+JSArray::JSArray(const JSContext& js_context, JSObjectRef js_object_ref)
+		: JSObject(js_context, js_object_ref, false) {
 }
 
 JSObjectRef JSArray::MakeArray(const JSContext& js_context, const std::vector<JSValue>& arguments) {
@@ -38,6 +43,26 @@ JSObjectRef JSArray::MakeArray(const JSContext& js_context, const std::vector<JS
 	}
 
 	return js_object_ref;
+}
+
+uint32_t JSArray::GetLength() const HAL_NOEXCEPT {
+	if (!HasProperty("length")) {
+		return 0;
+	}
+	const auto length = GetProperty("length");
+	if (!length.IsNumber()) {
+		return 0;
+	}
+	return static_cast<uint32_t>(length);
+}
+
+JSArray::operator std::vector<JSValue>() const {
+	std::vector<JSValue> items;
+	const auto length = GetLength();
+	for (uint32_t i = 0; i < length; i++) {
+		items.push_back(GetProperty(i));
+	}
+	return items;
 }
 
 } // namespace HAL {

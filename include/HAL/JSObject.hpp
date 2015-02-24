@@ -25,6 +25,7 @@ namespace HAL {
   class JSClass;
   class JSPropertyNameAccumulator;
   class JSPropertyNameArray;
+  class JSArray;
   
   class JSExportObject;
   
@@ -164,7 +165,17 @@ namespace HAL {
      enumerable properties.
      */
     virtual JSPropertyNameArray GetPropertyNames() const HAL_NOEXCEPT final;
-    
+
+    /*!
+     @method
+     
+     @abstract Return the set of this JavaScript object's enumerable properties.
+     
+     @result A unordered_map containing the names and values of object's enumerable properties.
+     */
+    virtual std::unordered_map<std::string, JSValue> GetProperties() const HAL_NOEXCEPT final;
+
+
     /*!
      @method
      
@@ -294,6 +305,15 @@ namespace HAL {
      @result A JSValue with the result of conversion.
      */
     virtual operator JSValue() const final;
+
+    /*!
+     @method
+     
+     @abstract Convert this JSObject to a JSArray.
+     
+     @result A JSArray with the result of conversion.
+     */
+    virtual operator JSArray() const final;
     
     /*!
      @method

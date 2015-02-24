@@ -13,6 +13,7 @@
 #include "HAL/JSContextGroup.hpp"
 
 #include <vector>
+#include <unordered_map>
 
 namespace HAL {
   
@@ -193,11 +194,15 @@ namespace HAL {
      
      @param js_class An optional custom JSClass to pass to the
      JSObject constructor.
+
+     @param properties A set of properties to be applied to the object
      
      @result A JavaScript object.
      */
     JSObject CreateObject() const HAL_NOEXCEPT;
     JSObject CreateObject(const JSClass& js_class) const HAL_NOEXCEPT;
+    JSObject CreateObject(const std::unordered_map<std::string, JSValue>& properties) const HAL_NOEXCEPT;
+    JSObject CreateObject(const JSClass& js_class, const std::unordered_map<std::string, JSValue>& properties) const HAL_NOEXCEPT;
 
     /*!
      @method

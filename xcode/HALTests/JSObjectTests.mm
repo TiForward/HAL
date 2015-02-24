@@ -296,6 +296,63 @@ namespace UnitTestConstants {
   XCTAssertFalse(js_array.IsError());
 }
 
+- (void)testGetProperties {
+  JSContext js_context = js_context_group.CreateContext();
+
+  std::unordered_map<std::string, JSValue> properties = { 
+    { "str",    js_context.CreateString("Hello") },
+    { "num",    js_context.CreateNumber(123) },
+    { "bool",   js_context.CreateBoolean(true) },
+    { "object", js_context.CreateObject() }
+  };
+
+  JSObject js_object = js_context.CreateObject(properties);
+
+  auto js_properties = js_object.GetProperties();
+
+  XCTAssertTrue(js_properties.find("str")    != js_properties.end());
+  XCTAssertTrue(js_properties.find("num")    != js_properties.end());
+  XCTAssertTrue(js_properties.find("bool")   != js_properties.end());
+  XCTAssertTrue(js_properties.find("object") != js_properties.end());
+
+  XCTAssertTrue(js_properties.at("str").IsString());
+  XCTAssertTrue(js_properties.at("num").IsNumber());
+  XCTAssertTrue(js_properties.at("bool").IsBoolean());
+  XCTAssertTrue(js_properties.at("object").IsObject());
+}
+
+- (void)testJSObjectToJSArray {
+  JSContext js_context = js_context_group.CreateContext();
+
+  std::vector<JSValue> args = { 
+    js_context.CreateString("Hello"),
+    js_context.CreateNumber(123),
+    js_context.CreateBoolean(true),
+    js_context.CreateObject()
+  };
+
+  JSObject js_object = js_context.CreateArray(args);
+  XCTAssertTrue(js_object.IsArray());
+  JSArray js_array = static_cast<JSArray>(js_object);
+  XCTAssertTrue(js_array.IsArray());
+  auto items = static_cast<std::vector<JSValue>>(js_array);
+
+  XCTAssertEqual(4, js_array.GetLength());
+  XCTAssertEqual(4, items.size());
+
+  XCTAssertTrue(items.at(0).IsString());
+  XCTAssertTrue(items.at(1).IsNumber());
+  XCTAssertTrue(items.at(2).IsBoolean());
+  XCTAssertTrue(items.at(3).IsObject());
+
+  auto export_items = js_array.GetPrivateItems<JSExportObject>();
+  XCTAssertEqual(4, export_items.size());
+  XCTAssertEqual(nullptr, export_items.at(0));
+  XCTAssertEqual(nullptr, export_items.at(1));
+  XCTAssertEqual(nullptr, export_items.at(2));
+  XCTAssertEqual(nullptr, export_items.at(3));
+}
+
 - (void)testJSDate {
   JSContext js_context = js_context_group.CreateContext();
   JSDate js_date = js_context.CreateDate();

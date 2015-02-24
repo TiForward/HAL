@@ -16,6 +16,7 @@
 #include "HAL/JSBoolean.hpp"
 #include "HAL/JSNumber.hpp"
 #include "HAL/JSError.hpp"
+#include "HAL/JSArray.hpp"
 
 #include "HAL/detail/JSPropertyNameAccumulator.hpp"
 #include "HAL/detail/JSUtil.hpp"
@@ -96,6 +97,15 @@ namespace HAL {
   JSPropertyNameArray JSObject::GetPropertyNames() const HAL_NOEXCEPT {
     HAL_JSOBJECT_LOCK_GUARD;
     return JSPropertyNameArray(*this);
+  }
+
+  std::unordered_map<std::string, JSValue> JSObject::GetProperties() const HAL_NOEXCEPT {
+    HAL_JSOBJECT_LOCK_GUARD;
+    std::unordered_map<std::string, JSValue> properties;
+    for (const auto& property_name : static_cast<std::vector<JSString>>(GetPropertyNames())) {
+      properties.emplace(property_name, GetProperty(property_name));
+    }
+    return properties;
   }
   
   bool JSObject::IsFunction() const HAL_NOEXCEPT {
@@ -277,6 +287,10 @@ namespace HAL {
   
   JSObject::operator JSValue() const {
     return JSValue(js_context__, js_object_ref__);
+  }
+  
+  JSObject::operator JSArray() const {
+    return JSArray(js_context__, js_object_ref__);
   }
   
   JSValue JSObject::CallAsFunction(const std::vector<JSValue>&  arguments, JSObject this_object) {

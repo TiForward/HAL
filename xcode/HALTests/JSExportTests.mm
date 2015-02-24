@@ -213,6 +213,60 @@ using namespace HAL;
 	XCTAssertEqual("Hello, baz. Your number is 999.", static_cast<std::string>(result));
 }
 
+- (void)testExportObjectToJSArray
+{
+	JSContext js_context = js_context_group.CreateContext();
+
+	std::vector<JSValue> args = { 
+		js_context.CreateObject(),
+		js_context.CreateObject(JSExport<Widget>::Class()),
+		js_context.CreateObject(JSExport<Widget>::Class()),
+		js_context.CreateObject(JSExport<Widget>::Class())
+	};
+
+	JSObject js_object = js_context.CreateArray(args);
+	XCTAssertTrue(js_object.IsArray());
+	JSArray js_array = static_cast<JSArray>(js_object);
+	XCTAssertTrue(js_array.IsArray());
+
+	auto export_items = js_array.GetPrivateItems<JSExportObject>();
+	XCTAssertEqual(4, export_items.size());
+	XCTAssertEqual(nullptr, export_items.at(0));
+	XCTAssertNotEqual(nullptr, export_items.at(1));
+	XCTAssertNotEqual(nullptr, export_items.at(2));
+	XCTAssertNotEqual(nullptr, export_items.at(3));
+
+	XCTAssertEqual(static_cast<JSObject>(args.at(1)).GetPrivate<Widget>().get(), export_items.at(1).get());
+	XCTAssertEqual(static_cast<JSObject>(args.at(2)).GetPrivate<Widget>().get(), export_items.at(2).get());
+	XCTAssertEqual(static_cast<JSObject>(args.at(3)).GetPrivate<Widget>().get(), export_items.at(3).get());
+}
+
+- (void)testInitializeWithProperties
+{
+	JSContext js_context = js_context_group.CreateContext();
+
+	std::unordered_map<std::string, JSValue> properties = { 
+		{ "str",    js_context.CreateString("Hello") },
+		{ "num",    js_context.CreateNumber(123) },
+		{ "bool",   js_context.CreateBoolean(true) },
+		{ "object", js_context.CreateObject() }
+	};
+
+	JSObject js_object = js_context.CreateObject(JSExport<Widget>::Class(), properties);
+
+	auto js_properties = js_object.GetProperties();
+
+	XCTAssertTrue(js_properties.find("str")    != js_properties.end());
+	XCTAssertTrue(js_properties.find("num")    != js_properties.end());
+	XCTAssertTrue(js_properties.find("bool")   != js_properties.end());
+	XCTAssertTrue(js_properties.find("object") != js_properties.end());
+
+	XCTAssertTrue(js_properties.at("str").IsString());
+	XCTAssertTrue(js_properties.at("num").IsNumber());
+	XCTAssertTrue(js_properties.at("bool").IsBoolean());
+	XCTAssertTrue(js_properties.at("object").IsObject());
+}
+
 /*
  * Call sayHello() through operator() over CallAsConstructor-ed object
  */
