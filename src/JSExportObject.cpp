@@ -21,7 +21,7 @@ namespace HAL {
     HAL_LOG_DEBUG("JSExportObject:: postInitialize ", this);
   }
 
-  void JSExportObject::postCallAsConstructor(JSObject& js_object) {
+  void JSExportObject::postCallAsConstructor(const JSContext& js_context, const std::vector<JSValue>& arguments) {
     HAL_LOG_DEBUG("JSExportObject:: postCallAsConstructor ", this);
   }
 	
@@ -33,7 +33,7 @@ namespace HAL {
     return JSObject::FindJSObjectFromPrivateData(get_context(), this);
   }
   
-  JSExportObject::JSExportObject(const JSContext& js_context, const std::vector<JSValue>& arguments) HAL_NOEXCEPT
+  JSExportObject::JSExportObject(const JSContext& js_context) HAL_NOEXCEPT
   : js_context__(js_context) {
     HAL_LOG_DEBUG("JSExportObject:: ctor ", this);
   }

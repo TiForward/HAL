@@ -554,33 +554,12 @@ namespace HAL { namespace detail {
     
     JSObject  js_object(JSObject::FindJSObject(context_ref, constructor_ref));
     JSContext js_context = js_object.get_context();
-    
-    auto native_object_ptr = static_cast<T*>(js_object.GetPrivate());
-    static_cast<void>(native_object_ptr);
-    HAL_LOG_DEBUG("JSExportClass<", typeid(T).name(), ">::CallAsConstructor: new this[", native_object_ptr, "]");
-    
-//    auto new_object   = js_context.CreateObject(JSExport<T>::Class());
-//    const bool result = new_object.SetPrivate(new T(*native_object_ptr, to_vector(js_context, argument_count, arguments_array)));
-    
-//    const auto new_native_new_object_ptr = new T(*native_object_ptr, to_vector(js_context, argument_count, arguments_array));
-//    auto new_object = JSObject(js_context, JSExport<T>::Class(), new_native_new_object_ptr);
-
-    auto       new_object                 = js_context.CreateObject<T>();
-    const auto previous_native_object_ptr = static_cast<T*>(new_object.GetPrivate());
-    const auto new_native_new_object_ptr  = new T(js_context, to_vector(js_context, argument_count, arguments_array));
-    const bool result                     = new_object.SetPrivate(new_native_new_object_ptr);
-    
-    HAL_LOG_DEBUG("JSExportClass<", typeid(T).name(), ">::CallAsConstructor: replace ", previous_native_object_ptr, " with ", new_native_new_object_ptr, " for ", JSObjectRef(new_object));
-    
-    // postconditions
-    assert(result);
-    assert(previous_native_object_ptr);
-    
-    delete previous_native_object_ptr;
-
-    HAL_LOG_DEBUG("JSExportClass<", typeid(T).name(), ">::CallAsConstructor: new this[", native_object_ptr, "] = this[", new_native_new_object_ptr, "] for ", JSObjectRef(new_object));
-    
-    new_native_new_object_ptr->postCallAsConstructor(new_object);
+		
+    auto new_object = js_context.CreateObject<T>();
+    const auto native_object_ptr = static_cast<T*>(new_object.GetPrivate());
+    HAL_LOG_DEBUG("JSExportClass<", typeid(T).name(), ">::CallAsConstructor: for this[", native_object_ptr, "]");
+		
+    native_object_ptr->postCallAsConstructor(js_context, to_vector(js_context, argument_count, arguments_array));
 		
     return static_cast<JSObjectRef>(new_object);
     

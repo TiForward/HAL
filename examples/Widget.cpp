@@ -15,8 +15,8 @@
 double Widget::pi__ = 3.141592653589793;
 
 
-Widget::Widget(const JSContext& js_context, const std::vector<JSValue>& arguments) HAL_NOEXCEPT
-: JSExportObject(js_context, arguments)
+Widget::Widget(const JSContext& js_context) HAL_NOEXCEPT
+: JSExportObject(js_context)
 , name__("world")
 , jsvalue__(js_context.CreateObject())
 , jsnull__(js_context.CreateNull())
@@ -30,17 +30,6 @@ Widget::Widget(const JSContext& js_context, const std::vector<JSValue>& argument
 , hello_callback__(js_context.CreateFunction("return 'Hello, World';"))
 , number__(42) {
   HAL_LOG_DEBUG("Widget:: ctor ", this);
-  if (arguments.size() >= 1) {
-    const auto _0 = arguments.at(0);
-    assert(_0.IsString());
-    name__   = static_cast<JSString>(_0);
-  }
-  
-  if (arguments.size() >= 2) {
-    const auto _1 = arguments.at(1);
-    assert(_1.IsNumber());
-    number__ = static_cast<int32_t>(_1);
-  }
 
   jsobject__.SetProperty("test", js_context.CreateString("ok"));
   jsarray__.SetProperty(0, js_context.CreateString("works"));
@@ -133,8 +122,22 @@ void Widget::postInitialize(JSObject& js_object) {
   js_object.SetProperty("test_postInitialize_called", get_context().CreateBoolean(true));
 }
 
-void Widget::postCallAsConstructor(JSObject& js_object) {
-  js_object.SetProperty("test_postCallAsConstructor_called", get_context().CreateBoolean(true));
+void Widget::postCallAsConstructor(const JSContext& js_context, const std::vector<JSValue>& arguments) {
+  HAL_LOG_DEBUG("Widget:: postCallAsConstructor ", this);
+  
+  get_object().SetProperty("test_postCallAsConstructor_called", get_context().CreateBoolean(true));
+  
+  if (arguments.size() >= 1) {
+    const auto _0 = arguments.at(0);
+    assert(_0.IsString());
+    name__   = static_cast<JSString>(_0);
+  }
+  
+  if (arguments.size() >= 2) {
+    const auto _1 = arguments.at(1);
+    assert(_1.IsNumber());
+    number__ = static_cast<int32_t>(_1);
+  }
 }
 
 std::string Widget::testMemberObjectProperty() const HAL_NOEXCEPT {

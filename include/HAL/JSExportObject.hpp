@@ -53,21 +53,7 @@ namespace HAL {
      */
     virtual JSObject get_object() HAL_NOEXCEPT final;
     
-    /*!
-     @method
-     
-     @abstract This mandatory constructor is invoked when your
-     JavaScript object is created as the result of being called in a
-     JavaScript 'new' expression.
-     
-     @param js_context The JSContext in which your JavaScript object
-     is created.
-
-     @param arguments An optional list of JSValues to initialize your
-     JavaScript object with as the result of being called in a
-     JavaScript 'new' expression.
-     */
-    JSExportObject(const JSContext& js_context, const std::vector<JSValue>& arguments = {}) HAL_NOEXCEPT;
+    JSExportObject(const JSContext& js_context) HAL_NOEXCEPT;
     
     virtual ~JSExportObject() HAL_NOEXCEPT;
     JSExportObject(const JSExportObject&)            = default;
@@ -81,8 +67,31 @@ namespace HAL {
     
     static void JSExportInitialize();
 		
+    /*!
+     @method
+     
+     @abstract constructor callback which is invoked when your
+     JavaScript object is created
+
+     @param js_object The JavaScript object which is being created
+     */
     virtual void postInitialize(JSObject& js_object);
-    virtual void postCallAsConstructor(JSObject& js_object);
+
+    /*!
+     @method
+
+     @abstract constructor callback which is invoked when your
+     JavaScript object is created as the result of being called in a
+     JavaScript 'new' expression.
+
+     @param js_context The JSContext in which your JavaScript object
+     is created.
+	
+     @param arguments An optional list of JSValues to initialize your
+     JavaScript object with as the result of being called in a
+     JavaScript 'new' expression.
+    */
+    virtual void postCallAsConstructor(const JSContext& js_context, const std::vector<JSValue>& arguments);
 		
   private:
     
