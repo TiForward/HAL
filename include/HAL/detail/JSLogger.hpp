@@ -158,25 +158,40 @@ namespace HAL { namespace detail {
     PrintImpl(rest...);
   }
   
-#ifdef HAL_LOGGING_ENABLE
-  
-  // TODO: Add a more flexible way to specify the logging policy.
-  using JSLogger_t = JSLogger<JSLoggerPolicyFile>;
-  //using JSLogger_t = JSLogger<JSLoggerPolicyConsole>;
-  
+// TODO: Add a more flexible way to specify the logging policy.
+//using JSLogger_t = JSLogger<JSLoggerPolicyFile>;
+using JSLogger_t = JSLogger<JSLoggerPolicyConsole>;
+
+#ifdef HAL_LOGGING_ENABLE_TRACE
 #define HAL_LOG_TRACE HAL::detail::JSLogger_t::Instance() -> Print<HAL::detail::JSLoggerSeverityType::JS_TRACE>
-#define HAL_LOG_DEBUG HAL::detail::JSLogger_t::Instance() -> Print<HAL::detail::JSLoggerSeverityType::JS_DEBUG>
-#define HAL_LOG_INFO  HAL::detail::JSLogger_t::Instance() -> Print<HAL::detail::JSLoggerSeverityType::JS_INFO>
-#define HAL_LOG_WARN  HAL::detail::JSLogger_t::Instance() -> Print<HAL::detail::JSLoggerSeverityType::JS_WARN>
-#define HAL_LOG_ERROR HAL::detail::JSLogger_t::Instance() -> Print<HAL::detail::JSLoggerSeverityType::JS_ERROR>
 #else
 #define HAL_LOG_TRACE(...)
+#endif
+
+#ifdef HAL_LOGGING_ENABLE_DEBUG
+#define HAL_LOG_DEBUG HAL::detail::JSLogger_t::Instance() -> Print<HAL::detail::JSLoggerSeverityType::JS_DEBUG>
+#else
 #define HAL_LOG_DEBUG(...)
+#endif
+
+#ifdef HAL_LOGGING_ENABLE_INFO
+#define HAL_LOG_INFO  HAL::detail::JSLogger_t::Instance() -> Print<HAL::detail::JSLoggerSeverityType::JS_INFO>
+#else
 #define HAL_LOG_INFO(...)
+#endif
+
+#ifdef HAL_LOGGING_ENABLE_WARN
+#define HAL_LOG_WARN  HAL::detail::JSLogger_t::Instance() -> Print<HAL::detail::JSLoggerSeverityType::JS_WARN>
+#else
 #define HAL_LOG_WARN(...)
+#endif
+
+#ifdef HAL_LOGGING_ENABLE_ERROR
+#define HAL_LOG_ERROR HAL::detail::JSLogger_t::Instance() -> Print<HAL::detail::JSLoggerSeverityType::JS_ERROR>
+#else
 #define HAL_LOG_ERROR(...)
 #endif
-  
+
 }} // namespace HAL { namespace detail {
 
 #endif // _HAL_DETAIL_JSLOGGER_HPP_
