@@ -38,7 +38,7 @@ public:
    JavaScript object with as the result of being called in a
    JavaScript 'new' expression.
    */
-  Widget(const JSContext& js_context, const std::vector<JSValue>& arguments = {}) HAL_NOEXCEPT;
+  Widget(const JSContext& js_context) HAL_NOEXCEPT;
   
   std::string get_name() const                  HAL_NOEXCEPT;
   void        set_name(const std::string& name) HAL_NOEXCEPT;
@@ -73,7 +73,7 @@ public:
   static void JSExportInitialize();
 	
   virtual void postInitialize(JSObject& js_object) override;
-  virtual void postCallAsConstructor(JSObject& js_object) override;
+  virtual void postCallAsConstructor(const JSContext& js_context, const std::vector<JSValue>& arguments) override;
 	
   JSValue js_get_name() const              HAL_NOEXCEPT;
   bool    js_set_name(const JSValue& name) HAL_NOEXCEPT;
