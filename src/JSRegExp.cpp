@@ -17,7 +17,7 @@
 namespace HAL {
 
 JSRegExp::JSRegExp(const JSContext& js_context, const std::vector<JSValue>& arguments)
-		: JSObject(js_context, MakeRegExp(js_context, arguments), false) {
+		: JSObject(js_context, MakeRegExp(js_context, arguments)) {
 }
 
 JSObjectRef JSRegExp::MakeRegExp(const JSContext& js_context, const std::vector<JSValue>& arguments) {

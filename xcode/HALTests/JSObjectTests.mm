@@ -42,7 +42,7 @@ namespace UnitTestConstants {
   // JSValue and JSObject are base classes, so have an extra pointer for the
   // virtual function table.
   XCTAssertEqual(sizeof(JSContext) + sizeof(std::intptr_t) + sizeof(std::intptr_t), sizeof(JSValue));
-  XCTAssertEqual(sizeof(JSContext) + sizeof(std::intptr_t) + sizeof(std::intptr_t) + sizeof(std::intptr_t), sizeof(JSObject));
+  XCTAssertEqual(sizeof(JSContext) + sizeof(std::intptr_t) + sizeof(std::intptr_t), sizeof(JSObject));
 }
 
 - (void)testJSPropertyAttribute {

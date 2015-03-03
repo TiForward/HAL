@@ -98,6 +98,9 @@ public:
   JSValue js_testMemberNumberProperty(const std::vector<JSValue>& arguments, JSObject& this_object);
   JSValue js_testMemberStringProperty(const std::vector<JSValue>& arguments, JSObject& this_object);
   JSValue js_testCallAsFunction(const std::vector<JSValue>& arguments, JSObject& this_object);
+  JSValue js_testMemberDateProperty(const std::vector<JSValue>& arguments, JSObject& this_object);
+  JSValue js_testMemberErrorProperty(const std::vector<JSValue>& arguments, JSObject& this_object);
+  JSValue js_testMemberRegExpProperty(const std::vector<JSValue>& arguments, JSObject& this_object);
 private:
   
   std::string name__;
@@ -108,12 +111,15 @@ private:
   JSValue    jsvalue__;
   JSValue    jsnull__;
   JSValue    jsundefined__;
-  JSValue    jsboolean__;
-  JSValue    jsnumber__;
+  JSBoolean  jsboolean__;
+  JSNumber   jsnumber__;
   JSValue    jsstring__;
   JSObject   jsobject__;
-  JSObject   jsarray__;
-  JSObject   jsfunction__;
+  JSArray    jsarray__;
+  JSFunction jsfunction__;
+  JSDate     jsdate__;
+  JSError    jserror__;
+  JSRegExp   jsregexp__;
   JSObject   hello_callback__;
 };
 

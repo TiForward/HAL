@@ -17,7 +17,7 @@
 namespace HAL {
 
 JSError::JSError(const JSContext& js_context, const std::vector<JSValue>& arguments)
-		: JSObject(js_context, MakeError(js_context, arguments), false) {
+		: JSObject(js_context, MakeError(js_context, arguments)) {
 }
 
 JSObjectRef JSError::MakeError(const JSContext& js_context, const std::vector<JSValue>& arguments) {
