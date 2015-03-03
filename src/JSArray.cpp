@@ -18,11 +18,11 @@
 namespace HAL {
 
 JSArray::JSArray(const JSContext& js_context, const std::vector<JSValue>& arguments)
-		: JSObject(js_context, MakeArray(js_context, arguments), false) {
+		: JSObject(js_context, MakeArray(js_context, arguments)) {
 }
 
 JSArray::JSArray(const JSContext& js_context, JSObjectRef js_object_ref)
-		: JSObject(js_context, js_object_ref, false) {
+		: JSObject(js_context, js_object_ref) {
 }
 
 JSObjectRef JSArray::MakeArray(const JSContext& js_context, const std::vector<JSValue>& arguments) {

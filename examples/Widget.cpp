@@ -28,6 +28,9 @@ Widget::Widget(const JSContext& js_context) HAL_NOEXCEPT
 , jsarray__(js_context.CreateArray())
 , jsfunction__(js_context.CreateFunction("return 'it works fine';"))
 , hello_callback__(js_context.CreateFunction("return 'Hello, World';"))
+, jsdate__(js_context.CreateDate())
+, jserror__(js_context.CreateError())
+, jsregexp__(js_context.CreateRegExp())
 , number__(42) {
   HAL_LOG_DEBUG("Widget:: ctor ", this);
 
@@ -52,6 +55,9 @@ Widget::Widget(const Widget& rhs) HAL_NOEXCEPT
 , jsboolean__(rhs.jsboolean__)
 , jsnumber__(rhs.jsnumber__)
 , jsstring__(rhs.jsstring__)
+, jsdate__(rhs.jsdate__)
+, jserror__(rhs.jserror__)
+, jsregexp__(rhs.jsregexp__)
 , number__(rhs.number__) {
   HAL_LOG_DEBUG("Widget:: copy ctor ", this);
 }
@@ -69,6 +75,9 @@ Widget::Widget(Widget&& rhs) HAL_NOEXCEPT
 , jsboolean__(rhs.jsboolean__)
 , jsnumber__(rhs.jsnumber__)
 , jsstring__(rhs.jsstring__)
+, jsdate__(rhs.jsdate__)
+, jserror__(rhs.jserror__)
+, jsregexp__(rhs.jsregexp__)
 , number__(rhs.number__) {
   HAL_LOG_DEBUG("Widget:: move ctor ", this);
 }
@@ -210,6 +219,9 @@ void Widget::JSExportInitialize() {
   JSExport<Widget>::AddFunctionProperty("testMemberBooleanProperty", std::mem_fn(&Widget::js_testMemberBooleanProperty));
   JSExport<Widget>::AddFunctionProperty("testMemberNumberProperty", std::mem_fn(&Widget::js_testMemberNumberProperty));
   JSExport<Widget>::AddFunctionProperty("testMemberStringProperty", std::mem_fn(&Widget::js_testMemberStringProperty));
+  JSExport<Widget>::AddFunctionProperty("testMemberDateProperty", std::mem_fn(&Widget::js_testMemberDateProperty));
+  JSExport<Widget>::AddFunctionProperty("testMemberErrorProperty", std::mem_fn(&Widget::js_testMemberErrorProperty));
+  JSExport<Widget>::AddFunctionProperty("testMemberRegExpProperty", std::mem_fn(&Widget::js_testMemberRegExpProperty));
   JSExport<Widget>::AddFunctionProperty("testCallAsFunction", std::mem_fn(&Widget::js_testCallAsFunction));
 }
 
@@ -309,6 +321,18 @@ JSValue Widget::js_testMemberNumberProperty(const std::vector<JSValue>& argument
 
 JSValue Widget::js_testMemberStringProperty(const std::vector<JSValue>& arguments, JSObject& this_object) {
   return jsstring__;
+}
+
+JSValue Widget::js_testMemberDateProperty(const std::vector<JSValue>& arguments, JSObject& this_object) {
+  return jsdate__;
+}
+
+JSValue Widget::js_testMemberErrorProperty(const std::vector<JSValue>& arguments, JSObject& this_object) {
+  return jserror__;
+}
+
+JSValue Widget::js_testMemberRegExpProperty(const std::vector<JSValue>& arguments, JSObject& this_object) {
+  return jsregexp__;
 }
 
 JSValue Widget::js_testCallAsFunction(const std::vector<JSValue>& arguments, JSObject& this_object) {

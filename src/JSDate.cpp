@@ -17,7 +17,7 @@
 namespace HAL {
 
 JSDate::JSDate(const JSContext& js_context, const std::vector<JSValue>& arguments)
-		: JSObject(js_context, MakeDate(js_context, arguments), false) {
+		: JSObject(js_context, MakeDate(js_context, arguments)) {
 }
 
 JSObjectRef JSDate::MakeDate(const JSContext& js_context, const std::vector<JSValue>& arguments) {

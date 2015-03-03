@@ -18,7 +18,7 @@
 namespace HAL {
 
 JSFunction::JSFunction(const JSContext& js_context, const JSString& body, const std::vector<JSString>& parameter_names, const JSString& function_name, const JSString& source_url, int starting_line_number)
-		: JSObject(js_context, MakeFunction(js_context, body, parameter_names, function_name, source_url, starting_line_number), false) {
+		: JSObject(js_context, MakeFunction(js_context, body, parameter_names, function_name, source_url, starting_line_number)) {
 }
 
 JSObjectRef JSFunction::MakeFunction(const JSContext& js_context, const JSString& body, const std::vector<JSString>& parameter_names, const JSString& function_name, const JSString& source_url, int starting_line_number) {
