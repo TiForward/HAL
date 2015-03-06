@@ -8,6 +8,7 @@
 
 #include "HAL/HAL.hpp"
 #include "Widget.hpp"
+#include "OtherWidget.hpp"
 #include <functional>
 
 #include "gtest/gtest.h"
@@ -145,6 +146,29 @@ TEST_F(JSExportTests, JSExport) {
   // FIXME
   auto string_ptr = widget.GetPrivate<std::string>();
   //XCTAssertEqual(nullptr, string_ptr);
+}
+
+TEST_F(JSExportTests, JSExportGetPrivate) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  
+  JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+  JSObject otherWidget = js_context.CreateObject(JSExport<OtherWidget>::Class());
+  
+  // Test getting access to the underlying C++ object
+  auto widget_ptr = widget.GetPrivate<Widget>();
+  XCTAssertNotEqual(nullptr, widget_ptr);
+  
+  auto other_widget_ptr = otherWidget.GetPrivate<OtherWidget>();
+  XCTAssertNotEqual(nullptr, other_widget_ptr);
+  
+  // Test getting access to wrong C++ object
+  auto wrong_widget_ptr = widget.GetPrivate<OtherWidget>();
+  XCTAssertEqual(nullptr, wrong_widget_ptr);
+  
+  // Test getting access to wrong C++ object
+  auto wrong_widget_ptr2 = otherWidget.GetPrivate<Widget>();
+  XCTAssertEqual(nullptr, wrong_widget_ptr2);
 }
 
 /*

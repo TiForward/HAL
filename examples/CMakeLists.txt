@@ -9,8 +9,14 @@ set(SOURCE_Widget
   Widget.cpp
 )
 
+set(SOURCE_OtherWidget
+  OtherWidget.hpp
+  OtherWidget.cpp
+)
+
 add_library(HAL_examples STATIC
   ${SOURCE_Widget}
+  ${SOURCE_OtherWidget}
   )
 target_include_directories(HAL_examples INTERFACE
   ${PROJECT_SOURCE_DIR}/examples
@@ -35,6 +41,7 @@ target_link_libraries(EvaluateScript HAL)
 
 source_group(HAL\\Examples FILES
   ${SOURCE_Widget}
+  ${SOURCE_OtherWidget}
   ${SOURCE_WidgetMain}
   ${SOURCE_EvaluateScript}
   )

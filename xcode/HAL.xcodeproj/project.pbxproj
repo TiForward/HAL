@@ -86,6 +86,7 @@
 		C9E6AFB51A12FB5300FED053 /* JSLoggerPolicyFile.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9E6AFB11A12FB5300FED053 /* JSLoggerPolicyFile.hpp */; };
 		C9E6AFB61A12FB5300FED053 /* JSLoggerPolicyInterface.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C9E6AFB21A12FB5300FED053 /* JSLoggerPolicyInterface.hpp */; };
 		C9E6AFF21A13F97500FED053 /* HAL.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C974543F1A0282FD00CB4CA9 /* HAL.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
+		F902BA6F1AA9304900B16539 /* OtherWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F902BA6D1AA9304900B16539 /* OtherWidget.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -182,6 +183,8 @@
 		C9E6AFB01A12FB5300FED053 /* JSLoggerPolicyConsole.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSLoggerPolicyConsole.hpp; path = include/HAL/detail/JSLoggerPolicyConsole.hpp; sourceTree = "<group>"; };
 		C9E6AFB11A12FB5300FED053 /* JSLoggerPolicyFile.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSLoggerPolicyFile.hpp; path = include/HAL/detail/JSLoggerPolicyFile.hpp; sourceTree = "<group>"; };
 		C9E6AFB21A12FB5300FED053 /* JSLoggerPolicyInterface.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = JSLoggerPolicyInterface.hpp; path = include/HAL/detail/JSLoggerPolicyInterface.hpp; sourceTree = "<group>"; };
+		F902BA6D1AA9304900B16539 /* OtherWidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OtherWidget.cpp; path = ../../examples/OtherWidget.cpp; sourceTree = "<group>"; };
+		F902BA6E1AA9304900B16539 /* OtherWidget.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = OtherWidget.hpp; path = ../../examples/OtherWidget.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -253,6 +256,8 @@
 				C974542C1A0280A400CB4CA9 /* JSExportTests.mm */,
 				C97454ED1A0B66E500CB4CA9 /* Widget.hpp */,
 				C985CB081A107E96004D4163 /* Widget.cpp */,
+				F902BA6D1AA9304900B16539 /* OtherWidget.cpp */,
+				F902BA6E1AA9304900B16539 /* OtherWidget.hpp */,
 				C974548B1A05FC5D00CB4CA9 /* JSLoggerTests.mm */,
 				C97454301A0280A400CB4CA9 /* HashUtilitiesTests.mm */,
 				C9A4E62F19F2ED2A00CF25BF /* detail */,
@@ -592,6 +597,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F902BA6F1AA9304900B16539 /* OtherWidget.cpp in Sources */,
 				C974548C1A05FC5D00CB4CA9 /* JSLoggerTests.mm in Sources */,
 				C97454331A0280A400CB4CA9 /* JSExportTests.mm in Sources */,
 				C985CB091A107E96004D4163 /* Widget.cpp in Sources */,

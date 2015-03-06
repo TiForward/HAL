@@ -471,7 +471,7 @@ namespace HAL {
   
   template<typename T>
   std::shared_ptr<T> JSObject::GetPrivate() const HAL_NOEXCEPT {
-    return std::shared_ptr<T>(std::make_shared<JSObject>(*this), dynamic_cast<T*>(static_cast<T*>(GetPrivate())));
+    return std::shared_ptr<T>(std::make_shared<JSObject>(*this), dynamic_cast<T*>(static_cast<JSExportObject*>(GetPrivate())));
   }
   
 } // namespace HAL {
