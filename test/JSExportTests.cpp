@@ -78,7 +78,7 @@ TEST_F(JSExportTests, JSExport) {
   JSObject global_object   = js_context.get_global_object();
   
   XCTAssertFalse(global_object.HasProperty("Widget"));
-  JSObject widget = js_context.CreateObject<Widget>();
+  JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
   global_object.SetProperty("Widget", widget);
   XCTAssertTrue(global_object.HasProperty("Widget"));
   
@@ -169,6 +169,45 @@ TEST_F(JSExportTests, JSExportGetPrivate) {
   // Test getting access to wrong C++ object
   auto wrong_widget_ptr2 = otherWidget.GetPrivate<Widget>();
   XCTAssertEqual(nullptr, wrong_widget_ptr2);
+}
+
+TEST_F(JSExportTests, JSExportConstructorCount) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+
+  // reset count
+  Widget::constructor_count__ = 0;
+  XCTAssertEqual(0, Widget::constructor_count__);
+  
+  JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+  
+  // Test getting access to the underlying C++ object
+  auto widget_ptr = widget.GetPrivate<Widget>();
+  XCTAssertNotEqual(nullptr, widget_ptr);
+
+  XCTAssertEqual(1, Widget::constructor_count__);
+}
+
+TEST_F(JSExportTests, JSExportConstructorCountForCallAsConstructor) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+
+  // reset count
+  Widget::constructor_count__ = 0;
+  XCTAssertEqual(0, Widget::constructor_count__);
+  
+  JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+  
+  // Test getting access to the underlying C++ object
+  auto widget_ptr = widget.GetPrivate<Widget>();
+  XCTAssertNotEqual(nullptr, widget_ptr);
+
+  XCTAssertEqual(1, Widget::constructor_count__);
+
+  const std::vector<JSValue> args = {js_context.CreateString("newbar"), js_context.CreateNumber(123)};
+  JSObject new_widget = widget.CallAsConstructor(args);
+
+  XCTAssertEqual(2, Widget::constructor_count__);
 }
 
 /*

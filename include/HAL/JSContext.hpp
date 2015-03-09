@@ -207,24 +207,6 @@ namespace HAL {
     /*!
      @method
      
-     @abstract Create a JavaScript object in this execution context
-     that is implemented by a C++ class.
-     
-     @param T Any class that derives from JSExport.
-     
-     @param constructor_arguments The constructor arguments to pass to
-     T.
-     
-     @result A JavaScript object running in this execution context
-     that is implemented by a C++ class.
-     */
-    template<typename T, typename... Us>
-    JSObject CreateObject(Us&&... constructor_arguments) const HAL_NOEXCEPT;
-    // std::shared_ptr<T> CreateObject(Us&&... constructor_arguments) const;
-    
-    /*!
-     @method
-     
      @abstract Create a JavaScript Array object.
      
      @discussion The behavior of this constructor does not exactly

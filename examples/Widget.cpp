@@ -13,7 +13,7 @@
 #include <vector>
 
 double Widget::pi__ = 3.141592653589793;
-
+uint32_t Widget::constructor_count__ = 0;
 
 Widget::Widget(const JSContext& js_context) HAL_NOEXCEPT
 : JSExportObject(js_context)
@@ -36,6 +36,8 @@ Widget::Widget(const JSContext& js_context) HAL_NOEXCEPT
 
   jsobject__.SetProperty("test", js_context.CreateString("ok"));
   jsarray__.SetProperty(0, js_context.CreateString("works"));
+
+  constructor_count__++;
 }
 
 Widget::~Widget() HAL_NOEXCEPT {
