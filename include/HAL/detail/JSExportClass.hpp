@@ -555,7 +555,7 @@ namespace HAL { namespace detail {
     JSObject  js_object(JSObject::FindJSObject(context_ref, constructor_ref));
     JSContext js_context = js_object.get_context();
 		
-    auto new_object = js_context.CreateObject<T>();
+    auto new_object = js_context.CreateObject(JSExport<T>::Class());
     const auto native_object_ptr = static_cast<T*>(new_object.GetPrivate());
     HAL_LOG_DEBUG("JSExportClass<", typeid(T).name(), ">::CallAsConstructor: for this[", native_object_ptr, "]");
 		

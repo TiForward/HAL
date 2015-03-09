@@ -186,6 +186,47 @@ using namespace HAL;
 	XCTAssertEqual(nullptr, wrong_widget_ptr2);
 }
 
+- (void)testJSExportConstructorCount
+{
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+
+  // reset count
+  Widget::constructor_count__ = 0;
+  XCTAssertEqual(0, Widget::constructor_count__);
+  
+  JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+  
+  // Test getting access to the underlying C++ object
+  auto widget_ptr = widget.GetPrivate<Widget>();
+  XCTAssertNotEqual(nullptr, widget_ptr);
+
+  XCTAssertEqual(1, Widget::constructor_count__);
+}
+
+- (void)testJSExportConstructorCountForCallAsConstructor
+{
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+
+  // reset count
+  Widget::constructor_count__ = 0;
+  XCTAssertEqual(0, Widget::constructor_count__);
+  
+  JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+  
+  // Test getting access to the underlying C++ object
+  auto widget_ptr = widget.GetPrivate<Widget>();
+  XCTAssertNotEqual(nullptr, widget_ptr);
+
+  XCTAssertEqual(1, Widget::constructor_count__);
+
+  const std::vector<JSValue> args = {js_context.CreateString("newbar"), js_context.CreateNumber(123)};
+  JSObject new_widget = widget.CallAsConstructor(args);
+
+  XCTAssertEqual(2, Widget::constructor_count__);
+}
+
 /*
  * Call Widget.sayHello() through operator()
  */

@@ -101,6 +101,8 @@ public:
   JSValue js_testMemberDateProperty(const std::vector<JSValue>& arguments, JSObject& this_object);
   JSValue js_testMemberErrorProperty(const std::vector<JSValue>& arguments, JSObject& this_object);
   JSValue js_testMemberRegExpProperty(const std::vector<JSValue>& arguments, JSObject& this_object);
+  
+  static uint32_t constructor_count__;
 private:
   
   std::string name__;
@@ -121,6 +123,7 @@ private:
   JSError    jserror__;
   JSRegExp   jsregexp__;
   JSObject   hello_callback__;
+
 };
 
 inline
