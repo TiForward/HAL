@@ -31,8 +31,21 @@ using namespace HAL;
 - (void)testJSEvaluateScript {
   JSContext js_context = js_context_group.CreateContext();
   JSValue js_value = js_context.JSEvaluateScript("'Hello, world.'");
-  //std::clog << "MDL: js_value = " << js_value << std::endl;
   XCTAssertEqual("Hello, world.", static_cast<std::string>(js_value));
+}
+
+- (void)testJSEvaluateScriptWithError {
+  try {
+    JSContext js_context = js_context_group.CreateContext();
+    JSValue js_value = js_context.JSEvaluateScript("}@!]}", js_context.get_global_object(), "app.js", 123);
+    XCTAssertTrue(false);
+  } catch (const HAL::detail::js_runtime_error& e) {
+    XCTAssertEqual("SyntaxError", e.js_name());
+    XCTAssertEqual("app.js", e.js_filename());
+    XCTAssertEqual(123, e.js_linenumber());
+  } catch (...) {
+    XCTAssertTrue(false);
+  }
 }
 
 - (void)testJSContext {

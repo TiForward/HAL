@@ -12,6 +12,8 @@
 
 #define XCTAssertEqual    ASSERT_EQ
 #define XCTAssertNotEqual ASSERT_NE
+#define XCTAssertTrue     ASSERT_TRUE
+#define XCTAssertFalse    ASSERT_FALSE
 
 using namespace HAL;
 
@@ -30,6 +32,20 @@ TEST_F(JSContextTests, JSEvaluateScript) {
   JSContext js_context = js_context_group.CreateContext();
   JSValue js_value     = js_context.JSEvaluateScript("'Hello, world.'");
   XCTAssertEqual("Hello, world.", static_cast<std::string>(js_value));
+}
+
+TEST_F(JSContextTests, JSEvaluateScriptWithError) {
+  try {
+    JSContext js_context = js_context_group.CreateContext();
+    JSValue js_value = js_context.JSEvaluateScript("}@!]}", js_context.get_global_object(), "app.js", 123);
+    XCTAssertTrue(false);
+  } catch (const HAL::detail::js_runtime_error& e) {
+    XCTAssertEqual("SyntaxError", e.js_name());
+    XCTAssertEqual("app.js", e.js_filename());
+    XCTAssertEqual(123, e.js_linenumber());
+  } catch (...) {
+    XCTAssertTrue(false);
+  }
 }
 
 TEST_F(JSContextTests, JSContext) {

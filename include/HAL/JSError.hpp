@@ -10,6 +10,7 @@
 #define _HAL_JSERROR_HPP_
 
 #include "HAL/JSObject.hpp"
+#include <vector>
 
 namespace HAL {
 
@@ -22,15 +23,26 @@ namespace HAL {
   JSContext::CreateError member function.
 */
 class HAL_EXPORT JSError final : public JSObject HAL_PERFORMANCE_COUNTER2(JSError) {
+ public:
+ 	std::string message() const;
+ 	std::string name() const;
+ 	std::string filename() const;
+ 	std::uint32_t linenumber() const;
+ 	std::vector<std::string> stack() const;
 	
  private:
 	
-	// Only a JSContext can create a JSError.
+	// Only JSContext and JSObject can create a JSError.
 	friend JSContext;
+	friend JSObject;
 	
 	JSError(const JSContext& js_context, const std::vector<JSValue>& arguments = {});
 
+	// For interoperability with the JavaScriptCore C API.
+	JSError(const JSContext& js_context, JSObjectRef js_object_ref);
+
 	static JSObjectRef MakeError(const JSContext& js_context, const std::vector<JSValue>& arguments);
+
 };
 
 } // namespace HAL {

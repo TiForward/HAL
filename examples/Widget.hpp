@@ -102,6 +102,8 @@ public:
   JSValue js_testMemberErrorProperty(const std::vector<JSValue>& arguments, JSObject& this_object);
   JSValue js_testMemberRegExpProperty(const std::vector<JSValue>& arguments, JSObject& this_object);
   
+  JSValue js_testException(const std::vector<JSValue>& arguments, JSObject& this_object);
+
   static uint32_t constructor_count__;
 private:
   

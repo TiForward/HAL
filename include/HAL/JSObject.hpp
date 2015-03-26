@@ -26,6 +26,7 @@ namespace HAL {
   class JSPropertyNameAccumulator;
   class JSPropertyNameArray;
   class JSArray;
+  class JSError;
   
   class JSExportObject;
   
@@ -315,6 +316,15 @@ namespace HAL {
      */
     virtual operator JSArray() const final;
     
+    /*!
+     @method
+     
+     @abstract Convert this JSObject to a JSError
+     
+     @result A JSError with the result of conversion.
+     */
+    virtual operator JSError() const final;
+  
     /*!
      @method
      
