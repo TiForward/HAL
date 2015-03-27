@@ -56,8 +56,8 @@ std::uint32_t JSError::linenumber() const {
 }
 
 std::vector<JSValue> JSError::stack() const {
-	if (HasProperty("stack") && GetProperty("stack").IsObject()) {
-		const auto js_stack = static_cast<JSObject>(GetProperty("stack"));
+	if (HasProperty("native_stack") && GetProperty("native_stack").IsObject()) {
+		const auto js_stack = static_cast<JSObject>(GetProperty("native_stack"));
 		if (js_stack.IsArray()) {
 			return static_cast<std::vector<JSValue>>(static_cast<JSArray>(js_stack));
 		}

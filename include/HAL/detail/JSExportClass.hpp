@@ -383,7 +383,7 @@ namespace HAL { namespace detail {
     js_error.SetProperty("message",    js_context.CreateString(e.js_message()));
     js_error.SetProperty("name",       js_context.CreateString(e.js_name()));
     js_error.SetProperty("fileName",   js_context.CreateString(e.js_filename()));
-    js_error.SetProperty("stack",      js_context.CreateArray(js_stack));
+    js_error.SetProperty("native_stack",      js_context.CreateArray(js_stack));
     js_error.SetProperty("lineNumber", js_context.CreateNumber(e.js_linenumber()));
     return js_error;
   }
@@ -402,7 +402,7 @@ namespace HAL { namespace detail {
 
     auto js_error = js_context.CreateError();
     js_error.SetProperty("message",    js_context.CreateString(what));
-    js_error.SetProperty("stack",      js_context.CreateArray({ js_context.CreateString(name) }));
+    js_error.SetProperty("native_stack",      js_context.CreateArray({ js_context.CreateString(name) }));
     return js_error;
   }
   
