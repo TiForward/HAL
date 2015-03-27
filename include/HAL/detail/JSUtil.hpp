@@ -12,6 +12,7 @@
 #include "HAL/detail/JSBase.hpp"
 #include "HAL/JSPropertyAttribute.hpp"
 #include "HAL/JSClassAttribute.hpp"
+#include "HAL/JSValue.hpp"
 
 #include <string>
 #include <cstdint>
@@ -24,7 +25,7 @@
 namespace HAL {
   class JSString;
   class JSContext;
-  class JSValue;
+  class JSError;
 }
 
 namespace HAL { namespace detail {
@@ -33,12 +34,38 @@ namespace HAL { namespace detail {
   std::unique_ptr<T> make_unique(Ts&&... params) {
     return std::unique_ptr<T>(new T(std::forward<Ts>(params)...));
   }
-  
-  // Log and throw a std::logic_error from an internal component.
-  HAL_EXPORT void      ThrowLogicError(const std::string& internal_component_name, const std::string& message  );
-  HAL_EXPORT void      ThrowLogicError(const std::string& internal_component_name, const JSValue&     exception);
-  HAL_EXPORT void    ThrowRuntimeError(const std::string& internal_component_name, const std::string& message  );
-  HAL_EXPORT void    ThrowRuntimeError(const std::string& internal_component_name, const JSValue&     exception);
+
+  class js_runtime_error : public std::runtime_error {
+  public:
+    js_runtime_error() HAL_NOEXCEPT = default;
+    js_runtime_error(const JSError& js_error);
+    virtual ~js_runtime_error() = default;
+
+    std::string js_name() const {
+      return js_name__;
+    }
+    std::string js_message() const {
+      return js_message__;
+    }
+    std::string js_filename() const {
+      return js_filename__;
+    }
+    std::uint32_t js_linenumber() const {
+      return js_linenumber__;
+    }
+    std::vector<JSValue> js_stack() const {
+      return js_stack__;
+    }
+  private:
+    std::string js_name__;
+    std::string js_message__;
+    std::string js_filename__;
+    std::uint32_t js_linenumber__;
+    std::vector<JSValue> js_stack__;
+  };
+
+  HAL_EXPORT void    ThrowRuntimeError(const std::string& internal_component_name, const std::string& message);
+  HAL_EXPORT void    ThrowRuntimeError(const std::string& internal_component_name, const JSValue&     exception, const std::string& source_url = "", int line_number = 0);
   HAL_EXPORT void ThrowInvalidArgument(const std::string& internal_component_name, const std::string& message  );
   
   // For interoperability with the JavaScriptCore C API.

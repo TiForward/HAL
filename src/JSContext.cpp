@@ -192,7 +192,7 @@ namespace HAL {
       // If this assert fails then we need to JSValueUnprotect
       // js_value_ref.
       assert(!js_value_ref);
-      detail::ThrowRuntimeError("JSContext", JSValue(JSContext(js_global_context_ref__), exception));
+      detail::ThrowRuntimeError("JSContext", JSValue(JSContext(js_global_context_ref__), exception), source_url, starting_line_number);
     }
     
     return JSValue(JSContext(js_global_context_ref__), js_value_ref);

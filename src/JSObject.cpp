@@ -287,6 +287,10 @@ namespace HAL {
   JSObject::operator JSArray() const {
     return JSArray(js_context__, js_object_ref__);
   }
+
+  JSObject::operator JSError() const {
+    return JSError(js_context__, js_object_ref__);
+  }
   
   JSValue JSObject::CallAsFunction(const std::vector<JSValue>&  arguments, JSObject this_object) {
     HAL_JSOBJECT_LOCK_GUARD;

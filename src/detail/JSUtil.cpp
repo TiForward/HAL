@@ -9,6 +9,9 @@
 #include "HAL/detail/JSUtil.hpp"
 #include "HAL/JSString.hpp"
 #include "HAL/JSValue.hpp"
+#include "HAL/JSObject.hpp"
+#include "HAL/JSError.hpp"
+#include "HAL/JSNumber.hpp"
 
 #include <algorithm>
 #include <sstream>
@@ -18,24 +21,40 @@
 
 
 namespace HAL { namespace detail {
-  
-  void ThrowLogicError(const std::string& internal_component_name, const std::string& message) {
-    HAL_LOG_ERROR(internal_component_name, ": ", message);
-    throw std::logic_error(message);
+
+  js_runtime_error::js_runtime_error(const JSError& js_error) : std::runtime_error(js_error.message()) {
+    js_name__       = js_error.name();
+    js_filename__   = js_error.filename();
+    js_linenumber__ = js_error.linenumber();
+    js_stack__      = js_error.stack();
+    js_message__    = js_error.message();
   }
-  
-  void ThrowLogicError(const std::string& internal_component_name, const JSValue& exception) {
-    const auto exception_message = to_string(exception);
-    HAL_LOG_ERROR(internal_component_name, ": ", exception_message);
-    throw std::logic_error(exception_message);
-  }
-  
+
   void ThrowRuntimeError(const std::string& internal_component_name, const std::string& message) {
     HAL_LOG_ERROR(internal_component_name, ": ", message);
     throw std::runtime_error(message);
   }
   
-  void ThrowRuntimeError(const std::string& internal_component_name, const JSValue& exception) {
+  void ThrowRuntimeError(const std::string& internal_component_name, const JSValue& exception, const std::string& source_url, int line_number) {
+    // Check if exception is an error object
+    if (exception.IsObject()) {
+      const auto js_exception = static_cast<JSObject>(exception);
+      if (js_exception.IsError()) {
+        const auto js_context = js_exception.get_context();
+        auto js_error = static_cast<JSError>(js_exception);
+				
+        // Mozilla-like detailed properties to help debug
+        if (!js_error.HasProperty("fileName")) {
+            js_error.SetProperty("fileName", js_context.CreateString(source_url));
+        }
+        if (!js_error.HasProperty("lineNumber")) {
+          js_error.SetProperty("lineNumber", js_context.CreateNumber(line_number));
+        }	
+	
+        throw js_runtime_error(js_error);
+      }
+    }
+
     const auto exception_message = to_string(exception);
     HAL_LOG_ERROR(internal_component_name, ": ", exception_message);
     throw std::runtime_error(exception_message);
@@ -45,7 +64,6 @@ namespace HAL { namespace detail {
     HAL_LOG_ERROR(internal_component_name, ": ", message);
     throw std::invalid_argument(message);
   }
-  
   
   std::vector<JSValue> to_vector(const JSContext& js_context, size_t count, const JSValueRef js_value_ref_array[]) {
     std::vector<JSValue> js_value_vector;
