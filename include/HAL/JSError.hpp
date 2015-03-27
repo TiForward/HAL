@@ -9,6 +9,7 @@
 #ifndef _HAL_JSERROR_HPP_
 #define _HAL_JSERROR_HPP_
 
+#include "HAL/JSValue.hpp"
 #include "HAL/JSObject.hpp"
 #include <vector>
 
@@ -28,7 +29,7 @@ class HAL_EXPORT JSError final : public JSObject HAL_PERFORMANCE_COUNTER2(JSErro
  	std::string name() const;
  	std::string filename() const;
  	std::uint32_t linenumber() const;
- 	std::vector<std::string> stack() const;
+ 	std::vector<JSValue> stack() const;
 	
  private:
 	

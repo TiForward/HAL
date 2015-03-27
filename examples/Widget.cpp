@@ -226,6 +226,7 @@ void Widget::JSExportInitialize() {
   JSExport<Widget>::AddFunctionProperty("testMemberRegExpProperty", std::mem_fn(&Widget::js_testMemberRegExpProperty));
   JSExport<Widget>::AddFunctionProperty("testCallAsFunction", std::mem_fn(&Widget::js_testCallAsFunction));
   JSExport<Widget>::AddFunctionProperty("testException", std::mem_fn(&Widget::js_testException));
+  JSExport<Widget>::AddFunctionProperty("testNestedException", std::mem_fn(&Widget::js_testNestedException));
 }
 
 JSValue Widget::js_get_name() const HAL_NOEXCEPT {
@@ -347,7 +348,11 @@ JSValue Widget::js_sayHello(const std::vector<JSValue>& arguments, JSObject& thi
 }
 
 JSValue Widget::js_testException(const std::vector<JSValue>& arguments, JSObject& this_object) {
-	const auto js_context = this_object.get_context();
-  js_context.JSEvaluateScript("}@!]}", js_context.get_global_object(), "app.js", 123);
-  return this_object.get_context().CreateUndefined();
+  const auto js_context = this_object.get_context();
+  return js_context.JSEvaluateScript("}@!]}", js_context.get_global_object(), "app.js", 123);
+}
+
+JSValue Widget::js_testNestedException(const std::vector<JSValue>& arguments, JSObject& this_object) {
+  const auto js_context = this_object.get_context();
+  return js_context.JSEvaluateScript("this.testException()", this_object, "app.js", 123);
 }

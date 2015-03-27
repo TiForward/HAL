@@ -1234,9 +1234,30 @@ TEST_F(JSExportTests, ExceptionCall) {
     XCTAssertTrue(false);
   } catch (const HAL::detail::js_runtime_error& e) {
     XCTAssertEqual("SyntaxError", e.js_name());
-    XCTAssertEqual("SyntaxError: Parser error at testException", e.js_message());
+    XCTAssertEqual("Parser error", e.js_message());
     XCTAssertEqual("app.js", e.js_filename());
     XCTAssertEqual(123, e.js_linenumber());
     XCTAssertEqual(1, e.js_stack().size());
+  }
+}
+
+TEST_F(JSExportTests, ExceptionCall2) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  
+  XCTAssertFalse(global_object.HasProperty("Widget"));
+  JSObject widget = js_context.CreateObject(JSExport<Widget>::Class());
+  global_object.SetProperty("Widget", widget);
+  XCTAssertTrue(global_object.HasProperty("Widget"));
+  
+  try {
+    js_context.JSEvaluateScript("new Widget().testNestedException()", js_context.get_global_object(), "app.js", 123);
+    XCTAssertTrue(false);
+  } catch (const HAL::detail::js_runtime_error& e) {
+    XCTAssertEqual("SyntaxError", e.js_name());
+    XCTAssertEqual("Parser error", e.js_message());
+    XCTAssertEqual("app.js", e.js_filename());
+    XCTAssertEqual(123, e.js_linenumber());
+    XCTAssertEqual(2, e.js_stack().size());
   }
 }

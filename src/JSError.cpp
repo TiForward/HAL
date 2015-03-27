@@ -55,18 +55,14 @@ std::uint32_t JSError::linenumber() const {
 	return 0;
 }
 
-std::vector<std::string> JSError::stack() const {
-	std::vector<std::string> stack;
+std::vector<JSValue> JSError::stack() const {
 	if (HasProperty("stack") && GetProperty("stack").IsObject()) {
 		const auto js_stack = static_cast<JSObject>(GetProperty("stack"));
 		if (js_stack.IsArray()) {
-			const auto length = static_cast<JSArray>(js_stack).GetLength();
-			for (uint32_t i = 0; i < length; i++) {
-				stack.push_back(static_cast<std::string>(js_stack.GetProperty(i)));
-			}
+			return static_cast<std::vector<JSValue>>(static_cast<JSArray>(js_stack));
 		}
 	}
-	return stack;
+	return std::vector<JSValue>();
 }
 
 JSObjectRef JSError::MakeError(const JSContext& js_context, const std::vector<JSValue>& arguments) {

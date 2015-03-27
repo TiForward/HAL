@@ -14,6 +14,7 @@
 #include "HAL/detail/JSExportClassDefinition.hpp"
 
 #include "HAL/JSString.hpp"
+#include "HAL/JSValue.hpp"
 #include "HAL/JSObject.hpp"
 #include "HAL/JSNumber.hpp"
 #include "HAL/JSError.hpp"
@@ -111,9 +112,9 @@ namespace HAL { namespace detail {
     
     // Helper functions.
     static JSValue CreateJSError(const std::string& function_name, const std::string& location, JSObject js_object, const js_runtime_error& e);
-    static JSValue CreateJSError(const std::string& function_name, JSObject js_object, const std::exception& e, uint32_t line_number);
-    static JSValue CreateJSError(const std::string& function_name, JSObject js_object, const std::string& what, uint32_t line_number);
-    static std::string GetJSExportComponentName(const std::string& function_name);
+    static JSValue CreateJSError(const std::string& function_name, JSObject js_object, const std::exception& e);
+    static JSValue CreateJSError(const std::string& function_name, JSObject js_object, const std::string& what);
+    static std::string GetJSExportComponentName(const std::string& function_name, const std::string& location = "");
     
     static JSExportClassDefinition<T> js_export_class_definition__;
     
@@ -136,7 +137,7 @@ namespace HAL { namespace detail {
   
   template<typename T>
   JSExportClass<T>::JSExportClass() HAL_NOEXCEPT {
-	  HAL_LOG_TRACE("JSExportClass<", typeid(T).name(), ">:: ctor 1 ", this);
+    HAL_LOG_TRACE("JSExportClass<", typeid(T).name(), ">:: ctor 1 ", this);
   }
 
   template<typename T>
@@ -150,7 +151,7 @@ namespace HAL { namespace detail {
   
   template<typename T>
   JSExportClass<T>::~JSExportClass() HAL_NOEXCEPT {
-	  HAL_LOG_TRACE("JSExportClass<", typeid(T).name(), ">:: dtor ", this);
+    HAL_LOG_TRACE("JSExportClass<", typeid(T).name(), ">:: dtor ", this);
   }
   
   template<typename T>
@@ -188,9 +189,9 @@ namespace HAL { namespace detail {
     
     const bool result = js_object.SetPrivate(native_object_ptr);
     HAL_LOG_DEBUG("JSExportClass<", typeid(T).name(), ">::Initialize: private data set to ", js_object.GetPrivate(), " for ", object_ref);
-		
+    
     native_object_ptr->postInitialize(js_object);
-		
+    
     assert(result);
   }
   
@@ -240,11 +241,11 @@ namespace HAL { namespace detail {
 
   } catch (const std::exception& e) {
     JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
-		*exception = static_cast<JSValueRef>(CreateJSError("GetNamedProperty", js_object, e, __LINE__));
+    *exception = static_cast<JSValueRef>(CreateJSError("GetNamedProperty", js_object, e));
     return nullptr;
   } catch (...) {
     JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
-		*exception = static_cast<JSValueRef>(CreateJSError("GetNamedProperty", js_object, "unknown exception", __LINE__));
+    *exception = static_cast<JSValueRef>(CreateJSError("GetNamedProperty", js_object, "unknown exception"));
     return nullptr;
   }
   
@@ -281,11 +282,11 @@ namespace HAL { namespace detail {
     
   } catch (const std::exception& e) {
     JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
-		*exception = static_cast<JSValueRef>(CreateJSError("SetNamedProperty", js_object, e, __LINE__));
+    *exception = static_cast<JSValueRef>(CreateJSError("SetNamedProperty", js_object, e));
     return false;
   } catch (...) {
     JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
-		*exception = static_cast<JSValueRef>(CreateJSError("SetNamedProperty", js_object, "unknown exception", __LINE__));
+    *exception = static_cast<JSValueRef>(CreateJSError("SetNamedProperty", js_object, "unknown exception"));
     return false;
   }
   
@@ -352,37 +353,34 @@ namespace HAL { namespace detail {
       
       return static_cast<JSValueRef>(result);
 
-		} catch (const js_runtime_error& e) {
-			JSObject js_object(JSObject::FindJSObject(context_ref, function_ref));
-			*exception = static_cast<JSValueRef>(CreateJSError("CallNamedFunction", function_name, js_object, e));
-			return nullptr;
+    } catch (const js_runtime_error& e) {
+      JSObject js_object(JSObject::FindJSObject(context_ref, function_ref));
+      *exception = static_cast<JSValueRef>(CreateJSError("CallNamedFunction", function_name, js_object, e));
+      return nullptr;
     }
 
   } catch (const std::exception& e) {
     JSObject js_object(JSObject::FindJSObject(context_ref, function_ref));
-    *exception = static_cast<JSValueRef>(CreateJSError("CallNamedFunction", js_object, e, __LINE__));
+    *exception = static_cast<JSValueRef>(CreateJSError("CallNamedFunction", js_object, e));
     return nullptr;
   } catch (...) {
     JSObject js_object(JSObject::FindJSObject(context_ref, function_ref));
-    *exception = static_cast<JSValueRef>(CreateJSError("CallNamedFunction", js_object, "unknown exception", __LINE__));
+    *exception = static_cast<JSValueRef>(CreateJSError("CallNamedFunction", js_object, "unknown exception"));
     return nullptr;
   }
 
   template<typename T>
-	JSValue JSExportClass<T>::CreateJSError(const std::string& function_name, const std::string& location, JSObject js_source, const js_runtime_error& e) {
+  JSValue JSExportClass<T>::CreateJSError(const std::string& function_name, const std::string& location, JSObject js_source, const js_runtime_error& e) {
     const auto js_context = js_source.get_context();
-    const auto name = GetJSExportComponentName(function_name);
+    const auto name = GetJSExportComponentName(function_name, location);
 
     HAL_LOG_ERROR(name, ": ", e.what());
 
-		std::vector<JSValue> js_stack;
-		for (auto v : e.js_stack()) {
-			js_stack.push_back(js_context.CreateString(v));
-		}
-		js_stack.push_back(js_context.CreateString(name));
+    std::vector<JSValue> js_stack = e.js_stack();
+    js_stack.push_back(js_context.CreateString(name));
 
     auto js_error = js_context.CreateError();
-    js_error.SetProperty("message",    js_context.CreateString(e.js_name()+": "+e.what()+(location.size() > 0 ? " at "+location : "")));
+    js_error.SetProperty("message",    js_context.CreateString(e.js_message()));
     js_error.SetProperty("name",       js_context.CreateString(e.js_name()));
     js_error.SetProperty("fileName",   js_context.CreateString(e.js_filename()));
     js_error.SetProperty("stack",      js_context.CreateArray(js_stack));
@@ -391,12 +389,12 @@ namespace HAL { namespace detail {
   }
 
   template<typename T>
-  JSValue JSExportClass<T>::CreateJSError(const std::string& function_name, JSObject js_source, const std::exception& e, std::uint32_t line_number) {
-    return CreateJSError(function_name, js_source, e.what(), line_number);
+  JSValue JSExportClass<T>::CreateJSError(const std::string& function_name, JSObject js_source, const std::exception& e) {
+    return CreateJSError(function_name, js_source, e.what());
   }
 
   template<typename T>
-  JSValue JSExportClass<T>::CreateJSError(const std::string& function_name, JSObject js_source, const std::string& what, std::uint32_t line_number) {
+  JSValue JSExportClass<T>::CreateJSError(const std::string& function_name, JSObject js_source, const std::string& what) {
     const auto js_context = js_source.get_context();
     const auto name = GetJSExportComponentName(function_name);
 
@@ -405,7 +403,6 @@ namespace HAL { namespace detail {
     auto js_error = js_context.CreateError();
     js_error.SetProperty("message",    js_context.CreateString(what));
     js_error.SetProperty("stack",      js_context.CreateArray({ js_context.CreateString(name) }));
-    js_error.SetProperty("lineNumber", js_context.CreateNumber(line_number));
     return js_error;
   }
   
@@ -431,10 +428,10 @@ namespace HAL { namespace detail {
     return result;
     
   } catch (const std::exception& e) {
-		HAL_LOG_ERROR(GetJSExportComponentName("HasProperty"), ": ", e.what());
+    HAL_LOG_ERROR(GetJSExportComponentName("HasProperty"), ": ", e.what());
     return false;
   } catch (...) {
-		HAL_LOG_ERROR(GetJSExportComponentName("HasProperty"), ": unknown exception");
+    HAL_LOG_ERROR(GetJSExportComponentName("HasProperty"), ": unknown exception");
     return false;
   }
   
@@ -478,11 +475,11 @@ namespace HAL { namespace detail {
 
   } catch (const std::exception& e) {
     JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
-		*exception = static_cast<JSValueRef>(CreateJSError("GetProperty", js_object, e, __LINE__));
+    *exception = static_cast<JSValueRef>(CreateJSError("GetProperty", js_object, e));
     return nullptr;
   } catch (...) {
     JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
-		*exception = static_cast<JSValueRef>(CreateJSError("GetProperty", js_object, "unknown exception", __LINE__));
+    *exception = static_cast<JSValueRef>(CreateJSError("GetProperty", js_object, "unknown exception"));
     return nullptr;
   }
   
@@ -513,11 +510,11 @@ namespace HAL { namespace detail {
 
   } catch (const std::exception& e) {
     JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
-		*exception = static_cast<JSValueRef>(CreateJSError("SetProperty", js_object, e, __LINE__));
+    *exception = static_cast<JSValueRef>(CreateJSError("SetProperty", js_object, e));
     return false;
   } catch (...) {
     JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
-		*exception = static_cast<JSValueRef>(CreateJSError("SetProperty", js_object, "unknown exception", __LINE__));
+    *exception = static_cast<JSValueRef>(CreateJSError("SetProperty", js_object, "unknown exception"));
     return false;
   }
   
@@ -548,11 +545,11 @@ namespace HAL { namespace detail {
     
   } catch (const std::exception& e) {
     JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
-		*exception = static_cast<JSValueRef>(CreateJSError("DeleteProperty", js_object, e, __LINE__));
+    *exception = static_cast<JSValueRef>(CreateJSError("DeleteProperty", js_object, e));
     return false;
   } catch (...) {
     JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
-		*exception = static_cast<JSValueRef>(CreateJSError("DeleteProperty", js_object, "unknown exception", __LINE__));
+    *exception = static_cast<JSValueRef>(CreateJSError("DeleteProperty", js_object, "unknown exception"));
     return false;
   }
   
@@ -574,9 +571,9 @@ namespace HAL { namespace detail {
     callback(*native_object_ptr, js_property_name_accumulator);
 
   } catch (const std::exception& e) {
-	  HAL_LOG_ERROR(GetJSExportComponentName("GetPropertyNames"), ": ", e.what());
+    HAL_LOG_ERROR(GetJSExportComponentName("GetPropertyNames"), ": ", e.what());
   } catch (...) {
-		HAL_LOG_ERROR(GetJSExportComponentName("GetPropertyNames"), ": unknown exception");
+    HAL_LOG_ERROR(GetJSExportComponentName("GetPropertyNames"), ": unknown exception");
   }
   
   template<typename T>
@@ -609,11 +606,11 @@ namespace HAL { namespace detail {
     return nullptr;
   } catch (const std::exception& e) {
     JSObject js_object(JSObject::FindJSObject(context_ref, function_ref));
-		*exception = static_cast<JSValueRef>(CreateJSError("CallAsFunction", js_object, e, __LINE__));
+    *exception = static_cast<JSValueRef>(CreateJSError("CallAsFunction", js_object, e));
     return nullptr;
   } catch (...) {
     JSObject js_object(JSObject::FindJSObject(context_ref, function_ref));
-		*exception = static_cast<JSValueRef>(CreateJSError("CallAsFunction", js_object, "unknown exception", __LINE__));
+    *exception = static_cast<JSValueRef>(CreateJSError("CallAsFunction", js_object, "unknown exception"));
     return nullptr;
   }
   
@@ -622,13 +619,13 @@ namespace HAL { namespace detail {
     
     JSObject  js_object(JSObject::FindJSObject(context_ref, constructor_ref));
     JSContext js_context = js_object.get_context();
-		
+
     auto new_object = js_context.CreateObject(JSExport<T>::Class());
     const auto native_object_ptr = static_cast<T*>(new_object.GetPrivate());
     HAL_LOG_DEBUG("JSExportClass<", typeid(T).name(), ">::CallAsConstructor: for this[", native_object_ptr, "]");
-		
+
     native_object_ptr->postCallAsConstructor(js_context, to_vector(js_context, argument_count, arguments_array));
-		
+
     return static_cast<JSObjectRef>(new_object);
     
   } catch (const js_runtime_error& e) {
@@ -637,11 +634,11 @@ namespace HAL { namespace detail {
     return nullptr;
   } catch (const std::exception& e) {
     JSObject js_object(JSObject::FindJSObject(context_ref, constructor_ref));
-		*exception = static_cast<JSValueRef>(CreateJSError("JSObjectCallAsConstructorCallback", js_object, e, __LINE__));
+    *exception = static_cast<JSValueRef>(CreateJSError("JSObjectCallAsConstructorCallback", js_object, e));
     return nullptr;
   } catch (...) {
     JSObject js_object(JSObject::FindJSObject(context_ref, constructor_ref));
-		*exception = static_cast<JSValueRef>(CreateJSError("JSObjectCallAsConstructorCallback", js_object, "unknown exception", __LINE__));
+    *exception = static_cast<JSValueRef>(CreateJSError("JSObjectCallAsConstructorCallback", js_object, "unknown exception"));
     return nullptr;
   }
   
@@ -670,14 +667,14 @@ namespace HAL { namespace detail {
   } catch (const js_runtime_error& e) {
     JSObject js_object(JSObject::FindJSObject(context_ref, constructor_ref));
     *exception = static_cast<JSValueRef>(CreateJSError("JSObjectHasInstanceCallback", "", js_object, e));
-		return false;
+    return false;
   } catch (const std::exception& e) {
     JSObject js_object(JSObject::FindJSObject(context_ref, constructor_ref));
-		*exception = static_cast<JSValueRef>(CreateJSError("JSObjectHasInstanceCallback", js_object, e, __LINE__));
+    *exception = static_cast<JSValueRef>(CreateJSError("JSObjectHasInstanceCallback", js_object, e));
     return false;
   } catch (...) {
     JSObject js_object(JSObject::FindJSObject(context_ref, constructor_ref));
-		*exception = static_cast<JSValueRef>(CreateJSError("JSObjectHasInstanceCallback", js_object, "unknown exception", __LINE__));
+    *exception = static_cast<JSValueRef>(CreateJSError("JSObjectHasInstanceCallback", js_object, "unknown exception"));
     return false;
   }
   
@@ -707,18 +704,21 @@ namespace HAL { namespace detail {
     return nullptr;
   } catch (const std::exception& e) {
     JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
-		*exception = static_cast<JSValueRef>(CreateJSError("JSObjectConvertToTypeCallback", js_object, e, __LINE__));
+    *exception = static_cast<JSValueRef>(CreateJSError("JSObjectConvertToTypeCallback", js_object, e));
     return nullptr;
   } catch (...) {
     JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
-		*exception = static_cast<JSValueRef>(CreateJSError("JSObjectConvertToTypeCallback", js_object, "unknown exception", __LINE__));
+    *exception = static_cast<JSValueRef>(CreateJSError("JSObjectConvertToTypeCallback", js_object, "unknown exception"));
     return nullptr;
   }
   
   template<typename T>
-  std::string JSExportClass<T>::GetJSExportComponentName(const std::string& function_name) {
+  std::string JSExportClass<T>::GetJSExportComponentName(const std::string& function_name, const std::string& location) {
     std::ostringstream os;
     os << "JSExportClass<" << typeid(T).name() << ">::" << function_name;
+    if (location.size() > 0) {
+      os << " (" << location << ")";
+    }
     return os.str();
   }
 

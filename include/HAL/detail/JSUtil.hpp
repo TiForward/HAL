@@ -12,6 +12,7 @@
 #include "HAL/detail/JSBase.hpp"
 #include "HAL/JSPropertyAttribute.hpp"
 #include "HAL/JSClassAttribute.hpp"
+#include "HAL/JSValue.hpp"
 
 #include <string>
 #include <cstdint>
@@ -24,7 +25,6 @@
 namespace HAL {
   class JSString;
   class JSContext;
-  class JSValue;
   class JSError;
 }
 
@@ -37,7 +37,7 @@ namespace HAL { namespace detail {
 
   class js_runtime_error : public std::runtime_error {
   public:
-    js_runtime_error() noexcept = default;
+    js_runtime_error() HAL_NOEXCEPT = default;
     js_runtime_error(const JSError& js_error);
     virtual ~js_runtime_error() = default;
 
@@ -53,7 +53,7 @@ namespace HAL { namespace detail {
     std::uint32_t js_linenumber() const {
       return js_linenumber__;
     }
-    std::vector<std::string> js_stack() const {
+    std::vector<JSValue> js_stack() const {
       return js_stack__;
     }
   private:
@@ -61,7 +61,7 @@ namespace HAL { namespace detail {
     std::string js_message__;
     std::string js_filename__;
     std::uint32_t js_linenumber__;
-    std::vector<std::string> js_stack__;
+    std::vector<JSValue> js_stack__;
   };
 
   HAL_EXPORT void    ThrowRuntimeError(const std::string& internal_component_name, const std::string& message);
