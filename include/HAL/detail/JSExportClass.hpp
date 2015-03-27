@@ -277,7 +277,7 @@ namespace HAL { namespace detail {
     } catch (const js_runtime_error& e) {
       JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
       *exception = static_cast<JSValueRef>(CreateJSError("SetNamedProperty", property_name, js_object, e));
-      return nullptr;
+      return false;
     }
     
   } catch (const std::exception& e) {
@@ -505,7 +505,7 @@ namespace HAL { namespace detail {
     } catch (const js_runtime_error& e) {
       JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
       *exception = static_cast<JSValueRef>(CreateJSError("SetProperty", property_name, js_object, e));
-      return nullptr;
+      return false;
     }
 
   } catch (const std::exception& e) {
@@ -540,7 +540,7 @@ namespace HAL { namespace detail {
     } catch (const js_runtime_error& e) {
       JSObject js_object(JSObject::FindJSObject(context_ref, object_ref));
       *exception = static_cast<JSValueRef>(CreateJSError("DeleteProperty", property_name, js_object, e));
-      return nullptr;
+      return false;
     }
     
   } catch (const std::exception& e) {
