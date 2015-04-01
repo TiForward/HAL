@@ -154,3 +154,7 @@ A [JSObject](include/HAL/JSObject.hpp) is an RAII wrapper around a [JSObjectRef]
 ## Contributors
 
 The original source code and design for this project was developed by [Matt Langston](https://github.com/matt-langston).
+
+## Legal
+
+Appcelerator is a registered trademark of Appcelerator, Inc. Titanium is a registered trademark of Appcelerator, Inc.  Please see the LEGAL information about using our trademarks, privacy policy, terms of usage and other legal information at [http://www.appcelerator.com/legal](http://www.appcelerator.com/legal).
