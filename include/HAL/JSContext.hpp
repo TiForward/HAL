@@ -133,7 +133,16 @@ namespace HAL {
      @result The unique null value.
      */
     JSNull CreateNull() const HAL_NOEXCEPT;
-    
+		
+    /*!
+     @method
+ 
+     @abstract Create a native nullptr. For interoperability with the JavaScriptCore C API.
+ 
+     @result The value which represents native nullptr.
+     */
+    JSValue CreateNativeNull() const HAL_NOEXCEPT;
+		
     /*!
      @method
      

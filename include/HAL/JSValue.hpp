@@ -198,7 +198,17 @@ namespace HAL {
      @result true if this JavaScript value's type is the null type.
      */
     virtual bool IsNull() const HAL_NOEXCEPT final;
-    
+		
+    /*!
+     @method
+     
+     @abstract Determine whether this JavaScript value's type is the
+     null type.
+     
+     @result true if this JavaScript value's type is the null type.
+     */
+    virtual bool IsNativeNull() const HAL_NOEXCEPT final;
+		
     /*!
      @method
      
@@ -290,6 +300,16 @@ namespace HAL {
     virtual JSContext get_context() const HAL_NOEXCEPT final {
       return js_context__;
     }
+
+    /*!
+     @method
+ 
+     @abstract Mark this value as native nullptr. 
+               For interoperability with the JavaScriptCore C API.
+     */
+    virtual void MarkAsNativeNull() HAL_NOEXCEPT final {
+      is_native_nullptr__ = true;
+    }
     
     virtual ~JSValue()           HAL_NOEXCEPT;
     JSValue(const JSValue&)      HAL_NOEXCEPT;
@@ -329,6 +349,9 @@ namespace HAL {
     
     // For interoperability with the JavaScriptCore C API.
     explicit operator JSValueRef() const HAL_NOEXCEPT {
+      if (is_native_nullptr__) {
+        return nullptr;
+      }
       return js_value_ref__;
     }
     
@@ -346,6 +369,8 @@ namespace HAL {
     static void * operator new [] (std::size_t); // #2: To prevent allocation of array of objects
     
     JSContext  js_context__;
+		
+    bool is_native_nullptr__{false};
 
     // Silence 4251 on Windows since private member variables do not
     // need to be exported from a DLL.

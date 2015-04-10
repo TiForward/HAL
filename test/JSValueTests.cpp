@@ -56,6 +56,19 @@ TEST_F(JSValueTests, JSNull) {
   XCTAssertFalse(js_null.IsObject());
 }
 
+TEST_F(JSValueTests, NativeNull) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSValue js_null = js_context.CreateNativeNull();
+  XCTAssertEqual("null", static_cast<std::string>(js_null));
+  XCTAssertFalse(js_null.IsUndefined());
+  XCTAssertTrue(js_null.IsNull());
+  XCTAssertFalse(js_null.IsBoolean());
+  XCTAssertFalse(js_null.IsNumber());
+  XCTAssertFalse(js_null.IsString());
+  XCTAssertFalse(js_null.IsObject());
+  XCTAssertTrue(js_null.IsNativeNull());
+}
+
 TEST_F(JSValueTests, JSBoolean) {
   JSContext js_context = js_context_group.CreateContext();
   JSBoolean js_false = js_context.CreateBoolean(false);

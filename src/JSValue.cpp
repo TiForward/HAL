@@ -154,7 +154,12 @@ namespace HAL {
     HAL_JSVALUE_LOCK_GUARD;
     return JSValueIsNull(static_cast<JSContextRef>(js_context__), js_value_ref__);
   }
-  
+	
+  bool JSValue::IsNativeNull() const HAL_NOEXCEPT {
+    HAL_JSVALUE_LOCK_GUARD;
+    return is_native_nullptr__;
+  }
+	
   bool JSValue::IsBoolean() const HAL_NOEXCEPT {
     HAL_JSVALUE_LOCK_GUARD;
     return JSValueIsBoolean(static_cast<JSContextRef>(js_context__), js_value_ref__);
@@ -214,7 +219,8 @@ namespace HAL {
   
   JSValue::JSValue(const JSValue& rhs) HAL_NOEXCEPT
   : js_context__(rhs.js_context__)
-  , js_value_ref__(rhs.js_value_ref__) {
+  , js_value_ref__(rhs.js_value_ref__)
+  , is_native_nullptr__(rhs.is_native_nullptr__) {
     HAL_LOG_TRACE("JSValue:: copy ctor ", this);
     HAL_LOG_TRACE("JSValue:: retain ", js_value_ref__, " for ", this);
     JSValueProtect(static_cast<JSContextRef>(js_context__), js_value_ref__);
@@ -222,7 +228,8 @@ namespace HAL {
   
   JSValue::JSValue(JSValue&& rhs) HAL_NOEXCEPT
   : js_context__(std::move(rhs.js_context__))
-  , js_value_ref__(rhs.js_value_ref__) {
+  , js_value_ref__(rhs.js_value_ref__)
+  , is_native_nullptr__(rhs.is_native_nullptr__){
     HAL_LOG_TRACE("JSValue:: move ctor ", this);
     HAL_LOG_TRACE("JSValue:: retain ", js_value_ref__, " for ", this);
     JSValueProtect(static_cast<JSContextRef>(js_context__), js_value_ref__);
@@ -250,6 +257,7 @@ namespace HAL {
     // effectively swapped.
     swap(js_context__  , other.js_context__);
     swap(js_value_ref__, other.js_value_ref__);
+    swap(is_native_nullptr__, other.is_native_nullptr__);
   }
   
   JSValue::JSValue(const JSContext& js_context, const JSString& js_string, bool parse_as_json)
@@ -267,7 +275,7 @@ namespace HAL {
     HAL_LOG_TRACE("JSValue:: retain ", js_value_ref__, " for ", this);
     JSValueProtect(static_cast<JSContextRef>(js_context__), js_value_ref__);
   }
-  
+	
   // For interoperability with the JavaScriptCore C API.
   JSValue::JSValue(const JSContext& js_context, JSValueRef js_value_ref) HAL_NOEXCEPT
   : js_context__(js_context)
