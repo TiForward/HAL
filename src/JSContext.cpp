@@ -67,7 +67,15 @@ namespace HAL {
     HAL_JSCONTEXT_LOCK_GUARD;
     return JSNull(JSContext(js_global_context_ref__));
   }
-  
+	
+  JSValue JSContext::CreateNativeNull() const HAL_NOEXCEPT {
+    HAL_JSCONTEXT_LOCK_GUARD;
+    // Use JSNull to represent native nullptr
+    auto value = JSNull(JSContext(js_global_context_ref__));
+    value.MarkAsNativeNull();
+    return value;
+  }
+	
   JSBoolean JSContext::CreateBoolean(bool boolean) const HAL_NOEXCEPT {
     HAL_JSCONTEXT_LOCK_GUARD;
     return JSBoolean(JSContext(js_global_context_ref__), boolean);

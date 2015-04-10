@@ -8,6 +8,7 @@
 
 #include "HAL/HAL.hpp"
 #include "Widget.hpp"
+#include "ChildWidget.hpp"
 #include "OtherWidget.hpp"
 #include <functional>
 
@@ -146,6 +147,25 @@ TEST_F(JSExportTests, JSExport) {
   // FIXME
   auto string_ptr = widget.GetPrivate<std::string>();
   //XCTAssertEqual(nullptr, string_ptr);
+}
+
+TEST_F(JSExportTests, JSExportPrototypeChain) {
+  JSContext js_context = js_context_group.CreateContext();
+  JSObject global_object = js_context.get_global_object();
+  
+  XCTAssertFalse(global_object.HasProperty("ChildWidget"));
+  JSObject widget = js_context.CreateObject(JSExport<ChildWidget>::Class());
+  global_object.SetProperty("ChildWidget", widget);
+  XCTAssertTrue(global_object.HasProperty("ChildWidget"));
+  
+  // This should return property from parent
+  auto result = js_context.JSEvaluateScript("ChildWidget.name;");
+  XCTAssertTrue(result.IsString());
+  XCTAssertEqual("world", static_cast<std::string>(result));
+
+  result = js_context.JSEvaluateScript("ChildWidget.my_name;");
+  XCTAssertTrue(result.IsString());
+  XCTAssertEqual("child widget", static_cast<std::string>(result));
 }
 
 TEST_F(JSExportTests, JSExportGetPrivate) {

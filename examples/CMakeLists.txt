@@ -7,6 +7,8 @@
 set(SOURCE_Widget
   Widget.hpp
   Widget.cpp
+  ChildWidget.hpp
+  ChildWidget.cpp
 )
 
 set(SOURCE_OtherWidget
