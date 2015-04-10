@@ -26,12 +26,7 @@ class ChildWidget : public Widget, public JSExport<ChildWidget> {
 public:
   
   ChildWidget(const JSContext& js_context) HAL_NOEXCEPT;
-  
-  virtual ~ChildWidget()                     HAL_NOEXCEPT;
-  ChildWidget(const ChildWidget&)            HAL_NOEXCEPT = default;
-  ChildWidget(ChildWidget&&)                 HAL_NOEXCEPT = default;
-  ChildWidget& operator=(const ChildWidget&) HAL_NOEXCEPT = default;
-  ChildWidget& operator=(ChildWidget&&)      HAL_NOEXCEPT = default;
+  virtual ~ChildWidget() HAL_NOEXCEPT;
   
   static void JSExportInitialize();
   
