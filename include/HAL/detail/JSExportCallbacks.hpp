@@ -157,8 +157,8 @@ namespace HAL { namespace detail {
    @abstract The callback to invoke when getting a property's value
    from your JavaScript object.
    
-   @discussion If this callback returns JSUndefined then get request
-   forwards to your JavaScript object's set of
+   @discussion If this callback returns native null value (context.CreateNativeNull())
+   then get request forwards to your JavaScript object's set of
    GetNamedValuePropertyCallback and CallNamedFunctionCallback
    callbacks (if any), then properties vended by your class' parent
    class chain, then properties belonging to your JavaScript object's
@@ -180,7 +180,7 @@ namespace HAL { namespace detail {
    @param 2 A const rvalue reference to the property's name.
    
    @result The property's value with the name given in parameter 2 if
-   it exists. If the property does not exist then return JSUndefined
+   it exists. If the property does not exist then return native null value (context.CreateNativeNull())
    to forward the request to your JavaScript object's set of
    GetNamedValuePropertyCallback and CallNamedFunctionCallback
    callbacks (if any), then properties vended by your class' parent
@@ -371,7 +371,7 @@ namespace HAL { namespace detail {
    @param 2 A JSValue::Type specifying the JavaScript type to convert
    to.
    
-   @result Return the objects's converted value. Return JSUndefined to
+   @result Return the objects's converted value. Return native null value (context.CreateNativeNull())
    forward the reqeust to your class' parent class chain, then your
    JavaScript object's prototype chain.
    */
