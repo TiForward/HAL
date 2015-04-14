@@ -7,6 +7,43 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		09012BFA1ADD18F50063C35F /* JSBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97455031A0D292500CB4CA9 /* JSBase.cpp */; };
+		09012BFB1ADD18FA0063C35F /* JSUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97454251A02807900CB4CA9 /* JSUtil.cpp */; };
+		09012BFC1ADD19010063C35F /* JSExportObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9E6AFA41A11653A00FED053 /* JSExportObject.cpp */; };
+		09012BFD1ADD19090063C35F /* JSValueUtil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9E6AFA81A11808800FED053 /* JSValueUtil.cpp */; };
+		09012BFE1ADD190F0063C35F /* JSClassDefinition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97455001A0D23AD00CB4CA9 /* JSClassDefinition.cpp */; };
+		09012BFF1ADD19130063C35F /* JSClass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97454911A06D03700CB4CA9 /* JSClass.cpp */; };
+		09012C001ADD19190063C35F /* JSPropertyCallback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97454E71A09C79600CB4CA9 /* JSPropertyCallback.cpp */; };
+		09012C011ADD191D0063C35F /* JSStaticValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97454F61A0CFB7000CB4CA9 /* JSStaticValue.cpp */; };
+		09012C021ADD19200063C35F /* JSStaticFunction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97454F51A0CFB7000CB4CA9 /* JSStaticFunction.cpp */; };
+		09012C031ADD19270063C35F /* JSContextGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97453DE1A027A1800CB4CA9 /* JSContextGroup.cpp */; };
+		09012C041ADD192B0063C35F /* JSContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97453DD1A027A1800CB4CA9 /* JSContext.cpp */; };
+		09012C051ADD19310063C35F /* JSValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97453E81A027E3D00CB4CA9 /* JSValue.cpp */; };
+		09012C061ADD19390063C35F /* JSPropertyNameArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97454CA1A097E4400CB4CA9 /* JSPropertyNameArray.cpp */; };
+		09012C071ADD193F0063C35F /* JSObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97453F91A027F6000CB4CA9 /* JSObject.cpp */; };
+		09012C081ADD194C0063C35F /* JSArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97453FB1A027F6000CB4CA9 /* JSArray.cpp */; };
+		09012C091ADD19530063C35F /* JSDate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97453FC1A027F6000CB4CA9 /* JSDate.cpp */; };
+		09012C0A1ADD19560063C35F /* JSError.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97453FD1A027F6000CB4CA9 /* JSError.cpp */; };
+		09012C0B1ADD195B0063C35F /* JSRegExp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97453FA1A027F6000CB4CA9 /* JSRegExp.cpp */; };
+		09012C0C1ADD19640063C35F /* JSFunction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97453FE1A027F6000CB4CA9 /* JSFunction.cpp */; };
+		09012C0D1ADD19760063C35F /* JSLoggerPimpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97454891A05FC3F00CB4CA9 /* JSLoggerPimpl.cpp */; };
+		09012C0E1ADD19F60063C35F /* JSStringTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C974542E1A0280A400CB4CA9 /* JSStringTests.mm */; };
+		09012C0F1ADD19F60063C35F /* JSContextGroupTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C974542A1A0280A400CB4CA9 /* JSContextGroupTests.mm */; };
+		09012C101ADD19F60063C35F /* JSContextTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C974542B1A0280A400CB4CA9 /* JSContextTests.mm */; };
+		09012C111ADD19F60063C35F /* JSObjectTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C974542D1A0280A400CB4CA9 /* JSObjectTests.mm */; };
+		09012C121ADD19F60063C35F /* JSValueTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C974542F1A0280A400CB4CA9 /* JSValueTests.mm */; };
+		09012C131ADD19F60063C35F /* JSExportTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C974542C1A0280A400CB4CA9 /* JSExportTests.mm */; };
+		09012C141ADD19FE0063C35F /* Widget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C985CB081A107E96004D4163 /* Widget.cpp */; };
+		09012C151ADD19FE0063C35F /* ChildWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9503D371AD7A63F00D4EA0A /* ChildWidget.cpp */; };
+		09012C161ADD1A020063C35F /* OtherWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F902BA6D1AA9304900B16539 /* OtherWidget.cpp */; };
+		09012C171ADD1A070063C35F /* JSLoggerTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C974548B1A05FC5D00CB4CA9 /* JSLoggerTests.mm */; };
+		09012C181ADD1A070063C35F /* HashUtilitiesTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C97454301A0280A400CB4CA9 /* HashUtilitiesTests.mm */; };
+		09012C191ADD1A0E0063C35F /* LambdaTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C974543A1A02810600CB4CA9 /* LambdaTests.mm */; };
+		09012C1A1ADD1A0E0063C35F /* TemplateTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C974543B1A02810600CB4CA9 /* TemplateTests.mm */; };
+		09012C1B1ADD1A0E0063C35F /* ChronoTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = C9E6AFAD1A11B19500FED053 /* ChronoTests.mm */; };
+		09012C1E1ADD1A780063C35F /* libHAL_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 09758FFA1ADCF5290072E461 /* libHAL_ios.a */; };
+		09012C201ADD1A800063C35F /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09012C1F1ADD1A800063C35F /* JavaScriptCore.framework */; };
+		09012C211ADD1ACB0063C35F /* JSString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C97454971A07534700CB4CA9 /* JSString.cpp */; };
 		C936FD6119CB96650082CB08 /* libHAL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C936FD3119CB95BE0082CB08 /* libHAL.a */; };
 		C97453D91A02797E00CB4CA9 /* JSString.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C97453D71A02797E00CB4CA9 /* JSString.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		C97453DF1A027A1800CB4CA9 /* JSContext.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C97453DB1A027A1800CB4CA9 /* JSContext.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -91,6 +128,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		09012C1C1ADD1A470063C35F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C936FD2919CB95BE0082CB08 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 09758FF91ADCF5290072E461;
+			remoteInfo = HAL_ios;
+		};
 		C936FD5F19CB96630082CB08 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C936FD2919CB95BE0082CB08 /* Project object */;
@@ -100,7 +144,23 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		09758FF81ADCF5290072E461 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		09012C1F1ADD1A800063C35F /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.3.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
+		09758FFA1ADCF5290072E461 /* libHAL_ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libHAL_ios.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		097590041ADCF5290072E461 /* HAL_iosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HAL_iosTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		097590071ADCF5290072E461 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C936FD3119CB95BE0082CB08 /* libHAL.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libHAL.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		C936FD4D19CB961A0082CB08 /* HALTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HALTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C936FD5019CB961A0082CB08 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -191,6 +251,22 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		09758FF71ADCF5290072E461 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		097590011ADCF5290072E461 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09012C201ADD1A800063C35F /* JavaScriptCore.framework in Frameworks */,
+				09012C1E1ADD1A780063C35F /* libHAL_ios.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C936FD2E19CB95BE0082CB08 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -210,12 +286,30 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		097590051ADCF5290072E461 /* HAL_iosTests */ = {
+			isa = PBXGroup;
+			children = (
+				097590061ADCF5290072E461 /* Supporting Files */,
+			);
+			path = HAL_iosTests;
+			sourceTree = "<group>";
+		};
+		097590061ADCF5290072E461 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				097590071ADCF5290072E461 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		C936FD2819CB95BE0082CB08 = {
 			isa = PBXGroup;
 			children = (
+				09012C1F1ADD1A800063C35F /* JavaScriptCore.framework */,
 				C97C6D931A674D67002D0644 /* JavaScriptCore.framework */,
 				C936FD3319CB95BE0082CB08 /* HAL */,
 				C936FD4E19CB961A0082CB08 /* HALTests */,
+				097590051ADCF5290072E461 /* HAL_iosTests */,
 				C936FD3219CB95BE0082CB08 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -225,6 +319,8 @@
 			children = (
 				C936FD3119CB95BE0082CB08 /* libHAL.a */,
 				C936FD4D19CB961A0082CB08 /* HALTests.xctest */,
+				09758FFA1ADCF5290072E461 /* libHAL_ios.a */,
+				097590041ADCF5290072E461 /* HAL_iosTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -489,6 +585,41 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		09758FF91ADCF5290072E461 /* HAL_ios */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0975900C1ADCF5290072E461 /* Build configuration list for PBXNativeTarget "HAL_ios" */;
+			buildPhases = (
+				09758FF61ADCF5290072E461 /* Sources */,
+				09758FF71ADCF5290072E461 /* Frameworks */,
+				09758FF81ADCF5290072E461 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = HAL_ios;
+			productName = HAL_ios;
+			productReference = 09758FFA1ADCF5290072E461 /* libHAL_ios.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		097590031ADCF5290072E461 /* HAL_iosTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0975900D1ADCF5290072E461 /* Build configuration list for PBXNativeTarget "HAL_iosTests" */;
+			buildPhases = (
+				097590001ADCF5290072E461 /* Sources */,
+				097590011ADCF5290072E461 /* Frameworks */,
+				097590021ADCF5290072E461 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				09012C1D1ADD1A470063C35F /* PBXTargetDependency */,
+			);
+			name = HAL_iosTests;
+			productName = HAL_iosTests;
+			productReference = 097590041ADCF5290072E461 /* HAL_iosTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		C936FD3019CB95BE0082CB08 /* HAL */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C936FD3C19CB95BE0082CB08 /* Build configuration list for PBXNativeTarget "HAL" */;
@@ -533,6 +664,12 @@
 				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = Appcelerator;
 				TargetAttributes = {
+					09758FF91ADCF5290072E461 = {
+						CreatedOnToolsVersion = 6.0.1;
+					};
+					097590031ADCF5290072E461 = {
+						CreatedOnToolsVersion = 6.0.1;
+					};
 					C936FD3019CB95BE0082CB08 = {
 						CreatedOnToolsVersion = 6.0.1;
 					};
@@ -555,11 +692,20 @@
 			targets = (
 				C936FD3019CB95BE0082CB08 /* HAL */,
 				C936FD4C19CB961A0082CB08 /* HALTests */,
+				09758FF91ADCF5290072E461 /* HAL_ios */,
+				097590031ADCF5290072E461 /* HAL_iosTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		097590021ADCF5290072E461 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C936FD4B19CB961A0082CB08 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -570,6 +716,55 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		09758FF61ADCF5290072E461 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09012BFE1ADD190F0063C35F /* JSClassDefinition.cpp in Sources */,
+				09012C071ADD193F0063C35F /* JSObject.cpp in Sources */,
+				09012BFC1ADD19010063C35F /* JSExportObject.cpp in Sources */,
+				09012C051ADD19310063C35F /* JSValue.cpp in Sources */,
+				09012BFB1ADD18FA0063C35F /* JSUtil.cpp in Sources */,
+				09012C0C1ADD19640063C35F /* JSFunction.cpp in Sources */,
+				09012C211ADD1ACB0063C35F /* JSString.cpp in Sources */,
+				09012C041ADD192B0063C35F /* JSContext.cpp in Sources */,
+				09012C031ADD19270063C35F /* JSContextGroup.cpp in Sources */,
+				09012C081ADD194C0063C35F /* JSArray.cpp in Sources */,
+				09012C0A1ADD19560063C35F /* JSError.cpp in Sources */,
+				09012C0D1ADD19760063C35F /* JSLoggerPimpl.cpp in Sources */,
+				09012C021ADD19200063C35F /* JSStaticFunction.cpp in Sources */,
+				09012BFA1ADD18F50063C35F /* JSBase.cpp in Sources */,
+				09012C0B1ADD195B0063C35F /* JSRegExp.cpp in Sources */,
+				09012BFF1ADD19130063C35F /* JSClass.cpp in Sources */,
+				09012C061ADD19390063C35F /* JSPropertyNameArray.cpp in Sources */,
+				09012C091ADD19530063C35F /* JSDate.cpp in Sources */,
+				09012C001ADD19190063C35F /* JSPropertyCallback.cpp in Sources */,
+				09012C011ADD191D0063C35F /* JSStaticValue.cpp in Sources */,
+				09012BFD1ADD19090063C35F /* JSValueUtil.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		097590001ADCF5290072E461 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09012C161ADD1A020063C35F /* OtherWidget.cpp in Sources */,
+				09012C151ADD19FE0063C35F /* ChildWidget.cpp in Sources */,
+				09012C0F1ADD19F60063C35F /* JSContextGroupTests.mm in Sources */,
+				09012C0E1ADD19F60063C35F /* JSStringTests.mm in Sources */,
+				09012C1B1ADD1A0E0063C35F /* ChronoTests.mm in Sources */,
+				09012C101ADD19F60063C35F /* JSContextTests.mm in Sources */,
+				09012C181ADD1A070063C35F /* HashUtilitiesTests.mm in Sources */,
+				09012C111ADD19F60063C35F /* JSObjectTests.mm in Sources */,
+				09012C131ADD19F60063C35F /* JSExportTests.mm in Sources */,
+				09012C1A1ADD1A0E0063C35F /* TemplateTests.mm in Sources */,
+				09012C141ADD19FE0063C35F /* Widget.cpp in Sources */,
+				09012C171ADD1A070063C35F /* JSLoggerTests.mm in Sources */,
+				09012C191ADD1A0E0063C35F /* LambdaTests.mm in Sources */,
+				09012C121ADD19F60063C35F /* JSValueTests.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C936FD2D19CB95BE0082CB08 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -622,6 +817,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		09012C1D1ADD1A470063C35F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 09758FF91ADCF5290072E461 /* HAL_ios */;
+			targetProxy = 09012C1C1ADD1A470063C35F /* PBXContainerItemProxy */;
+		};
 		C936FD6019CB96630082CB08 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = C936FD3019CB95BE0082CB08 /* HAL */;
@@ -630,6 +830,72 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		097590081ADCF5290072E461 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		097590091ADCF5290072E461 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		0975900A1ADCF5290072E461 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = HAL_iosTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		0975900B1ADCF5290072E461 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = HAL_iosTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		C936FD3A19CB95BE0082CB08 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -772,6 +1038,24 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		0975900C1ADCF5290072E461 /* Build configuration list for PBXNativeTarget "HAL_ios" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				097590081ADCF5290072E461 /* Debug */,
+				097590091ADCF5290072E461 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0975900D1ADCF5290072E461 /* Build configuration list for PBXNativeTarget "HAL_iosTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0975900A1ADCF5290072E461 /* Debug */,
+				0975900B1ADCF5290072E461 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		C936FD2C19CB95BE0082CB08 /* Build configuration list for PBXProject "HAL" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
