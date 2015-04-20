@@ -1,4 +1,4 @@
-# Hyperloop Abstraction Layer (HAL)
+# HAL - The core of Ti.Next
 
 > The Hyperloop Abstraction Layer (HAL) library is a cross-platform standards-compliant C++11 library wrapper around the JavaScriptCore C API.
 
