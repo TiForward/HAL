@@ -30,11 +30,11 @@ This library was initially created using both iOS 8 (i.e. Apple LLVM version 6.0
 
 ### Roadmap
 
-See [Roadmap](doc/ROADMAP.md) document.
+See [Roadmap](docs/ROADMAP.md) document.
 
 ### To compile / test:
 
-See [How to Compile](doc/HOW_TO_COMPILE.md) document.
+See [How to Compile](docs/HOW_TO_COMPILE.md) document.
 
 ## How to contribute:
 
