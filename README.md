@@ -38,7 +38,7 @@ See [How to Compile](doc/HOW_TO_COMPILE.md) document.
 
 ## How to contribute:
 
-We are working fast to create a to-do list. For now check out the github issues here, and discuss issues on the issues project.
+We are working fast to create a to-do list. For now check out the github issues here, and discuss issues on the [discussions project](https://github.com/TiForward/discuss).
 
 ### Contributors
 
