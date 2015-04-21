@@ -58,7 +58,8 @@ build_and_test.sh
 ```
 
 Here is [EvaluateScript.cpp](../examples/EvaluateScript.cpp), a simple main program that evaluates the JavaScript expression `21 / 7` and prints `3` to the terminal. To run it on Windows type `./build.debug/examples/EvaluateScript.exe` and to run it on OS X type `./build.debug/examples/EvaluateScript`.
-```
+
+```c++
 #include "HAL/HAL.hpp"
 #include <iostream>
 
@@ -74,7 +75,8 @@ int main () {
 To add a C++ class to the JavaScriptCore runtime take a look at our Widget example in [Widget.hpp](../examples/Widget.hpp) and [Widget.cpp](../examples/Widget.cpp). This will show you how to expose a C++ class to JavaScriptCore.
 
 Running it on Windows (type `./build.debug/examples/WidgetMain.exe`) or OS X (type `./build.debug/examples/WidgetMain`) produces this output.
-```
+
+```c++
 Widget is an object
 Widget.name; // outputs 'world'
 Widget.number; // outputs '42'
